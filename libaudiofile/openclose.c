@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 2000, Silicon Graphics, Inc.
+	Copyright (C) 2000-2001, Silicon Graphics, Inc.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -61,6 +61,74 @@ int _af_identify (AFvirtualfile *vf, int *implemented)
 		*implemented = AF_FALSE;
 
 	return AF_FILE_UNKNOWN;
+}
+
+int afIdentifyFD (int fd)
+{
+	FILE		*fp;
+	AFvirtualfile	*vf;
+	int		result;
+
+	/*
+		Duplicate the file descriptor since otherwise the
+		original file descriptor would get closed when we close
+		the virtual file below.
+	*/
+	fd = dup(fd);
+
+	fp = fdopen(fd, "r");
+	if (fp == NULL)
+	{
+		_af_error(AF_BAD_OPEN, "could not open file");
+		return AF_FILE_UNKNOWN;
+	}
+
+	vf = af_virtual_file_new_for_file(fp);
+	if (vf == NULL)
+	{
+		_af_error(AF_BAD_OPEN, "could not open file");
+		return AF_FILE_UNKNOWN;
+	}
+
+	result = _af_identify(vf, NULL);
+
+	af_fclose(vf);
+
+	return result;
+}
+
+int afIdentifyNamedFD (int fd, const char *filename, int *implemented)
+{
+	FILE		*fp;
+	AFvirtualfile	*vf;
+	int		result;
+
+	/*
+		Duplicate the file descriptor since otherwise the
+		original file descriptor would get closed when we close
+		the virtual file below.
+	*/
+	fd = dup(fd);
+
+	fp = fdopen(fd, "r");
+	if (fp == NULL)
+	{
+		_af_error(AF_BAD_OPEN, "could not open file '%s'", filename);
+		return AF_FILE_UNKNOWN;
+	}
+
+	vf = af_virtual_file_new_for_file(fp);
+	if (vf == NULL)
+	{
+		_af_error(AF_BAD_OPEN, "could not open file '%s'", filename);
+		return AF_FILE_UNKNOWN;
+	}
+
+	result = _af_identify(vf, implemented);
+
+	af_fclose(vf);
+
+	return result;
 }
 
 AFfilehandle afOpenFile (const char *filename, const char *mode, AFfilesetup setup)
