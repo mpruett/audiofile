@@ -32,15 +32,13 @@ worth the effort.
 This version of the Audio File Library has been tested under the
 following operating environments:
 
-	mips-sgi-irix6.5 / IRIX 6.5 (gcc 2.8.1)
 	mips-sgi-irix6.5 / IRIX 6.5 (MIPSpro cc 7.3.1.2m)
 	mips-sgi-irix6.5 / IRIX 6.5 (MIPSpro cc 7.2.1.3m)
+	mips-sgi-irix6.5 / IRIX 6.5 (gcc 2.8.1)
 	i686-pc-linux-gnu / Debian GNU/Linux 2.2 (gcc 2.95.2)
 	i686-pc-linux-gnu / Red Hat Linux 7.1 (gcc 2.96)
 	i686-pc-linux-gnu / Red Hat Linux 6.1 (egcs 1.1.2)
-	i386-unknown-netbsd1.3 / NetBSD 1.3 (gcc 2.7.2.2+myc1)
-	ia64-sgi-linux / Turbolinux IA64 Beta 3 (gcc 2.96-ia64-000717)
-	ia64-sgi-linux / Turbolinux IA64 Beta 3 (SGI Pro64 cc 0.01.0-13)
+	powerpc-apple-linux-gnu / Debian GNU/Linux (gcc 2.95.4)
 
 The version of GNU cc shipped with some versions of Red Hat 7.0 [1] is
 known to fail on an internal compiler error while compiling some of the
