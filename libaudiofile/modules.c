@@ -286,33 +286,59 @@ MODULESWAP(swap8, real_char8,
 */
 
 /* convert 0xaabbcc to 0xssaabbcc */
-MODULE(real_char3_to_schar3, f /* NOTUSED */,
-	real_char3, schar3,
+#ifdef WORDS_BIGENDIAN
+MODULE(real_char3_to_schar3, f /* NOTUSED */, real_char3, schar3,
 	{
 		char3u u;
 		u.real_char3_high.c3 = ip[i];
 		u.real_char3_high.pad = 0;
 		op[i] = u.schar3.i >> 8;
 	})
+#else
+MODULE(real_char3_to_schar3, f /* NOTUSED */, real_char3, schar3,
+	{
+		char3u u;
+		u.real_char3_low.c3 = ip[i];
+		u.real_char3_low.pad = 0;
+		op[i] = u.schar3.i >> 8;
+	})
+#endif
 
 /* convert 0xaabbcc to 0x00aabbcc */
-MODULE(real_char3_to_uchar3, f /*NOTUSED*/,
-	real_char3, uchar3,
+#ifdef WORDS_BIGENDIAN
+MODULE(real_char3_to_uchar3, f /* NOTUSED */, real_char3, uchar3,
 	{
 		char3u u;
 		u.real_char3_high.c3 = ip[i];
 		u.real_char3_high.pad = 0;
 		op[i] = u.uchar3.i >> 8;
 	})
+#else
+MODULE(real_char3_to_uchar3, f /* NOTUSED */, real_char3, uchar3,
+	{
+		char3u u;
+		u.real_char3_low.c3 = ip[i];
+		u.real_char3_low.pad = 0;
+		op[i] = u.uchar3.i >> 8;
+	})
+#endif
 
 /* convert 0x??aabbcc to 0xaabbcc */
-MODULE(char3_to_real_char3, f /*NOTUSED*/,
-	uchar3, real_char3,
+#ifdef WORDS_BIGENDIAN
+MODULE(char3_to_real_char3, f /* NOTUSED */, uchar3, real_char3,
 	{
 		char3u u;
 		u.uchar3.i = ip[i];
 		op[i] = u.real_char3_low.c3;
 	})
+#else
+MODULE(char3_to_real_char3, f /* NOTUSED */, uchar3, real_char3,
+	{
+		char3u u;
+		u.uchar3.i = ip[i];
+		op[i] = u.real_char3_high.c3;
+	})
+#endif
 
 /*
 	float <--> double ; CASTS
@@ -2600,7 +2626,6 @@ status _AFsetupmodules (AFfilehandle h, _Track *track)
 	for (i=track->ms.nmodules-1; i >= 0; i--)
 	{
 		_AFmoduleinst *inst = &track->ms.module[i];
-		inst->dump = AF_TRUE;
 	}
 
 	{

@@ -1,3 +1,18 @@
+2001-06-06  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/modules.c: Fix conversion between 24-bit and
+	32-bit data formats on little-endian systems.  Thanks to Axel
+	Roebel for pointing out this problem.
+
+	* libaudiofile/aiffwrite.c:  Don't write a MARK chunk unless
+	markers are present.  Don't confuse the big-endian marker id
+	used for writing to the file with its native-endian value used
+	in calls to afGetMark*.
+
+	* test/twentyfour.c: Add a new program to test the conversion
+	between 24-bit signed integer data in a file and 32-bit signed
+	integer data in memory.
+
 2001-06-05  Michael Pruett <mpruett@sgi.com>
 
 	* libaudiofile/af_vfs.c: Prevent division by zero in af_fread
@@ -5,6 +20,8 @@
 
 	* libaudiofile/aiff.c: Check that the number of markers in a
 	MARK chunk is positive before allocating markers.
+
+	Thanks to Axel Roebel for pointing out both of these problems.
 
 2001-05-19  Michael Pruett <mpruett@sgi.com>
 
