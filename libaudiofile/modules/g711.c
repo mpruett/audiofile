@@ -22,7 +22,6 @@
 	g711.c
 */
 
-#include <unistd.h>
 #include <errno.h>
 #include <string.h>
 #include <assert.h>
