@@ -1,6 +1,5 @@
-News for Audio File Library version 0.2.5
-Michael Pruett <michael@68k.org>
+News for Audio File Library version 0.2.6
 
-Fix bugs related to processing 24-bit audio data.
+Added support for AVR, IFF/8SVX, and NIST SPHERE file formats.
 
-Made AIFF/AIFF-C parsing more robust.
+Added example program demonstrating audio file playback on Mac OS X.

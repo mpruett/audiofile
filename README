@@ -1,8 +1,8 @@
 Audio File Library
-Version 0.2.5
-Sunday, 21 December 2003
+Version 0.2.6
+Friday, 5 March 2003
 
-Copyright (C) 1998-2000, 2003, Michael Pruett
+Copyright (C) 1998-2000, 2003-2004, Michael Pruett
 Copyright (C) 2000-2001, Silicon Graphics, Inc.
 
 michael@68k.org
@@ -15,10 +15,10 @@ standard digital audio file formats.
 
 This library allows the processing of audio data to and from audio
 files of many common formats (currently AIFF, AIFF-C, WAVE, NeXT/Sun
-.snd/.au, and IRCAM).  The library also supports compression (currently
-G.711 mu-law and A-law and IMA and MS ADPCM) as well as PCM formats of
-all flavors (signed and unsigned integer, floating point and
-double-precision floating point).
+.snd/.au, IRCAM, AVR, Amiga IFF/8SVX, and NIST SPHERE).  The library
+also supports compression (currently G.711 mu-law and A-law and IMA and
+MS ADPCM) as well as PCM formats of all flavors (signed and unsigned
+integer, single- and double-precision floating point).
 
 One premise of the Audio File Library is that the data presented to
 an application need not be in the same format as the data contained in

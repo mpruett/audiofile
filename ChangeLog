@@ -3,6 +3,8 @@
 	* libaudiofile/Makefile.am, libaudiofile/audiofile.exports:
 	Export only public entry points.
 
+	* Released version 0.2.6 of the Audio File Library.
+
 2004-02-19  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/audiofile.h: Update comments to reflect the fact
