@@ -609,8 +609,8 @@ void _af_print_chunk (_AFchunk *chnk)
 				sprintf(formatstring, "%%%d.2f ", digits+3);
 				numberwidth = digits + 3 + 1;
 			}
-			break;
 		}
+		break;
 
 		case AF_SAMPFMT_TWOSCOMP:
 		case AF_SAMPFMT_UNSIGNED:
@@ -648,6 +648,7 @@ void _af_print_chunk (_AFchunk *chnk)
 			sprintf(formatstring, "%%%d.0f ", digits);
 			numberwidth = digits + 1;
 		}
+		break;
 
 		default:
 			assert(0);
