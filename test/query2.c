@@ -31,6 +31,7 @@
 #include <stdlib.h>
 
 const char *paramtypename (int paramtype);
+void printinstparams (int format);
 
 #define DEBUG
 
@@ -44,7 +45,6 @@ int main (int ac, char **av)
 {
 	AUpvlist	formatlist;
 	int		*flist;
-	int		*iarray;
 	long		lvalue;
 	int		i, formatcount;
 
@@ -79,36 +79,71 @@ int main (int ac, char **av)
 			format, 0, 0);
 		DEBG("instrument parameter query: supported: %ld\n", lvalue);
 
-		lvalue = afQueryLong(AF_QUERYTYPE_INSTPARAM, AF_QUERY_ID_COUNT,
-			format, 0, 0);
-		DEBG("instrument parameter query: id count: %ld\n", lvalue);
-
-		iarray = afQueryPointer(AF_QUERYTYPE_INSTPARAM, AF_QUERY_IDS,
-			format, 0, 0);
-
-		if (iarray != NULL)
-		{
-			int	i;
-			for (i=0; i<lvalue; i++)
-			{
-				int	paramtype;
-
-				DEBG("instrument parameter query: id: %d\n", iarray[i]);
-				paramtype = afQueryLong(AF_QUERYTYPE_INSTPARAM,
-					AF_QUERY_TYPE, format, iarray[i], 0);
-				DEBG("	type of parameter: %s\n",
-					paramtypename(paramtype));
-				DEBG("	name of parameter: %s\n",
-				       (char *)
-					afQueryPointer(AF_QUERYTYPE_INSTPARAM, AF_QUERY_NAME,
-						format, iarray[i], 0));
-			}
-			free(iarray);
-		}
+		/*
+			Print instrument parameter information only if
+			instrument parameters are supported.
+		*/
+		if (lvalue)
+			printinstparams(format);
 	}
 	free(flist);
 
 	return 0;
+}
+
+void printinstparams (int format)
+{
+	int	i, *iarray;
+	long	instParamCount;
+
+	instParamCount = afQueryLong(AF_QUERYTYPE_INSTPARAM, AF_QUERY_ID_COUNT,
+		format, 0, 0);
+	DEBG("instrument parameter query: id count: %ld\n", instParamCount);
+
+	iarray = afQueryPointer(AF_QUERYTYPE_INSTPARAM, AF_QUERY_IDS,
+		format, 0, 0);
+
+	if (iarray == NULL)
+		printf("AF_QUERYTYPE_INSTPARAM failed for format %d\n", format);
+
+	for (i=0; i<instParamCount; i++)
+	{
+		int		paramType;
+		AUpvlist	defaultValue;
+
+		DEBG("instrument parameter query: id: %d\n", iarray[i]);
+		paramType = afQueryLong(AF_QUERYTYPE_INSTPARAM,
+			AF_QUERY_TYPE, format, iarray[i], 0);
+
+		DEBG("\ttype of parameter: %s\n", paramtypename(paramType));
+		DEBG("\tname of parameter: %s\n",
+			(char *) afQueryPointer(AF_QUERYTYPE_INSTPARAM,
+				AF_QUERY_NAME, format, iarray[i], 0));
+
+		defaultValue = afQuery(AF_QUERYTYPE_INSTPARAM, AF_QUERY_DEFAULT,
+			format, iarray[i], 0);
+
+		if (paramType == AU_PVTYPE_LONG)
+		{
+			long	ldefault;
+			AUpvgetval(defaultValue, 0, &ldefault);
+			DEBG("\tdefault value: %ld\n", ldefault);
+		}
+		else if (paramType == AU_PVTYPE_DOUBLE)
+		{
+			double	ddefault;
+			AUpvgetval(defaultValue, 0, &ddefault);
+			DEBG("\tdefault value: %f\n", ddefault);
+		}
+		else if (paramType == AU_PVTYPE_PTR)
+		{
+			void	*vdefault;
+			AUpvgetval(defaultValue, 0, &vdefault);
+			DEBG("\tdefault value: %p\n", vdefault);
+		}
+	}
+
+	free(iarray);
 }
 
 const char *paramtypename (int paramtype)
