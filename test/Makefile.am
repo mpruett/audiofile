@@ -2,7 +2,6 @@ INCLUDES = -I. -I$(srcdir) -I$(top_srcdir)/libaudiofile
 
 noinst_PROGRAMS = \
 	adddcoffset \
-	bitdepth \
 	copy \
 	error \
 	floatto24 \
@@ -48,10 +47,5 @@ irixtestloop_LDADD = $(top_builddir)/libaudiofile/libaudiofile.la @AUDIO_LIB@
 linuxtest_SOURCES = linuxtest.c
 
 LDADD = $(top_builddir)/libaudiofile/libaudiofile.la
-
-if BUILD_STATIC_LIBS
-LDFLAGS=-static
-endif
-LIBS=
 
 DEPENDENCIES = $(top_builddir)/libaudiofile/libaudiofile.la

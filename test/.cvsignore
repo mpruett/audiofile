@@ -5,7 +5,6 @@
 Makefile
 Makefile.in
 adddcoffset
-bitdepth
 copy
 error
 floatto24
