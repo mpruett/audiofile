@@ -1,3 +1,8 @@
+2001-07-07  Michael Pruett <mpruett@sgi.com>
+
+	* configure.in, test/Makefile.am: Link against libaudio.so only
+	for programs which use it.
+
 2001-07-04  Michael Pruett <mpruett@sgi.com>
 
 	* test/floatto24.c: Added program to test virtual sample format

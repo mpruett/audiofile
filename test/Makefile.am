@@ -35,13 +35,13 @@ TESTS = error writeaiff writenext writewave \
 	query2 sixteen-to-eight twentyfour floatto24
 
 irixread_SOURCES = irixread.c sgi.c
-irixread_LDADD = -laudio $(top_builddir)/libaudiofile/libaudiofile.la
+irixread_LDADD = $(top_builddir)/libaudiofile/libaudiofile.la @AUDIO_LIB@
 
 irixtest_SOURCES = irixtest.c sgi.c sgi.h
-irixtest_LDADD = -laudio $(top_builddir)/libaudiofile/libaudiofile.la
+irixtest_LDADD = $(top_builddir)/libaudiofile/libaudiofile.la @AUDIO_LIB@
 
 irixtestloop_SOURCES = irixtestloop.c sgi.c
-irixtestloop_LDADD = -laudio $(top_builddir)/libaudiofile/libaudiofile.la
+irixtestloop_LDADD = $(top_builddir)/libaudiofile/libaudiofile.la @AUDIO_LIB@
 
 linuxtest_SOURCES = linuxtest.c
 
