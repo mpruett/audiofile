@@ -127,10 +127,20 @@ AFframecount afSeekFrame (AFfilehandle file, int trackid, AFframecount frame)
 	if (frame == track->nextvframe)
 		return track->nextvframe;
 
+	/* Limit request to the number of frames in the file. */
 	if (track->totalvframes != -1)
 		if (frame > track->totalvframes)
 			frame = track->totalvframes - 1;
 
+	/*
+		Now that the modules are not dirty and frame
+		represents a valid virtual frame, we call
+		_AFsetupmodules again after setting track->nextvframe.
+
+		_AFsetupmodules will look at track->nextvframe and
+		compute track->nextfframe in clever and mysterious
+		ways.
+	*/
 	track->nextvframe = frame;
 
 	if (_AFsetupmodules(file, track) != AF_SUCCEED)
@@ -147,6 +157,9 @@ AFfileoffset afTellFrame (AFfilehandle file, int trackid)
 int afSetVirtualByteOrder (AFfilehandle handle, int track, int byteorder)
 {
 	_Track *currentTrack;
+
+	if (!_af_filehandle_ok(handle))
+		return -1;
 
 	if (NULL == (currentTrack = _af_filehandle_get_track(handle, track)))
 		return AF_FAIL;
@@ -168,6 +181,9 @@ int afGetByteOrder (AFfilehandle handle, int track)
 {
 	_Track *currentTrack;
 
+	if (!_af_filehandle_ok(handle))
+		return -1;
+
 	if ((currentTrack = _af_filehandle_get_track(handle, track)) == NULL)
 		return -1;
 
@@ -178,6 +194,9 @@ int afGetVirtualByteOrder (AFfilehandle handle, int track)
 {
 	_Track *currentTrack;
 
+	if (!_af_filehandle_ok(handle))
+		return -1;
+
 	if ((currentTrack = _af_filehandle_get_track(handle, track)) == NULL)
 		return -1;
 
@@ -187,6 +206,9 @@ int afGetVirtualByteOrder (AFfilehandle handle, int track)
 AFframecount afGetFrameCount (AFfilehandle file, int trackid)
 {
 	_Track	*track;
+
+	if (!_af_filehandle_ok(file))
+		return -1;
 
 	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
 		return -1;

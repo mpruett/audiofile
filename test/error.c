@@ -48,26 +48,47 @@ void myerrorfunc (long error, const char *description)
 	}
 }
 
-void test1 (void)
+void testnull (void)
 {
 	expectedError = AF_BAD_FILEHANDLE;
 
 	if (verbose) printf("closing null file handle\n");
 	afCloseFile(AF_NULL_FILEHANDLE);
 
+	if (verbose) printf("reading from null file handle\n");
+	afReadFrames(AF_NULL_FILEHANDLE, AF_DEFAULT_TRACK, NULL, 0);
+
+	if (verbose) printf("writing to null file handle\n");
+	afWriteFrames(AF_NULL_FILEHANDLE, AF_DEFAULT_TRACK, NULL, 0);
+
+	if (verbose) printf("setting position on null file handle\n");
+	afSeekFrame(AF_NULL_FILEHANDLE, AF_DEFAULT_TRACK, 0);
+
+	if (verbose) printf("retrieving position on null file handle\n");
+	afTellFrame(AF_NULL_FILEHANDLE, AF_DEFAULT_TRACK);
+
+	if (verbose) printf("getting data offset of null file handle\n");
+	afGetDataOffset(AF_NULL_FILEHANDLE, AF_DEFAULT_TRACK);
+
+	if (verbose) printf("getting track byte count of null file handle\n");
+	afGetTrackBytes(AF_NULL_FILEHANDLE, AF_DEFAULT_TRACK);
+
+	if (verbose) printf("getting frame count of null file handle\n");
+	afGetFrameCount(AF_NULL_FILEHANDLE, AF_DEFAULT_TRACK);
+
 	expectedError = AF_BAD_FILESETUP;
 	if (verbose) printf("freeing null file setup\n");
 	afFreeFileSetup(AF_NULL_FILESETUP);
+}
+
+void testbad (void)
+{
+	AFfilesetup	setup;
+	setup = afNewFileSetup();
 
 	expectedError = AF_BAD_OPEN;
 	if (verbose) printf("opening nonexistent file\n");
 	afOpenFile("sldkjflsdkfjalksdjflaksdjflsakfdj", "r", NULL);
-}
-
-void test2 (void)
-{
-	AFfilesetup	setup;
-	setup = afNewFileSetup();
 
 	expectedError = AF_BAD_FILEFMT;
 	if (verbose) printf("initializing file format to invalid value\n");
@@ -84,7 +105,7 @@ void test2 (void)
 	afInitFileFormat(setup, AF_FILE_AIFFC);
 }
 
-void test3 (void)
+void testbadquery (void)
 {
 	expectedError = AF_BAD_QUERY;
 	if (verbose) printf("querying on bad selectors\n");
@@ -102,9 +123,9 @@ int main (int argc, char **argv)
 	if (argc == 2 && strcmp(argv[1], "-v") == 0)
 		verbose = 1;
 
-	test1();
-	test2();
-	test3();
+	testnull();
+	testbad();
+	testbadquery();
 
 	return 0;
 }

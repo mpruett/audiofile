@@ -1,3 +1,16 @@
+2001-10-10  Michael Pruett <mpruett@sgi.com>
+
+	* test/error.c: Expanded the error test to include several more
+	library functions.
+
+	* libaudiofile/format.c: Improve error checking and add comments.
+
+2001-09-20  Michael Pruett <mpruett@sgi.com>
+
+	* test/irixread.c, test/irixtestloop.c, test/linuxtest.c:
+	Always use virtual audio format in calculations regarding audio
+	data in memory.
+
 2001-09-18  Michael Pruett <mpruett@sgi.com>
 
 	* configure.in: Bump version to 0.2.3 in anticipation of the
