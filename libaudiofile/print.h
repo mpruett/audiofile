@@ -40,13 +40,13 @@
 #endif
 
 #if (SIZEOF_SIZE_T == SIZEOF_LONG)
-#define AF_SIZE_T_PRINT_FMT "ld"
+#define AF_SIZE_T_PRINT_FMT "lu"
 #endif
 #if (SIZEOF_SIZE_T > SIZEOF_LONG)
-#define AF_SIZE_T_PRINT_FMT "lld"
+#define AF_SIZE_T_PRINT_FMT "llu"
 #endif
 #if (SIZEOF_SIZE_T < SIZEOF_LONG)
-#define AF_SIZE_T_PRINT_FMT "d"
+#define AF_SIZE_T_PRINT_FMT "u"
 #endif
 
 #define AF_FRAMECOUNT_PRINT_FMT AF_OFF_T_PRINT_FMT
