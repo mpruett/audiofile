@@ -84,6 +84,10 @@ status _af_iff_update (AFfilehandle file)
 {
 	u_int32_t	length;
 
+	WriteVHDR(file);
+	WriteMiscellaneous(file);
+	WriteBODY(file);
+
 	/* Get the length of the file. */
 	length = af_flength(file->fh);
 	length -= 8;
@@ -91,10 +95,6 @@ status _af_iff_update (AFfilehandle file)
 	/* Set the length of the FORM chunk. */
 	af_fseek(file->fh, 4, SEEK_SET);
 	af_write_uint32_be(&length, file->fh);
-
-	WriteVHDR(file);
-	WriteMiscellaneous(file);
-	WriteBODY(file);
 
 	return AF_SUCCEED;
 }
@@ -178,6 +178,14 @@ static status WriteBODY (AFfilehandle file)
 
 	if (track->fpos_first_frame == 0)
 		track->fpos_first_frame = af_ftell(file->fh);
+
+	/* Add a pad byte to the end of the chunk if the chunk size is odd. */
+	if ((chunkSize % 2) == 1)
+	{
+		u_int8_t	zero = 0;
+		af_fseek(file->fh, iff->BODY_offset + 8 + chunkSize, SEEK_SET);
+		af_fwrite(&zero, 1, 1, file->fh);
+	}
 
 	return AF_SUCCEED;
 }
