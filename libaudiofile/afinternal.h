@@ -359,6 +359,15 @@ enum
 	_AF_WRITE_ACCESS = 2
 };
 
+/* The following are tokens for compression parameters in PV lists. */
+enum
+{
+	_AF_SAMPLES_PER_BLOCK = 700,		/* type: long */
+	_AF_BLOCK_SIZE = 701,			/* type: long */
+	_AF_MS_ADPCM_NUM_COEFFICIENTS = 800,	/* type: long */
+	_AF_MS_ADPCM_COEFFICIENTS = 801		/* type: array of int16_t[2] */
+};
+
 /* NeXT/Sun sampling rate */
 #define _AF_SRATE_CODEC (8012.8210513)
 

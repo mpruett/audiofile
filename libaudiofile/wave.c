@@ -85,6 +85,7 @@ static status ParseFrameCount (AFfilehandle filehandle, AFvirtualfile *fp,
 	track = _af_filehandle_get_track(filehandle, AF_DEFAULT_TRACK);
 
 	af_fread(&totalFrames, 1, 4, fp);
+
 	track->totalfframes = LENDIAN_TO_HOST_INT32(totalFrames);
 
 	return AF_SUCCEED;
@@ -97,12 +98,16 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 	u_int16_t	formatTag, channelCount;
 	u_int32_t	sampleRate, averageBytesPerSecond;
 	u_int16_t	blockAlign;
+	_WAVEInfo	*wave;
 
 	assert(filehandle != NULL);
 	assert(fp != NULL);
 	assert(!memcmp(&id, "fmt ", 4));
 
 	track = _af_filehandle_get_track(filehandle, AF_DEFAULT_TRACK);
+
+	assert(filehandle->formatSpecific != NULL);
+	wave = (_WAVEInfo *) filehandle->formatSpecific;
 
 	af_fread(&formatTag, 1, 2, fp);
 	formatTag = LENDIAN_TO_HOST_INT16(formatTag);
@@ -187,7 +192,120 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 		break;
 
 		case WAVE_FORMAT_ADPCM:
+		{
+			u_int16_t	bitsPerSample, extraByteCount,
+					samplesPerBlock, numCoefficients;
+			int		i;
+			AUpvlist	pv;
+			long		l;
+			void		*v;
+
+			if (track->f.channelCount != 1 &&
+				track->f.channelCount != 2)
+			{
+				_af_error(AF_BAD_CHANNELS,
+					"WAVE file with MS ADPCM compression "
+					"must have 1 or 2 channels");
+			}
+
+			af_fread(&bitsPerSample, 1, 2, fp);
+			bitsPerSample = LENDIAN_TO_HOST_INT16(bitsPerSample);
+
+			af_fread(&extraByteCount, 1, 2, fp);
+			extraByteCount = LENDIAN_TO_HOST_INT16(extraByteCount);
+
+			af_fread(&samplesPerBlock, 1, 2, fp);
+			samplesPerBlock = LENDIAN_TO_HOST_INT16(samplesPerBlock);
+
+			af_fread(&numCoefficients, 1, 2, fp);
+			numCoefficients = LENDIAN_TO_HOST_INT16(numCoefficients);
+
+			/* numCoefficients should be at least 7. */
+			assert(numCoefficients >= 7 && numCoefficients <= 255);
+
+			for (i=0; i<numCoefficients; i++)
+			{
+				int16_t	a0, a1;
+
+				af_fread(&a0, 1, 2, fp);
+				af_fread(&a1, 1, 2, fp);
+
+				a0 = LENDIAN_TO_HOST_INT16(a0);
+				a1 = LENDIAN_TO_HOST_INT16(a1);
+
+				wave->msadpcmCoefficients[i][0] = a0;
+				wave->msadpcmCoefficients[i][1] = a1;
+			}
+
+			track->f.sampleWidth = 16;
+			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
+			track->f.compressionType = AF_COMPRESSION_MS_ADPCM;
+			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
+
+			/* Create the parameter list. */
+			pv = AUpvnew(4);
+			AUpvsetparam(pv, 0, _AF_MS_ADPCM_NUM_COEFFICIENTS);
+			AUpvsetvaltype(pv, 0, AU_PVTYPE_LONG);
+			l = numCoefficients;
+			AUpvsetval(pv, 0, &l);
+
+			AUpvsetparam(pv, 1, _AF_MS_ADPCM_COEFFICIENTS);
+			AUpvsetvaltype(pv, 1, AU_PVTYPE_PTR);
+			v = wave->msadpcmCoefficients;
+			AUpvsetval(pv, 1, &v);
+
+			AUpvsetparam(pv, 2, _AF_SAMPLES_PER_BLOCK);
+			AUpvsetvaltype(pv, 2, AU_PVTYPE_LONG);
+			l = samplesPerBlock;
+			AUpvsetval(pv, 2, &l);
+
+			AUpvsetparam(pv, 3, _AF_BLOCK_SIZE);
+			AUpvsetvaltype(pv, 3, AU_PVTYPE_LONG);
+			l = blockAlign;
+			AUpvsetval(pv, 3, &l);
+
+			track->f.compressionParams = pv;
+		}
+		break;
+
 		case WAVE_FORMAT_DVI_ADPCM:
+		{
+			AUpvlist	pv;
+			long		l;
+
+			u_int16_t	bitsPerSample, extraByteCount,
+					samplesPerBlock;
+
+			af_fread(&bitsPerSample, 1, 2, fp);
+			bitsPerSample = LENDIAN_TO_HOST_INT16(bitsPerSample);
+
+			af_fread(&extraByteCount, 1, 2, fp);
+			extraByteCount = LENDIAN_TO_HOST_INT16(extraByteCount);
+
+			af_fread(&samplesPerBlock, 1, 2, fp);
+			samplesPerBlock = LENDIAN_TO_HOST_INT16(samplesPerBlock);
+
+			track->f.sampleWidth = 16;
+			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
+			track->f.compressionType = AF_COMPRESSION_IMA;
+			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
+
+			/* Create the parameter list. */
+			pv = AUpvnew(2);
+			AUpvsetparam(pv, 0, _AF_SAMPLES_PER_BLOCK);
+			AUpvsetvaltype(pv, 0, AU_PVTYPE_LONG);
+			l = samplesPerBlock;
+			AUpvsetval(pv, 0, &l);
+
+			AUpvsetparam(pv, 1, _AF_BLOCK_SIZE);
+			AUpvsetvaltype(pv, 1, AU_PVTYPE_LONG);
+			l = blockAlign;
+			AUpvsetval(pv, 1, &l);
+
+			track->f.compressionParams = pv;
+		}
+		break;
+
 		case WAVE_FORMAT_YAMAHA_ADPCM:
 		case WAVE_FORMAT_OKI_ADPCM:
 		case WAVE_FORMAT_CREATIVE_ADPCM:
@@ -419,7 +537,7 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 	u_int32_t	index = 0;
 	bool		hasFormat, hasData, hasCue, hasPlayList, hasFrameCount,
 			hasINST, hasINFO;
-	int		frameSize;
+	_WAVEInfo	*wave = _af_malloc(sizeof (_WAVEInfo));
 
 	assert(filehandle != NULL);
 	assert(filehandle->fh != NULL);
@@ -432,6 +550,7 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 	hasINST = AF_FALSE;
 	hasINFO = AF_FALSE;
 
+	filehandle->formatSpecific = wave;
 	filehandle->instruments = NULL;
 	filehandle->instrumentCount = 0;
 	filehandle->miscellaneous = NULL;
@@ -561,8 +680,11 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 		and a data chunk, so we can assume that track->f and
 		track->data_size have been initialized.
 	*/
-	frameSize = _af_format_frame_size(&track->f, AF_FALSE);
-	track->totalfframes = track->data_size / frameSize;
+	if (hasFrameCount == AF_FALSE)
+	{
+		track->totalfframes = track->data_size /
+			_af_format_frame_size(&track->f, AF_FALSE);
+	}
 
 	/*
 		The format and data chunks must be present.
@@ -822,7 +944,6 @@ bool _af_wave_instparam_valid (AFfilehandle filehandle, AUpvlist list, int i)
 
 		default:
 			return AF_FALSE;
-			break;
 	}
 
 	return AF_TRUE;

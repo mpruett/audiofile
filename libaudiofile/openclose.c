@@ -484,6 +484,21 @@ static void freeFileHandle (AFfilehandle filehandle)
 		int	i;
 		for (i=0; i<filehandle->trackCount; i++)
 		{
+			/* Free the compression parameters. */
+			if (filehandle->tracks[i].f.compressionParams)
+			{
+				AUpvfree(filehandle->tracks[i].f.compressionParams);
+				filehandle->tracks[i].f.compressionParams = AU_NULL_PVLIST;
+			}
+
+			if (filehandle->tracks[i].v.compressionParams)
+			{
+				AUpvfree(filehandle->tracks[i].v.compressionParams);
+				filehandle->tracks[i].v.compressionParams = AU_NULL_PVLIST;
+			}
+
+			/* Free the track's modules. */
+
 			_AFfreemodules(&filehandle->tracks[i]);
 
 			if (filehandle->tracks[i].channelMatrix)

@@ -29,7 +29,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <math.h>
 
 #include <assert.h>
@@ -947,7 +946,10 @@ status initfilemods (_Track *track, AFfilehandle h)
 		sound data chunk of the file (such as aware).  This is NOT
 		the seek that sets the file at the beginning of the data.
 	*/
+	/* XXXmpruett -- we currently don't set seekok.
 	if (h->seekok && af_fseek(h->fh, track->fpos_first_frame, SEEK_SET) < 0)
+	*/
+	if (af_fseek(h->fh, track->fpos_first_frame, SEEK_SET) < 0)
 	{
 		_af_error(AF_BAD_LSEEK, "unable to position file handle at beginning of sound data");
 		return AF_FAIL;

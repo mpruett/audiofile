@@ -1,3 +1,35 @@
+2001-08-23  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/modules/Makefile.am, libaudiofile/units.[ch]:
+	Added IMA and MS ADPCM compression modules.
+
+	* libaudiofile/modules/msadpcm.[ch]: Checked in MS ADPCM
+	compression module.
+
+	* libaudiofile/modules/{ima,adpcm}.[ch]: Checked in IMA
+	compression module and Stichting Mathematisch Centrum's IMA
+	reference codec.
+
+	* libaudiofile/afinternal.h: Declared new internal tokens for
+	compression parameters in PV lists.
+
+	* libaudiofile/audiofile.h: Declared constants for DV and MS
+	ADPCM compression formats.
+
+	* libaudiofile/wave.[ch]: Handle IMA and MS ADPCM compression
+	in WAVE files.
+
+	* libaudiofile/openclose.c: If a track has compression
+	parameters, deallocate them before closing the file.
+
+	* sfcommands/printinfo.c: Added support for compressed audio
+	data to sound commands.
+
+2001-08-07  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/query.c: Added support for
+	AF_QUERYTYPE_COMPRESSION.
+
 2001-08-04  Michael Pruett <mpruett@sgi.com>
 
 	* libaudiofile/util.c, libaudiofile/util.h: Add utility

@@ -90,6 +90,19 @@ typedef struct _WAVEInfo
 	off_t	miscellaneousStartOffset;
 	off_t	totalMiscellaneousSize;
 	off_t	dataSizeOffset;
+
+	/*
+		The following information is specified in the format
+		chunk and is for use with compressed data formats.
+	*/
+	u_int32_t	blockAlign, samplesPerBlock;
+
+	/*
+		The index into the coefficient array is of type
+		u_int8_t, so we can safely limit msadpcmCoefficients to
+		be 256 coefficient pairs.
+	*/
+	int16_t		msadpcmCoefficients[256][2];
 } _WAVEInfo;
 
 #endif

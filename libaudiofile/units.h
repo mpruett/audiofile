@@ -95,6 +95,6 @@ typedef struct _CompressionUnit
 } _CompressionUnit;
 
 #define _AF_NUM_UNITS 6
-#define _AF_NUM_COMPRESSION 3
+#define _AF_NUM_COMPRESSION 5
 
 #endif /* UNIT_H */

@@ -38,6 +38,8 @@
 
 #include "modules/pcm.h"
 #include "modules/g711.h"
+#include "modules/ima.h"
+#include "modules/msadpcm.h"
 
 extern _InstParamInfo _af_aiff_inst_params[];
 extern _InstParamInfo _af_wave_inst_params[];
@@ -158,7 +160,7 @@ _CompressionUnit _af_compression[_AF_NUM_COMPRESSION] =
 		AF_COMPRESSION_G711_ULAW,
 		AF_TRUE,
 		"ulaw",	/* label */
-		"ulaw",	/* shortname */
+		"CCITT G.711 u-law",	/* shortname */
 		"CCITT G.711 u-law",
 		2.0,
 		AF_SAMPFMT_TWOSCOMP, 16,
@@ -171,7 +173,7 @@ _CompressionUnit _af_compression[_AF_NUM_COMPRESSION] =
 		AF_COMPRESSION_G711_ALAW,
 		AF_TRUE,
 		"alaw",	/* label */
-		"alaw",	/* short name */
+		"CCITT G.711 A-law",	/* short name */
 		"CCITT G.711 A-law",
 		2.0,
 		AF_SAMPFMT_TWOSCOMP, 16,
@@ -179,5 +181,31 @@ _CompressionUnit _af_compression[_AF_NUM_COMPRESSION] =
 		AF_FALSE,	/* multiple_of */
 		_af_g711_format_ok,
 		_AFg711initcompress, _AFg711initdecompress
+	},
+	{
+		AF_COMPRESSION_IMA,
+		AF_TRUE,
+		"ima4",	/* label */
+		"IMA ADPCM",	/* short name */
+		"IMA DVI ADPCM",
+		4.0,
+		AF_SAMPFMT_TWOSCOMP, 16,
+		AF_TRUE,	/* needsRebuffer */
+		AF_FALSE,	/* multiple_of */
+		_af_ima_adpcm_format_ok,
+		NULL, _af_ima_adpcm_init_decompress
+	},
+	{
+		AF_COMPRESSION_MS_ADPCM,
+		AF_TRUE,
+		"msadpcm",	/* label */
+		"MS ADPCM",	/* short name */
+		"Microsoft ADPCM",
+		4.0,
+		AF_SAMPFMT_TWOSCOMP, 16,
+		AF_TRUE,	/* needsRebuffer */
+		AF_FALSE,	/* multiple_of */
+		_af_ms_adpcm_format_ok,
+		NULL, _af_ms_adpcm_init_decompress
 	}
 };

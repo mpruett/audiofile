@@ -5,6 +5,8 @@ INCLUDES = -I$(srcdir)/..
 libmodules_la_SOURCES = \
 	g711.c g711.h \
 	pcm.c pcm.h \
+	msadpcm.c msadpcm.h \
+	ima.c ima.h adpcm.c adpcm.h \
 	rebuffer.c rebuffer.h \
 	rebuffer.template
 
