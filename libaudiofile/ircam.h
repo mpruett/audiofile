@@ -22,8 +22,8 @@
 /*
 	ircam.h
 
-	This file contains structures and constants related to the AIFF
-	and AIFF-C formats.
+	This file contains constants and function prototypes related to
+	the Berkeley/IRCAM/CARL Sound File format.
 */
 
 #ifndef IRCAM_H
