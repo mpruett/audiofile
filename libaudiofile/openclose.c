@@ -37,6 +37,10 @@
 #include "util.h"
 #include "modules.h"
 
+#ifndef _MSC_VER
+#define SETBINARYMODE(x)
+#endif
+
 extern _Unit _af_units[];
 
 static void freeFileHandle (AFfilehandle filehandle);
@@ -91,6 +95,8 @@ int afIdentifyFD (int fd)
 		return AF_FILE_UNKNOWN;
 	}
 
+	SETBINARYMODE(fp);
+
 	vf = af_virtual_file_new_for_file(fp);
 	if (vf == NULL)
 	{
@@ -124,6 +130,8 @@ int afIdentifyNamedFD (int fd, const char *filename, int *implemented)
 		_af_error(AF_BAD_OPEN, "could not open file '%s'", filename);
 		return AF_FILE_UNKNOWN;
 	}
+
+	SETBINARYMODE(fp);
 
 	vf = af_virtual_file_new_for_file(fp);
 	if (vf == NULL)
@@ -168,6 +176,8 @@ AFfilehandle afOpenFD (int fd, const char *mode, AFfilesetup setup)
 		return AF_NULL_FILEHANDLE;
 	}
 
+	SETBINARYMODE(fp);
+
 	vf = af_virtual_file_new_for_file(fp);
 
 	if (_afOpenFile(access, vf, NULL, &filehandle, setup) != AF_SUCCEED)
@@ -206,6 +216,8 @@ AFfilehandle afOpenNamedFD (int fd, const char *mode, AFfilesetup setup,
 		return AF_NULL_FILEHANDLE;
 	}
 
+	SETBINARYMODE(fp);
+
 	vf = af_virtual_file_new_for_file(fp);
 
 	if (_afOpenFile(access, vf, filename, &filehandle, setup) != AF_SUCCEED)
@@ -242,6 +254,8 @@ AFfilehandle afOpenFile (const char *filename, const char *mode, AFfilesetup set
 		_af_error(AF_BAD_OPEN, "could not open file '%s'", filename);
 		return AF_NULL_FILEHANDLE;
 	}
+
+	SETBINARYMODE(fp);
 
 	vf = af_virtual_file_new_for_file(fp);
 
