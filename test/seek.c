@@ -40,6 +40,23 @@
 #define PAD_FRAME_COUNT (FRAME_COUNT + 5)
 #define DATA_LENGTH (FRAME_COUNT * sizeof (short))
 
+void cleanup (void)
+{
+#ifndef DEBUG
+	unlink(TEST_FILE);
+#endif
+}
+
+void ensure (int condition, const char *message)
+{
+	if (!condition)
+	{
+		printf("%s.\n", message);
+		cleanup();
+		exit(EXIT_FAILURE);
+	}
+}
+
 int main (int argc, char **argv)
 {
 	AFfilehandle file;
@@ -50,21 +67,13 @@ int main (int argc, char **argv)
 	int i;
 
 	setup = afNewFileSetup();
-	if (setup == NULL)
-	{
-		fprintf(stderr, "could not create file setup\n");
-		exit(EXIT_FAILURE);
-	}
+	ensure(setup != NULL, "could not create file setup");
 
 	afInitFileFormat(setup, AF_FILE_AIFF);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 
 	file = afOpenFile(TEST_FILE, "w", setup);
-	if (file == AF_NULL_FILEHANDLE)
-	{
-		fprintf(stderr, "could not open file for writing\n");
-		exit(EXIT_FAILURE);
-	}
+	ensure(file != AF_NULL_FILEHANDLE, "could not open file for writing");
 
 	afFreeFileSetup(setup);
 
@@ -82,11 +91,7 @@ int main (int argc, char **argv)
 	afCloseFile(file);
 
 	file = afOpenFile(TEST_FILE, "r", AF_NULL_FILESETUP);
-	if (file == AF_NULL_FILEHANDLE)
-	{
-		fprintf(stderr, "could not open file for reading\n");
-		exit(EXIT_FAILURE);
-	}
+	ensure(file != AF_NULL_FILEHANDLE, "could not open file for reading");
 
 	/*
 		For each position in the file, seek to that position and
@@ -101,28 +106,19 @@ int main (int argc, char **argv)
 
 		afSeekFrame(file, AF_DEFAULT_TRACK, i);
 		currentposition = afTellFrame(file, AF_DEFAULT_TRACK);
-		if (currentposition != i)
-		{
-			fprintf(stderr, "incorrect seek position\n");
-			exit(EXIT_FAILURE);
-		}
+		ensure(currentposition == i, "incorrect seek position");
 
 		framesread = afReadFrames(file, AF_DEFAULT_TRACK, readdata + i,
 			PAD_FRAME_COUNT);
-		if (framesread != FRAME_COUNT - i)
-		{
-			fprintf(stderr, "incorrect number of frames read\n");
-			exit(EXIT_FAILURE);
-		}
+		ensure(framesread == FRAME_COUNT - i,
+			"incorrect number of frames read");
 
-		if (memcmp(data + i, readdata + i, framesread * sizeof (short)) != 0)
-		{
-			fprintf(stderr, "error in data read\n");
-			exit(EXIT_FAILURE);
-		}
+		ensure(memcmp(data + i, readdata + i, framesread * sizeof (short)) == 0,
+			"error in data read");
 	}
 
 	afCloseFile(file);
 
+	cleanup();
 	return 0;
 }

@@ -1,3 +1,7 @@
+2003-12-20  Michael Pruett <michael@68k.org>
+
+	* test/seek.c: Delete temporary file before exiting.
+
 2003-12-17  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/aiff.c: When reading an AIFF-C file with an
