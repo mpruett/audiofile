@@ -1,3 +1,11 @@
+2001-07-08  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/{aiff.c,aiffwrite.c}: Add support for
+	floating-point AIFF-C files.
+
+	* test/testfloat.c: Add a test for reading and writing
+	floating-point audio files.
+
 2001-07-07  Michael Pruett <mpruett@sgi.com>
 
 	* configure.in, test/Makefile.am: Link against libaudio.so only

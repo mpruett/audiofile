@@ -21,6 +21,7 @@ noinst_PROGRAMS = \
 	instparamwrite \
 	instparamtest \
 	sixteen-to-eight \
+	testfloat \
 	twentyfour \
 	power \
 	@TEST_BIN@
@@ -32,7 +33,7 @@ EXTRA_PROGRAMS = irixread irixtest irixtestloop linuxtest
 TESTS = error writeaiff writenext writewave \
 	writeulaw writealaw \
 	misc.sh transparency.sh \
-	query2 sixteen-to-eight twentyfour floatto24
+	query2 sixteen-to-eight twentyfour floatto24 testfloat
 
 irixread_SOURCES = irixread.c sgi.c
 irixread_LDADD = $(top_builddir)/libaudiofile/libaudiofile.la @AUDIO_LIB@

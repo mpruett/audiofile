@@ -1,7 +1,7 @@
 /*
 	Audio File Library
 	Copyright (C) 1998-2000, Michael Pruett <michael@68k.org>
-	Copyright (C) 2000, Silicon Graphics, Inc.
+	Copyright (C) 2000-2001, Silicon Graphics, Inc.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -136,14 +136,26 @@ status _af_aiff_update (AFfilehandle file)
 static status WriteCOMM (const AFfilehandle file)
 {
 	_Track		*track;
-	u_int32_t	size;
+	u_int32_t	chunkSize;
+	_AIFFInfo	*aiff;
+	bool		isAIFFC;
+
 	u_int16_t	sb;
 	u_int32_t	lb;
 	unsigned char	eb[10];
-	_AIFFInfo	*aiff;
+
+	u_int8_t	compressionTag[4];
+	/* Pascal strings can occupy only 255 bytes (+ a size byte). */
+	char		compressionName[256];
+
+	isAIFFC = file->fileFormat == AF_FILE_AIFFC;
 
 	aiff = file->formatSpecific;
 
+	/*
+		If COMM_offset hasn't been set yet, set it to the
+		current offset.
+	*/
 	if (aiff->COMM_offset == 0)
 		aiff->COMM_offset = af_ftell(file->fh);
 	else
@@ -151,13 +163,66 @@ static status WriteCOMM (const AFfilehandle file)
 
 	track = _af_filehandle_get_track(file, AF_DEFAULT_TRACK);
 
-	size = 18;
-	if (file->fileFormat == AF_FILE_AIFFC)
-		size = 38;
+	if (isAIFFC)
+	{
+		if (track->f.compressionType == AF_COMPRESSION_NONE)
+		{
+			if (track->f.sampleFormat == AF_SAMPFMT_TWOSCOMP)
+			{
+				memcpy(compressionTag, "NONE", 4);
+				strcpy(compressionName, "not compressed");
+			}
+			else if (track->f.sampleFormat == AF_SAMPFMT_FLOAT)
+			{
+				memcpy(compressionTag, "fl32", 4);
+				strcpy(compressionName, "32-bit Floating Point");
+			}
+			else if (track->f.sampleFormat == AF_SAMPFMT_DOUBLE)
+			{
+				memcpy(compressionTag, "fl64", 4);
+				strcpy(compressionName, "64-bit Floating Point");
+			}
+			/*
+				We disallow unsigned sample data for
+				AIFF files in _af_aiff_complete_setup,
+				so the next condition should never be
+				satisfied.
+			*/
+			else if (track->f.sampleFormat == AF_SAMPFMT_UNSIGNED)
+			{
+				_af_error(AF_BAD_SAMPFMT,
+					"AIFF/AIFF-C format does not support unsigned data");
+				assert(0);
+				return AF_FAIL;
+			}
+		}
+		else if (track->f.compressionType == AF_COMPRESSION_G711_ULAW)
+		{
+			memcpy(compressionTag, "ulaw", 4);
+			strcpy(compressionName, "CCITT G.711 u-law");
+		}
+		else if (track->f.compressionType == AF_COMPRESSION_G711_ALAW)
+		{
+			memcpy(compressionTag, "alaw", 4);
+			strcpy(compressionName, "CCITT G.711 A-law");
+		}
+	}
 
 	af_fwrite("COMM", 4, 1, file->fh);
-	size = HOST_TO_BENDIAN_INT32(size);
-	af_fwrite(&size, 4, 1, file->fh);
+
+	/*
+		For AIFF-C files, the length of the COMM chunk is 22
+		plus the length of the compression name plus the size
+		byte.  If the length of the data is an odd number of
+		bytes, add a zero pad byte at the end, but don't
+		include the pad byte in the chunk's size.
+	*/
+	if (isAIFFC)
+		chunkSize = 22 + strlen(compressionName) + 1;
+	else
+		chunkSize = 18;
+	chunkSize = HOST_TO_BENDIAN_INT32(chunkSize);
+	af_fwrite(&chunkSize, 4, 1, file->fh);
 
 	/* number of channels, 2 bytes */
 	sb = HOST_TO_BENDIAN_INT16(track->f.channelCount);
@@ -177,15 +242,21 @@ static status WriteCOMM (const AFfilehandle file)
 
 	if (file->fileFormat == AF_FILE_AIFFC)
 	{
-		char	sizeByte, zero = 0;
-		char	compressionName[] = "not compressed";
+		u_int8_t	sizeByte, zero = 0;
 
-		af_fwrite("NONE", 4, 1, file->fh);
+		af_fwrite(compressionTag, 4, 1, file->fh);
 
 		sizeByte = strlen(compressionName);
 
 		af_fwrite(&sizeByte, 1, 1, file->fh);
 		af_fwrite(compressionName, sizeByte, 1, file->fh);
+
+		/*
+			If sizeByte is even, then 1+sizeByte
+			(the length of the string) is odd.  Add an
+			extra byte to make the chunk's extent even
+			(even though the chunk's size may be odd).
+		*/
 		if ((sizeByte % 2) == 0)
 			af_fwrite(&zero, 1, 1, file->fh);
 	}

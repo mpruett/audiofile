@@ -45,19 +45,19 @@
 #include "track.h"
 #include "marker.h"
 
-static status ParseFVER (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type,
+static status ParseFVER (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 	size_t size);
-static status ParseAESD (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type,
+static status ParseAESD (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 	size_t size);
-static status ParseMiscellaneous (AFfilehandle file, AF_VirtualFile *fh,
+static status ParseMiscellaneous (AFfilehandle file, AFvirtualfile *fh,
 	u_int32_t type, size_t size);
-static status ParseINST (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type,
+static status ParseINST (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 	size_t size);
-static status ParseMARK (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type,
+static status ParseMARK (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 	size_t size);
-static status ParseCOMM (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type,
+static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 	size_t size);
-static status ParseSSND (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type,
+static status ParseSSND (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 	size_t size);
 
 _InstParamInfo _af_aiff_inst_params[_AF_AIFF_NUM_INSTPARAMS] =
@@ -97,7 +97,7 @@ _AFfilesetup _af_aiff_default_filesetup =
 /*
 	FVER chunks are only present in AIFF-C files.
 */
-static status ParseFVER (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type, size_t size)
+static status ParseFVER (AFfilehandle file, AFvirtualfile *fh, u_int32_t type, size_t size)
 {
 	u_int32_t	timestamp;
 
@@ -113,7 +113,7 @@ static status ParseFVER (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type, 
 /*
 	Parse AES recording data.
 */
-static status ParseAESD (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type, size_t size)
+static status ParseAESD (AFfilehandle file, AFvirtualfile *fh, u_int32_t type, size_t size)
 {
 	_Track		*track;
 	unsigned char	aesChannelStatusData[24];
@@ -141,7 +141,7 @@ static status ParseAESD (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type, 
 	Parse miscellaneous data chunks such as name, author, copyright,
 	and annotation chunks.
 */
-static status ParseMiscellaneous (AFfilehandle file, AF_VirtualFile *fh,
+static status ParseMiscellaneous (AFfilehandle file, AFvirtualfile *fh,
 	u_int32_t type, size_t size)
 {
 	int	misctype = AF_MISC_UNRECOGNIZED;
@@ -183,7 +183,7 @@ static status ParseMiscellaneous (AFfilehandle file, AF_VirtualFile *fh,
 	Parse instrument chunks, which contain information about using
 	sound data as a sampled instrument.
 */
-static status ParseINST (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type,
+static status ParseINST (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 	size_t size)
 {
 	_Instrument	*instrument;
@@ -271,7 +271,7 @@ static status ParseINST (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type,
 /*
 	Parse marker chunks, which contain the positions and names of loop markers.
 */
-static status ParseMARK (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type,
+static status ParseMARK (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 	size_t size)
 {
 	_Track		*track;
@@ -336,7 +336,7 @@ static status ParseMARK (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type,
 	sampling rate, the number of sample frames, and the number of
 	sound channels.
 */
-static status ParseCOMM (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type,
+static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 	size_t size)
 {
 	_Track		*track;
@@ -399,6 +399,20 @@ static status ParseCOMM (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type,
 		{
 			track->f.compressionType = AF_COMPRESSION_G711_ALAW;
 		}
+		else if (!memcmp(compressionID, "fl32", 4) ||
+			!memcmp(compressionID, "FL32", 4))
+		{
+			track->f.sampleFormat = AF_SAMPFMT_FLOAT;
+			track->f.sampleWidth = 32;
+			track->f.compressionType = AF_COMPRESSION_NONE;
+		}
+		else if (!memcmp(compressionID, "fl64", 4) ||
+			!memcmp(compressionID, "FL64", 4))
+		{
+			track->f.sampleFormat = AF_SAMPFMT_DOUBLE;
+			track->f.sampleWidth = 64;
+			track->f.compressionType = AF_COMPRESSION_NONE;
+		}
 	}
 
 	_af_set_sample_format(&track->f, track->f.sampleFormat, track->f.sampleWidth);
@@ -410,7 +424,7 @@ static status ParseCOMM (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type,
 	Parse the stored sound chunk, which usually contains little more
 	than the sound data.
 */
-static status ParseSSND (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type,
+static status ParseSSND (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 	size_t size)
 {
 	_Track		*track;
