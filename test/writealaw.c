@@ -48,7 +48,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#define TEST_FILE "/tmp/fuck.au"
+#define TEST_FILE "/tmp/test.au"
 
 void cleanup (void)
 {

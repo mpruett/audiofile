@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <audiofile.h>
 
-#define TEST_FILE "/tmp/fuck.wave"
+#define TEST_FILE "/tmp/test.wave"
 
 int main (int argc, char **argv)
 {

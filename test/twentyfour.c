@@ -36,7 +36,7 @@
 #include <audiofile.h>
 #include <assert.h>
 
-#define TEST_FILE "/tmp/fuck.aiff"
+#define TEST_FILE "/tmp/test.aiff"
 #define FRAME_COUNT 6
 
 int main (int argc, char **argv)
