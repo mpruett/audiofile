@@ -1,18 +1,18 @@
 Audio File Library
-Version 0.2.3
+Version 0.2.4
 Thursday, 25 October 2001
 
 Copyright (C) 1998-2000, Michael Pruett
 Copyright (C) 2000-2001, Silicon Graphics, Inc.
 
-michael@68k.org / mpruett@sgi.com
+michael@68k.org
 http://www.68k.org/~michael/audiofile/
 http://oss.sgi.com/projects/audiofile/
 
 ----
 
-The Silicon Graphics Audio File Library provides a uniform programming
-interface to standard digital audio file formats.
+The Audio File Library provides a uniform programming interface to
+standard digital audio file formats.
 
 This library allows the processing of audio data to and from audio
 files of many common formats (currently AIFF, AIFF-C, WAVE, NeXT/Sun
