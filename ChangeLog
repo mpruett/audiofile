@@ -1,3 +1,8 @@
+2004-03-05  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/Makefile.am, libaudiofile/audiofile.exports:
+	Export only public entry points.
+
 2004-02-19  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/audiofile.h: Update comments to reflect the fact

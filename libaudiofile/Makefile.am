@@ -4,6 +4,8 @@ SUBDIRS = modules
 
 lib_LTLIBRARIES = libaudiofile.la
 
+EXTRA_DIST = audiofile.exports
+
 libaudiofile_la_SOURCES = \
 	openclose.c setup.c format.c data.c pcm.c \
 	error.c byteorder.c af_vfs.c \
@@ -26,7 +28,8 @@ libaudiofile_la_SOURCES = \
 
 libaudiofile_la_LIBADD = modules/libmodules.la
 
-libaudiofile_la_LDFLAGS = -version-info 0:2:0 -no-undefined
+libaudiofile_la_LDFLAGS = -version-info 0:2:0 -no-undefined \
+	-export-symbols audiofile.exports
 
 include_HEADERS = audiofile.h aupvlist.h af_vfs.h
 
