@@ -1,3 +1,8 @@
+2003-10-01  Michael Pruett <michael@68k.org>
+
+	* sfcommands/printinfo.c: Change printfileinfo to display duration
+	with millisecond accuracy.
+
 2003-09-29  Michael Pruett <michael@68k.org>
 
 	* test/seek.c: Include <string.h> for memcmp.  Thanks to Christian
