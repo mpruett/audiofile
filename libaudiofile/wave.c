@@ -123,6 +123,9 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 
 	track->f.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
 
+	/* Default to uncompressed audio data. */
+	track->f.compressionType = AF_COMPRESSION_NONE;
+
 	switch (formatTag)
 	{
 		case WAVE_FORMAT_PCM:
@@ -133,7 +136,6 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 			bitsPerSample = LENDIAN_TO_HOST_INT16(bitsPerSample);
 
 			track->f.sampleWidth = bitsPerSample;
-			track->f.compressionType = AF_COMPRESSION_NONE;
 
 			if (bitsPerSample == 0 || bitsPerSample > 32)
 			{
@@ -162,6 +164,11 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 			track->f.sampleWidth = 16;
 			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
 			track->f.compressionType = AF_COMPRESSION_G711_ALAW;
+			break;
+
+		case WAVE_FORMAT_IEEE_FLOAT:
+			track->f.sampleWidth = 32;
+			track->f.sampleFormat = AF_SAMPFMT_FLOAT;
 			break;
 
 		default:
