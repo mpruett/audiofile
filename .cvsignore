@@ -11,6 +11,7 @@ Makefile.in
 aclocal.m4
 configure
 config.cache
+depcomp
 ltconfig
 ltmain.sh
 missing
@@ -24,3 +25,4 @@ COPYING
 stamp-h
 stamp-h.in
 audiofile.spec
+audiofile.pc
