@@ -1,3 +1,13 @@
+2004-01-22  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/util.[ch]: Add functions for reading and writing
+	16-bit and 32-bit integers with specified byte order.
+
+	* libaudiofile/Makefile.am, libaudiofile/iff.c,
+	libaudiofile/iff.h, libaudiofile/iffwrite.c,
+	libaudiofile/units.c: Add support for reading and writing
+	IFF/8SVX files.
+
 2004-01-15  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/Makefile.am, libaudiofile/nist.c,

@@ -14,6 +14,7 @@ libaudiofile_la_SOURCES = \
 	next.c nextwrite.c next.h \
 	wave.c wavewrite.c wave.h \
 	ircam.c ircamwrite.c ircam.h \
+	iff.c iffwrite.c iff.h \
 	nist.c nistwrite.c nist.h \
 	g711.c g711.h \
 	afinternal.h aupvinternal.h aupvlist.h byteorder.h \

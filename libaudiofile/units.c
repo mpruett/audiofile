@@ -37,6 +37,7 @@
 #include "next.h"
 #include "wave.h"
 #include "ircam.h"
+#include "iff.h"
 #include "nist.h"
 
 #include "compression.h"
@@ -167,7 +168,16 @@ _Unit _af_units[_AF_NUM_UNITS] =
 	{
 		AF_FILE_IFF_8SVX,
 		"IFF/8SVX", "Amiga IFF/8SVX Sound File Format", "iff",
-		AF_FALSE
+		AF_TRUE, NULL, _af_iff_complete_setup,
+		{_af_iff_recognize, _af_iff_read_init},
+		{_af_iff_write_init, NULL, _af_iff_update},
+		AF_SAMPFMT_TWOSCOMP, 8,
+		0,	/* number of compression types */
+		NULL,	/* compression types */
+		0,	/* maximum marker count */
+		0,	/* maximum instrument count */
+		0,	/* maximum number of loops per instrument */
+		0,	/* number of instrument parameters */
 	},
 	{
 		AF_FILE_SAMPLEVISION,
