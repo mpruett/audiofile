@@ -1,3 +1,8 @@
+2004-07-21  Michael Pruett <michael@68k.org>
+
+	* examples/power.c: Change invocations of 'abs' to 'fabs' since
+	arguments are doubles.
+
 2004-06-26  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/aiff.c, libaudiofile/aiff.h, libaudiofile/aiffwrite.c,

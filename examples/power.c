@@ -212,9 +212,9 @@ void print_power (char *filename)
 	printf("peak-: %f\n", minSample);
 	printf("peak+: %f\n", maxSample);
 
-	peak = abs(minSample);
-	if (peak < abs(maxSample))
-		peak = abs(maxSample);
+	peak = fabs(minSample);
+	if (peak < fabs(maxSample))
+		peak = fabs(maxSample);
 
 	printf("peak (dB): %f\n", 20 * log10(peak));
 }
