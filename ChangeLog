@@ -1,3 +1,15 @@
+2001-08-27  Michael Pruett <mpruett@sgi.com>
+
+	* win32/*: Added Chris Wolf's Windows port of the Audio File Library.
+
+2001-08-24  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/error.c: Include <config.h>.
+
+	* libaudiofile/modules.c: Replacing null macro arguments with
+	the token NULLMODULEPARAM so that the module macros will work
+	with bad preprocessors.
+
 2001-08-23  Michael Pruett <mpruett@sgi.com>
 
 	* libaudiofile/openclose.c: Include <unistd.h> only if the

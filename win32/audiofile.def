@@ -1,0 +1,114 @@
+;------------------------------------------------------------------------
+; $Id$
+; $Name$
+;
+; Win32 port, August 2001 Chris Wolf
+;------------------------------------------------------------------------
+;
+; This should be kept syncronized with the publicly exposed API 
+; defined by audiofile.h
+; 
+LIBRARY
+;
+DESCRIPTION "Entry points for libaudiofile."
+;
+EXPORTS
+
+	afCloseFile
+	afFreeFileSetup
+	afGetAESChannelData
+	afGetByteOrder
+	afGetChannels
+	afGetCompression
+	afGetDataOffset
+	afGetFileFormat
+	afGetFrameCount
+	afGetFrameSize
+	afGetInstIDs
+	afGetInstParamLong
+	afGetInstParams
+	afGetLoopCount
+	afGetLoopEnd
+	afGetLoopEndFrame
+	afGetLoopIDs
+	afGetLoopMode
+	afGetLoopStart
+	afGetLoopStartFrame
+	afGetLoopTrack
+	afGetMarkComment
+	afGetMarkIDs
+	afGetMarkName
+	afGetMarkPosition
+	afGetMiscIDs
+	afGetMiscSize
+	afGetMiscType
+	afGetPCMMapping
+	afGetRate
+	afGetSampleFormat
+	afGetTrackBytes
+	afGetTrackIDs
+	afGetVirtualByteOrder
+	afGetVirtualChannels
+	afGetVirtualFrameSize
+	afGetVirtualPCMMapping
+	afGetVirtualSampleFormat
+	afIdentifyFD
+	afIdentifyNamedFD
+	afInitAESChannelData
+	afInitAESChannelDataTo
+	afInitByteOrder
+	afInitChannels
+	afInitCompression
+	afInitDataOffset
+	afInitFileFormat
+	afInitFrameCount
+	afInitInstIDs
+	afInitLoopIDs
+	afInitMarkComment
+	afInitMarkIDs
+	afInitMarkName
+	afInitMiscIDs
+	afInitMiscSize
+	afInitMiscType
+	afInitPCMMapping
+	afInitRate
+	afInitSampleFormat
+	afInitTrackIDs
+	afNewFileSetup
+	afOpenFD
+	afOpenFile
+	afOpenNamedFD
+;	afOpenVirtualFile			@65	; not implemented
+	afQuery
+	afQueryDouble
+	afQueryLong	
+	afQueryPointer
+	afReadFrames
+	afReadMisc
+;	afRestoreFilePosition		@72	; not implemented
+;	afSaveFilePosition			@73	; not implemented
+	afSeekFrame
+	afSeekMisc
+	afSetAESChannelData
+	afSetChannelMatrix
+	afSetErrorHandler
+	afSetInstParamLong
+	afSetInstParams
+	afSetLoopCount
+	afSetLoopEnd
+	afSetLoopEndFrame	
+	afSetLoopMode
+	afSetLoopStart
+	afSetLoopStartFrame
+	afSetLoopTrack
+	afSetMarkPosition
+	afSetTrackPCMMapping
+	afSetVirtualByteOrder
+	afSetVirtualChannels
+	afSetVirtualPCMMapping
+	afSetVirtualSampleFormat
+	afSyncFile
+	afTellFrame
+	afWriteFrames
+	afWriteMisc
+

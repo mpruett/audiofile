@@ -1,0 +1,66 @@
+$Id$
+$Name$
+
+Win32 port of audiofile, August 2001,  Chris Wolf <cwolf@starclass.com>
+===========================================================================
+This is the win32 port of the audiofile library and utilities.
+It has only been tested using MSVC v6 on Windows 2000 server, but
+should build on other win32 platforms as long as MCVC v6 is used.
+
+BUILDING
+
+  Before running either the command-line build, or IDE build, run the
+  script "prebuild.bat".  This will create the required working directories.
+
+  Command line build:
+  The libraries and executables may be built by invoking "build_all.bat".
+
+  Note that the makefiles are generated from the IDE, and are thus a 
+  reflection of the workspace and project file states.  It is strongly
+  recommended to make changes via the IDE and export the makefiles,
+  rather than tweaking the makefiles directly.
+
+  IDE build:
+  Load the "all.dsw" workspace.  This workspace loads and manages the
+  the dependent project files.  To perform a build, from the "build"
+  menu, select the "build" menu item.
+
+
+DIRECTORIES
+
+  Debug and release versions of both the static and dynamic (DLL) libraries
+  will be created in the win32/lib directory.
+
+  The debug and release versions of the statically and dynamically linked
+  versions of the executables will be created in the following directories:
+
+  Debug/bin/static
+  Debug/bin/dynamic
+  Relase/bin/static
+  Relase/bin/dynamic
+
+  N.B. In order to execute the dynamically linked executables, the 
+       corresponding DLL's must be in the PATH.  There are two options:
+
+       1.) put the fully qualified path of "win32/lib" in the PATH.
+
+       2.) copy "audiofile.dll" and/or "audiofileD.dll" to a directory
+           which is already in the PATH. 
+
+
+LIBRARY NAMING CONVENTIONS
+
+  There is an ambiguity with Microsoft's naming convention; a file with
+  a "*.lib" extension could either be a static library, or a DLL export
+  library, therefore the following naming convention is adopted to resolve
+  the ambiguity:
+
+  Static Library:      libBASENAME.lib   e.g. libaudiofile.lib
+  DLL export Library:  BASENAME.lib      e.g. audiofile.lib
+
+  In addition, appending "D" to the basename denotes a debug version of
+  the library. e.g. libaudiofileD.lib, audiofileD.dll
+
+  The module definition file (audiofile.def) does not explicitly name
+  the library, in order for the linker to set the name based on the 
+  type of build.

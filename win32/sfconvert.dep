@@ -1,0 +1,11 @@
+# Microsoft Developer Studio Generated Dependency File, included by sfconvert.mak
+
+..\sfcommands\printinfo.c : \
+	"..\libaudiofile\audiofile.h"\
+	"..\libaudiofile\aupvlist.h"\
+	
+
+..\sfcommands\sfconvert.c : \
+	"..\libaudiofile\audiofile.h"\
+	"..\libaudiofile\aupvlist.h"\
+	

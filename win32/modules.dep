@@ -1,0 +1,70 @@
+# Microsoft Developer Studio Generated Dependency File, included by modules.mak
+
+..\libaudiofile\modules\adpcm.c : \
+	"..\libaudiofile\modules\adpcm.h"\
+	".\config.h"\
+	
+
+..\libaudiofile\modules\g711.c : \
+	"..\libaudiofile\af_vfs.h"\
+	"..\libaudiofile\afinternal.h"\
+	"..\libaudiofile\audiofile.h"\
+	"..\libaudiofile\aupvlist.h"\
+	"..\libaudiofile\byteorder.h"\
+	"..\libaudiofile\compression.h"\
+	"..\libaudiofile\g711.h"\
+	"..\libaudiofile\modules.h"\
+	"..\libaudiofile\modules\g711.h"\
+	"..\libaudiofile\units.h"\
+	".\config.h"\
+	
+
+..\libaudiofile\modules\ima.c : \
+	"..\libaudiofile\af_vfs.h"\
+	"..\libaudiofile\afinternal.h"\
+	"..\libaudiofile\audiofile.h"\
+	"..\libaudiofile\aupvlist.h"\
+	"..\libaudiofile\byteorder.h"\
+	"..\libaudiofile\compression.h"\
+	"..\libaudiofile\modules.h"\
+	"..\libaudiofile\modules\adpcm.h"\
+	"..\libaudiofile\units.h"\
+	".\config.h"\
+	
+
+..\libaudiofile\modules\msadpcm.c : \
+	"..\libaudiofile\af_vfs.h"\
+	"..\libaudiofile\afinternal.h"\
+	"..\libaudiofile\audiofile.h"\
+	"..\libaudiofile\aupvlist.h"\
+	"..\libaudiofile\byteorder.h"\
+	"..\libaudiofile\compression.h"\
+	"..\libaudiofile\modules.h"\
+	"..\libaudiofile\modules\msadpcm.h"\
+	"..\libaudiofile\units.h"\
+	".\config.h"\
+	
+
+..\libaudiofile\modules\pcm.c : \
+	"..\libaudiofile\af_vfs.h"\
+	"..\libaudiofile\afinternal.h"\
+	"..\libaudiofile\audiofile.h"\
+	"..\libaudiofile\aupvlist.h"\
+	"..\libaudiofile\compression.h"\
+	"..\libaudiofile\modules.h"\
+	"..\libaudiofile\print.h"\
+	".\config.h"\
+	
+
+..\libaudiofile\modules\rebuffer.c : \
+	"..\libaudiofile\af_vfs.h"\
+	"..\libaudiofile\afinternal.h"\
+	"..\libaudiofile\audiofile.h"\
+	"..\libaudiofile\aupvlist.h"\
+	"..\libaudiofile\compression.h"\
+	"..\libaudiofile\modules.h"\
+	"..\libaudiofile\modules\pcm.h"\
+	"..\libaudiofile\modules\rebuffer.template"\
+	"..\libaudiofile\units.h"\
+	".\config.h"\
+	
