@@ -1,3 +1,13 @@
+2001-09-18  Michael Pruett <mpruett@sgi.com>
+
+	* configure.in: Bump version to 0.2.3 in anticipation of the
+	upcoming release.
+
+2001-09-08  Michael Pruett <mpruett@sgi.com>
+
+	* test/sgi.c: Replace fixed-point shift with a call to the more
+	elegant alDoubleToFixed.
+
 2001-08-29  Michael Pruett <mpruett@sgi.com>
 
 	* test/pipe.{c,sh}: Added simple test of Audio File Library
