@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "audiofile.h"
 #include "util.h"
@@ -682,8 +683,12 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 	*/
 	if (hasFrameCount == AF_FALSE)
 	{
-		track->totalfframes = track->data_size /
-			_af_format_frame_size(&track->f, AF_FALSE);
+		/*
+			Calculate using double-precision arithmetic so
+			as to preserve accuracy.
+		*/
+		track->totalfframes = ceil((double) track->data_size /
+			_af_format_frame_size(&track->f, AF_FALSE));
 	}
 
 	/*

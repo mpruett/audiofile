@@ -1,5 +1,10 @@
 2002-05-16  Michael Pruett <mpruett@sgi.com>
 
+	* libaudiofile/wave.c: Compute the frame count of uncompressed
+	WAVE files using double-precision floating-point arithmetic.
+
+2002-05-16  Michael Pruett <mpruett@sgi.com>
+
 	* libaudiofile/openclose.c: Implement afOpenVirtualFile.
 
 2002-03-24  Michael Pruett <mpruett@sgi.com>
