@@ -1,3 +1,7 @@
+2003-09-08  Michael Pruett <michael@68k.org>
+
+	* test/*.c: Update test programs to include <config.h>.
+
 2003-09-04  Michael Pruett <michael@68k.org>
 
 	* configure.in, libaudiofile/{aiff.c,aiff.h,aiffwrite.c},
