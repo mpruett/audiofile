@@ -1,7 +1,7 @@
 Thanks to all who've contributed patches for the Audio File Library,
 especially Michael Krause, Jean-Francois Panisset, Simon Kagedal, Eric
 Mitchell, Bruce Forsberg, Julien Boulnois, Axel Roebel, Mark Murnane,
-and Chris Wolf.
+Chris Wolf, and Davy Durham.
 
 Thanks to Douglas Scott of SGI for helping me understand the tricky
 parts of the Audio File Library API.  Thanks to Chris Pirazzi, Scott
@@ -21,4 +21,4 @@ Thanks to Apple for the Audio Interchange File Format.
 
 Thanks to Apple and SGI for handling audio really well.
 
-No thanks to Microsoft for sucking a fat dick.
+No thanks to Microsoft.

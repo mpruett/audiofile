@@ -4,11 +4,11 @@ AC_INIT(libaudiofile/aiff.c)
 PACKAGE=audiofile
 AUDIOFILE_MAJOR_VERSION=0
 AUDIOFILE_MINOR_VERSION=2
-AUDIOFILE_MICRO_VERSION=3
+AUDIOFILE_MICRO_VERSION=4
 AUDIOFILE_VERSION=${AUDIOFILE_MAJOR_VERSION}.${AUDIOFILE_MINOR_VERSION}.${AUDIOFILE_MICRO_VERSION}
 
 dnl set version info for libaudiofile.so to package rev - $MAJOR + $MINOR : $MICRO : $MINOR
-AUDIOFILE_VERSION_INFO=2:3:2
+AUDIOFILE_VERSION_INFO=2:4:2
 
 AC_SUBST(AUDIOFILE_MAJOR_VERSION)
 AC_SUBST(AUDIOFILE_MINOR_VERSION)
@@ -87,5 +87,6 @@ AC_OUTPUT([
 	libaudiofile/Makefile 
 	libaudiofile/modules/Makefile 
 	docs/Makefile 
+	win32/Makefile 
 	Makefile 
 	audiofile-config], [case "$CONFIG_FILES" in *audiofile-config*) chmod +x audiofile-config;; esac])
