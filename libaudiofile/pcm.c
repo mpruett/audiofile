@@ -1,7 +1,7 @@
 /*
 	Audio File Library
 	Copyright (C) 1999-2000, Michael Pruett <michael@68k.org>
-	Copyright (C) 2000, Silicon Graphics, Inc.
+	Copyright (C) 2000-2001, Silicon Graphics, Inc.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -53,6 +53,26 @@ _PCMInfo _af_default_float_pcm_mapping =
 _PCMInfo _af_default_double_pcm_mapping =
 {1, 0, 0, 0};
 
+/*
+	Initialize the PCM mapping for a given track.
+*/
+void afInitPCMMapping (AFfilesetup setup, int trackid,
+	double slope, double intercept, double minClip, double maxClip)
+{
+	_TrackSetup	*track;
+
+	if (!_af_filesetup_ok(setup))
+		return;
+
+	if ((track = _af_filesetup_get_tracksetup(setup, trackid)) == NULL)
+		return;
+
+	track->f.pcm.slope = slope;
+	track->f.pcm.intercept = intercept;
+	track->f.pcm.minClip = minClip;
+	track->f.pcm.maxClip = maxClip;
+}
+
 int afSetVirtualPCMMapping (AFfilehandle file, int trackid,
 	double slope, double intercept, double minClip, double maxClip)
 {
@@ -85,6 +105,17 @@ int afSetTrackPCMMapping (AFfilehandle file, int trackid,
 	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
 		return -1;
 
+	/*
+		NOTE: this is highly unusual: we don't ordinarily
+		change track.f after the file is opened.
+
+		PCM mapping is the exception because this information
+		is not encoded in sound files' headers using today's
+		formats, so the user will probably want to set this
+		information on a regular basis.  The defaults may or
+		may not be what the user wants.
+	*/
+
 	track->f.pcm.slope = slope;
 	track->f.pcm.intercept = intercept;
 	track->f.pcm.minClip = minClip;
@@ -93,4 +124,46 @@ int afSetTrackPCMMapping (AFfilehandle file, int trackid,
 	track->ms.modulesdirty = AF_TRUE;
 
 	return 0;
+}
+
+void afGetPCMMapping (AFfilehandle file, int trackid,
+	double *slope, double *intercept, double *minClip, double *maxClip)
+{
+	_Track	*track;
+
+	if (!_af_filehandle_ok(file))
+		return;
+
+	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+		return;
+
+	if (slope)
+		*slope = track->f.pcm.slope;
+	if (intercept)
+		*intercept = track->f.pcm.intercept;
+	if (minClip)
+		*minClip = track->f.pcm.minClip;
+	if (maxClip)
+		*maxClip = track->f.pcm.maxClip;
+}
+
+void afGetVirtualPCMMapping (AFfilehandle file, int trackid,
+	double *slope, double *intercept, double *minClip, double *maxClip)
+{
+	_Track	*track;
+
+	if (!_af_filehandle_ok(file))
+		return;
+
+	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+		return;
+
+	if (slope)
+		*slope = track->v.pcm.slope;
+	if (intercept)
+		*intercept = track->v.pcm.intercept;
+	if (minClip)
+		*minClip = track->v.pcm.minClip;
+	if (maxClip)
+		*maxClip = track->v.pcm.maxClip;
 }
