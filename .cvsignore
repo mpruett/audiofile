@@ -28,3 +28,4 @@ audiofile.spec
 audiofile.pc
 autom4te.cache
 stamp-h1
+so_locations

@@ -1,3 +1,8 @@
+2003-07-02  Michael Pruett <mpruett@sgi.com>
+
+	* test/testchannelmatrix.c, test/Makefile.am: Add regression
+	test for channel matrix functionality.
+
 2003-07-01  Michael Pruett <mpruett@sgi.com>
 
 	Applying a patch from Masahiro Sakai to enable building as a

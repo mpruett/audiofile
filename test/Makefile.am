@@ -27,6 +27,7 @@ noinst_PROGRAMS = \
 	power \
 	pipe \
 	testmarkers \
+	testchannelmatrix \
 	printmarkers \
 	@TEST_BIN@
 
@@ -37,7 +38,8 @@ EXTRA_PROGRAMS = irixread irixtestloop linuxtest
 TESTS = error writeaiff writeircam writenext writewave writeraw \
 	writeulaw writealaw \
 	misc.sh transparency.sh pipe.sh \
-	query2 sixteen-to-eight twentyfour floatto24 testfloat testmarkers
+	query2 sixteen-to-eight twentyfour floatto24 \
+	testfloat testmarkers testchannelmatrix
 
 irixread_SOURCES = irixread.c sgi.c sgi.h
 irixread_LDADD = $(top_builddir)/libaudiofile/libaudiofile.la @AUDIO_LIB@
