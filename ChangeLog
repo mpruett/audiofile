@@ -3,6 +3,9 @@
 	* examples/power.c: Change invocations of 'abs' to 'fabs' since
 	arguments are doubles.
 
+	* sfcommands/sfconvert.c: Add support for converting to the NIST
+	SPHERE file format.
+
 2004-06-26  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/aiff.c, libaudiofile/aiff.h, libaudiofile/aiffwrite.c,

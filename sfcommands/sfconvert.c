@@ -98,6 +98,8 @@ int main (int argc, char **argv)
 				outFileFormat = AF_FILE_NEXTSND;
 			else if (!strcmp(argv[i+1], "bics"))
 				outFileFormat = AF_FILE_BICSF;
+			else if (!strcmp(argv[i+1], "nist"))
+				outFileFormat = AF_FILE_NIST_SPHERE;
 			else
 			{
 				fprintf(stderr, "sfconvert: Unknown format %s.\n", argv[i+1]);
