@@ -18,6 +18,7 @@ loop
 miscread
 miscwrite
 printframes
+power
 query
 query2
 sixteen-to-eight
