@@ -491,7 +491,7 @@ status af_read_uint16_le (u_int16_t *value, AFvirtualfile *vf)
 	return AF_SUCCEED;
 }
 
-status af_write_uint32_be (u_int32_t *value, AFvirtualfile *vf)
+status af_write_uint32_be (const u_int32_t *value, AFvirtualfile *vf)
 {
 	u_int32_t	v;
 	v = HOST_TO_BENDIAN_INT32(*value);
@@ -500,7 +500,7 @@ status af_write_uint32_be (u_int32_t *value, AFvirtualfile *vf)
 	return AF_SUCCEED;
 }
 
-status af_write_uint32_le (u_int32_t *value, AFvirtualfile *vf)
+status af_write_uint32_le (const u_int32_t *value, AFvirtualfile *vf)
 {
 	u_int32_t	v;
 	v = HOST_TO_LENDIAN_INT32(*value);
@@ -509,7 +509,7 @@ status af_write_uint32_le (u_int32_t *value, AFvirtualfile *vf)
 	return AF_SUCCEED;
 }
 
-status af_write_uint16_be (u_int16_t *value, AFvirtualfile *vf)
+status af_write_uint16_be (const u_int16_t *value, AFvirtualfile *vf)
 {
 	u_int16_t	v;
 	v = HOST_TO_BENDIAN_INT16(*value);
@@ -518,7 +518,7 @@ status af_write_uint16_be (u_int16_t *value, AFvirtualfile *vf)
 	return AF_SUCCEED;
 }
 
-status af_write_uint16_le (u_int16_t *value, AFvirtualfile *vf)
+status af_write_uint16_le (const u_int16_t *value, AFvirtualfile *vf)
 {
 	u_int16_t	v;
 	v = HOST_TO_LENDIAN_INT16(*value);
