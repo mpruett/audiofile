@@ -23,11 +23,13 @@ query
 query2
 sixteen-to-eight
 testaupv
+testfloat
 transparency
 twentyfour
 virtual
 writeaiff
 writealaw
+writeircam
 writenext
 writeulaw
 writewave
