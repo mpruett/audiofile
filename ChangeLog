@@ -1,3 +1,8 @@
+2001-10-25  Michael Pruett <mpruett@sgi.com>
+
+	* test/irixread.c: Improve error handling.  Use proper
+	conversion specifications in printf statements.
+
 2001-10-10  Michael Pruett <mpruett@sgi.com>
 
 	* test/error.c: Expanded the error test to include several more

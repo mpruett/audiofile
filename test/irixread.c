@@ -66,6 +66,12 @@ main (int argc, char **argv)
 		usage();
 
 	file = afOpenFile(argv[1], "r", NULL);
+	if (file == AF_NULL_FILEHANDLE)
+	{
+		fprintf(stderr, "Could not open file %s.\n", argv[1]);
+		exit(EXIT_FAILURE);
+	}
+
 	frameCount = afGetFrameCount(file, AF_DEFAULT_TRACK);
 	frameSize = afGetVirtualFrameSize(file, AF_DEFAULT_TRACK, 1);
 	channelCount = afGetVirtualChannels(file, AF_DEFAULT_TRACK);
@@ -79,8 +85,8 @@ main (int argc, char **argv)
 			AF_SAMPFMT_TWOSCOMP, sampleWidth);
 	}
 
-	printf("frame count: %d\n", frameCount);
-	printf("frame size: %d bytes\n", frameSize);
+	printf("frame count: %lld\n", frameCount);
+	printf("frame size: %d bytes\n", (int) frameSize);
 	printf("channel count: %d\n", channelCount);
 	printf("sample rate: %.2f Hz\n", sampleRate);
 	buffer = malloc(BUFFERED_FRAME_COUNT * frameSize);
@@ -97,13 +103,12 @@ main (int argc, char **argv)
 
 	do
 	{
-		printf("count = %d\n", count);
+		printf("count = %lld\n", count);
 		alWriteFrames(outport, buffer, count);
 
 		count = afReadFrames(file, AF_DEFAULT_TRACK, buffer,
 			BUFFERED_FRAME_COUNT);
-	}
-	while (count > 0);
+	} while (count > 0);
 
 	waitport(outport);
 
