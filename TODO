@@ -1,13 +1,13 @@
-Audio File Library 0.2.2
+Audio File Library 0.2.3
 Michael Pruett <mpruett@sgi.com>
 
 Short-term
 ----------
 
-Sample rate conversion needs to be handled.
+Handle more compressed data formats, most importantly Ogg Vorbis.  GSM
+06.10 would also be nice.
 
-Handle more compressed data formats, most importantly ADPCM and Ogg
-Vorbis.  GSM 06.10 would also be nice.
+Handle sample rate conversion.
 
 More comprehensive tests should be developed to stress-test the
 library.  Tests are needed most for the following sets of functions:
@@ -21,18 +21,11 @@ etc.) should be added.
 Long-term
 ---------
 
-Support for reading and writing to pipes for IRCAM, NeXT, and raw data
-file formats should be investigated.  (The AIFF and WAVE file formats
-are more structured and couldn't cope with not being able to seek.)
-It's my suspicion that the work involved in this will be substantial.
-
 It would be nice to support some more file formats.
 
 Add locale support for error messages.
 
 Documentation should probably be in the SGML DocBook format.
-
-Thread-safe error handling would be nice.
 
 Whenever a compression format is requested, the library should scan
 through /usr/lib/audiofile/*.so to see if any DSOs support the requested

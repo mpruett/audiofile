@@ -3,6 +3,8 @@
 	* test/irixread.c: Improve error handling.  Use proper
 	conversion specifications in printf statements.
 
+	* Released version 0.2.3 of the Audio File Library.
+
 2001-10-10  Michael Pruett <mpruett@sgi.com>
 
 	* test/error.c: Expanded the error test to include several more

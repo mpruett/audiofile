@@ -1,6 +1,6 @@
 Audio File Library
-Version 0.2.2
-Thursday, 19 July 2001
+Version 0.2.3
+Thursday, 25 October 2001
 
 Copyright (C) 1998-2000, Michael Pruett
 Copyright (C) 2000-2001, Silicon Graphics, Inc.
@@ -15,10 +15,11 @@ The Silicon Graphics Audio File Library provides a uniform programming
 interface to standard digital audio file formats.
 
 This library allows the processing of audio data to and from audio
-files of many common formats (currently AIFF, AIFF-C, WAVE, and
-NeXT/Sun .snd/.au).  The library also supports compression (currently
-only G.711 mu-law and A-law) as well as PCM formats of all flavors (signed
-and unsigned integer, floating point and double-precision floating point).
+files of many common formats (currently AIFF, AIFF-C, WAVE, NeXT/Sun
+.snd/.au, and IRCAM).  The library also supports compression (currently
+G.711 mu-law and A-law and IMA and MS ADPCM) as well as PCM formats of
+all flavors (signed and unsigned integer, floating point and
+double-precision floating point).
 
 One premise of the Audio File Library is that the data presented to
 an application need not be in the same format as the data contained in
