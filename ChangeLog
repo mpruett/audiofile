@@ -1,3 +1,7 @@
+2003-12-21  Michael Pruett <michael@68k.org>
+
+	* Released version 0.2.5 of the Audio File Library.
+
 2003-12-20  Michael Pruett <michael@68k.org>
 
 	* test/seek.c: Delete temporary file before exiting.
