@@ -1,7 +1,7 @@
 /*
 	Audio File Library
 	Copyright (C) 1998-2000, Michael Pruett <michael@68k.org>
-	Copyright (C) 2000, Silicon Graphics, Inc.
+	Copyright (C) 2000-2001, Silicon Graphics, Inc.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -76,7 +76,7 @@ _AFfilesetup _af_wave_default_filesetup =
 	NULL			/* miscellaneous */
 };
 
-static status ParseFact (AFfilehandle filehandle, AFvirtualfile *fp,
+static status ParseFrameCount (AFfilehandle filehandle, AFvirtualfile *fp,
 	u_int32_t id, size_t size)
 {
 	u_int32_t	totalFrames;
@@ -85,7 +85,7 @@ static status ParseFact (AFfilehandle filehandle, AFvirtualfile *fp,
 	track = _af_filehandle_get_track(filehandle, AF_DEFAULT_TRACK);
 
 	af_fread(&totalFrames, 1, 4, fp);
-	track->totalfframes = totalFrames;
+	track->totalfframes = LENDIAN_TO_HOST_INT32(totalFrames);
 
 	return AF_SUCCEED;
 }
@@ -402,8 +402,8 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 	_Track		*track;
 	u_int32_t	type, size, formtype;
 	u_int32_t	index = 0;
-	bool		hasFormat, hasData, hasCue, hasPlayList, hasFact;
-	bool		hasInstrument;
+	bool		hasFormat, hasData, hasCue, hasPlayList, hasFrameCount,
+			hasINST, hasINFO;
 	int		frameSize;
 
 	assert(filehandle != NULL);
@@ -413,8 +413,9 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 	hasData = AF_FALSE;
 	hasCue = AF_FALSE;
 	hasPlayList = AF_FALSE;
-	hasInstrument = AF_FALSE;
-	hasFact = AF_FALSE;
+	hasFrameCount = AF_FALSE;
+	hasINST = AF_FALSE;
+	hasINFO = AF_FALSE;
 
 	filehandle->instruments = NULL;
 	filehandle->instrumentCount = 0;
@@ -470,6 +471,13 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 		}
 		else if (memcmp(&chunkid, "data", 4) == 0)
 		{
+			/* The format chunk must precede the data chunk. */
+			if (!hasFormat)
+			{
+				_af_error(AF_BAD_HEADER, "missing format chunk in WAVE file");
+				return AF_FAIL;
+			}
+
 			result = ParseData(filehandle, filehandle->fh, chunkid, chunksize);
 			if (result == AF_FAIL)
 				return AF_FAIL;
@@ -484,28 +492,28 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 		}
 		else if (memcmp(&chunkid, "fact", 4) == 0)
 		{
-			hasFact = AF_TRUE;
-			result = ParseFact(filehandle, filehandle->fh, chunkid, chunksize);
+			hasFrameCount = AF_TRUE;
+			result = ParseFrameCount(filehandle, filehandle->fh, chunkid, chunksize);
 			if (result == AF_FAIL)
 				return AF_FAIL;
 		}
 		else if (memcmp(&chunkid, "cue ", 4) == 0)
 		{
-			hasFact = AF_TRUE;
+			hasCue = AF_TRUE;
 			result = ParseCue(filehandle, filehandle->fh, chunkid, chunksize);
 			if (result == AF_FAIL)
 				return AF_FAIL;
 		}
 		else if (memcmp(&chunkid, "INFO", 4) == 0)
 		{
-			hasFact = AF_TRUE;
+			hasINFO = AF_TRUE;
 			result = ParseInfo(filehandle, filehandle->fh, chunkid, chunksize);
 			if (result == AF_FAIL)
 				return AF_FAIL;
 		}
 		else if (memcmp(&chunkid, "INST", 4) == 0)
 		{
-			hasInstrument = AF_TRUE;
+			hasINST = AF_TRUE;
 			result = ParseInstrument(filehandle, filehandle->fh, chunkid, chunksize);
 			if (result == AF_FAIL)
 				return AF_FAIL;
@@ -529,16 +537,14 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 
 	/* The format chunk and the data chunk are required. */
 	if (!hasFormat || !hasData)
+	{
 		return AF_FAIL;
+	}
 
 	/*
-		At this point we know that the file has a format chunk and
-		a data chunk, so we can assume that channelCount,
-		sampleWidth, and trackBytes have been initialized.
-	*/
-
-	/*
-		We always round up to the nearest byte for the frame size.
+		At this point we know that the file has a format chunk
+		and a data chunk, so we can assume that track->f and
+		track->data_size have been initialized.
 	*/
 	frameSize = _af_format_frame_size(&track->f, AF_FALSE);
 	track->totalfframes = track->data_size / frameSize;
@@ -567,7 +573,7 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 		(track->f.compressionType == AF_COMPRESSION_G711_ULAW ||
 		track->f.compressionType == AF_COMPRESSION_G711_ALAW))
 	{
-		track->totalfframes = size / track->f.channelCount;
+		track->totalfframes = track->data_size / track->f.channelCount;
 	}
 
 	/*

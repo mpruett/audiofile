@@ -1,7 +1,8 @@
 /*
 	Audio File Library
 
-	Copyright 2000, Michael Pruett <michael@68k.org>
+	Copyright (C) 1999, Michael Pruett <michael@68k.org>
+	Copyright (C) 2001, Silicon Graphics, Inc.
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License as
@@ -23,11 +24,11 @@
 	writealaw.c
 
 	The writealaw program performs sanity testing on the Audio File
-	Library's G.711 a-law compression by writing and then reading
+	Library's G.711 A-law compression by writing and then reading
 	back known data to a file to make sure the two sets of data agree.
 
 	This program writes a set of data which is invariant under G.711
-	a-law compression to a file and then reads that set of data back.
+	A-law compression to a file and then reads that set of data back.
 
 	The data read from that file should match the data written
 	exactly.
@@ -48,11 +49,15 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#define TEST_FILE "/tmp/test.au"
+#define TEST_FILE "/tmp/test.alaw"
+
+void testalaw (int fileFormat);
 
 void cleanup (void)
 {
+#ifndef DEBUG
 	unlink(TEST_FILE);
+#endif
 }
 
 void ensure (int condition, const char *message)
@@ -67,17 +72,31 @@ void ensure (int condition, const char *message)
 
 int main (int argc, char **argv)
 {
+	printf("writealaw: testing NeXT .snd.\n");
+	testalaw(AF_FILE_NEXTSND);
+	printf("writealaw: testing AIFF-C.\n");
+	testalaw(AF_FILE_AIFFC);
+	printf("writealaw: testing WAVE.\n");
+	testalaw(AF_FILE_WAVE);
+
+	printf("writealaw test passed.\n");
+
+	exit(0);
+}
+
+void testalaw (int fileFormat)
+{
 	AFfilehandle	file;
-	AFfilesetup		setup;
-	u_int16_t		frames[] = {8, 24, 88, 120, 184, 784, 912, 976,
-						1120, 1440, 1888, 8960, 9984, 16128, 19968, 32256};
-	u_int16_t		readframes[16];
-	int				i;
+	AFfilesetup	setup;
+	u_int16_t	frames[] = {8, 24, 88, 120, 184, 784, 912, 976,
+			1120, 1440, 1888, 8960, 9984, 16128, 19968, 32256};
+	u_int16_t	readframes[16];
+	int		i;
 
 	setup = afNewFileSetup();
 
 	afInitCompression(setup, AF_DEFAULT_TRACK, AF_COMPRESSION_G711_ALAW);
-	afInitFileFormat(setup, AF_FILE_NEXTSND);
+	afInitFileFormat(setup, fileFormat);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 
 	file = afOpenFile(TEST_FILE, "w", setup);
@@ -85,7 +104,7 @@ int main (int argc, char **argv)
 
 	ensure(afGetCompression(file, AF_DEFAULT_TRACK) ==
 		AF_COMPRESSION_G711_ALAW,
-		"test file not created with G.711 u-law compression");
+		"test file not created with G.711 A-law compression");
 
 	ensure(file != AF_NULL_FILEHANDLE, "unable to open file for writing");
 
@@ -97,12 +116,12 @@ int main (int argc, char **argv)
 	file = afOpenFile(TEST_FILE, "r", NULL);
 	ensure(file != AF_NULL_FILEHANDLE, "unable to open file for reading");
 
-	ensure(afGetFileFormat(file, NULL) == AF_FILE_NEXTSND,
-		"test file not created as NeXT/Sun .snd/.au");
+	ensure(afGetFileFormat(file, NULL) == fileFormat,
+		"test file format incorrect");
 
 	ensure(afGetCompression(file, AF_DEFAULT_TRACK) ==
 		AF_COMPRESSION_G711_ALAW,
-		"test file not opened with G.711 u-law compression");
+		"test file not opened with G.711 A-law compression");
 
 	ensure(afReadFrames(file, AF_DEFAULT_TRACK, readframes, 16) == 16,
 		"number of frames read does not match number of frames requested");
@@ -132,8 +151,4 @@ int main (int argc, char **argv)
 	ensure(afCloseFile(file) == 0, "error closing file");
 
 	cleanup();
-
-	printf("writealaw test passed.\n");
-
-	exit(0);
 }

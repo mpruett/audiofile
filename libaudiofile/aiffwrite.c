@@ -320,8 +320,17 @@ static status WriteSSND (AFfilehandle file)
 	else
 		af_fseek(file->fh, aiff->SSND_offset, SEEK_SET);
 
-	chunkSize = _af_format_frame_size(&track->f, AF_FALSE) *
-		track->totalfframes + 8;
+	if (track->f.compressionType == AF_COMPRESSION_NONE)
+	{
+		chunkSize = _af_format_frame_size(&track->f, AF_FALSE) *
+			track->totalfframes + 8;
+	}
+	else if (track->f.compressionType == AF_COMPRESSION_G711_ULAW ||
+		track->f.compressionType == AF_COMPRESSION_G711_ALAW)
+	{
+		/* G.711 compression uses one byte per sample. */
+		chunkSize = track->f.channelCount * track->totalfframes + 8;
+	}
 
 	af_fwrite("SSND", 4, 1, file->fh);
 	chunkSize = HOST_TO_BENDIAN_INT32(chunkSize);

@@ -1,7 +1,8 @@
 /*
 	Audio File Library
 
-	Copyright 1999, Michael Pruett <michael@68k.org>
+	Copyright (C) 2000, Michael Pruett <michael@68k.org>
+	Copyright (C) 2001, Silicon Graphics, Inc.
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License as
@@ -48,7 +49,9 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#define TEST_FILE "/tmp/test.au"
+#define TEST_FILE "/tmp/test.ulaw"
+
+void testulaw (int fileFormat);
 
 void cleanup (void)
 {
@@ -69,17 +72,31 @@ void ensure (int condition, const char *message)
 
 int main (int argc, char **argv)
 {
+	printf("writeulaw: testing NeXT .snd.\n");
+	testulaw(AF_FILE_NEXTSND);
+	printf("writeulaw: testing AIFF-C.\n");
+	testulaw(AF_FILE_AIFFC);
+	printf("writeulaw: testing WAVE.\n");
+	testulaw(AF_FILE_WAVE);
+
+	printf("writeulaw test passed.\n");
+
+	exit(0);
+}
+
+void testulaw (int fileFormat)
+{
 	AFfilehandle	file;
-	AFfilesetup		setup;
-	u_int16_t		frames[] = {8, 16, 80, 120, 180, 780, 924, 988,
-						1116, 1436, 1884, 8828, 9852, 15996, 19836, 32124};
-	u_int16_t		readframes[16];
-	int				i;
+	AFfilesetup	setup;
+	u_int16_t	frames[] = {8, 16, 80, 120, 180, 780, 924, 988,
+			1116, 1436, 1884, 8828, 9852, 15996, 19836, 32124};
+	u_int16_t	readframes[16];
+	int		i;
 
 	setup = afNewFileSetup();
 
 	afInitCompression(setup, AF_DEFAULT_TRACK, AF_COMPRESSION_G711_ULAW);
-	afInitFileFormat(setup, AF_FILE_NEXTSND);
+	afInitFileFormat(setup, fileFormat);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 
 	file = afOpenFile(TEST_FILE, "w", setup);
@@ -99,8 +116,8 @@ int main (int argc, char **argv)
 	file = afOpenFile(TEST_FILE, "r", NULL);
 	ensure(file != AF_NULL_FILEHANDLE, "unable to open file for reading");
 
-	ensure(afGetFileFormat(file, NULL) == AF_FILE_NEXTSND,
-		"test file not created as NeXT/Sun .snd/.au");
+	ensure(afGetFileFormat(file, NULL) == fileFormat,
+		"test file format incorrect");
 
 	ensure(afGetCompression(file, AF_DEFAULT_TRACK) ==
 		AF_COMPRESSION_G711_ULAW,
@@ -122,8 +139,6 @@ int main (int argc, char **argv)
 			"data written does not match data read");
 	}
 
-	printf("track bytes: %d\n", afGetTrackBytes(file, AF_DEFAULT_TRACK));
-
 	ensure(afGetTrackBytes(file, AF_DEFAULT_TRACK) == 16,
 		"track byte count is incorrect");
 
@@ -136,8 +151,4 @@ int main (int argc, char **argv)
 	ensure(afCloseFile(file) == 0, "error closing file");
 
 	cleanup();
-
-	printf("writeulaw test passed.\n");
-
-	exit(0);
 }

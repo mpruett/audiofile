@@ -59,10 +59,14 @@ int main (int argc, char **argv)
 	int	fileFormatCount = 4;
 	int	fileFormats[] =
 		{AF_FILE_AIFFC, AF_FILE_WAVE, AF_FILE_NEXTSND, AF_FILE_IRCAM};
+	char	*formatNames[] = {"AIFF-C", "WAVE", "NeXT .snd", "IRCAM"};
 	int	i;
 
 	for (i=0; i<fileFormatCount; i++)
+	{
+		printf("testfloat: testing %s\n", formatNames[i]);
 		testfloat(fileFormats[i]);
+	}
 
 	printf("testfloat passed\n");
 	exit(EXIT_SUCCESS);

@@ -81,7 +81,7 @@ typedef struct _CompressionUnit
 	char	*label;		/* 4-character (approximately) label */
 	char	*shortname;	/* short name in English */
 	char	*name;		/* long name in English */
-	double	squishFactor;
+	double	squishFactor;	/* compression ratio */
 	int	nativeSampleFormat;	/* AF_SAMPFMT_... */
 	int	nativeSampleWidth;	/* sample width in bits */
 	bool	needsRebuffer;	/* if there are chunk boundary requirements */

@@ -423,7 +423,7 @@ _Track *_af_filehandle_get_track (AFfilehandle file, int trackid)
 	return NULL;
 }
 
-int _af_format_sample_size (_AudioFormat *format, bool stretch3to4)
+int _af_format_sample_size_uncompressed (_AudioFormat *format, bool stretch3to4)
 {
 	int	size = 0;
 
@@ -446,19 +446,34 @@ int _af_format_sample_size (_AudioFormat *format, bool stretch3to4)
 	return size;
 }
 
-int _af_format_sample_size_uncompressed (_AudioFormat *fmt, bool stretch3to4)
+float _af_format_sample_size (_AudioFormat *fmt, bool stretch3to4)
 {
-	return _af_format_sample_size(fmt, stretch3to4);
-}
+	int	compressionIndex;
+	float	squishFactor;
 
-int _af_format_frame_size (_AudioFormat *fmt, bool stretch3to4)
-{
-	return (_af_format_sample_size(fmt, stretch3to4) * fmt->channelCount);
+	compressionIndex = _af_compression_index_from_id(fmt->compressionType);
+	squishFactor = _af_compression[compressionIndex].squishFactor;
+
+	return _af_format_sample_size_uncompressed(fmt, stretch3to4) /
+		squishFactor;
 }
 
 int _af_format_frame_size_uncompressed (_AudioFormat *fmt, bool stretch3to4)
 {
-	return _af_format_frame_size(fmt, stretch3to4);
+	return _af_format_sample_size_uncompressed(fmt, stretch3to4) *
+		fmt->channelCount;
+}
+
+float _af_format_frame_size (_AudioFormat *fmt, bool stretch3to4)
+{
+	int	compressionIndex;
+	float	squishFactor;
+
+	compressionIndex = _af_compression_index_from_id(fmt->compressionType);
+	squishFactor = _af_compression[compressionIndex].squishFactor;
+
+	return _af_format_frame_size_uncompressed(fmt, stretch3to4) /
+		squishFactor;
 }
 
 /*

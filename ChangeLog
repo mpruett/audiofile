@@ -1,3 +1,18 @@
+2001-07-09  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/aiffwrite.c: Make AIFF code handle compressed
+	data formats more cleanly.
+
+	* libaudiofile/{wave.h,wave.c,wavewrite.c}: Make WAVE code
+	handle compressed data formats more cleanly.
+
+	* test/query2.c: Print default value of instrument parameters
+	if instrument parameters are supported.
+
+	* test/{writeulaw.c,writealaw.c}: Update writeulaw and
+	writealaw to test G.711 compression in AIFF-C and WAVE files in
+	addition to NeXT .snd.
+
 2001-07-08  Michael Pruett <mpruett@sgi.com>
 
 	* libaudiofile/{aiff.c,aiffwrite.c}: Add support for
