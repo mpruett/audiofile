@@ -26,3 +26,5 @@ stamp-h
 stamp-h.in
 audiofile.spec
 audiofile.pc
+autom4te.cache
+stamp-h1

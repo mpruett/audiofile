@@ -23,7 +23,7 @@ libaudiofile_la_SOURCES = \
 
 libaudiofile_la_LIBADD = modules/libmodules.la
 
-libaudiofile_la_LDFLAGS = -version-info 0:2:0
+libaudiofile_la_LDFLAGS = -version-info 0:2:0 -no-undefined
 
 include_HEADERS = audiofile.h aupvlist.h af_vfs.h
 

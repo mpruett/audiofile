@@ -1,3 +1,13 @@
+2003-07-01  Michael Pruett <mpruett@sgi.com>
+
+	Applying a patch from Masahiro Sakai to enable building as a
+	DLL under Cygwin.
+
+	* configure.in: Add AC_LIBTOOL_WIN32_DLL and call
+	AM_PROG_LIBTOOL after AC_PROG_CC.
+	* libaudiofile/Makefile.am: Add -no-undefined to
+	libaudiofile_la_LDFLAGS.
+
 2003-06-10  Michael Pruett <mpruett@sgi.com>
 
 	* libaudiofile/format.c: Fix error in channel matrix

@@ -20,12 +20,13 @@ VERSION=$AUDIOFILE_VERSION
 
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
 AM_CONFIG_HEADER(config.h)
-AM_PROG_LIBTOOL
 
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
+AC_LIBTOOL_WIN32_DLL
+AM_PROG_LIBTOOL
 
 dnl Checks for libraries.
 dnl Check for the ldexp function in the math library.
