@@ -166,7 +166,7 @@ int afReadFrames (AFfilehandle file, int trackid, void *samples,
 		nvframes2read = (nvframeswanted > nvframesleft) ?
 			nvframesleft : nvframeswanted;
 	}
-	bytes_per_vframe = _af_format_frame_size(&track->v, AF_FALSE);
+	bytes_per_vframe = _af_format_frame_size(&track->v, AF_TRUE);
 
 	firstmod = &track->ms.module[track->ms.nmodules-1];
 	userc = &track->ms.chunk[track->ms.nmodules];

@@ -438,11 +438,6 @@ static status _afOpenFile (int access, AFvirtualfile *vf, const char *filename,
 		track->v.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
 #endif
 
-		if (track->f.sampleWidth > 16 &&
-			(track->f.sampleFormat == AF_SAMPFMT_TWOSCOMP ||
-			track->f.sampleFormat == AF_SAMPFMT_UNSIGNED))
-			track->v.sampleWidth = 32;
-
 		if (_AFinitmodules(filehandle, track) == AF_FAIL)
 		{
 			freeFileHandle(filehandle);

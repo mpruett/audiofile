@@ -1,3 +1,25 @@
+2003-12-17  Michael Pruett <michael@68k.org>
+
+	Fix two bugs related to processing 24-bit audio data.
+
+	* libaudiofile/data.c: Fix calculation of bytes per virtual frame
+	in the case of 24-bit audio data.  Previously, requesting more
+	than _AF_ATOMIC_NVFRAMES from afReadFrames when reading a 24-bit
+	audio file would result in corrupted audio data since the audio
+	data pointer would be incremented using a sample size of 3 bytes
+	rather than 4 bytes.
+
+	* libaudiofile/openclose.c: Set virtual sample width by default to
+	the same value as file sample width.  Previously for 24-bit audio
+	data, the virtual sample width would be incorrectly set to 32.
+
+	* test/twentyfour2.c: Add new test which checks reading and
+	writing a large amount of 24-bit audio data.  This program
+	serves as a regression test for a bug in the Audio File Library
+	in which requesting more than 1024 frames (_AF_ATOMIC_NVFRAMES)
+	from afReadFrames when reading a 24-bit audio file would result
+	in corrupted audio data.
+
 2003-12-08  Michael Pruett <michael@68k.org>
 
 	* examples/*, test/*: Add examples subdirectory. Separate
