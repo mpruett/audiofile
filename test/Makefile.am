@@ -5,7 +5,6 @@ noinst_PROGRAMS = \
 	bitdepth \
 	copy \
 	error \
-	results \
 	transparency \
 	miscread \
 	miscwrite \
