@@ -9,11 +9,10 @@
 #define __HAVE_AF_CONFIG_H__
 
 #include <float.h>
-#include <io.h>
-#include <fcntl.h>
 
 #define isnan _isnan
 #define vsnprintf _vsnprintf
+#define snprintf _snprintf
 
 typedef long           ssize_t;
 typedef char           int8_t;
@@ -23,12 +22,6 @@ typedef unsigned short u_int16_t;
 typedef long           int32_t;
 typedef unsigned long  u_int32_t;
 
-  /* turn off default "\n" to "\r\n" translation in Win32 */
-#ifdef _MSC_VER
-# define SETBINARYMODE(fp) 	_setmode( _fileno(fp), _O_BINARY )
-#else
-# define SETBINARYMODE(fp)
-#endif
 
 
 
@@ -74,6 +67,6 @@ typedef unsigned long  u_int32_t;
 #define PACKAGE "audiofile"
 
 /* Version number of package */
-#define VERSION "0.2.2"
+#define VERSION "0.2.6"
 
 #endif /* __HAVE_AF_CONFIG_H__ */

@@ -47,6 +47,29 @@
 	"..\libaudiofile\aupvlist.h"\
 	
 
+..\libaudiofile\avr.c : \
+	"..\libaudiofile\af_vfs.h"\
+	"..\libaudiofile\afinternal.h"\
+	"..\libaudiofile\audiofile.h"\
+	"..\libaudiofile\aupvlist.h"\
+	"..\libaudiofile\avr.h"\
+	"..\libaudiofile\byteorder.h"\
+	"..\libaudiofile\setup.h"\
+	"..\libaudiofile\track.h"\
+	".\config.h"\
+	
+
+..\libaudiofile\avrwrite.c : \
+	"..\libaudiofile\af_vfs.h"\
+	"..\libaudiofile\afinternal.h"\
+	"..\libaudiofile\audiofile.h"\
+	"..\libaudiofile\aupvlist.h"\
+	"..\libaudiofile\avr.h"\
+	"..\libaudiofile\byteorder.h"\
+	"..\libaudiofile\setup.h"\
+	".\config.h"\
+	
+
 ..\libaudiofile\byteorder.c : \
 	"..\libaudiofile\af_vfs.h"\
 	"..\libaudiofile\afinternal.h"\
@@ -77,6 +100,7 @@
 ..\libaudiofile\error.c : \
 	"..\libaudiofile\audiofile.h"\
 	"..\libaudiofile\aupvlist.h"\
+	".\config.h"\
 	
 
 ..\libaudiofile\extended.c : \
@@ -90,6 +114,30 @@
 	"..\libaudiofile\aupvlist.h"\
 	"..\libaudiofile\modules.h"\
 	"..\libaudiofile\units.h"\
+	".\config.h"\
+	
+
+..\libaudiofile\iff.c : \
+	"..\libaudiofile\af_vfs.h"\
+	"..\libaudiofile\afinternal.h"\
+	"..\libaudiofile\audiofile.h"\
+	"..\libaudiofile\aupvlist.h"\
+	"..\libaudiofile\byteorder.h"\
+	"..\libaudiofile\iff.h"\
+	"..\libaudiofile\marker.h"\
+	"..\libaudiofile\setup.h"\
+	"..\libaudiofile\track.h"\
+	".\config.h"\
+	
+
+..\libaudiofile\iffwrite.c : \
+	"..\libaudiofile\af_vfs.h"\
+	"..\libaudiofile\afinternal.h"\
+	"..\libaudiofile\audiofile.h"\
+	"..\libaudiofile\aupvlist.h"\
+	"..\libaudiofile\byteorder.h"\
+	"..\libaudiofile\iff.h"\
+	"..\libaudiofile\setup.h"\
 	".\config.h"\
 	
 
@@ -163,6 +211,7 @@
 	"..\libaudiofile\aupvlist.h"\
 	"..\libaudiofile\byteorder.h"\
 	"..\libaudiofile\compression.h"\
+	"..\libaudiofile\debug.h"\
 	"..\libaudiofile\modules.h"\
 	"..\libaudiofile\modules\rebuffer.h"\
 	"..\libaudiofile\pcm.h"\
@@ -199,7 +248,22 @@
 	"..\libaudiofile\afinternal.h"\
 	"..\libaudiofile\audiofile.h"\
 	"..\libaudiofile\aupvlist.h"\
+	"..\libaudiofile\byteorder.h"\
 	"..\libaudiofile\nist.h"\
+	"..\libaudiofile\setup.h"\
+	"..\libaudiofile\track.h"\
+	".\config.h"\
+	
+
+..\libaudiofile\nistwrite.c : \
+	"..\libaudiofile\af_vfs.h"\
+	"..\libaudiofile\afinternal.h"\
+	"..\libaudiofile\audiofile.h"\
+	"..\libaudiofile\aupvlist.h"\
+	"..\libaudiofile\byteorder.h"\
+	"..\libaudiofile\nist.h"\
+	"..\libaudiofile\setup.h"\
+	"..\libaudiofile\track.h"\
 	".\config.h"\
 	
 
@@ -268,7 +332,9 @@
 	"..\libaudiofile\aiff.h"\
 	"..\libaudiofile\audiofile.h"\
 	"..\libaudiofile\aupvlist.h"\
+	"..\libaudiofile\avr.h"\
 	"..\libaudiofile\compression.h"\
+	"..\libaudiofile\iff.h"\
 	"..\libaudiofile\ircam.h"\
 	"..\libaudiofile\modules.h"\
 	"..\libaudiofile\modules\g711.h"\
@@ -276,6 +342,7 @@
 	"..\libaudiofile\modules\msadpcm.h"\
 	"..\libaudiofile\modules\pcm.h"\
 	"..\libaudiofile\next.h"\
+	"..\libaudiofile\nist.h"\
 	"..\libaudiofile\raw.h"\
 	"..\libaudiofile\units.h"\
 	"..\libaudiofile\wave.h"\
@@ -291,7 +358,6 @@
 	"..\libaudiofile\byteorder.h"\
 	"..\libaudiofile\compression.h"\
 	"..\libaudiofile\modules.h"\
-	"..\libaudiofile\print.h"\
 	"..\libaudiofile\units.h"\
 	".\config.h"\
 	

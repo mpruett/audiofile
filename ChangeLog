@@ -1,3 +1,13 @@
+2004-02-09  Michael Pruett <michael@68k.org>
+
+	Fabrizio Gennari has contributed several Windows-related fixes:
+
+	* libaudiofile/openclose.c, win32/config.h: Open files with
+	binary translation mode under MinGW and Cygwin.
+	* win32/sfinfo.dsp: Link against non-debug version of libaudiofile
+	when building non-debug version of sfinfo.
+	* win32/*: Sychronize MSVC project files with latest source code.
+
 2004-01-27  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/afinternal.h, libaudiofile/openclose.c: Store

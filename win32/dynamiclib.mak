@@ -50,6 +50,8 @@ CLEAN :
 	-@erase "$(INTDIR)\aiff.obj"
 	-@erase "$(INTDIR)\aiffwrite.obj"
 	-@erase "$(INTDIR)\aupv.obj"
+	-@erase "$(INTDIR)\avr.obj"
+	-@erase "$(INTDIR)\avrwrite.obj"
 	-@erase "$(INTDIR)\byteorder.obj"
 	-@erase "$(INTDIR)\compression.obj"
 	-@erase "$(INTDIR)\data.obj"
@@ -57,6 +59,8 @@ CLEAN :
 	-@erase "$(INTDIR)\extended.obj"
 	-@erase "$(INTDIR)\format.obj"
 	-@erase "$(INTDIR)\g711.obj"
+	-@erase "$(INTDIR)\iff.obj"
+	-@erase "$(INTDIR)\iffwrite.obj"
 	-@erase "$(INTDIR)\instrument.obj"
 	-@erase "$(INTDIR)\ircam.obj"
 	-@erase "$(INTDIR)\ircamwrite.obj"
@@ -67,6 +71,7 @@ CLEAN :
 	-@erase "$(INTDIR)\next.obj"
 	-@erase "$(INTDIR)\nextwrite.obj"
 	-@erase "$(INTDIR)\nist.obj"
+	-@erase "$(INTDIR)\nistwrite.obj"
 	-@erase "$(INTDIR)\openclose.obj"
 	-@erase "$(INTDIR)\pcm.obj"
 	-@erase "$(INTDIR)\query.obj"
@@ -135,6 +140,8 @@ LINK32_OBJS= \
 	"$(INTDIR)\aiff.obj" \
 	"$(INTDIR)\aiffwrite.obj" \
 	"$(INTDIR)\aupv.obj" \
+	"$(INTDIR)\avr.obj" \
+	"$(INTDIR)\avrwrite.obj" \
 	"$(INTDIR)\byteorder.obj" \
 	"$(INTDIR)\compression.obj" \
 	"$(INTDIR)\data.obj" \
@@ -142,6 +149,8 @@ LINK32_OBJS= \
 	"$(INTDIR)\extended.obj" \
 	"$(INTDIR)\format.obj" \
 	"$(INTDIR)\g711.obj" \
+	"$(INTDIR)\iff.obj" \
+	"$(INTDIR)\iffwrite.obj" \
 	"$(INTDIR)\instrument.obj" \
 	"$(INTDIR)\ircam.obj" \
 	"$(INTDIR)\ircamwrite.obj" \
@@ -152,6 +161,7 @@ LINK32_OBJS= \
 	"$(INTDIR)\next.obj" \
 	"$(INTDIR)\nextwrite.obj" \
 	"$(INTDIR)\nist.obj" \
+	"$(INTDIR)\nistwrite.obj" \
 	"$(INTDIR)\openclose.obj" \
 	"$(INTDIR)\pcm.obj" \
 	"$(INTDIR)\query.obj" \
@@ -213,6 +223,10 @@ CLEAN :
 	-@erase "$(INTDIR)\aiffwrite.sbr"
 	-@erase "$(INTDIR)\aupv.obj"
 	-@erase "$(INTDIR)\aupv.sbr"
+	-@erase "$(INTDIR)\avr.obj"
+	-@erase "$(INTDIR)\avr.sbr"
+	-@erase "$(INTDIR)\avrwrite.obj"
+	-@erase "$(INTDIR)\avrwrite.sbr"
 	-@erase "$(INTDIR)\byteorder.obj"
 	-@erase "$(INTDIR)\byteorder.sbr"
 	-@erase "$(INTDIR)\compression.obj"
@@ -227,6 +241,10 @@ CLEAN :
 	-@erase "$(INTDIR)\format.sbr"
 	-@erase "$(INTDIR)\g711.obj"
 	-@erase "$(INTDIR)\g711.sbr"
+	-@erase "$(INTDIR)\iff.obj"
+	-@erase "$(INTDIR)\iff.sbr"
+	-@erase "$(INTDIR)\iffwrite.obj"
+	-@erase "$(INTDIR)\iffwrite.sbr"
 	-@erase "$(INTDIR)\instrument.obj"
 	-@erase "$(INTDIR)\instrument.sbr"
 	-@erase "$(INTDIR)\ircam.obj"
@@ -247,6 +265,8 @@ CLEAN :
 	-@erase "$(INTDIR)\nextwrite.sbr"
 	-@erase "$(INTDIR)\nist.obj"
 	-@erase "$(INTDIR)\nist.sbr"
+	-@erase "$(INTDIR)\nistwrite.obj"
+	-@erase "$(INTDIR)\nistwrite.sbr"
 	-@erase "$(INTDIR)\openclose.obj"
 	-@erase "$(INTDIR)\openclose.sbr"
 	-@erase "$(INTDIR)\pcm.obj"
@@ -322,6 +342,8 @@ BSC32_SBRS= \
 	"$(INTDIR)\aiff.sbr" \
 	"$(INTDIR)\aiffwrite.sbr" \
 	"$(INTDIR)\aupv.sbr" \
+	"$(INTDIR)\avr.sbr" \
+	"$(INTDIR)\avrwrite.sbr" \
 	"$(INTDIR)\byteorder.sbr" \
 	"$(INTDIR)\compression.sbr" \
 	"$(INTDIR)\data.sbr" \
@@ -329,6 +351,8 @@ BSC32_SBRS= \
 	"$(INTDIR)\extended.sbr" \
 	"$(INTDIR)\format.sbr" \
 	"$(INTDIR)\g711.sbr" \
+	"$(INTDIR)\iff.sbr" \
+	"$(INTDIR)\iffwrite.sbr" \
 	"$(INTDIR)\instrument.sbr" \
 	"$(INTDIR)\ircam.sbr" \
 	"$(INTDIR)\ircamwrite.sbr" \
@@ -339,6 +363,7 @@ BSC32_SBRS= \
 	"$(INTDIR)\next.sbr" \
 	"$(INTDIR)\nextwrite.sbr" \
 	"$(INTDIR)\nist.sbr" \
+	"$(INTDIR)\nistwrite.sbr" \
 	"$(INTDIR)\openclose.sbr" \
 	"$(INTDIR)\pcm.sbr" \
 	"$(INTDIR)\query.sbr" \
@@ -365,6 +390,8 @@ LINK32_OBJS= \
 	"$(INTDIR)\aiff.obj" \
 	"$(INTDIR)\aiffwrite.obj" \
 	"$(INTDIR)\aupv.obj" \
+	"$(INTDIR)\avr.obj" \
+	"$(INTDIR)\avrwrite.obj" \
 	"$(INTDIR)\byteorder.obj" \
 	"$(INTDIR)\compression.obj" \
 	"$(INTDIR)\data.obj" \
@@ -372,6 +399,8 @@ LINK32_OBJS= \
 	"$(INTDIR)\extended.obj" \
 	"$(INTDIR)\format.obj" \
 	"$(INTDIR)\g711.obj" \
+	"$(INTDIR)\iff.obj" \
+	"$(INTDIR)\iffwrite.obj" \
 	"$(INTDIR)\instrument.obj" \
 	"$(INTDIR)\ircam.obj" \
 	"$(INTDIR)\ircamwrite.obj" \
@@ -382,6 +411,7 @@ LINK32_OBJS= \
 	"$(INTDIR)\next.obj" \
 	"$(INTDIR)\nextwrite.obj" \
 	"$(INTDIR)\nist.obj" \
+	"$(INTDIR)\nistwrite.obj" \
 	"$(INTDIR)\openclose.obj" \
 	"$(INTDIR)\pcm.obj" \
 	"$(INTDIR)\query.obj" \
@@ -517,6 +547,42 @@ SOURCE=..\libaudiofile\aupv.c
 
 !ENDIF 
 
+SOURCE=..\libaudiofile\avr.c
+
+!IF  "$(CFG)" == "dynamiclib - Win32 Release"
+
+
+"$(INTDIR)\avr.obj" : $(SOURCE) "$(INTDIR)"
+	$(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ELSEIF  "$(CFG)" == "dynamiclib - Win32 Debug"
+
+
+"$(INTDIR)\avr.obj"	"$(INTDIR)\avr.sbr" : $(SOURCE) "$(INTDIR)"
+	$(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ENDIF 
+
+SOURCE=..\libaudiofile\avrwrite.c
+
+!IF  "$(CFG)" == "dynamiclib - Win32 Release"
+
+
+"$(INTDIR)\avrwrite.obj" : $(SOURCE) "$(INTDIR)"
+	$(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ELSEIF  "$(CFG)" == "dynamiclib - Win32 Debug"
+
+
+"$(INTDIR)\avrwrite.obj"	"$(INTDIR)\avrwrite.sbr" : $(SOURCE) "$(INTDIR)"
+	$(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ENDIF 
+
 SOURCE=..\libaudiofile\byteorder.c
 
 !IF  "$(CFG)" == "dynamiclib - Win32 Release"
@@ -638,6 +704,42 @@ SOURCE=..\libaudiofile\g711.c
 
 
 "$(INTDIR)\g711.obj"	"$(INTDIR)\g711.sbr" : $(SOURCE) "$(INTDIR)"
+	$(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ENDIF 
+
+SOURCE=..\libaudiofile\iff.c
+
+!IF  "$(CFG)" == "dynamiclib - Win32 Release"
+
+
+"$(INTDIR)\iff.obj" : $(SOURCE) "$(INTDIR)"
+	$(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ELSEIF  "$(CFG)" == "dynamiclib - Win32 Debug"
+
+
+"$(INTDIR)\iff.obj"	"$(INTDIR)\iff.sbr" : $(SOURCE) "$(INTDIR)"
+	$(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ENDIF 
+
+SOURCE=..\libaudiofile\iffwrite.c
+
+!IF  "$(CFG)" == "dynamiclib - Win32 Release"
+
+
+"$(INTDIR)\iffwrite.obj" : $(SOURCE) "$(INTDIR)"
+	$(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ELSEIF  "$(CFG)" == "dynamiclib - Win32 Debug"
+
+
+"$(INTDIR)\iffwrite.obj"	"$(INTDIR)\iffwrite.sbr" : $(SOURCE) "$(INTDIR)"
 	$(CPP) $(CPP_PROJ) $(SOURCE)
 
 
@@ -818,6 +920,24 @@ SOURCE=..\libaudiofile\nist.c
 
 
 "$(INTDIR)\nist.obj"	"$(INTDIR)\nist.sbr" : $(SOURCE) "$(INTDIR)"
+	$(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ENDIF 
+
+SOURCE=..\libaudiofile\nistwrite.c
+
+!IF  "$(CFG)" == "dynamiclib - Win32 Release"
+
+
+"$(INTDIR)\nistwrite.obj" : $(SOURCE) "$(INTDIR)"
+	$(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ELSEIF  "$(CFG)" == "dynamiclib - Win32 Debug"
+
+
+"$(INTDIR)\nistwrite.obj"	"$(INTDIR)\nistwrite.sbr" : $(SOURCE) "$(INTDIR)"
 	$(CPP) $(CPP_PROJ) $(SOURCE)
 
 
@@ -1007,24 +1127,24 @@ SOURCE=..\libaudiofile\wavewrite.c
 
 "dynmodules - Win32 Release" : 
    cd "."
-   $(MAKE) /$(MAKEFLAGS) /F .\dynmodules.mak CFG="dynmodules - Win32 Release" 
+   $(MAKE) /$(MAKEFLAGS) /F ".\dynmodules.mak" CFG="dynmodules - Win32 Release" 
    cd "."
 
 "dynmodules - Win32 ReleaseCLEAN" : 
    cd "."
-   $(MAKE) /$(MAKEFLAGS) /F .\dynmodules.mak CFG="dynmodules - Win32 Release" RECURSE=1 CLEAN 
+   $(MAKE) /$(MAKEFLAGS) /F ".\dynmodules.mak" CFG="dynmodules - Win32 Release" RECURSE=1 CLEAN 
    cd "."
 
 !ELSEIF  "$(CFG)" == "dynamiclib - Win32 Debug"
 
 "dynmodules - Win32 Debug" : 
    cd "."
-   $(MAKE) /$(MAKEFLAGS) /F .\dynmodules.mak CFG="dynmodules - Win32 Debug" 
+   $(MAKE) /$(MAKEFLAGS) /F ".\dynmodules.mak" CFG="dynmodules - Win32 Debug" 
    cd "."
 
 "dynmodules - Win32 DebugCLEAN" : 
    cd "."
-   $(MAKE) /$(MAKEFLAGS) /F .\dynmodules.mak CFG="dynmodules - Win32 Debug" RECURSE=1 CLEAN 
+   $(MAKE) /$(MAKEFLAGS) /F ".\dynmodules.mak" CFG="dynmodules - Win32 Debug" RECURSE=1 CLEAN 
    cd "."
 
 !ENDIF 

@@ -124,6 +124,14 @@ SOURCE=..\libaudiofile\aupv.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\libaudiofile\avr.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\libaudiofile\avrwrite.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\libaudiofile\byteorder.c
 # End Source File
 # Begin Source File
@@ -149,6 +157,14 @@ SOURCE=..\libaudiofile\format.c
 # Begin Source File
 
 SOURCE=..\libaudiofile\g711.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\libaudiofile\iff.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\libaudiofile\iffwrite.c
 # End Source File
 # Begin Source File
 
@@ -189,6 +205,10 @@ SOURCE=..\libaudiofile\nextwrite.c
 # Begin Source File
 
 SOURCE=..\libaudiofile\nist.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\libaudiofile\nistwrite.c
 # End Source File
 # Begin Source File
 
@@ -260,6 +280,10 @@ SOURCE=..\libaudiofile\aupvlist.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\libaudiofile\avr.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\libaudiofile\byteorder.h
 # End Source File
 # Begin Source File
@@ -281,6 +305,10 @@ SOURCE=..\libaudiofile\extended.h
 # Begin Source File
 
 SOURCE=..\libaudiofile\g711.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\libaudiofile\iff.h
 # End Source File
 # Begin Source File
 

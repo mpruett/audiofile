@@ -3,6 +3,7 @@
 ..\sfcommands\printinfo.c : \
 	"..\libaudiofile\audiofile.h"\
 	"..\libaudiofile\aupvlist.h"\
+	".\config.h"\
 	
 
 ..\sfcommands\sfconvert.c : \

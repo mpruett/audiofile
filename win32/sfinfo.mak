@@ -351,7 +351,7 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\sfinfo.bsc"
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib audiofileD.lib /nologo /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\sfinfo.pdb" /debug /machine:I386 /nodefaultlib:"libcd.lib" /out:"Release\bin\dynamic\sfinfo.exe" /pdbtype:sept /libpath:"lib" 
+LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib audiofile.lib /nologo /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\sfinfo.pdb" /debug /machine:I386 /nodefaultlib:"libcd.lib" /out:"Release\bin\dynamic\sfinfo.exe" /pdbtype:sept /libpath:"lib" 
 LINK32_OBJS= \
 	"$(INTDIR)\printinfo.obj" \
 	"$(INTDIR)\sfinfo.obj"
@@ -442,24 +442,24 @@ SOURCE=..\sfcommands\sfinfo.c
 
 "dynamiclib - Win32 Release" : 
    cd "."
-   $(MAKE) /$(MAKEFLAGS) /F .\dynamiclib.mak CFG="dynamiclib - Win32 Release" 
+   $(MAKE) /$(MAKEFLAGS) /F ".\dynamiclib.mak" CFG="dynamiclib - Win32 Release" 
    cd "."
 
 "dynamiclib - Win32 ReleaseCLEAN" : 
    cd "."
-   $(MAKE) /$(MAKEFLAGS) /F .\dynamiclib.mak CFG="dynamiclib - Win32 Release" RECURSE=1 CLEAN 
+   $(MAKE) /$(MAKEFLAGS) /F ".\dynamiclib.mak" CFG="dynamiclib - Win32 Release" RECURSE=1 CLEAN 
    cd "."
 
 !ELSEIF  "$(CFG)" == "sfinfo - Win32 Debug"
 
 "dynamiclib - Win32 Debug" : 
    cd "."
-   $(MAKE) /$(MAKEFLAGS) /F .\dynamiclib.mak CFG="dynamiclib - Win32 Debug" 
+   $(MAKE) /$(MAKEFLAGS) /F ".\dynamiclib.mak" CFG="dynamiclib - Win32 Debug" 
    cd "."
 
 "dynamiclib - Win32 DebugCLEAN" : 
    cd "."
-   $(MAKE) /$(MAKEFLAGS) /F .\dynamiclib.mak CFG="dynamiclib - Win32 Debug" RECURSE=1 CLEAN 
+   $(MAKE) /$(MAKEFLAGS) /F ".\dynamiclib.mak" CFG="dynamiclib - Win32 Debug" RECURSE=1 CLEAN 
    cd "."
 
 !ELSEIF  "$(CFG)" == "sfinfo - Win32 Debug using DLL"
@@ -472,24 +472,24 @@ SOURCE=..\sfcommands\sfinfo.c
 
 "staticlib - Win32 Release" : 
    cd "."
-   $(MAKE) /$(MAKEFLAGS) /F .\staticlib.mak CFG="staticlib - Win32 Release" 
+   $(MAKE) /$(MAKEFLAGS) /F ".\staticlib.mak" CFG="staticlib - Win32 Release" 
    cd "."
 
 "staticlib - Win32 ReleaseCLEAN" : 
    cd "."
-   $(MAKE) /$(MAKEFLAGS) /F .\staticlib.mak CFG="staticlib - Win32 Release" RECURSE=1 CLEAN 
+   $(MAKE) /$(MAKEFLAGS) /F ".\staticlib.mak" CFG="staticlib - Win32 Release" RECURSE=1 CLEAN 
    cd "."
 
 !ELSEIF  "$(CFG)" == "sfinfo - Win32 Debug"
 
 "staticlib - Win32 Debug" : 
    cd "."
-   $(MAKE) /$(MAKEFLAGS) /F .\staticlib.mak CFG="staticlib - Win32 Debug" 
+   $(MAKE) /$(MAKEFLAGS) /F ".\staticlib.mak" CFG="staticlib - Win32 Debug" 
    cd "."
 
 "staticlib - Win32 DebugCLEAN" : 
    cd "."
-   $(MAKE) /$(MAKEFLAGS) /F .\staticlib.mak CFG="staticlib - Win32 Debug" RECURSE=1 CLEAN 
+   $(MAKE) /$(MAKEFLAGS) /F ".\staticlib.mak" CFG="staticlib - Win32 Debug" RECURSE=1 CLEAN 
    cd "."
 
 !ELSEIF  "$(CFG)" == "sfinfo - Win32 Debug using DLL"

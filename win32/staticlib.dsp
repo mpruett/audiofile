@@ -65,7 +65,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug\staticlib"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm- /GX /ZI /Od /I "..\libaudiofile" /I "." /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "HAVE_CONFIG_H" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /GX /ZI /Od /I "..\libaudiofile" /I "." /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "HAVE_CONFIG_H" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -107,6 +107,14 @@ SOURCE=..\libaudiofile\aupv.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\libaudiofile\avr.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\libaudiofile\avrwrite.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\libaudiofile\byteorder.c
 # End Source File
 # Begin Source File
@@ -132,6 +140,14 @@ SOURCE=..\libaudiofile\format.c
 # Begin Source File
 
 SOURCE=..\libaudiofile\g711.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\libaudiofile\iff.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\libaudiofile\iffwrite.c
 # End Source File
 # Begin Source File
 
@@ -172,6 +188,10 @@ SOURCE=..\libaudiofile\nextwrite.c
 # Begin Source File
 
 SOURCE=..\libaudiofile\nist.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\libaudiofile\nistwrite.c
 # End Source File
 # Begin Source File
 

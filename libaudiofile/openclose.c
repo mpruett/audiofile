@@ -37,9 +37,13 @@
 #include "util.h"
 #include "modules.h"
 
-#ifndef _MSC_VER
+#if defined(WIN32) || defined(__CYGWIN__)
+#include <io.h>
+#include <fcntl.h>
+#define SETBINARYMODE(fp) 	_setmode(_fileno(fp), _O_BINARY)
+#else
 #define SETBINARYMODE(x)
-#endif
+#endif /* WIN32 || __CYGWIN__ */
 
 extern _Unit _af_units[];
 
