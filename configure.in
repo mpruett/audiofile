@@ -22,9 +22,6 @@ AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
 AM_CONFIG_HEADER(config.h)
 AM_PROG_LIBTOOL
 
-dnl Checks whether we are building static libraries.
-AM_CONDITIONAL(BUILD_STATIC_LIBS, test x$enable_static = xyes)
-
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_INSTALL
