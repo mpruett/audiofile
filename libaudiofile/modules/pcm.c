@@ -29,11 +29,13 @@
 #include <unistd.h>
 #include <errno.h>
 #include <assert.h>
+#include <math.h>
 
 #include <audiofile.h>
 #include "afinternal.h"
 #include "compression.h"
 #include "modules.h"
+#include "util.h"
 #include "print.h"
 
 #ifdef DEBUG

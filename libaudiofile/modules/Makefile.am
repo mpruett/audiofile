@@ -1,6 +1,6 @@
 noinst_LTLIBRARIES = libmodules.la
 
-INCLUDES = -I.. -I../../libaudioutil
+INCLUDES = -I..
 
 libmodules_la_SOURCES = \
 	g711.c g711.h \
