@@ -32,6 +32,8 @@
 
 const char *paramtypename (int paramtype);
 
+#define DEBUG
+
 #ifdef DEBUG
 #define DEBG printf
 #else
@@ -41,10 +43,10 @@ const char *paramtypename (int paramtype);
 int main (int ac, char **av)
 {
 	AUpvlist	formatlist;
-	long		*flist;
-	long		*larray;
+	int		*flist;
+	int		*iarray;
 	long		lvalue;
-	int			i, formatcount;
+	int		i, formatcount;
 
 	formatlist = afQuery(AF_QUERYTYPE_FILEFMT, AF_QUERY_IDS, 0, 0, 0);
 	formatcount = afQueryLong(AF_QUERYTYPE_FILEFMT, AF_QUERY_ID_COUNT, 0, 0, 0);
@@ -56,11 +58,11 @@ int main (int ac, char **av)
 
 	for (i=0; i<formatcount; i++)
 	{
-		long	format;
+		int	format;
 		char	*formatstring;
 
 		format = flist[i];
-		DEBG("format = %ld\n", format);
+		DEBG("format = %d\n", format);
 		formatstring = afQueryPointer(AF_QUERYTYPE_FILEFMT, AF_QUERY_NAME,
 			format, 0, 0);
 		DEBG("format = %s\n", formatstring);
@@ -81,27 +83,27 @@ int main (int ac, char **av)
 			format, 0, 0);
 		DEBG("instrument parameter query: id count: %ld\n", lvalue);
 
-		larray = afQueryPointer(AF_QUERYTYPE_INSTPARAM, AF_QUERY_IDS,
+		iarray = afQueryPointer(AF_QUERYTYPE_INSTPARAM, AF_QUERY_IDS,
 			format, 0, 0);
 
-		if (larray != NULL)
+		if (iarray != NULL)
 		{
 			int	i;
 			for (i=0; i<lvalue; i++)
 			{
 				int	paramtype;
 
-				DEBG("instrument parameter query: id: %ld\n", larray[i]);
+				DEBG("instrument parameter query: id: %d\n", iarray[i]);
 				paramtype = afQueryLong(AF_QUERYTYPE_INSTPARAM,
-					AF_QUERY_TYPE, format, larray[i], 0);
+					AF_QUERY_TYPE, format, iarray[i], 0);
 				DEBG("	type of parameter: %s\n",
 					paramtypename(paramtype));
 				DEBG("	name of parameter: %s\n",
 				       (char *)
 					afQueryPointer(AF_QUERYTYPE_INSTPARAM, AF_QUERY_NAME,
-						format, larray[i], 0));
+						format, iarray[i], 0));
 			}
-			free(larray);
+			free(iarray);
 		}
 	}
 	free(flist);

@@ -1,3 +1,18 @@
+2001-05-16  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/query.c: Backing out last change.  The file
+	format and instrument parameter selectors once again return
+	arrays of type 'int' rather than arrays of type 'long'.
+
+	Although the AUpv structure uses only long integers, the Audio
+	File Library's API uses 'int' and not 'long' when describing
+	file formats and instrument parameters.  Furthermore all
+	existing applications expect the affected query calls to return
+	arrays of int.
+
+	* test/query2.c: Expect arrays of int rather than arrays of
+	long when querying on file formats and instrument parameters.
+
 2001-05-09  Michael Pruett <mpruett@sgi.com>
 
 	* libaudiofile/aiffwrite.c: Fix a memory leak in WriteMARK, and
