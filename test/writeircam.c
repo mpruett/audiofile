@@ -20,10 +20,10 @@
 */
 
 /*
-	writeaiff.c
+	writeircam.c
 
-	This program tests the validity of the AIFF file reading and writing
-	code.
+	This program tests the validity of the IRCAM/BICSF format
+	reading and writing code.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -40,7 +40,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#define TEST_FILE "/tmp/test.aiff"
+#define TEST_FILE "/tmp/test.au"
 
 void cleanup (void)
 {
@@ -62,14 +62,14 @@ void ensure (int condition, const char *message)
 int main (int argc, char **argv)
 {
 	AFfilehandle	file;
-	AFfilesetup		setup;
-	u_int16_t		samples[] = {11, 51, 101, 501, 1001, 5001, 10001, 50001};
-	int				i;
-	int				sampleFormat, sampleWidth;
-	int				framesRead, framesWritten;
+	AFfilesetup	setup;
+	u_int16_t	samples[] = {11, 51, 101, 501, 1001, 5001, 10001, 50001};
+	int		i;
+	int		sampleFormat, sampleWidth;
+	int		framesRead, framesWritten;
 
 	setup = afNewFileSetup();
-	afInitFileFormat(setup, AF_FILE_AIFF);
+	afInitFileFormat(setup, AF_FILE_IRCAM);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, 16);
 
@@ -86,8 +86,8 @@ int main (int argc, char **argv)
 	file = afOpenFile(TEST_FILE, "r", NULL);
 	ensure(file != AF_NULL_FILEHANDLE, "unable to open file for reading");
 
-	ensure(afGetFileFormat(file, NULL) == AF_FILE_AIFF,
-		"test file not created as AIFF");
+	ensure(afGetFileFormat(file, NULL) == AF_FILE_IRCAM,
+		"test file not created as IRCAM/BICSF");
 
 	afGetSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
 	ensure(sampleFormat == AF_SAMPFMT_TWOSCOMP,
@@ -98,8 +98,13 @@ int main (int argc, char **argv)
 	ensure(afGetChannels(file, AF_DEFAULT_TRACK) == 1,
 		"test file doesn't have exactly one channel");
 
+#ifdef WORDS_BIGENDIAN
 	ensure(afGetByteOrder(file, AF_DEFAULT_TRACK) == AF_BYTEORDER_BIGENDIAN,
 		"test file not big-endian");
+#else
+	ensure(afGetByteOrder(file, AF_DEFAULT_TRACK) == AF_BYTEORDER_LITTLEENDIAN,
+		"test file not little-endian");
+#endif
 
 	for (i=0; i<8; i++)
 	{
@@ -117,7 +122,7 @@ int main (int argc, char **argv)
 
 	cleanup();
 
-	printf("writeaiff test passed.\n");
+	printf("writeircam test passed.\n");
 
 	exit(0);
 }

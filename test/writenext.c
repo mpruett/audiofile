@@ -98,6 +98,9 @@ int main (int argc, char **argv)
 	ensure(afGetChannels(file, AF_DEFAULT_TRACK) == 1,
 		"test file doesn't have exactly one channel");
 
+	ensure(afGetByteOrder(file, AF_DEFAULT_TRACK) == AF_BYTEORDER_BIGENDIAN,
+		"test file not big-endian");
+
 	for (i=0; i<8; i++)
 	{
 		u_int16_t	temporary;
