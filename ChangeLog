@@ -1,5 +1,13 @@
 2001-08-23  Michael Pruett <mpruett@sgi.com>
 
+	* libaudiofile/openclose.c: Include <unistd.h> only if the
+	system has this header file.
+
+	* libaudiofile/modules/rebuffer.c: Don't define min and max if
+	they've been defined already.
+
+2001-08-23  Michael Pruett <mpruett@sgi.com>
+
 	* libaudiofile/modules/Makefile.am, libaudiofile/units.[ch]:
 	Added IMA and MS ADPCM compression modules.
 
