@@ -31,6 +31,7 @@
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <audiofile.h>
 
 #define TEST_FILE "/tmp/fuck.wave"
@@ -56,7 +57,7 @@ int main (int argc, char **argv)
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		fprintf(stderr, "could not open file for writing\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	afFreeFileSetup(setup);
@@ -71,7 +72,7 @@ int main (int argc, char **argv)
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		fprintf(stderr, "could not open file for reading\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	afSetVirtualSampleFormat(file, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, 8);
@@ -89,7 +90,7 @@ int main (int argc, char **argv)
 		{
 			printf("error\n");
 			printf("expected %d, got %d\n", frames8[i], byte);
-			exit(-1);
+			exit(EXIT_FAILURE);
 		}
 		else
 		{
@@ -100,6 +101,7 @@ int main (int argc, char **argv)
 	}
 
 	afCloseFile(file);
+	unlink(TEST_FILE);
 
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
