@@ -39,10 +39,7 @@
 #define _AF_AIFF_NUM_INSTPARAMS 9
 #define _AF_AIFF_NUM_COMPTYPES 2
 
-enum
-{
-	AIFCVersion1 = 0xa2805140
-};
+#define AIFC_VERSION_1 0xa2805140
 
 struct _COMM
 {

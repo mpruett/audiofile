@@ -510,7 +510,7 @@ static status WriteFVER (AFfilehandle file)
 	chunkSize = HOST_TO_BENDIAN_INT32(chunkSize);
 	af_fwrite(&chunkSize, 4, 1, file->fh);
 
-	timeStamp = AIFCVersion1;
+	timeStamp = AIFC_VERSION_1;
 	timeStamp = HOST_TO_BENDIAN_INT32(timeStamp);
 	af_fwrite(&timeStamp, 4, 1, file->fh);
 

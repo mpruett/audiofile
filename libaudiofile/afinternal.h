@@ -328,11 +328,6 @@ typedef struct _AFfilehandle
 
 enum
 {
-	AIFC_VERSION_1 = 0xa2805140
-};
-
-enum
-{
 	_AF_VALID_FILEHANDLE = 38212,
 	_AF_VALID_FILESETUP = 38213
 };

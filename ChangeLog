@@ -1,3 +1,9 @@
+2004-01-06  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/afinternal.h, libaudiofile/aiff.h,
+	libaudiofile/aiffwrite.c: Eliminate duplicate definition of
+	AIFC_VERSION_1 constant.
+
 2003-12-21  Michael Pruett <michael@68k.org>
 
 	* Released version 0.2.5 of the Audio File Library.
