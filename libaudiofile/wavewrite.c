@@ -193,8 +193,6 @@ status _af_wave_update (AFfilehandle file)
 	{
 		u_int32_t	dataLength, fileLength;
 
-		printf("in _af_wave_update\n");
-
 		/*
 			We call _af_format_frame_size to calculate the
 			frame size of normal PCM data or compressed data.
