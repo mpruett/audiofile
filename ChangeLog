@@ -1,12 +1,17 @@
 2004-03-11  Michael Pruett <michael@68k.org>
 
-	* audiofile.m4:  Quote AM_PATH_AUDIOFILE in order to fix
+	* audiofile.m4: Quote AM_PATH_AUDIOFILE in order to fix
 	automake warning.
 
 	* libaudiofile/Makefile.am: Prepend audiofile.exports with
 	$(srcdir) in order to allow building from another directory.
 
 	Thanks to Frederic L. W. Meunier for these fixes.
+
+	* libaudiofile/audiofile.exports: Add VFS functions to list of
+	exported symbols.
+
+	Thanks to Daniel Kobras for pointing out this omission.
 
 2004-03-05  Michael Pruett <michael@68k.org>
 
