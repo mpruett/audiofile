@@ -1,3 +1,8 @@
+2001-07-19  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/format.c: Add afSetChannelMatrix and
+	afGetVirtualChannels.
+
 2001-07-18  Michael Pruett <mpruett@sgi.com>
 
 	* sfcommands/sfconvert.c: Use a fixed-size buffer for reading
