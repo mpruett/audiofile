@@ -87,8 +87,8 @@ enum
 	AF_FILE_MPEG1BITSTREAM = 6,	/* not implemented */
 	AF_FILE_SOUNDDESIGNER1 = 7,	/* not implemented */
 	AF_FILE_SOUNDDESIGNER2 = 8,	/* not implemented */
-	AF_FILE_AVR = 9,		/* not implemented */
-	AF_FILE_IFF_8SVX = 10,		/* not implemented */
+	AF_FILE_AVR = 9,
+	AF_FILE_IFF_8SVX = 10,
 	AF_FILE_SAMPLEVISION = 11,	/* not implemented */
 	AF_FILE_VOC = 12,		/* not implemented */
 	AF_FILE_NIST_SPHERE = 13,

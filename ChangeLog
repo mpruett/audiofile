@@ -1,3 +1,8 @@
+2004-02-19  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/audiofile.h: Update comments to reflect the fact
+	that AVR and IFF/8SVX file formats are now implemented.
+
 2004-02-18  Michael Pruett <michael@68k.org>
 
 	* test/Makefile.am, test/writeavr.c. test/writeiff.c,
