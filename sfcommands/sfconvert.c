@@ -104,6 +104,7 @@ int main (int argc, char **argv)
 				exit(EXIT_FAILURE);
 			}
 
+			/* Increment for argument. */
 			i++;
 		}
 		else if (!strcmp(argv[i], "channels"))
@@ -114,6 +115,9 @@ int main (int argc, char **argv)
 			outChannelCount = atoi(argv[i+1]);
 			if (outChannelCount < 1)
 				usageerror();
+
+			/* Increment for argument. */
+			i++;
 		}
 		else if (!strcmp(argv[i], "float"))
 		{
@@ -124,6 +128,7 @@ int main (int argc, char **argv)
 			outSampleWidth = 32;
 			outMaxAmp = atof(argv[i+1]);
 
+			/* Increment for argument. */
 			i++;
 		}
 		else if (!strcmp(argv[i], "integer"))
@@ -142,7 +147,8 @@ int main (int argc, char **argv)
 			else
 				usageerror();
 
-			i++;
+			/* Increment for arguments. */
+			i += 2;
 		}
 		else
 		{

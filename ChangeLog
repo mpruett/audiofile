@@ -1,3 +1,7 @@
+2003-12-03  Michael Pruett <michael@68k.org>
+
+	* sfcommands/sfconvert.c: Fix argument parsing in sfconvert.
+
 2003-10-01  Michael Pruett <michael@68k.org>
 
 	* sfcommands/printinfo.c: Change printfileinfo to display duration
