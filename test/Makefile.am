@@ -16,7 +16,6 @@ noinst_PROGRAMS = \
 	writewave \
 	writeulaw \
 	writealaw \
-	printframes \
 	virtual \
 	loop \
 	instparamwrite \
@@ -47,6 +46,7 @@ irixtestloop_LDADD = -laudio $(top_builddir)/libaudiofile/libaudiofile.la
 linuxtest_SOURCES = linuxtest.c
 
 LDADD = $(top_builddir)/libaudiofile/libaudiofile.la
+
 if BUILD_STATIC_LIBS
 LDFLAGS=-static
 endif
