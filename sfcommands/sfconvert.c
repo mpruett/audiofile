@@ -62,7 +62,7 @@ int main (int argc, char **argv)
 {
 	int	i = 1;
 	char	*infilename, *outfilename;
-	int	outFileFormat = AF_FILE_UNKNOWN;
+	int	fileFormat, outFileFormat = AF_FILE_UNKNOWN;
 
 	AFfilehandle	infile, outfile;
 	AFfilesetup	outfilesetup;
@@ -160,6 +160,7 @@ int main (int argc, char **argv)
 	}
 
 	/* Get audio format parameters from input file. */
+	fileFormat = afGetFileFormat(infile, NULL);
 	totalFrames = afGetFrameCount(infile, AF_DEFAULT_TRACK);
 	channelCount = afGetChannels(infile, AF_DEFAULT_TRACK);
 	sampleRate = afGetRate(infile, AF_DEFAULT_TRACK);
@@ -168,22 +169,21 @@ int main (int argc, char **argv)
 	/* Initialize output audio format parameters. */
 	outfilesetup = afNewFileSetup();
 
-	if (outFileFormat != -1)
-	{
-		afInitFileFormat(outfilesetup, outFileFormat);
-	}
+	if (outFileFormat == -1)
+		outFileFormat = fileFormat;
 
-	if (outSampleFormat != -1 && outSampleWidth != -1)
+	if (outSampleFormat == -1 || outSampleWidth == -1)
 	{
-		afInitSampleFormat(outfilesetup, AF_DEFAULT_TRACK,
-			outSampleFormat, outSampleWidth);
+		outSampleFormat = sampleFormat;
+		outSampleWidth = sampleWidth;
 	}
 
 	if (outChannelCount == -1)
-	{
 		outChannelCount = channelCount;
-	}
 
+	afInitFileFormat(outfilesetup, outFileFormat);
+	afInitSampleFormat(outfilesetup, AF_DEFAULT_TRACK, outSampleFormat,
+		outSampleWidth);
 	afInitChannels(outfilesetup, AF_DEFAULT_TRACK, outChannelCount);
 	afInitRate(outfilesetup, AF_DEFAULT_TRACK, sampleRate);
 

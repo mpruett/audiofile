@@ -5,6 +5,9 @@
 	converting large sound files.  Add float, integer, and channels
 	keywords to sfconvert.
 
+	* docs/sfconvert: Updated documentation to reflect new
+	keywords.
+
 	* libaudiofile/setup.c: Change the default file format for
 	big-endian systems from AIFF to AIFF-C.
 
