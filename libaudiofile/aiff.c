@@ -376,8 +376,11 @@ static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 		af_fread(compressionName, compressionNameLength, 1, fh);
 		compressionName[compressionNameLength] = '\0';
 
-		if (!memcmp(compressionID, "NONE", 4))
+		if (!memcmp(compressionID, "NONE", 4) ||
+			!memcmp(compressionID, "twos", 4))
+		{
 			track->f.compressionType = AF_COMPRESSION_NONE;
+		}
 		else if (!memcmp(compressionID, "ACE2", 4) ||
 			!memcmp(compressionID, "ACE8", 4) ||
 			!memcmp(compressionID, "MAC3", 4) ||
