@@ -82,7 +82,21 @@ static status WriteFormat (AFfilehandle file)
 	{
 		case AF_COMPRESSION_NONE:
 			chunkSize = 16;
-			formatTag = WAVE_FORMAT_PCM;
+			if (track->f.sampleFormat == AF_SAMPFMT_FLOAT)
+			{
+				formatTag = WAVE_FORMAT_IEEE_FLOAT;
+			}
+			else if (track->f.sampleFormat == AF_SAMPFMT_TWOSCOMP ||
+				track->f.sampleFormat == AF_SAMPFMT_UNSIGNED)
+			{
+				formatTag = WAVE_FORMAT_PCM;
+			}
+			else
+			{
+				_af_error(AF_BAD_COMPTYPE, "bad sample format");
+				return AF_FAIL;
+			}
+
 			blockAlign = _af_format_frame_size(&track->f, AF_FALSE);
 			bitsPerSample = 8 * _af_format_sample_size(&track->f, AF_FALSE);
 			break;
