@@ -378,6 +378,8 @@ void afSetChannelMatrix (AFfilehandle file, int trackid, double* matrix)
 
 		size = track->v.channelCount * track->f.channelCount;
 
+		track->channelMatrix = (double *) malloc(size * sizeof (double));
+
 		for (i = 0; i < size; i++)
 			track->channelMatrix[i] = matrix[i];
 	}

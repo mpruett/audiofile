@@ -1,3 +1,9 @@
+2003-06-10  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/format.c: Fix error in channel matrix
+	initialization.  Thanks to Jasmin Frenette for reporting this
+	problem.
+
 2002-09-11  Michael Pruett <mpruett@sgi.com>
 
 	* libaudiofile/raw.c: Account for data offset when calculating
