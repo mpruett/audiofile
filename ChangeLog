@@ -1,3 +1,8 @@
+2004-11-14  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/aiff.c: Add support for reading more nonstandard
+	uncompressed two's complement AIFF-C files created by Mac OS X.
+
 2004-09-14  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/aiff.c: Add support for reading nonstandard

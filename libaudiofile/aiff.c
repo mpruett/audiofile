@@ -381,6 +381,16 @@ static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 		{
 			track->f.compressionType = AF_COMPRESSION_NONE;
 		}
+		else if (!memcmp(compressionID, "in24", 4))
+		{
+			track->f.compressionType = AF_COMPRESSION_NONE;
+			track->f.sampleWidth = 24;
+		}
+		else if (!memcmp(compressionID, "in32", 4))
+		{
+			track->f.compressionType = AF_COMPRESSION_NONE;
+			track->f.sampleWidth = 32;
+		}
 		else if (!memcmp(compressionID, "ACE2", 4) ||
 			!memcmp(compressionID, "ACE8", 4) ||
 			!memcmp(compressionID, "MAC3", 4) ||
