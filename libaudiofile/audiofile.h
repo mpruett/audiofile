@@ -32,6 +32,7 @@
 
 #define LIBAUDIOFILE_MAJOR_VERSION 0
 #define LIBAUDIOFILE_MINOR_VERSION 2
+#define LIBAUDIOFILE_MICRO_VERSION 4
 
 #ifdef __cplusplus
 extern "C"
