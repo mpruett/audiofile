@@ -14,6 +14,8 @@ int afSetVirtualByteOrder (AFfilehandle file, int track,
 
 int afSetVirtualChannels (AFfilehandle file, int track, int channels);
 
+int afSetVirtualRate (AFfilehandle file, int track, double rate);
+
 int afSetVirtualPCMMapping (AFfilehandle file, int track,
 	double slope, double intercept, double minclip, double maxclip);
 
@@ -57,5 +59,4 @@ These functions return 0 for success and -1 for failure.
 
 BUGS
 
-Of these four functions, only afSetVirtualByteOrder is implemented at
-present.
+At present, afSetVirtualRate is not implemented.
