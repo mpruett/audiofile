@@ -5,6 +5,9 @@
 	the extent of compressed and uncompressed audio data using
 	_af_format_frame_size.
 
+	* libaudiofile/wave.c: Add support for double-precision
+	floating-point WAVE files.
+
 2001-07-10  Michael Pruett <mpruett@sgi.com>
 
 	* libaudiofile/util.[ch]: Make _af_format_sample_size and
