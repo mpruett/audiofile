@@ -1,11 +1,6 @@
-News for the Audio File Library version 0.2.4
+News for Audio File Library version 0.2.5
 Michael Pruett <michael@68k.org>
 
-Added support for large files.  This option is disabled by default; to
-enable large file support, run configure with the flag --enable-largefile.
+Fix bugs related to processing 24-bit audio data.
 
-Improved support for markers in WAVE files.
-
-Added support for miscellaneous data in WAVE files.
-
-Cleaned up code in many places.
+Made AIFF/AIFF-C parsing more robust.
