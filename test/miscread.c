@@ -45,10 +45,15 @@ int main (int argc, char **argv)
 	if (argc < 2)
 	{
 		fprintf(stderr, "usage: %s <audio file>\n", argv[0]);
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 
 	file = afOpenFile(argv[1], "r", NULL);
+	if (file == NULL)
+	{
+		fprintf(stderr, "could not open file %s for reading\n", argv[1]);
+		exit(EXIT_FAILURE);
+	}
 	misccount = afGetMiscIDs(file, NULL);
 	miscids = malloc(sizeof (int) * misccount);
 	afGetMiscIDs(file, miscids);

@@ -24,6 +24,7 @@
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 
@@ -47,26 +48,45 @@ u_int16_t data[] = {0, 1, 2, 3};
 
 int main (int argc, char **argv)
 {
+	int		filefmt;
 	AFfilehandle	file;
-	AFfilesetup		setup;
-	int				miscids[] = {1, 2};
-	int				result;
+	AFfilesetup	setup;
+	int		miscids[] = {1, 2};
+	int		result;
 
-	if (argc < 2)
+	if (argc < 3)
 	{
-		fprintf(stderr, "usage: %s <audio file>\n", argv[0]);
-		exit(0);
+		fprintf(stderr, "usage: %s <file format> <audio file>\n",
+			argv[0]);
+		exit(EXIT_FAILURE);
+	}
+
+	if (strcmp(argv[1], "aiff") == 0)
+		filefmt = AF_FILE_AIFF;
+	else if (strcmp(argv[1], "aifc") == 0)
+		filefmt = AF_FILE_AIFFC;
+	else if (strcmp(argv[1], "wave") == 0)
+		filefmt = AF_FILE_WAVE;
+	else
+	{
+		fprintf(stderr, "unrecognized file format '%s'\n", argv[1]);
+		exit(EXIT_FAILURE);
 	}
 
 	setup = afNewFileSetup();
-	afInitFileFormat(setup, AF_FILE_AIFF);
+	afInitFileFormat(setup, filefmt);
 	afInitMiscIDs(setup, miscids, 2);
 	afInitMiscType(setup, 1, AF_MISC_COPY);
 	afInitMiscType(setup, 2, AF_MISC_NAME);
 	afInitMiscSize(setup, 1, strlen(copyright));
 	afInitMiscSize(setup, 2, strlen(name));
 
-	file = afOpenFile(argv[1], "w", setup);
+	file = afOpenFile(argv[2], "w", setup);
+	if (file == NULL)
+	{
+		fprintf(stderr, "could not open file '%s' for writing\n", argv[2]);
+		exit(EXIT_FAILURE);
+	}
 
 	result = afWriteMisc(file, 1, copyright, strlen(copyright));
 	DEBG("wrote miscellaneous data of type %d with length = %d\n",

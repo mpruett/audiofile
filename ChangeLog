@@ -1,5 +1,14 @@
 2003-09-11  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/wave.c, libaudiofile/wavewrite.c: Add support
+	for miscellaneous data in WAVE files.  Thanks to Davy Durham
+	for this patch.
+
+	* test/{misc.sh,miscread.c,miscwrite.c}: Update miscellaneous
+	data tests to support WAVE as well as AIFF.
+
+2003-09-11  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/*.c: Replace use of off_t with AFfileoffset and
 	AFframecount, as appropriate.
 	* configure.in: Add AC_SYS_LARGEFILE in order to support large

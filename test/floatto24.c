@@ -35,6 +35,7 @@
 #include <audiofile.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #define TEST_FILE "/tmp/test.sf"
 #define FRAME_COUNT 10
@@ -96,7 +97,7 @@ int main (int argc, char **argv)
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		printf("could not open file for writing\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	framesWritten = afWriteFrames(file, AF_DEFAULT_TRACK, (void *) samples,
@@ -174,6 +175,8 @@ int main (int argc, char **argv)
 		fprintf(stderr, "Closing file returned non-zero status.\n");
 		exit(EXIT_FAILURE);
 	}
+
+	unlink(TEST_FILE);
 
 	exit(EXIT_SUCCESS);
 }
