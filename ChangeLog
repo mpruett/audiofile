@@ -1,3 +1,8 @@
+2002-02-04  Michael Pruett <mpruett@sgi.com>
+
+	* audiofile.spec.in: Add /usr/lib/libaudiofile.la and
+	/usr/lib/pkgconfig/audiofile.pc to the RPM spec file.
+
 2001-10-25  Michael Pruett <mpruett@sgi.com>
 
 	* test/irixread.c: Improve error handling.  Use proper

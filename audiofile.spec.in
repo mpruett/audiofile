@@ -63,5 +63,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-, root, root)
 %{prefix}/lib/lib*.so
 %{prefix}/lib/*.a
+%{prefix}/lib/*.la
+%{prefix}/lib/pkgconfig/*.pc
 %{prefix}/include/*
 %{prefix}/share/aclocal/*
