@@ -1,8 +1,8 @@
 /*
 	Audio File Library
 
-	Copyright 2001, Silicon Graphics, Inc.
-	Copyright 1998, Michael Pruett <michael@68k.org>
+	Copyright (C) 2001, Silicon Graphics, Inc.
+	Copyright (C) 1998, Michael Pruett <michael@68k.org>
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License as
@@ -41,6 +41,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define BUFFER_FRAME_COUNT 65536
+
 void usageerror (void);
 void printfileinfo (char *filename);
 
@@ -54,9 +56,9 @@ int main (int argc, char **argv)
 	AFfilesetup	outfilesetup;
 	int		sampleFormat, sampleWidth, channelCount;
 	double		sampleRate;
-	char		*buffer;
+	void		*buffer;
 
-	AFframecount	frameCount;
+	AFframecount	totalFrames, totalFramesWritten;
 	int		frameSize;
 
 	if (argc < 3)
@@ -81,10 +83,12 @@ int main (int argc, char **argv)
 				format = AF_FILE_WAVE;
 			else if (!strcmp(argv[i+1], "next"))
 				format = AF_FILE_NEXTSND;
+			else if (!strcmp(argv[i+1], "bicsf"))
+				format = AF_FILE_BICSF;
 			else
 			{
 				fprintf(stderr, "sfconvert: Unknown format %s.\n", argv[i+1]);
-				exit(-1);
+				exit(EXIT_FAILURE);
 			}
 
 			i++;
@@ -110,17 +114,14 @@ int main (int argc, char **argv)
 		return 1;
 	}
 
-	frameCount = afGetFrameCount(infile, AF_DEFAULT_TRACK);
+	/* Get audio format parameters from input file. */
+	totalFrames = afGetFrameCount(infile, AF_DEFAULT_TRACK);
 	frameSize = afGetFrameSize(infile, AF_DEFAULT_TRACK, 1);
 	channelCount = afGetChannels(infile, AF_DEFAULT_TRACK);
 	sampleRate = afGetRate(infile, AF_DEFAULT_TRACK);
 	afGetSampleFormat(infile, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
 
-	buffer = malloc(frameCount * frameSize);
-	afReadFrames(infile, AF_DEFAULT_TRACK, buffer, frameCount);
-
-	afCloseFile(infile);
-
+	/* Initialize output audio format parameters. */
 	outfilesetup = afNewFileSetup();
 	afInitFileFormat(outfilesetup, format);
 	afInitChannels(outfilesetup, AF_DEFAULT_TRACK, channelCount);
@@ -137,18 +138,49 @@ int main (int argc, char **argv)
 
 	afFreeFileSetup(outfilesetup);
 
-	afWriteFrames(outfile, AF_DEFAULT_TRACK, buffer, frameCount);
+	buffer = malloc(BUFFER_FRAME_COUNT * frameSize);
+
+	totalFramesWritten = 0;
+	do
+	{
+		AFframecount	framesToRead = BUFFER_FRAME_COUNT;
+		AFframecount	framesRead, framesWritten;
+
+		framesRead = afReadFrames(infile, AF_DEFAULT_TRACK, buffer,
+			framesToRead);
+
+		if (framesRead < 0)
+		{
+			fprintf(stderr, "Bad read of audio track data.\n");
+			break;
+		}
+
+		framesWritten = afWriteFrames(outfile, AF_DEFAULT_TRACK, buffer,
+			framesRead);
+
+		if (framesWritten < 0)
+		{
+			fprintf(stderr, "Bad write of audio track data.\n");
+			break;
+		}
+		else
+		{
+			totalFramesWritten += framesWritten;
+		}
+	} while (totalFramesWritten < totalFrames);
+
+	afCloseFile(infile);
 	afCloseFile(outfile);
 
 	printfileinfo(infilename);
 	putchar('\n');
 	printfileinfo(outfilename);
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 void usageerror (void)
 {
 	fprintf(stderr, "usage: sfconvert infile outfile [ options ... ] [ output keywords ... ]\n");
-	exit(-1);
+	exit(EXIT_FAILURE);
 }
