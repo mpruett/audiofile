@@ -58,7 +58,7 @@ bool _af_pcm_format_ok (_AudioFormat *f)
 	The pcm module does both reading and writing.
 */
 
-_AFmodule pcm;
+static _AFmodule pcm;
 
 typedef struct pcm_data
 {
@@ -91,7 +91,7 @@ _AFmoduleinst _AFpcminitcompress (_Track *trk, AFvirtualfile *fh, bool seekok,
 	return ret;
 }
 
-void pcmrun_push (_AFmoduleinst *i)
+static void pcmrun_push (_AFmoduleinst *i)
 {
 	pcm_data *d = (pcm_data *) i->modspec;
 	AFframecount frames2write = i->inc->nframes;
@@ -143,7 +143,7 @@ void pcmrun_push (_AFmoduleinst *i)
 	assert(!d->seekok || (af_ftell(d->fh) == d->trk->fpos_next_frame));
 }
 
-void pcmsync1 (_AFmoduleinst *i)
+static void pcmsync1 (_AFmoduleinst *i)
 {
 	pcm_data *d = (pcm_data *)i->modspec;
 
@@ -151,7 +151,7 @@ void pcmsync1 (_AFmoduleinst *i)
 	d->saved_nextfframe = d->trk->nextfframe;
 }
 
-void pcmsync2 (_AFmoduleinst *i)
+static void pcmsync2 (_AFmoduleinst *i)
 {
 	pcm_data *d = (pcm_data *)i->modspec;
 
@@ -185,7 +185,7 @@ _AFmoduleinst _AFpcminitdecompress (_Track *trk, AFvirtualfile *fh, bool seekok,
 	return ret;
 }
 
-void pcmrun_pull (_AFmoduleinst *i)
+static void pcmrun_pull (_AFmoduleinst *i)
 {
 	pcm_data *d = (pcm_data *) i->modspec;
 	AFframecount n, frames2read = i->outc->nframes;
@@ -244,7 +244,7 @@ void pcmrun_pull (_AFmoduleinst *i)
 	i->outc->nframes = n;
 }
 
-void pcmreset1 (_AFmoduleinst *i)
+static void pcmreset1 (_AFmoduleinst *i)
 {
 #ifdef DONE
 	pcm_data *d = (pcm_data *) i->modspec;
@@ -252,7 +252,7 @@ void pcmreset1 (_AFmoduleinst *i)
 	/* This function is supposed to be empty to fit into design. */
 }
 
-void pcmreset2 (_AFmoduleinst *i)
+static void pcmreset2 (_AFmoduleinst *i)
 {
 	pcm_data *d = (pcm_data *) i->modspec;
 
@@ -262,7 +262,7 @@ void pcmreset2 (_AFmoduleinst *i)
 	d->trk->frames2ignore = 0;
 }
 
-_AFmodule pcm =
+static _AFmodule pcm =
 {
 	"pcm",
 	AF_NULL,

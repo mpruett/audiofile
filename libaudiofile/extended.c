@@ -42,7 +42,7 @@
 
 #define FloatToUnsigned(f) ((unsigned long) (((long) (f - 2147483648.0)) + 2147483647L) + 1)
 
-void ConvertToIeeeExtended(double num, unsigned char *bytes)
+void _af_convert_to_ieee_extended (double num, unsigned char *bytes)
 {
 	int				sign;
 	int				expon;
@@ -138,7 +138,7 @@ void ConvertToIeeeExtended(double num, unsigned char *bytes)
  * Extended precision IEEE floating-point conversion routine.
  ****************************************************************/
 
-double ConvertFromIeeeExtended(const unsigned char *bytes)
+double _af_convert_from_ieee_extended (const unsigned char *bytes)
 {
 	double			f;
 	int				expon;

@@ -49,7 +49,7 @@ static status WriteFrameCount (AFfilehandle file);
 static status WriteMiscellaneous (AFfilehandle file);
 static status WriteData (AFfilehandle file);
 
-_WAVEInfo *waveinfo_new (void)
+static _WAVEInfo *waveinfo_new (void)
 {
 	_WAVEInfo	*waveinfo = _af_malloc(sizeof (_WAVEInfo));
 

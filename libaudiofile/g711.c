@@ -38,7 +38,7 @@
 #define	SEG_MASK	(0x70)		/* Segment field mask. */
 
 /* copy from CCITT G.711 specifications */
-unsigned char _u2a[128] = {			/* u- to A-law conversions */
+static unsigned char _u2a[128] = {		/* u- to A-law conversions */
 	1,	1,	2,	2,	3,	3,	4,	4,
 	5,	5,	6,	6,	7,	7,	8,	8,
 	9,	10,	11,	12,	13,	14,	15,	16,
@@ -56,7 +56,7 @@ unsigned char _u2a[128] = {			/* u- to A-law conversions */
 	113,	114,	115,	116,	117,	118,	119,	120,
 	121,	122,	123,	124,	125,	126,	127,	128};
 
-unsigned char _a2u[128] = {			/* A- to u-law conversions */
+static unsigned char _a2u[128] = {		/* A- to u-law conversions */
 	1,	3,	5,	7,	9,	11,	13,	15,
 	16,	17,	18,	19,	20,	21,	22,	23,
 	24,	25,	26,	27,	28,	29,	30,	31,
@@ -268,7 +268,7 @@ int _af_ulaw2linear (unsigned char u_val)
 #endif
 
 /* A-law to u-law conversion */
-unsigned char
+static unsigned char
 alaw2ulaw(aval)
 	unsigned char	aval;
 {
@@ -278,7 +278,7 @@ alaw2ulaw(aval)
 }
 
 /* u-law to A-law conversion */
-unsigned char
+static unsigned char
 ulaw2alaw(uval)
 	unsigned char	uval;
 {

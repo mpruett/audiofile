@@ -36,7 +36,7 @@
 /* defines module floatrebufferv2f and floatrebufferf2v */
 
 #define PRFX(word) float ## word
-#define INITFUNC(word) initfloat ## word
+#define INITFUNC(word) _af_initfloat ## word
 #define NAMESTRING(word) "float" #word
 #define TYPE float
 #include "rebuffer.template"
@@ -48,7 +48,7 @@
 /* defines module int2rebufferv2f and int2rebufferf2v */
 
 #define PRFX(word) int2 ## word
-#define INITFUNC(word) initint2 ## word
+#define INITFUNC(word) _af_initint2 ## word
 #define NAMESTRING(word) "int2" #word
 #define TYPE schar2
 #include "rebuffer.template"

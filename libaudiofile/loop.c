@@ -99,7 +99,8 @@ int _af_handle_loop_index_from_id (AFfilehandle file, int instno, int loopid)
 	mustWrite is true, only if handle is writable.
 */
 
-_Loop *getLoop (AFfilehandle handle, int instid, int loopid, bool mustWrite)
+static _Loop *getLoop (AFfilehandle handle, int instid, int loopid,
+	bool mustWrite)
 {
 	int	loopno, instno;
 

@@ -36,7 +36,7 @@
 
 static void defaultErrorFunction (long error, const char *str);
 
-AFerrfunc errorFunction = defaultErrorFunction;
+static AFerrfunc errorFunction = defaultErrorFunction;
 
 AFerrfunc afSetErrorHandler (AFerrfunc efunc)
 {

@@ -1,3 +1,8 @@
+2002-02-20  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/*: Eliminate unnecessary global symbols.  Thanks
+	to Daniel Kobras for fixing this problem.
+
 2002-02-04  Michael Pruett <mpruett@sgi.com>
 
 	* audiofile.spec.in: Add /usr/lib/libaudiofile.la and

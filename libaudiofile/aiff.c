@@ -359,7 +359,7 @@ static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 	track->f.sampleWidth = BENDIAN_TO_HOST_INT16(sampleSize);
 
 	af_fread(sampleRate, 10, 1, fh);
-	track->f.sampleRate = ConvertFromIeeeExtended(sampleRate);
+	track->f.sampleRate = _af_convert_from_ieee_extended(sampleRate);
 
 	track->f.compressionType = AF_COMPRESSION_NONE;
 	track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;

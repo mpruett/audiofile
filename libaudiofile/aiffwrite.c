@@ -237,7 +237,7 @@ static status WriteCOMM (const AFfilehandle file)
 	af_fwrite(&sb, 2, 1, file->fh);
 
 	/* sample rate, 10 bytes */
-	ConvertToIeeeExtended(track->f.sampleRate, eb);
+	_af_convert_to_ieee_extended(track->f.sampleRate, eb);
 	af_fwrite(eb, 10, 1, file->fh);
 
 	if (file->fileFormat == AF_FILE_AIFFC)

@@ -50,14 +50,14 @@
 	Here ircam_mips_magic refers to little-endian MIPS, not SGI IRIX,
 	which uses big-endian MIPS.
 */
-extern const u_int8_t ircam_vax_magic[4], ircam_sun_magic[4],
-	ircam_mips_magic[4], ircam_next_magic[4];
+extern const u_int8_t _af_ircam_vax_magic[4], _af_ircam_sun_magic[4],
+	_af_ircam_mips_magic[4], _af_ircam_next_magic[4];
 
 /* We write IRCAM files using the native byte order. */
 status _af_ircam_write_init (AFfilesetup setup, AFfilehandle handle)
 {
 	_Track		*track;
-	u_int8_t	*magic;
+	const u_int8_t	*magic;
 	float		rate;
 	u_int32_t	channels;
 	u_int32_t	packMode;
@@ -85,9 +85,9 @@ status _af_ircam_write_init (AFfilesetup setup, AFfilehandle handle)
 
 	/* Choose the magic number appropriate for the byte order. */
 #ifdef WORDS_BIGENDIAN
-	magic = ircam_sun_magic;
+	magic = _af_ircam_sun_magic;
 #else
-	magic = ircam_vax_magic;
+	magic = _af_ircam_vax_magic;
 #endif
 
 	channels = track->f.channelCount;

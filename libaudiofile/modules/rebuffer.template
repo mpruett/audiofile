@@ -55,7 +55,7 @@ typedef struct PRFX(rebuffer_data)
 
 /* REBUFFER variable to fixed -- PUSH ONLY */
 
-void PRFX(rebufferv2fmax_push)(struct _AFmoduleinst *i)
+static void PRFX(rebufferv2fmax_push)(struct _AFmoduleinst *i)
 {
   REBUFFER_DATA *d = i->modspec;
   int nframes = d->nsamps/i->inc->f.channelCount;
@@ -67,7 +67,7 @@ void PRFX(rebufferv2fmax_push)(struct _AFmoduleinst *i)
     i->outc->nframes = nframes;
 }
 
-void PRFX(rebufferv2frun_push)(struct _AFmoduleinst *i)
+static void PRFX(rebufferv2frun_push)(struct _AFmoduleinst *i)
 {
   REBUFFER_DATA *d = i->modspec;
   long samples2push = i->inc->nframes * i->inc->f.channelCount;
@@ -172,7 +172,7 @@ void PRFX(rebufferv2frun_push)(struct _AFmoduleinst *i)
   assert(d->offset >= 0 && d->offset < d->nsamps);
 }
 
-void PRFX(rebufferv2fsync1)(struct _AFmoduleinst *i)
+static void PRFX(rebufferv2fsync1)(struct _AFmoduleinst *i)
 {
   REBUFFER_DATA *d = i->modspec;
 
@@ -186,7 +186,7 @@ void PRFX(rebufferv2fsync1)(struct _AFmoduleinst *i)
   d->saved_offset = d->offset;
 }
 
-void PRFX(rebufferv2fsync2)(struct _AFmoduleinst *i)
+static void PRFX(rebufferv2fsync2)(struct _AFmoduleinst *i)
 {
   REBUFFER_DATA *d = i->modspec;
 
@@ -217,7 +217,7 @@ void PRFX(rebufferv2fsync2)(struct _AFmoduleinst *i)
   assert(d->offset >= 0 && d->offset < d->nsamps);
 }
 
-void PRFX(rebufferv2ffree)(struct _AFmoduleinst *i)
+static void PRFX(rebufferv2ffree)(struct _AFmoduleinst *i)
 {
   REBUFFER_DATA *d = i->modspec;
   if (d->buf)
@@ -226,7 +226,7 @@ void PRFX(rebufferv2ffree)(struct _AFmoduleinst *i)
     free(d->saved_buf);
 }
 
-_AFmodule PRFX(rebufferv2f) =
+static _AFmodule PRFX(rebufferv2f) =
 {
   NAMESTRING(rebufferv2f),
   AF_NULL,
@@ -256,7 +256,7 @@ _AFmoduleinst INITFUNC(rebufferv2f)(AFframecount nsamps, bool multiple_of)
 
 /* ===== REBUFFER fixed to variable -- PULL ONLY */
 
-void PRFX(rebufferf2vmax_pull)(struct _AFmoduleinst *i)
+static void PRFX(rebufferf2vmax_pull)(struct _AFmoduleinst *i)
 {
   REBUFFER_DATA *d = i->modspec;
   long nframes = d->nsamps / i->inc->f.channelCount;
@@ -268,7 +268,7 @@ void PRFX(rebufferf2vmax_pull)(struct _AFmoduleinst *i)
     i->inc->nframes = nframes;
 }
 
-void PRFX(rebufferf2vrun_pull)(struct _AFmoduleinst *i)
+static void PRFX(rebufferf2vrun_pull)(struct _AFmoduleinst *i)
 {
   REBUFFER_DATA *d = i->modspec;
   long samples2pull = i->outc->nframes * i->outc->f.channelCount;
@@ -501,7 +501,7 @@ void PRFX(rebufferf2vrun_pull)(struct _AFmoduleinst *i)
               d->nsamps-d->offset));
 }
 
-void PRFX(rebufferf2vreset1)(struct _AFmoduleinst *i)
+static void PRFX(rebufferf2vreset1)(struct _AFmoduleinst *i)
 {
   REBUFFER_DATA *d = i->modspec;
   d->offset = d->nsamps;
@@ -510,7 +510,7 @@ void PRFX(rebufferf2vreset1)(struct _AFmoduleinst *i)
   assert(d->offset > 0 && d->offset <= d->nsamps);
 }
 
-void PRFX(rebufferf2vreset2)(struct _AFmoduleinst *i)
+static void PRFX(rebufferf2vreset2)(struct _AFmoduleinst *i)
 {
 #ifdef AF_DEBUG
   REBUFFER_DATA *d = i->modspec;
@@ -518,14 +518,14 @@ void PRFX(rebufferf2vreset2)(struct _AFmoduleinst *i)
 #endif
 }
 
-void PRFX(rebufferf2vfree)(struct _AFmoduleinst *i)
+static void PRFX(rebufferf2vfree)(struct _AFmoduleinst *i)
 {
   REBUFFER_DATA *d = i->modspec;
   if (d->buf)
     free(d->buf);
 }
 
-_AFmodule PRFX(rebufferf2v) =
+static _AFmodule PRFX(rebufferf2v) =
 {
   NAMESTRING(rebufferf2v),
   AF_NULL,

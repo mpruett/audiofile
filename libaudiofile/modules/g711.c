@@ -40,7 +40,7 @@
 
 #define CHNK(X)
 
-void ulaw2linear_buf (unsigned char *ulaw, signed short int *linear,
+static void ulaw2linear_buf (unsigned char *ulaw, signed short int *linear,
 	int nsamples)
 {
 	int i;
@@ -50,7 +50,7 @@ void ulaw2linear_buf (unsigned char *ulaw, signed short int *linear,
 	}
 }
 
-void linear2ulaw_buf (signed short int *linear, unsigned char *ulaw,
+static void linear2ulaw_buf (signed short int *linear, unsigned char *ulaw,
 	int nsamples)
 {
 	int i;
@@ -60,7 +60,7 @@ void linear2ulaw_buf (signed short int *linear, unsigned char *ulaw,
 	}
 }
 
-void alaw2linear_buf (unsigned char *alaw, signed short int *linear,
+static void alaw2linear_buf (unsigned char *alaw, signed short int *linear,
 	int nsamples)
 {
 	int i;
@@ -70,7 +70,7 @@ void alaw2linear_buf (unsigned char *alaw, signed short int *linear,
 	}
 }
 
-void linear2alaw_buf (signed short int *linear, unsigned char *alaw,
+static void linear2alaw_buf (signed short int *linear, unsigned char *alaw,
 	int nsamples)
 {
 	int i;
@@ -102,8 +102,7 @@ bool _af_g711_format_ok (_AudioFormat *f)
 	return AF_TRUE;
 }
 
-_AFmodule g711compress;
-_AFmodule g711decompress;
+static _AFmodule g711compress, g711decompress;
 
 typedef unsigned char g711samp;
 
@@ -118,7 +117,7 @@ typedef struct g711_data
 	int saved_nextfframe;
 } g711_data;
 
-void g711compressdescribe (_AFmoduleinst *i)
+static void g711compressdescribe (_AFmoduleinst *i)
 {
 	g711_data *d = (g711_data *)i->modspec;
 	i->outc->f.compressionType = d->trk->f.compressionType;
@@ -142,7 +141,7 @@ _AFmoduleinst _AFg711initcompress (_Track *trk, AFvirtualfile *fh, bool seekok,
 	return ret;
 }
 
-void g711run_push (_AFmoduleinst *i)
+static void g711run_push (_AFmoduleinst *i)
 {
 	g711_data *d = (g711_data *)i->modspec;
 	AFframecount frames2write = i->inc->nframes;
@@ -199,7 +198,7 @@ void g711run_push (_AFmoduleinst *i)
 	assert(!d->seekok || (af_ftell(d->fh) == d->trk->fpos_next_frame));
 }
 
-void g711sync1 (_AFmoduleinst *i)
+static void g711sync1 (_AFmoduleinst *i)
 {
 	g711_data *d = (g711_data *)i->modspec;
 
@@ -207,7 +206,7 @@ void g711sync1 (_AFmoduleinst *i)
 	d->saved_nextfframe = d->trk->nextfframe;
 }
 
-void g711sync2 (_AFmoduleinst *i)
+static void g711sync2 (_AFmoduleinst *i)
 {
 	g711_data *d = (g711_data *) i->modspec;
 
@@ -221,7 +220,7 @@ void g711sync2 (_AFmoduleinst *i)
 	d->trk->nextfframe = d->saved_nextfframe;
 }
 
-void g711decompressdescribe(_AFmoduleinst *i)
+static void g711decompressdescribe(_AFmoduleinst *i)
 {
 /*	XXXmpruett this is probably the correct way to go, but other things
 	need to be changed first.
@@ -253,7 +252,7 @@ _AFmoduleinst _AFg711initdecompress (_Track *trk, AFvirtualfile *fh,
 	return ret;
 }
 
-void g711run_pull (_AFmoduleinst *i)
+static void g711run_pull (_AFmoduleinst *i)
 {
 	g711_data *d = (g711_data *) i->modspec;
 	AFframecount frames2read = i->outc->nframes;
@@ -301,7 +300,7 @@ void g711run_pull (_AFmoduleinst *i)
 	i->outc->nframes = nfr;
 }
 
-void g711reset1 (_AFmoduleinst *i)
+static void g711reset1 (_AFmoduleinst *i)
 {
 #ifdef DONE
 	g711_data *d = (g711_data *) i->modspec;
@@ -309,7 +308,7 @@ void g711reset1 (_AFmoduleinst *i)
 	/* This function is supposed to be empty to fit into design. */
 }
 
-void g711reset2 (_AFmoduleinst *i)
+static void g711reset2 (_AFmoduleinst *i)
 {
 	g711_data *d = (g711_data *) i->modspec;
 	int framesize = sizeof (g711samp) * (i->inc->f.channelCount);
@@ -320,7 +319,7 @@ void g711reset2 (_AFmoduleinst *i)
 	d->trk->frames2ignore = 0;
 }
 
-_AFmodule g711compress =
+static _AFmodule g711compress =
 {
 	"g711compress",
 	g711compressdescribe,
@@ -331,7 +330,7 @@ _AFmodule g711compress =
 	_AFfreemodspec
 };
 
-_AFmodule g711decompress =
+static _AFmodule g711decompress =
 {
 	"g711decompress",
 	g711decompressdescribe,

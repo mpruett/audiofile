@@ -207,7 +207,7 @@ void _AFsimplemodrun_push (_AFmoduleinst *i)
 
 #define _MODULE( name, desc, \
 	intype, outtype, chans, preamble, action, postamble )\
-void name##run(_AFchunk *inc, _AFchunk *outc, void *modspec)\
+static void name##run(_AFchunk *inc, _AFchunk *outc, void *modspec)\
 {\
 	intype *ip = inc->buf;\
 	outtype *op = outc->buf;\
@@ -220,13 +220,13 @@ void name##run(_AFchunk *inc, _AFchunk *outc, void *modspec)\
 	postamble;\
 }\
 \
-void name##describe(struct _AFmoduleinst *i)\
+static void name##describe(struct _AFmoduleinst *i)\
 {\
 	_AudioFormat *f = &i->outc->f; \
 	desc;\
 }\
 \
-_AFmodule name =\
+static _AFmodule name =\
 { \
 	#name,\
 	name##describe, \
@@ -402,7 +402,7 @@ typedef struct pcmmodspec
 /*
 	initpcmmod
 */
-_AFmoduleinst initpcmmod (_AFmodule *mod,
+static _AFmoduleinst initpcmmod (_AFmodule *mod,
 	_PCMInfo *input_mapping, _PCMInfo *output_mapping)
 {
 	_AFmoduleinst ret = _AFnewmodinst(mod);
@@ -672,7 +672,7 @@ typedef struct channelchangedata
 /*
 	channelchangefree
 */
-void channelchangefree (struct _AFmoduleinst *i)
+static void channelchangefree (struct _AFmoduleinst *i)
 {
 	channelchangedata *d = i->modspec;
 
@@ -688,7 +688,7 @@ void channelchangefree (struct _AFmoduleinst *i)
 /*
 	channelchangedescribe
 */
-void channelchangedescribe (struct _AFmoduleinst *i)
+static void channelchangedescribe (struct _AFmoduleinst *i)
 {
 	channelchangedata *m = (channelchangedata *) i->modspec;
 	i->outc->f.channelCount = m->outchannels;
@@ -697,7 +697,7 @@ void channelchangedescribe (struct _AFmoduleinst *i)
 }
 
 #define CHANNELMOD( name, type, zero_op, action, afteraction ) \
-void name##run(_AFchunk *inc, _AFchunk *outc, void *modspec) \
+static void name##run(_AFchunk *inc, _AFchunk *outc, void *modspec) \
 { \
 	type *ip = inc->buf; \
 	type *op = outc->buf; \
@@ -726,7 +726,7 @@ void name##run(_AFchunk *inc, _AFchunk *outc, void *modspec) \
 	}\
 }\
 \
-_AFmodule name =\
+static _AFmodule name =\
 { \
 	#name, \
 	channelchangedescribe, \
@@ -760,7 +760,7 @@ CHANNELINTMOD(channelchange4, schar4)
 /*
 	initchannelchange
 */
-_AFmoduleinst initchannelchange (_AFmodule *mod,
+static _AFmoduleinst initchannelchange (_AFmodule *mod,
 	double *matrix, _PCMInfo *outpcm,
 	int inchannels, int outchannels,
 	bool reading)
@@ -879,7 +879,7 @@ typedef struct current_state
 	work of putting the module instance in the list and assigning
 	it an input and output chunk.
 */
-void addmod (current_state *current, _AFmoduleinst modinst)
+static void addmod (current_state *current, _AFmoduleinst modinst)
 {
 	*(current->modinst) = modinst;
 	current->modinst->valid = AF_TRUE; /* at this point mod must be valid */
@@ -931,7 +931,7 @@ void addmod (current_state *current, _AFmoduleinst modinst)
 
 	Also creates a rebuffer module for these modules if necessary.
 */
-status initfilemods (_Track *track, AFfilehandle h)
+static status initfilemods (_Track *track, AFfilehandle h)
 {
 	int compressionIndex;
 	_CompressionUnit *compunit;
@@ -1091,11 +1091,11 @@ status initfilemods (_Track *track, AFfilehandle h)
 
 		if (h->access == _AF_WRITE_ACCESS)
 			track->ms.filemod_rebufferinst =
-				initint2rebufferv2f(chunkframes*track->f.channelCount,
+				_af_initint2rebufferv2f(chunkframes*track->f.channelCount,
 					compunit->multiple_of);
 		else
 			track->ms.filemod_rebufferinst =
-				initint2rebufferf2v(chunkframes*track->f.channelCount,
+				_af_initint2rebufferf2v(chunkframes*track->f.channelCount,
 					compunit->multiple_of);
 
 		track->ms.filemod_rebufferinst.valid = AF_TRUE;
@@ -1118,7 +1118,8 @@ status initfilemods (_Track *track, AFfilehandle h)
 	addfilereadmods: called once per setup of the modules
 	for a given AFfilehandle
 */
-status addfilereadmods (current_state *current, _Track *track, AFfilehandle h)
+static status addfilereadmods (current_state *current, _Track *track,
+	AFfilehandle h)
 {
 	assert(track->ms.filemodinst.valid);
 
@@ -1137,7 +1138,8 @@ status addfilereadmods (current_state *current, _Track *track, AFfilehandle h)
 	addfilewritemods is called once per setup of the modules
 	for a given AFfilehandle.
 */
-status addfilewritemods (current_state *current, _Track *track, AFfilehandle h)
+static status addfilewritemods (current_state *current, _Track *track,
+	AFfilehandle h)
 {
 	assert(track->ms.filemodinst.valid);
 
@@ -1156,7 +1158,7 @@ status addfilewritemods (current_state *current, _Track *track, AFfilehandle h)
 /*
 	disposefilemods: called once in the lifetime of an AFfilehandle
 */
-status disposefilemods (_Track *track)
+static status disposefilemods (_Track *track)
 {
 	if (track->ms.filemodinst.valid &&
 		track->ms.filemodinst.mod->free)
@@ -1176,7 +1178,8 @@ status disposefilemods (_Track *track)
 /*
 	useAP: rate conversion AP decision maker and warner and kludger
 */
-bool useAP (double inrate, double outrate, double *inratep, double *outratep)
+static bool useAP (double inrate, double outrate,
+	double *inratep, double *outratep)
 {
 	bool instandard =
 		(inrate==8000 || inrate==11025 || inrate==16000 ||
@@ -1242,14 +1245,14 @@ bool useAP (double inrate, double outrate, double *inratep, double *outratep)
 	module and its extended-life rebuffer module called once in the
 	lifetime of an AFfilehandle.
 */
-void initrateconvertmods (bool reading, _Track *track)
+static void initrateconvertmods (bool reading, _Track *track)
 {
 	/* no rate conversion initially */
 	track->ms.rateconvertinst.valid = AF_FALSE;
 	track->ms.rateconvert_rebufferinst.valid = AF_FALSE;
 }
 
-void disposerateconvertmods (_Track *);
+static void disposerateconvertmods (_Track *);
 
 /* XXXmpruett rate conversion is disabled for now */
 #if 0
@@ -1257,7 +1260,7 @@ void disposerateconvertmods (_Track *);
 	addrateconvertmods: called once per setup of the modules
 	for a given AFfilehandle
 */
-void addrateconvertmods (current_state *current, int nchannels,
+static void addrateconvertmods (current_state *current, int nchannels,
 	double inrate, double outrate,
 	bool reading, _Track *track)
 {
@@ -1337,7 +1340,7 @@ void addrateconvertmods (current_state *current, int nchannels,
 	disposerateconvertmods is called once in the lifetime of an
 	AFfilehandle.
 */
-void disposerateconvertmods (_Track *track)
+static void disposerateconvertmods (_Track *track)
 {
 	/*
 		Neither module is necessarily valid--there could have been
@@ -1367,21 +1370,21 @@ void disposerateconvertmods (_Track *track)
 
 /* The stuff in this section is used by arrangemodules(). */
 
-_AFmodule *unsigned2signed[5] =
+static _AFmodule *unsigned2signed[5] =
 {
 	NULL,
 	&unsigned2signed1, &unsigned2signed2,
 	&unsigned2signed3, &unsigned2signed4
 };
 
-_AFmodule *signed2unsigned[5] =
+static _AFmodule *signed2unsigned[5] =
 {
 	NULL,
 	&signed2unsigned1, &signed2unsigned2,
 	&signed2unsigned3, &signed2unsigned4
 };
 
-_AFmodule *swapbytes[9] =
+static _AFmodule *swapbytes[9] =
 {
 	NULL, NULL, &swap2, &swap3, &swap4,
 	NULL, NULL, NULL, &swap8
@@ -1405,7 +1408,7 @@ typedef enum format_code
 /*
 	get_format_code
 */
-format_code get_format_code (_AudioFormat *fmt)
+static format_code get_format_code (_AudioFormat *fmt)
 {
 	if (fmt->sampleFormat == AF_SAMPFMT_FLOAT)
 		return float_fmt;
@@ -1429,32 +1432,32 @@ format_code get_format_code (_AudioFormat *fmt)
 	return -1;
 }
 
-_AFmodule *to_flt[6] =
+static _AFmodule *to_flt[6] =
 {
 	&int2float1, &int2float2, &int2float3, &int2float4,
 	NULL, &double2float
 };
 
-_AFmodule *to_dbl[6] =
+static _AFmodule *to_dbl[6] =
 {
 	&int2double1, &int2double2, &int2double3, &int2double4,
 	&float2double, NULL
 };
 
-_AFmodule *clip[6] =
+static _AFmodule *clip[6] =
 {
 	&clip1, &clip2, &clip3, &clip4,
 	&clipfloat, &clipdouble
 };
 
-_AFmodule *channelchanges[6] =
+static _AFmodule *channelchanges[6] =
 {
 	&channelchange1, &channelchange2, &channelchange3, &channelchange4,
 	&channelchangefloat, &channelchangedouble
 };
 
 /* indices are of type format_code: matrix[infmtcode][outfmtcode] */
-_AFmodule *convertmatrix[6][6] =
+static _AFmodule *convertmatrix[6][6] =
 {
 	/* TO:
 	{
@@ -1507,7 +1510,7 @@ _AFmodule *convertmatrix[6][6] =
 	}
 };
 
-_PCMInfo *intmappings[6] =
+static _PCMInfo *intmappings[6] =
 {
 	&_af_default_signed_integer_pcm_mappings[1],
 	&_af_default_signed_integer_pcm_mappings[2],
@@ -1519,7 +1522,7 @@ _PCMInfo *intmappings[6] =
 /*
 	trivial_int_clip
 */
-bool trivial_int_clip (_AudioFormat *f, format_code code)
+static bool trivial_int_clip (_AudioFormat *f, format_code code)
 {
 	return (intmappings[code] != NULL &&
 		f->pcm.minClip == intmappings[code]->minClip   &&
@@ -1529,7 +1532,7 @@ bool trivial_int_clip (_AudioFormat *f, format_code code)
 /*
 	trivial_int_mapping
 */
-bool trivial_int_mapping (_AudioFormat *f, format_code code)
+static bool trivial_int_mapping (_AudioFormat *f, format_code code)
 {
 	return (intmappings[code] != NULL &&
 		f->pcm.slope == intmappings[code]->slope &&
@@ -1540,7 +1543,7 @@ bool trivial_int_mapping (_AudioFormat *f, format_code code)
 	arrangemodules decides which modules to use and creates instances
 	of them.
 */
-status arrangemodules (_AFfilehandle *h, _Track *track)
+static status arrangemodules (_AFfilehandle *h, _Track *track)
 {
 	bool reading = (h->access == _AF_READ_ACCESS);
 
@@ -1981,7 +1984,7 @@ status arrangemodules (_AFfilehandle *h, _Track *track)
 
 	disposemodules will deal with all three cases.
 */
-void disposemodules (_Track *track)
+static void disposemodules (_Track *track)
 {
 	if (track->ms.module)
 	{
@@ -2033,7 +2036,7 @@ void disposemodules (_Track *track)
 /*
 	resetmodules: see advanced section in README.modules for more info
 */
-status resetmodules (_AFfilehandle *h, _Track *track)
+static status resetmodules (_AFfilehandle *h, _Track *track)
 {
 	int i;
 

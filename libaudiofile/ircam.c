@@ -50,10 +50,10 @@
 	Here ircam_mips_magic refers to little-endian MIPS, not SGI IRIX,
 	which uses big-endian MIPS.
 */
-const u_int8_t ircam_vax_magic[4] = {0x64, 0xa3, 0x01, 0x00},
-	ircam_sun_magic[4] = {0x64, 0xa3, 0x02, 0x00},
-	ircam_mips_magic[4] = {0x64, 0xa3, 0x03, 0x00},
-	ircam_next_magic[4] = {0x64, 0xa3, 0x04, 0x00};
+const u_int8_t _af_ircam_vax_magic[4] = {0x64, 0xa3, 0x01, 0x00},
+	_af_ircam_sun_magic[4] = {0x64, 0xa3, 0x02, 0x00},
+	_af_ircam_mips_magic[4] = {0x64, 0xa3, 0x03, 0x00},
+	_af_ircam_next_magic[4] = {0x64, 0xa3, 0x04, 0x00};
 
 _AFfilesetup _af_ircam_default_filesetup =
 {
@@ -80,10 +80,10 @@ bool _af_ircam_recognize (AFvirtualfile *fh)
 		return AF_FALSE;
 
 	/* Check to see if the file's magic number matches. */
-	if (memcmp(buffer, ircam_vax_magic, 4) == 0 ||
-		memcmp(buffer, ircam_sun_magic, 4) == 0 ||
-		memcmp(buffer, ircam_mips_magic, 4) == 0 ||
-		memcmp(buffer, ircam_next_magic, 4) == 0)
+	if (memcmp(buffer, _af_ircam_vax_magic, 4) == 0 ||
+		memcmp(buffer, _af_ircam_sun_magic, 4) == 0 ||
+		memcmp(buffer, _af_ircam_mips_magic, 4) == 0 ||
+		memcmp(buffer, _af_ircam_next_magic, 4) == 0)
 	{
 		return AF_TRUE;
 	}
@@ -212,10 +212,10 @@ status _af_ircam_read_init (AFfilesetup setup, AFfilehandle handle)
 		return AF_FAIL;
 	}
 
-	if (memcmp(magic, ircam_vax_magic, 4) != 0 &&
-		memcmp(magic, ircam_sun_magic, 4) != 0 &&
-		memcmp(magic, ircam_mips_magic, 4) != 0 &&
-		memcmp(magic, ircam_next_magic, 4) != 0)
+	if (memcmp(magic, _af_ircam_vax_magic, 4) != 0 &&
+		memcmp(magic, _af_ircam_sun_magic, 4) != 0 &&
+		memcmp(magic, _af_ircam_mips_magic, 4) != 0 &&
+		memcmp(magic, _af_ircam_next_magic, 4) != 0)
 	{
 		_af_error(AF_BAD_FILEFMT,
 			"file is not a BICSF file (bad magic number)");
@@ -226,8 +226,8 @@ status _af_ircam_read_init (AFfilesetup setup, AFfilehandle handle)
 		If the file's magic number is that for VAX or MIPS,
 		the file is little endian.
 	*/
-	isLittleEndian = (memcmp(magic, ircam_vax_magic, 4) == 0 ||
-		memcmp(magic, ircam_mips_magic, 4) == 0);
+	isLittleEndian = (memcmp(magic, _af_ircam_vax_magic, 4) == 0 ||
+		memcmp(magic, _af_ircam_mips_magic, 4) == 0);
 
 #ifdef WORDS_BIGENDIAN
 	isSwapped = isLittleEndian;

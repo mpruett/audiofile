@@ -28,7 +28,7 @@
 #ifndef EXTENDED_H
 #define EXTENDED_H
 
-void ConvertToIeeeExtended (double num, unsigned char *bytes);
-double ConvertFromIeeeExtended (const unsigned char *bytes);
+void _af_convert_to_ieee_extended (double num, unsigned char *bytes);
+double _af_convert_from_ieee_extended (const unsigned char *bytes);
 
 #endif
