@@ -10,7 +10,7 @@ DIE=0
 	echo
 	echo "You must have autoconf installed to compile libaudiofile."
 	echo "Download the appropriate package for your distribution,"
-	echo "or get ftp://ftp.gnu.org/gnu/autoconf/autoconf-2.13.tar.gz"
+	echo "or get ftp://ftp.gnu.org/gnu/autoconf/autoconf-2.57.tar.gz"
 	echo "(or a newer version if it is available)."
 	DIE=1
 }
@@ -18,7 +18,7 @@ DIE=0
 (libtool --version) < /dev/null > /dev/null 2>&1 || {
 	echo
 	echo "You must have libtool installed to compile libaudiofile."
-	echo "Get ftp://ftp.gnu.org/gnu/libtool/libtool-1.3.4.tar.gz"
+	echo "Get ftp://ftp.gnu.org/gnu/libtool/libtool-1.4.2.tar.gz"
 	echo "(or a newer version if it is available)."
 	DIE=1
 }
@@ -26,7 +26,7 @@ DIE=0
 (automake --version) < /dev/null > /dev/null 2>&1 || {
 	echo
 	echo "You must have automake installed to compile libaudiofile."
-	echo "Get ftp://ftp.gnu.org/gnu/automake/automake-1.4.tar.gz"
+	echo "Get ftp://ftp.gnu.org/gnu/automake/automake-1.5.tar.gz"
 	echo "(or a newer version if it is available)."
 	DIE=1
 }
