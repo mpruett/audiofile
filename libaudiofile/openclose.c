@@ -69,6 +69,12 @@ AFfilehandle afOpenFile (const char *filename, const char *mode, AFfilesetup set
 	AFfilehandle	filehandle;
 	int		access;
 
+	if (mode == NULL)
+	{
+		_af_error(AF_BAD_ACCMODE, "null access mode");
+		return AF_NULL_FILEHANDLE;
+	}
+
 	if (mode[0] == 'r')
 		access = _AF_READ_ACCESS;
 	else if (mode[0] == 'w')
@@ -87,7 +93,8 @@ AFfilehandle afOpenFile (const char *filename, const char *mode, AFfilesetup set
 
 	vf = af_virtual_file_new_for_file(fp);
 
-	_afOpenFile(access, vf, filename, &filehandle, setup);
+	if (_afOpenFile(access, vf, filename, &filehandle, setup) != AF_SUCCEED)
+		af_fclose(vf);
 
 	return filehandle;
 }
