@@ -51,6 +51,9 @@
 
 #define TEST_FILE "/tmp/test.ulaw"
 
+#define FRAME_COUNT 16
+#define SAMPLE_COUNT FRAME_COUNT
+
 void testulaw (int fileFormat);
 
 void cleanup (void)
@@ -88,9 +91,10 @@ void testulaw (int fileFormat)
 {
 	AFfilehandle	file;
 	AFfilesetup	setup;
-	u_int16_t	frames[] = {8, 16, 80, 120, 180, 780, 924, 988,
+	u_int16_t	samples[] = {8, 16, 80, 120, 180, 780, 924, 988,
 			1116, 1436, 1884, 8828, 9852, 15996, 19836, 32124};
-	u_int16_t	readframes[16];
+	u_int16_t	readsamples[SAMPLE_COUNT];
+	AFframecount	framesWritten, framesRead;
 	int		i;
 
 	setup = afNewFileSetup();
@@ -108,7 +112,10 @@ void testulaw (int fileFormat)
 
 	ensure(file != AF_NULL_FILEHANDLE, "unable to open file for writing");
 
-	ensure(afWriteFrames(file, AF_DEFAULT_TRACK, frames, 16) == 16,
+	framesWritten = afWriteFrames(file, AF_DEFAULT_TRACK, samples,
+		FRAME_COUNT);
+
+	ensure(framesWritten == FRAME_COUNT,
 		"number of frames requested does not match number of frames written");
 	afCloseFile(file);
 
@@ -123,26 +130,30 @@ void testulaw (int fileFormat)
 		AF_COMPRESSION_G711_ULAW,
 		"test file not opened with G.711 u-law compression");
 
-	ensure(afReadFrames(file, AF_DEFAULT_TRACK, readframes, 16) == 16,
+	framesRead = afReadFrames(file, AF_DEFAULT_TRACK, readsamples,
+		FRAME_COUNT);
+
+	ensure(framesRead == FRAME_COUNT,
 		"number of frames read does not match number of frames requested");
 
 #ifdef DEBUG
-	for (i=0; i<16; i++)
-		printf("readframes[%d]: %d\n", i, readframes[i]);
-	for (i=0; i<16; i++)
-		printf("frames[%d]: %d\n", i, frames[i]);
+	for (i=0; i<SAMPLE_COUNT; i++)
+		printf("readsamples[%d]: %d\n", i, readsamples[i]);
+	for (i=0; i<SAMPLE_COUNT; i++)
+		printf("samples[%d]: %d\n", i, samples[i]);
 #endif
 
-	for (i=0; i<16; i++)
+	for (i=0; i<SAMPLE_COUNT; i++)
 	{
-		ensure(frames[i] == readframes[i],
+		ensure(samples[i] == readsamples[i],
 			"data written does not match data read");
 	}
 
-	ensure(afGetTrackBytes(file, AF_DEFAULT_TRACK) == 16,
+	/* G.711 compression uses one byte per sample. */
+	ensure(afGetTrackBytes(file, AF_DEFAULT_TRACK) == SAMPLE_COUNT,
 		"track byte count is incorrect");
 
-	ensure(afGetFrameCount(file, AF_DEFAULT_TRACK) == 16,
+	ensure(afGetFrameCount(file, AF_DEFAULT_TRACK) == FRAME_COUNT,
 		"frame count is incorrect");
 
 	ensure(afGetChannels(file, AF_DEFAULT_TRACK) == 1,
