@@ -299,6 +299,12 @@ status _af_ircam_read_init (AFfilesetup setup, AFfilehandle handle)
 		track->f.pcm.slope = maxAmp;
 
 	track->data_size = af_flength(handle->fh) - SIZEOF_BSD_HEADER;
+
+	/*
+		Only uncompressed data formats are supported for IRCAM
+		files right now.  The following line would need to be
+		changed if compressed data formats were supported.
+	*/
 	track->totalfframes = track->data_size /
 		_af_format_frame_size(&track->f, AF_FALSE);
 

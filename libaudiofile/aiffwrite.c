@@ -333,14 +333,11 @@ static status WriteMARK (AFfilehandle file)
 	u_int32_t	length = 0;
 	u_int16_t	numMarkers, sb;
 	int		i, *markids;
-	_Track		*track;
 	_AIFFInfo	*aiff;
 
 	assert(file);
 
 	aiff = file->formatSpecific;
-
-	track = _af_filehandle_get_track(file, AF_DEFAULT_TRACK);
 
 	if (aiff->MARK_offset == 0)
 		aiff->MARK_offset = af_ftell(file->fh);
@@ -352,9 +349,10 @@ static status WriteMARK (AFfilehandle file)
 
 	chunkStartPosition = af_ftell(file->fh);
 
-	numMarkers = track->markerCount;
-	markids = _af_malloc(numMarkers * sizeof (int));
+	numMarkers = afGetMarkIDs(file, AF_DEFAULT_TRACK, NULL);
+	markids = _af_calloc(numMarkers, sizeof (int));
 	afGetMarkIDs(file, AF_DEFAULT_TRACK, markids);
+	assert(markids);
 
 	sb = HOST_TO_BENDIAN_INT16(numMarkers);
 	af_fwrite(&sb, 2, 1, file->fh);
@@ -364,6 +362,7 @@ static status WriteMARK (AFfilehandle file)
 		u_int8_t	namelength, zero = 0;
 		u_int16_t	id;
 		u_int32_t	position;
+		char		*name;
 
 		id = markids[i];
 		position = afGetMarkPosition(file, AF_DEFAULT_TRACK, id);
@@ -374,15 +373,24 @@ static status WriteMARK (AFfilehandle file)
 		af_fwrite(&id, 2, 1, file->fh);
 		af_fwrite(&position, 4, 1, file->fh);
 
-		/* Write the strings in Pascal style. */
-		assert(track->markers[i].name);
-		namelength = strlen(track->markers[i].name);
-		af_fwrite(&namelength, 1, 1, file->fh);
-		af_fwrite(track->markers[i].name, 1, namelength, file->fh);
+		name = afGetMarkName(file, AF_DEFAULT_TRACK, id);
+		assert(name);
+		namelength = strlen(name);
 
+		/* Write the name as a Pascal-style string. */
+		af_fwrite(&namelength, 1, 1, file->fh);
+		af_fwrite(name, 1, namelength, file->fh);
+
+		/*
+			We need a pad byte if the length of the
+			Pascal-style string (including the size byte)
+			is odd, i.e. if namelength + 1 % 2 == 1.
+		*/
 		if ((namelength % 2) == 0)
 			af_fwrite(&zero, 1, 1, file->fh);
 	}
+
+	free(markids);
 
 	chunkEndPosition = af_ftell(file->fh);
 	length = chunkEndPosition - chunkStartPosition;
