@@ -41,20 +41,6 @@
 
 #define AIFC_VERSION_1 0xa2805140
 
-struct _COMM
-{
-	short			numChannels;
-	long			numSampleFrames;
-	short			sampleSize;
-	unsigned char	sampleRate[10];
-};
-
-struct _MARK
-{
-	short			numMarkers;
-	struct _Marker	*markers;
-};
-
 struct _INST
 {
 	u_int8_t	baseNote;
@@ -63,13 +49,13 @@ struct _INST
 	u_int8_t	lowVelocity, highVelocity;
 	int16_t		gain;
 
-	int16_t	sustainLoopPlayMode;
-	int16_t	sustainLoopBegin;
-	int16_t	sustainLoopEnd;
+	u_int16_t	sustainLoopPlayMode;
+	u_int16_t	sustainLoopBegin;
+	u_int16_t	sustainLoopEnd;
 
-	int16_t	releaseLoopPlayMode;
-	int16_t	releaseLoopBegin;
-	int16_t	releaseLoopEnd;
+	u_int16_t	releaseLoopPlayMode;
+	u_int16_t	releaseLoopBegin;
+	u_int16_t	releaseLoopEnd;
 };
 
 bool _af_aiff_recognize (AFvirtualfile *fh);

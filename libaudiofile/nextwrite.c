@@ -66,21 +66,21 @@ static status next_write_header (AFfilehandle file)
 
 	frameSize = _af_format_frame_size(&track->f, AF_FALSE);
 
-	offset = HOST_TO_BENDIAN_INT32(track->fpos_first_frame);
-	length = HOST_TO_BENDIAN_INT32(track->totalfframes * frameSize);
-	encoding = HOST_TO_BENDIAN_INT32(nextencodingtype(&track->f));
-	sampleRate = HOST_TO_BENDIAN_INT32(track->f.sampleRate);
-	channelCount = HOST_TO_BENDIAN_INT32(track->f.channelCount);
+	offset = track->fpos_first_frame;
+	length = track->totalfframes * frameSize;
+	encoding = nextencodingtype(&track->f);
+	sampleRate = track->f.sampleRate;
+	channelCount = track->f.channelCount;
 
 	if (af_fseek(file->fh, 0, SEEK_SET) != 0)
 		_af_error(AF_BAD_LSEEK, "bad seek");
 
 	af_fwrite(".snd", 4, 1, file->fh);
-	af_fwrite(&offset, 4, 1, file->fh);
-	af_fwrite(&length, 4, 1, file->fh);
-	af_fwrite(&encoding, 4, 1, file->fh);
-	af_fwrite(&sampleRate, 4, 1, file->fh);
-	af_fwrite(&channelCount, 4, 1, file->fh);
+	af_write_uint32_be(&offset, file->fh);
+	af_write_uint32_be(&length, file->fh);
+	af_write_uint32_be(&encoding, file->fh);
+	af_write_uint32_be(&sampleRate, file->fh);
+	af_write_uint32_be(&channelCount, file->fh);
 
 	return AF_SUCCEED;
 }

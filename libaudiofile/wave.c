@@ -89,9 +89,9 @@ static status ParseFrameCount (AFfilehandle filehandle, AFvirtualfile *fp,
 
 	track = _af_filehandle_get_track(filehandle, AF_DEFAULT_TRACK);
 
-	af_fread(&totalFrames, 1, 4, fp);
+	af_read_uint32_le(&totalFrames, fp);
 
-	track->totalfframes = LENDIAN_TO_HOST_INT32(totalFrames);
+	track->totalfframes = totalFrames;
 
 	return AF_SUCCEED;
 }
@@ -114,23 +114,14 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 	assert(filehandle->formatSpecific != NULL);
 	wave = (_WAVEInfo *) filehandle->formatSpecific;
 
-	af_fread(&formatTag, 1, 2, fp);
-	formatTag = LENDIAN_TO_HOST_INT16(formatTag);
+	af_read_uint16_le(&formatTag, fp);
+	af_read_uint16_le(&channelCount, fp);
+	af_read_uint32_le(&sampleRate, fp);
+	af_read_uint32_le(&averageBytesPerSecond, fp);
+	af_read_uint16_le(&blockAlign, fp);
 
-	af_fread(&channelCount, 1, 2, fp);
-	channelCount = LENDIAN_TO_HOST_INT16(channelCount);
 	track->f.channelCount = channelCount;
-
-	af_fread(&sampleRate, 1, 4, fp);
-	sampleRate = LENDIAN_TO_HOST_INT32(sampleRate);
 	track->f.sampleRate = sampleRate;
-
-	af_fread(&averageBytesPerSecond, 1, 4, fp);
-	averageBytesPerSecond = LENDIAN_TO_HOST_INT32(averageBytesPerSecond);
-
-	af_fread(&blockAlign, 1, 2, fp);
-	blockAlign = LENDIAN_TO_HOST_INT16(blockAlign);
-
 	track->f.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
 
 	/* Default to uncompressed audio data. */
@@ -142,8 +133,7 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 		{
 			u_int16_t	bitsPerSample;
 
-			af_fread(&bitsPerSample, 1, 2, fp);
-			bitsPerSample = LENDIAN_TO_HOST_INT16(bitsPerSample);
+			af_read_uint16_le(&bitsPerSample, fp);
 
 			track->f.sampleWidth = bitsPerSample;
 
@@ -180,8 +170,7 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 		{
 			u_int16_t	bitsPerSample;
 
-			af_fread(&bitsPerSample, 1, 2, fp);
-			bitsPerSample = LENDIAN_TO_HOST_INT16(bitsPerSample);
+			af_read_uint16_le(&bitsPerSample, fp);
 
 			if (bitsPerSample == 64)
 			{
@@ -213,17 +202,10 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 					"must have 1 or 2 channels");
 			}
 
-			af_fread(&bitsPerSample, 1, 2, fp);
-			bitsPerSample = LENDIAN_TO_HOST_INT16(bitsPerSample);
-
-			af_fread(&extraByteCount, 1, 2, fp);
-			extraByteCount = LENDIAN_TO_HOST_INT16(extraByteCount);
-
-			af_fread(&samplesPerBlock, 1, 2, fp);
-			samplesPerBlock = LENDIAN_TO_HOST_INT16(samplesPerBlock);
-
-			af_fread(&numCoefficients, 1, 2, fp);
-			numCoefficients = LENDIAN_TO_HOST_INT16(numCoefficients);
+			af_read_uint16_le(&bitsPerSample, fp);
+			af_read_uint16_le(&extraByteCount, fp);
+			af_read_uint16_le(&samplesPerBlock, fp);
+			af_read_uint16_le(&numCoefficients, fp);
 
 			/* numCoefficients should be at least 7. */
 			assert(numCoefficients >= 7 && numCoefficients <= 255);
@@ -281,14 +263,9 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 			u_int16_t	bitsPerSample, extraByteCount,
 					samplesPerBlock;
 
-			af_fread(&bitsPerSample, 1, 2, fp);
-			bitsPerSample = LENDIAN_TO_HOST_INT16(bitsPerSample);
-
-			af_fread(&extraByteCount, 1, 2, fp);
-			extraByteCount = LENDIAN_TO_HOST_INT16(extraByteCount);
-
-			af_fread(&samplesPerBlock, 1, 2, fp);
-			samplesPerBlock = LENDIAN_TO_HOST_INT16(samplesPerBlock);
+			af_read_uint16_le(&bitsPerSample, fp);
+			af_read_uint16_le(&extraByteCount, fp);
+			af_read_uint16_le(&samplesPerBlock, fp);
 
 			track->f.sampleWidth = 16;
 			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
@@ -364,8 +341,7 @@ static status ParsePlayList (AFfilehandle filehandle, AFvirtualfile *fp,
 	u_int32_t	segmentCount;
 	int		segment;
 
-	af_fread(&segmentCount, 4, 1, fp);
-	segmentCount = LENDIAN_TO_HOST_INT32(segmentCount);
+	af_read_uint32_le(&segmentCount, fp);
 
 	if (segmentCount == 0)
 	{
@@ -378,12 +354,9 @@ static status ParsePlayList (AFfilehandle filehandle, AFvirtualfile *fp,
 	{
 		u_int32_t	startMarkID, loopLength, loopCount;
 
-		af_fread(&startMarkID, 4, 1, fp);
-		startMarkID = LENDIAN_TO_HOST_INT32(startMarkID);
-		af_fread(&loopLength, 4, 1, fp);
-		loopLength = LENDIAN_TO_HOST_INT32(loopLength);
-		af_fread(&loopCount, 4, 1, fp);
-		loopCount = LENDIAN_TO_HOST_INT32(loopCount);
+		af_read_uint32_le(&startMarkID, fp);
+		af_read_uint32_le(&loopLength, fp);
+		af_read_uint32_le(&loopCount, fp);
 	}
 
 	return AF_SUCCEED;
@@ -398,8 +371,7 @@ static status ParseCues (AFfilehandle filehandle, AFvirtualfile *fp,
 
 	track = _af_filehandle_get_track(filehandle, AF_DEFAULT_TRACK);
 
-	af_fread(&markerCount, 4, 1, fp);
-	markerCount = LENDIAN_TO_HOST_INT32(markerCount);
+	af_read_uint32_le(&markerCount, fp);
 	track->markerCount = markerCount;
 
 	if (markerCount == 0)
@@ -418,27 +390,17 @@ static status ParseCues (AFfilehandle filehandle, AFvirtualfile *fp,
 		u_int32_t	sampleFrameOffset;
 		_Marker		*marker = &track->markers[i];
 
-		af_fread(&id, 4, 1, fp);
-		id = LENDIAN_TO_HOST_INT32(id);
-
-		af_fread(&position, 4, 1, fp);
-		position = LENDIAN_TO_HOST_INT32(position);
-
-		af_fread(&chunkid, 4, 1, fp);
-		chunkid = LENDIAN_TO_HOST_INT32(chunkid);
-
-		af_fread(&chunkByteOffset, 4, 1, fp);
-		chunkByteOffset = LENDIAN_TO_HOST_INT32(chunkByteOffset);
-
-		af_fread(&blockByteOffset, 4, 1, fp);
-		blockByteOffset = LENDIAN_TO_HOST_INT32(blockByteOffset);
+		af_read_uint32_le(&id, fp);
+		af_read_uint32_le(&position, fp);
+		af_read_uint32_le(&chunkid, fp);
+		af_read_uint32_le(&chunkByteOffset, fp);
+		af_read_uint32_le(&blockByteOffset, fp);
 
 		/*
 			sampleFrameOffset represents the position of
 			the mark in units of frames.
 		*/
-		af_fread(&sampleFrameOffset, 4, 1, fp);
-		sampleFrameOffset = LENDIAN_TO_HOST_INT32(sampleFrameOffset);
+		af_read_uint32_le(&sampleFrameOffset, fp);
 
 		marker->id = id;
 		marker->position = sampleFrameOffset;
@@ -464,8 +426,7 @@ static status ParseADTLSubChunk (AFfilehandle filehandle, AFvirtualfile *fp,
 		u_int32_t	chunkSize;
 
 		af_fread(chunkID, 4, 1, fp);
-		af_fread(&chunkSize, 4, 1, fp);
-		chunkSize = LENDIAN_TO_HOST_INT32(chunkSize);
+		af_read_uint32_le(&chunkSize, fp);
 
 		if (memcmp(chunkID, "labl", 4)==0 || memcmp(chunkID, "note", 4)==0)
 		{
@@ -474,10 +435,8 @@ static status ParseADTLSubChunk (AFfilehandle filehandle, AFvirtualfile *fp,
 			long length=chunkSize-4;
 			char *p=_af_malloc(length);
 
-			af_fread(&id, 4, 1, fp);
+			af_read_uint32_le(&id, fp);
 			af_fread(p, length, 1, fp);
-
-			id = LENDIAN_TO_HOST_INT32(id);
 
 			marker = _af_marker_find_by_id(track, id);
 
@@ -527,8 +486,7 @@ static status ParseINFOSubChunk (AFfilehandle filehandle, AFvirtualfile *fp,
 		u_int32_t	miscid, miscsize;
 
 		af_fread(&miscid, 4, 1, fp);
-		af_fread(&miscsize, 4, 1, fp);
-		miscsize = LENDIAN_TO_HOST_INT32(miscsize);
+		af_read_uint32_le(&miscsize, fp);
 
 		if (memcmp(&miscid, "IART", 4) == 0)
 			misctype = AF_MISC_AUTH;
@@ -665,8 +623,7 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 	af_fseek(filehandle->fh, 0, SEEK_SET);
 
 	af_fread(&type, 4, 1, filehandle->fh);
-	af_fread(&size, 4, 1, filehandle->fh);
-	size = LENDIAN_TO_HOST_INT32(size);
+	af_read_uint32_le(&size, filehandle->fh);
 	af_fread(&formtype, 4, 1, filehandle->fh);
 
 	assert(!memcmp(&type, "RIFF", 4));
@@ -688,9 +645,7 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 		printf("index: %d\n", index);
 #endif
 		af_fread(&chunkid, 4, 1, filehandle->fh);
-
-		af_fread(&chunksize, 4, 1, filehandle->fh);
-		chunksize = LENDIAN_TO_HOST_INT32(chunksize);
+		af_read_uint32_le(&chunksize, filehandle->fh);
 
 #ifdef DEBUG
 		_af_printid(BENDIAN_TO_HOST_INT32(chunkid));

@@ -107,8 +107,7 @@ static status ParseFVER (AFfilehandle file, AFvirtualfile *fh, u_int32_t type, s
 
 	assert(!memcmp(&type, "FVER", 4));
 
-	af_fread(&timestamp, sizeof (u_int32_t), 1, fh);
-	timestamp = BENDIAN_TO_HOST_INT32(timestamp);
+	af_read_uint32_be(&timestamp, fh);
 	/* timestamp holds the number of seconds since January 1, 1904. */
 
 	return AF_SUCCEED;
@@ -240,19 +239,13 @@ static status ParseINST (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 	instrument->values[7].l = 1;	/* sustain loop id */
 	instrument->values[8].l = 2;	/* release loop id */
 
-	af_fread(&sustainLoopPlayMode, sizeof (u_int16_t), 1, fh);
-	sustainLoopPlayMode = BENDIAN_TO_HOST_INT16(sustainLoopPlayMode);
-	af_fread(&sustainLoopBegin, sizeof (u_int16_t), 1, fh);
-	sustainLoopBegin = BENDIAN_TO_HOST_INT16(sustainLoopBegin);
-	af_fread(&sustainLoopEnd, sizeof (u_int16_t), 1, fh);
-	sustainLoopEnd = BENDIAN_TO_HOST_INT16(sustainLoopEnd);
+	af_read_uint16_be(&sustainLoopPlayMode, fh);
+	af_read_uint16_be(&sustainLoopBegin, fh);
+	af_read_uint16_be(&sustainLoopEnd, fh);
 
-	af_fread(&releaseLoopPlayMode, sizeof (u_int16_t), 1, fh);
-	releaseLoopPlayMode = BENDIAN_TO_HOST_INT16(releaseLoopPlayMode);
-	af_fread(&releaseLoopBegin, sizeof (u_int16_t), 1, fh);
-	releaseLoopBegin = BENDIAN_TO_HOST_INT16(releaseLoopBegin);
-	af_fread(&releaseLoopEnd, sizeof (u_int16_t), 1, fh);
-	releaseLoopEnd = BENDIAN_TO_HOST_INT16(releaseLoopEnd);
+	af_read_uint16_be(&releaseLoopPlayMode, fh);
+	af_read_uint16_be(&releaseLoopBegin, fh);
+	af_read_uint16_be(&releaseLoopEnd, fh);
 
 #ifdef DEBUG
 	printf("sustain loop: mode %d, begin %d, end %d\n",
@@ -289,8 +282,7 @@ static status ParseMARK (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 
 	track = _af_filehandle_get_track(file, AF_DEFAULT_TRACK);
 
-	af_fread(&numMarkers, sizeof (u_int16_t), 1, fh);
-	numMarkers = BENDIAN_TO_HOST_INT16(numMarkers);
+	af_read_uint16_be(&numMarkers, fh);
 
 	track->markerCount = numMarkers;
 	if (numMarkers)
@@ -303,10 +295,8 @@ static status ParseMARK (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 		u_int8_t	sizeByte = 0;
 		char		*markerName = NULL;
 
-		af_fread(&markerID, sizeof (u_int16_t), 1, fh);
-		markerID = BENDIAN_TO_HOST_INT16(markerID);
-		af_fread(&markerPosition, sizeof (u_int32_t), 1, fh);
-		markerPosition = BENDIAN_TO_HOST_INT32(markerPosition);
+		af_read_uint16_be(&markerID, fh);
+		af_read_uint32_be(&markerPosition, fh);
 		af_fread(&sizeByte, sizeof (unsigned char), 1, fh);
 		markerName = _af_malloc(sizeByte + 1);
 		af_fread(markerName, sizeof (unsigned char), sizeByte, fh);
@@ -356,14 +346,14 @@ static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 
 	track = _af_filehandle_get_track(file, AF_DEFAULT_TRACK);
 
-	af_fread(&numChannels, sizeof (u_int16_t), 1, fh);
-	track->f.channelCount = BENDIAN_TO_HOST_INT16(numChannels);
+	af_read_uint16_be(&numChannels, fh);
+	track->f.channelCount = numChannels;
 
-	af_fread(&numSampleFrames, sizeof (u_int32_t), 1, fh);
-	track->totalfframes = BENDIAN_TO_HOST_INT32(numSampleFrames);
+	af_read_uint32_be(&numSampleFrames, fh);
+	track->totalfframes = numSampleFrames;
 
-	af_fread(&sampleSize, sizeof (u_int16_t), 1, fh);
-	track->f.sampleWidth = BENDIAN_TO_HOST_INT16(sampleSize);
+	af_read_uint16_be(&sampleSize, fh);
+	track->f.sampleWidth = sampleSize;
 
 	af_fread(sampleRate, 10, 1, fh);
 	track->f.sampleRate = _af_convert_from_ieee_extended(sampleRate);
@@ -455,10 +445,8 @@ static status ParseSSND (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 
 	track = _af_filehandle_get_track(file, AF_DEFAULT_TRACK);
 
-	af_fread(&offset, sizeof (u_int32_t), 1, fh);
-	offset = BENDIAN_TO_HOST_INT32(offset);
-	af_fread(&blockSize, sizeof (u_int32_t), 1, fh);
-	blockSize = BENDIAN_TO_HOST_INT32(blockSize);
+	af_read_uint32_be(&offset, fh);
+	af_read_uint32_be(&blockSize, fh);
 
 	/*
 		This seems like a reasonable way to calculate the number of
@@ -506,8 +494,7 @@ status _af_aiff_read_init (AFfilesetup setup, AFfilehandle file)
 	af_fseek(file->fh, 0, SEEK_SET);
 
 	af_fread(&type, 4, 1, file->fh);
-	af_fread(&size, 4, 1, file->fh);
-	size = BENDIAN_TO_HOST_INT32(size);
+	af_read_uint32_be(&size, file->fh);
 	af_fread(&formtype, 4, 1, file->fh);
 
 	if (memcmp(&type, "FORM", 4) != 0 ||
@@ -540,8 +527,7 @@ status _af_aiff_read_init (AFfilesetup setup, AFfilehandle file)
 		printf("index: %d\n", index);
 #endif
 		af_fread(&chunkid, 4, 1, file->fh);
-		af_fread(&chunksize, 4, 1, file->fh);
-		chunksize = BENDIAN_TO_HOST_INT32(chunksize);
+		af_read_uint32_be(&chunksize, file->fh);
 
 #ifdef DEBUG
 		_af_printid(chunkid);

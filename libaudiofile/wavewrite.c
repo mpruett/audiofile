@@ -128,32 +128,23 @@ static status WriteFormat (AFfilehandle file)
 			return AF_FAIL;
 	}
 
-	chunkSize = HOST_TO_LENDIAN_INT32(chunkSize);
-	af_fwrite(&chunkSize, 4, 1, file->fh);
-
-	formatTag = HOST_TO_LENDIAN_INT16(formatTag);
-	af_fwrite(&formatTag, 2, 1, file->fh);
-	formatTag = LENDIAN_TO_HOST_INT16(formatTag);
+	af_write_uint32_le(&chunkSize, file->fh);
+	af_write_uint16_le(&formatTag, file->fh);
 
 	channelCount = track->f.channelCount;
-	channelCount = HOST_TO_LENDIAN_INT16(channelCount);
-	af_fwrite(&channelCount, 2, 1, file->fh);
+	af_write_uint16_le(&channelCount, file->fh);
 
 	sampleRate = track->f.sampleRate;
-	sampleRate = HOST_TO_LENDIAN_INT32(sampleRate);
-	af_fwrite(&sampleRate, 4, 1, file->fh);
+	af_write_uint32_le(&sampleRate, file->fh);
 
 	averageBytesPerSecond =
 		track->f.sampleRate * _af_format_frame_size(&track->f, AF_FALSE);
-	averageBytesPerSecond = HOST_TO_LENDIAN_INT32(averageBytesPerSecond);
-	af_fwrite(&averageBytesPerSecond, 4, 1, file->fh);
+	af_write_uint32_le(&averageBytesPerSecond, file->fh);
 
 	blockAlign = _af_format_frame_size(&track->f, AF_FALSE);
-	blockAlign = HOST_TO_LENDIAN_INT16(blockAlign);
-	af_fwrite(&blockAlign, 2, 1, file->fh);
+	af_write_uint16_le(&blockAlign, file->fh);
 
-	bitsPerSample = HOST_TO_LENDIAN_INT16(bitsPerSample);
-	af_fwrite(&bitsPerSample, 2, 1, file->fh);
+	af_write_uint16_le(&bitsPerSample, file->fh);
 
 	if (track->f.compressionType == AF_COMPRESSION_G711_ULAW ||
 		track->f.compressionType == AF_COMPRESSION_G711_ALAW)
@@ -191,11 +182,10 @@ static status WriteFrameCount (AFfilehandle file)
 		af_fseek(file->fh, waveinfo->factOffset, SEEK_SET);
 
 	af_fwrite("fact", 4, 1, file->fh);
-	factSize = HOST_TO_LENDIAN_INT32(factSize);
-	af_fwrite(&factSize, 4, 1, file->fh);
+	af_write_uint32_le(&factSize, file->fh);
 
-	totalFrameCount = HOST_TO_LENDIAN_INT32(track->totalfframes);
-	af_fwrite(&totalFrameCount, 4, 1, file->fh);
+	totalFrameCount = track->totalfframes;
+	af_write_uint32_le(&totalFrameCount, file->fh);
 
 	return AF_SUCCEED;
 }
@@ -217,8 +207,7 @@ static status WriteData (AFfilehandle file)
 	chunkSize = _af_format_frame_size(&track->f, AF_FALSE) *
 		track->totalfframes;
 
-	chunkSize = HOST_TO_LENDIAN_INT32(chunkSize);
-	af_fwrite(&chunkSize, 4, 1, file->fh);
+	af_write_uint32_le(&chunkSize, file->fh);
 	track->fpos_first_frame = af_ftell(file->fh);
 
 	return AF_SUCCEED;
@@ -247,16 +236,14 @@ status _af_wave_update (AFfilehandle file)
 		*/
 		dataLength = (u_int32_t) track->totalfframes *
 			_af_format_frame_size(&track->f, AF_FALSE);
-		dataLength = HOST_TO_LENDIAN_INT32(dataLength);
-		af_fwrite(&dataLength, 4, 1, file->fh);
+		af_write_uint32_le(&dataLength, file->fh);
 
 		/* Update the length of the RIFF chunk. */
 		fileLength = (u_int32_t) af_flength(file->fh);
 		fileLength -= 8;
-		fileLength = HOST_TO_LENDIAN_INT32(fileLength);
 
 		af_fseek(file->fh, 4, SEEK_SET);
-		af_fwrite(&fileLength, 4, 1, file->fh);
+		af_write_uint32_le(&fileLength, file->fh);
 	}
 
 	/*
@@ -348,8 +335,7 @@ status WriteMiscellaneous (AFfilehandle filehandle)
 
 		/* Write the size of the following chunk. */
 		chunkSize = miscellaneousBytes-8;
-		chunkSize = HOST_TO_LENDIAN_INT32(chunkSize);
-		af_fwrite(&chunkSize, sizeof (u_int32_t), 1, filehandle->fh);
+		af_write_uint32_le(&chunkSize, filehandle->fh);
 
 		/* Write 'INFO'. */
 		af_fwrite("INFO", 4, 1, filehandle->fh);
@@ -357,7 +343,7 @@ status WriteMiscellaneous (AFfilehandle filehandle)
 		/* Write each miscellaneous chunk. */
 		for (i=0; i<filehandle->miscellaneousCount; i++)
 		{
-			u_int32_t	miscsize = HOST_TO_LENDIAN_INT32(filehandle->miscellaneous[i].size);
+			u_int32_t	miscsize = filehandle->miscellaneous[i].size;
 			u_int32_t 	miscid = 0;
 
 			/* Skip miscellaneous data of an unsupported type. */
@@ -366,7 +352,7 @@ status WriteMiscellaneous (AFfilehandle filehandle)
 				continue;
 
 			af_fwrite(&miscid, 4, 1, filehandle->fh);
-			af_fwrite(&miscsize, 4, 1, filehandle->fh);
+			af_write_uint32_le(&miscsize, filehandle->fh);
 			if (filehandle->miscellaneous[i].buffer != NULL)
 			{
 				u_int8_t	zero = 0;
@@ -420,10 +406,9 @@ static status WriteCues (AFfilehandle file)
 		followed by 24 bytes for each cue point record.
 	*/
 	cueChunkSize = 4 + markCount * 24;
-	cueChunkSize = HOST_TO_LENDIAN_INT32(cueChunkSize);
-	af_fwrite(&cueChunkSize, sizeof (u_int32_t), 1, file->fh);
-	numCues = HOST_TO_LENDIAN_INT32(markCount);
-	af_fwrite(&numCues, sizeof (u_int32_t), 1, file->fh);
+	af_write_uint32_le(&cueChunkSize, file->fh);
+	numCues = markCount;
+	af_write_uint32_le(&numCues, file->fh);
 
 	markids = _af_calloc(markCount, sizeof (int));
 	assert(markids != NULL);
@@ -436,11 +421,11 @@ static status WriteCues (AFfilehandle file)
 		u_int32_t	sampleOffset;
 		AFframecount	markposition;
 
-		identifier = HOST_TO_LENDIAN_INT32(markids[i]);
-		af_fwrite(&identifier, sizeof (u_int32_t), 1, file->fh);
+		identifier = markids[i];
+		af_write_uint32_le(&identifier, file->fh);
 
-		position = HOST_TO_LENDIAN_INT32(i);
-		af_fwrite(&position, sizeof (u_int32_t), 1, file->fh);
+		position = i;
+		af_write_uint32_le(&position, file->fh);
 
 		/* For now the RIFF id is always the first data chunk. */
 		af_fwrite("data", 4, 1, file->fh);
@@ -459,8 +444,8 @@ static status WriteCues (AFfilehandle file)
 		markposition = afGetMarkPosition(file, AF_DEFAULT_TRACK, markids[i]);
 
 		/* Sample offsets are stored in the WAVE file as frames. */
-		sampleOffset = HOST_TO_LENDIAN_INT32(markposition);
-		af_fwrite(&sampleOffset, sizeof (u_int32_t), 1, file->fh);
+		sampleOffset = markposition;
+		af_write_uint32_le(&sampleOffset, file->fh);
 	}
 
 	/*
@@ -490,8 +475,7 @@ static status WriteCues (AFfilehandle file)
 	}
 
 	af_fwrite("LIST", 4, 1, file->fh);
-	listChunkSize = HOST_TO_LENDIAN_INT32(listChunkSize);
-	af_fwrite(&listChunkSize, sizeof (u_int32_t), 1, file->fh);
+	af_write_uint32_le(&listChunkSize, file->fh);
 	af_fwrite("adtl", 4, 1, file->fh);
 
 	for (i=0; i<markCount; i++)
@@ -503,12 +487,11 @@ static status WriteCues (AFfilehandle file)
 
 		/* Make labelSize even if it is not already. */
 		labelSize = 4+(strlen(name)+1) + ((strlen(name) + 1) % 2);
-		labelSize = HOST_TO_LENDIAN_INT32(labelSize);
-		cuePointID = HOST_TO_LENDIAN_INT32(markids[i]);
+		cuePointID = markids[i];
 
 		af_fwrite("labl", 4, 1, file->fh);
-		af_fwrite(&labelSize, 4, 1, file->fh);
-		af_fwrite(&cuePointID, 4, 1, file->fh);
+		af_write_uint32_le(&labelSize, file->fh);
+		af_write_uint32_le(&cuePointID, file->fh);
 		af_fwrite(name, strlen(name) + 1, 1, file->fh);
 		/*
 			If the name plus the size byte comprises an odd

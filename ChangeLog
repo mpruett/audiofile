@@ -1,3 +1,11 @@
+2004-06-26  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/aiff.c, libaudiofile/aiff.h, libaudiofile/aiffwrite.c,
+	libaudiofile/next.c, libaudiofile/nextwrite.c, libaudiofile/wave.c,
+	libaudiofile/wavewrite.c: Clean up AIFF, WAVE, and NeXT file parsing
+	and writing code by using af_{read,write}_uint{16,32}_{be,le} where
+	appropriate.
+
 2004-04-14  Michael Pruett <michael@68k.org>
 
 	* configure.in: Update configure.in to conform to current

@@ -92,17 +92,11 @@ status _af_next_read_init (AFfilesetup setup, AFfilehandle file)
 	af_fread(&id, 4, 1, file->fh);
 	assert(!memcmp(&id, ".snd", 4));
 
-	af_fread(&offset, 4, 1, file->fh);
-	af_fread(&length, 4, 1, file->fh);
-	af_fread(&encoding, 4, 1, file->fh);
-	af_fread(&sampleRate, 4, 1, file->fh);
-	af_fread(&channelCount, 4, 1, file->fh);
-
-	offset = BENDIAN_TO_HOST_INT32(offset);
-	length = BENDIAN_TO_HOST_INT32(length);
-	encoding = BENDIAN_TO_HOST_INT32(encoding);
-	sampleRate = BENDIAN_TO_HOST_INT32(sampleRate);
-	channelCount = BENDIAN_TO_HOST_INT32(channelCount);
+	af_read_uint32_be(&offset, file->fh);
+	af_read_uint32_be(&length, file->fh);
+	af_read_uint32_be(&encoding, file->fh);
+	af_read_uint32_be(&sampleRate, file->fh);
+	af_read_uint32_be(&channelCount, file->fh);
 
 #ifdef DEBUG
 	printf("id, offset, length, encoding, sampleRate, channelCount:\n"
