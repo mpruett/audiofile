@@ -208,21 +208,8 @@ static status WriteData (AFfilehandle file)
 	af_fwrite("data", 4, 1, file->fh);
 	waveinfo->dataSizeOffset = af_ftell(file->fh);
 
-	if (track->f.compressionType == AF_COMPRESSION_NONE)
-	{
-		chunkSize = _af_format_frame_size(&track->f, AF_FALSE) *
-			track->totalfframes;
-	}
-	else if (track->f.compressionType == AF_COMPRESSION_G711_ULAW ||
-		track->f.compressionType == AF_COMPRESSION_G711_ALAW)
-	{
-		/* G.711 compression uses one byte per sample. */
-		chunkSize = track->f.channelCount * track->totalfframes;
-	}
-	else
-	{
-		_af_error(AF_BAD_COMPTYPE, "unsupported compression type");
-	}
+	chunkSize = _af_format_frame_size(&track->f, AF_FALSE) *
+		track->totalfframes;
 
 	chunkSize = HOST_TO_LENDIAN_INT32(chunkSize);
 	af_fwrite(&chunkSize, 4, 1, file->fh);

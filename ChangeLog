@@ -1,3 +1,10 @@
+2001-07-12  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/{aiffwrite.c,wavewrite.c}: Since
+	_af_format_frame_size takes compression into account, compute
+	the extent of compressed and uncompressed audio data using
+	_af_format_frame_size.
+
 2001-07-10  Michael Pruett <mpruett@sgi.com>
 
 	* libaudiofile/util.[ch]: Make _af_format_sample_size and
