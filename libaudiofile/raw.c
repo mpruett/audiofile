@@ -20,6 +20,9 @@
 
 /*
 	raw.c
+
+	This file contains code for reading and writing raw audio
+	data files.
 */
 
 #ifdef HAVE_CONFIG_H
