@@ -14,10 +14,14 @@ EXTRA_DIST= \
 	COPYING.GPL \
 	configure configure.in\
 	audiofile.m4 \
-	audiofile.spec.in
+	audiofile.spec.in \
+	audiofile.pc.in
 
 m4datadir = $(datadir)/aclocal
 m4data_DATA = audiofile.m4
+
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = audiofile.pc
 
 dist-hook: audiofile.spec
 	cp audiofile.spec $(distdir)

@@ -80,6 +80,7 @@ AC_SUBST(TEST_BIN)
 
 AC_OUTPUT([
 	audiofile.spec
+	audiofile.pc
 	sfcommands/Makefile 
 	test/Makefile 
 	libaudiofile/Makefile 
