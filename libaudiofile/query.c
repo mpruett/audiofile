@@ -101,9 +101,9 @@ AUpvlist _afQueryFileFormat (int arg1, int arg2, int arg3, int arg4)
 		case AF_QUERY_IDS:
 		{
 			int	count = 0, idx;
-			long	*buffer;
+			int	*buffer;
 
-			buffer = _af_calloc(_AF_NUM_UNITS, sizeof (long));
+			buffer = _af_calloc(_AF_NUM_UNITS, sizeof (int));
 			if (buffer == NULL)
 				return AU_NULL_PVLIST;
 
@@ -174,7 +174,7 @@ AUpvlist _afQueryFileFormat (int arg1, int arg2, int arg3, int arg4)
 		case AF_QUERY_COMPRESSION_TYPES:
 		{
 			int	idx, count;
-			long	*buffer;
+			int	*buffer;
 
 			if (arg3 < 0 || arg3 >= _AF_NUM_UNITS)
 			{
@@ -194,7 +194,7 @@ AUpvlist _afQueryFileFormat (int arg1, int arg2, int arg3, int arg4)
 					if (count == 0)
 						return AU_NULL_PVLIST;
 
-					buffer = _af_calloc(count, sizeof (long));
+					buffer = _af_calloc(count, sizeof (int));
 					if (buffer == NULL)
 						return AU_NULL_PVLIST;
 
@@ -221,7 +221,6 @@ long afQueryLong (int querytype, int arg1, int arg2, int arg3, int arg4)
 	list = afQuery(querytype, arg1, arg2, arg3, arg4);
 	if (list == AU_NULL_PVLIST)
 		return -1;
-
 	AUpvgetvaltype(list, 0, &type);
 	if (type != AU_PVTYPE_LONG)
 		return -1;
@@ -239,7 +238,6 @@ double afQueryDouble (int querytype, int arg1, int arg2, int arg3, int arg4)
 	list = afQuery(querytype, arg1, arg2, arg3, arg4);
 	if (list == AU_NULL_PVLIST)
 		return -1;
-
 	AUpvgetvaltype(list, 0, &type);
 	if (type != AU_PVTYPE_DOUBLE)
 		return -1;
@@ -257,7 +255,6 @@ void *afQueryPointer (int querytype, int arg1, int arg2, int arg3, int arg4)
 	list = afQuery(querytype, arg1, arg2, arg3, arg4);
 	if (list == AU_NULL_PVLIST)
 		return NULL;
-
 	AUpvgetvaltype(list, 0, &type);
 	if (type != AU_PVTYPE_PTR)
 		return NULL;
@@ -285,14 +282,14 @@ AUpvlist _afQueryInstrumentParameter (int arg1, int arg2, int arg3, int arg4)
 		case AF_QUERY_IDS:
 		{
 			int	i, count;
-			long	*buffer;
+			int	*buffer;
 
 			if (arg2 < 0 || arg2 >= _AF_NUM_UNITS)
 				return AU_NULL_PVLIST;
 			count = _af_units[arg2].instrumentParameterCount;
 			if (count == 0)
 				return AU_NULL_PVLIST;
-			buffer = _af_calloc(count, sizeof (long));
+			buffer = _af_calloc(count, sizeof (int));
 			if (buffer == NULL)
 				return AU_NULL_PVLIST;
 			for (i=0; i<count; i++)
