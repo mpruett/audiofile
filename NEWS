@@ -1,9 +1,21 @@
-News for the Audio File Library version 0.2.1
-Michael Pruett <mpruett@sgi.com / michael@68k.org>
+News for the Audio File Library version 0.2.2
+Michael Pruett <mpruett@sgi.com>
 
-Not much has changed.
+Fixed a bug involving the processing of 24-bit audio data on
+little-endian systems.
 
-The library can now be used with old programs which link against old
-versions of the library.
+Added support for the IRCAM file format.
 
-Some compiler warnings have been cleaned up.
+Added support for floating-point data in the AIFF-C and WAVE file
+formats.
+
+Improved support for compressed data formats in AIFF-C, WAVE, and NeXT
+.snd file formats.
+
+Cleaned up code for 64-bit systems.
+
+Cleaned up some compiler warnings.
+
+Added many new tests.
+
+Fixed several small bugs.

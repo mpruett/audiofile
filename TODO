@@ -1,20 +1,36 @@
-Audio File Library 0.2.1
-Michael Pruett <mpruett@sgi.com / michael@68k.org>
+Audio File Library 0.2.2
+Michael Pruett <mpruett@sgi.com>
 
-Short-term:
+Short-term
+----------
+
 Sample rate conversion needs to be handled.
 
-Longer-term:
-(These will hopefully be resolved by version 0.3.)
+Handle more compressed data formats, most importantly ADPCM and Ogg
+Vorbis.  GSM 06.10 would also be nice.
+
+More comprehensive tests should be developed to stress-test the
+library.  Tests are needed most for the following sets of functions:
+	* af{Get,Set}VirtualChannels/afSetChannelMatrix
+	* afGetSampleFormat/af{Get,Set}VirtualSampleFormat
+	* af{Get,Set}Loop{IDs,Mode,Count,Start,End,StartFrame,EndFrame,Track}
+
+Support for auxiliary data in IRCAM files (maximum amplitude, comments,
+etc.) should be added.
+
+Long-term
+---------
+
+Support for reading and writing to pipes for IRCAM, NeXT, and raw data
+file formats should be investigated.  (The AIFF and WAVE file formats
+are more structured and couldn't cope with not being able to seek.)
+It's my suspicion that the work involved in this will be substantial.
+
+It would be nice to support some more file formats.
 
 Add locale support for error messages.
 
 Documentation should probably be in the SGML DocBook format.
-
-More compressed data formats need to be handled.
-
-More comprehensive tests should be developed to stress-test the
-library.
 
 Thread-safe error handling would be nice.
 

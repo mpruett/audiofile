@@ -1,19 +1,19 @@
-Thanks to all who've sent me feedback regarding the Audio File Library,
+Thanks to all who've contributed patches for the Audio File Library,
 especially Michael Krause, Jean-Francois Panisset, Simon Kagedal, Eric
-Mitchell, and Bruce Forsberg.
+Mitchell, Bruce Forsberg, Julien Boulnois, Axel Roebel, and Mark
+Murnane.
 
-Thanks to Douglas Scott of SGI for helping me understand the tricky parts
-of the Audio File Library API.  And thanks to Chris Pirazzi and Scott
-Porter of SGI for creating the Audio File Library in the first place.
+Thanks to Douglas Scott of SGI for helping me understand the tricky
+parts of the Audio File Library API.  Thanks to Chris Pirazzi, Scott
+Porter, and SGI for creating the Audio File Library in the first
+place.
 
-Thanks also to those who have reported bugs, including Robert Melby,
-Rafael Laboissiere, Michael Ashton, Jes Sorensen, Jeff Peterson, Jay
-J. Williams, David Rose, David Kaelbling, Pascal Hofstee, Scott Heavner,
-Chris Butler, Mark Spencer, Ryan Prichard, and Wayne Price.
+Thanks to Axel Roebel for answering all my questions regarding the
+IRCAM file format.
+
+Thanks also to all who have reported bugs.
 
 Thanks to Linus and the Linux community for keeping it real.
-
-Thanks to SGI for providing the best audio file API I've ever seen.
 
 Thanks to Apple for the Audio Interchange File Format.
 
