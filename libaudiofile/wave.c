@@ -171,8 +171,28 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 			track->f.sampleFormat = AF_SAMPFMT_FLOAT;
 			break;
 
+		case WAVE_FORMAT_ADPCM:
+		case WAVE_FORMAT_DVI_ADPCM:
+		case WAVE_FORMAT_YAMAHA_ADPCM:
+		case WAVE_FORMAT_OKI_ADPCM:
+		case WAVE_FORMAT_CREATIVE_ADPCM:
+		case IBM_FORMAT_ADPCM:
+			_af_error(AF_BAD_NOT_IMPLEMENTED, "WAVE ADPCM data format 0x%x is not currently supported", formatTag);
+			return AF_FAIL;
+			break;
+
+		case WAVE_FORMAT_MPEG:
+			_af_error(AF_BAD_NOT_IMPLEMENTED, "WAVE MPEG data format is not supported");
+			return AF_FAIL;
+			break;
+
+		case WAVE_FORMAT_MPEGLAYER3:
+			_af_error(AF_BAD_NOT_IMPLEMENTED, "WAVE MPEG layer 3 data format is not supported");
+			return AF_FAIL;
+			break;
+
 		default:
-			_af_error(AF_BAD_FILEFMT, "bad WAVE file format");
+			_af_error(AF_BAD_NOT_IMPLEMENTED, "WAVE file data format 0x%x not currently supported", formatTag);
 			return AF_FAIL;
 			break;
 	}
@@ -574,10 +594,21 @@ AFfilesetup _af_wave_complete_setup (AFfilesetup setup)
 		switch (track->f.sampleFormat)
 		{
 			case AF_SAMPFMT_FLOAT:
+				if (track->sampleWidthSet &&
+					track->f.sampleWidth != 32)
+				{
+					_af_error(AF_BAD_WIDTH,
+						"Warning: invalid sample width for floating-point WAVE file: %d (must be 32 bits)\n",
+						track->f.sampleWidth);
+					_af_set_sample_format(&track->f, AF_SAMPFMT_FLOAT, 32);
+				}
+				break;
+
 			case AF_SAMPFMT_DOUBLE:
-				_af_error(AF_BAD_SAMPFMT, "WAVE format does not support floating-point data");
+				_af_error(AF_BAD_SAMPFMT, "WAVE format does not support double-precision floating-point data");
 				return AF_NULL_FILESETUP;
 				break;
+
 			case AF_SAMPFMT_UNSIGNED:
 				if (track->sampleWidthSet)
 				{
