@@ -1,3 +1,7 @@
+2003-09-23  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/modules/ima.c: Include <config.h>.
+
 2003-09-16  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/audiofile.h: Define LIBAUDIOFILE_MICRO_VERSION.

@@ -19,11 +19,15 @@
 */
 
 /*
-	afima.c
+	ima.c
 
 	This module implements IMA ADPCM compression for the Audio File
 	Library.
 */
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <errno.h>
 #include <string.h>
