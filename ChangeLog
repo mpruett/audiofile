@@ -1,3 +1,13 @@
+2004-01-27  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/afinternal.h, libaudiofile/openclose.c: Store
+	file name in AFfilehandle structure.
+
+	* libaudiofile/Makefile.am, libaudiofile/avr.c,
+	libaudiofile/avr.h, libaudiofile/avrwrite.c,
+	libaudiofile/units.c: Add support for reading and writing AVR
+	files.
+
 2004-01-22  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/util.[ch]: Add functions for reading and writing

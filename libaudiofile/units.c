@@ -37,6 +37,7 @@
 #include "next.h"
 #include "wave.h"
 #include "ircam.h"
+#include "avr.h"
 #include "iff.h"
 #include "nist.h"
 
@@ -163,7 +164,16 @@ _Unit _af_units[_AF_NUM_UNITS] =
 	{
 		AF_FILE_AVR,
 		"AVR", "Audio Visual Research File Format", "avr",
-		AF_FALSE
+		AF_TRUE, NULL, _af_avr_complete_setup,
+		{_af_avr_recognize, _af_avr_read_init},
+		{_af_avr_write_init, NULL, _af_avr_update},
+		AF_SAMPFMT_TWOSCOMP, 16,
+		0,	/* number of compression types */
+		NULL,	/* compression types */
+		0,	/* maximum marker count */
+		0,	/* maximum instrument count */
+		0,	/* maximum number of loops per instrument */
+		0,	/* number of instrument parameters */
 	},
 	{
 		AF_FILE_IFF_8SVX,
