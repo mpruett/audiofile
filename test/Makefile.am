@@ -1,4 +1,4 @@
-INCLUDES = -I. -I$(srcdir) -I$(top_srcdir)/libaudiofile
+INCLUDES = -I$(top_srcdir)/libaudiofile
 
 noinst_PROGRAMS = \
 	adddcoffset \
