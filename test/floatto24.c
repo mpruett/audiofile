@@ -28,6 +28,10 @@
 	24 bits).
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <audiofile.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -19,6 +19,10 @@
 	MA 02111-1307, USA.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifdef __USE_SGI_HEADERS__
 #include <dmedia/audiofile.h>
 #include <dmedia/audioutil.h>

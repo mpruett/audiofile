@@ -28,6 +28,10 @@
 	Calculate the power and peak amplitudes of an audio file.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
