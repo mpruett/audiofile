@@ -12,7 +12,7 @@
 	#define TYPE YYYY
 
 	where XXXX is replaced with the prefix you want for the module
-	name and YYYY is replaced with the type the routine works with.  
+	name and YYYY is replaced with the type the routine works with.
 	All the other stuff above stays the same.  Here is an example:
 
 	#define PRFX(word) int2 ## word
@@ -57,24 +57,24 @@ typedef struct PRFX(rebuffer_data)
 
 void PRFX(rebufferv2fmax_push)(struct _AFmoduleinst *i)
 {
-  REBUFFER_DATA *d = i->modspec;    
+  REBUFFER_DATA *d = i->modspec;
   int nframes = d->nsamps/i->inc->f.channelCount;
 
   if (d->multiple_of)
     /* actually, it can be less, but this is ok */
-    i->outc->nframes = i->inc->nframes + nframes; 
+    i->outc->nframes = i->inc->nframes + nframes;
   else
     i->outc->nframes = nframes;
 }
 
 void PRFX(rebufferv2frun_push)(struct _AFmoduleinst *i)
 {
-  REBUFFER_DATA *d = i->modspec;    
+  REBUFFER_DATA *d = i->modspec;
   long samples2push = i->inc->nframes * i->inc->f.channelCount;
   TYPE *inbufp = i->inc->buf;
 
   /* d->offset could be from 0 to nsamps. 0 is no saved samples,
-     nsamps is all saved samples (should never be nsamps though) 
+     nsamps is all saved samples (should never be nsamps though)
      offset thus contains a count of the valid data samples */
 
   assert(d->offset >= 0 && d->offset < d->nsamps);
@@ -91,7 +91,7 @@ void PRFX(rebufferv2frun_push)(struct _AFmoduleinst *i)
           /* round down to nearest d->nsamps */
           int n = (((d->offset+samples2push) / d->nsamps) * d->nsamps);
 
-          /* 
+          /*
              Example with d->nsamps==5, d->offset==3, and samples2push=10.
              B=a buffered sample
              N=a new sample (pushed into module on this call)
@@ -109,14 +109,14 @@ void PRFX(rebufferv2frun_push)(struct _AFmoduleinst *i)
              n is the number of samples we will push on this run.  What's
              left over (3 samples in this case) will get buffered for use
              in the next run.
-          */               
-                 
+          */
+
           assert(n > d->offset);
-          memcpy((TYPE *)i->outc->buf + d->offset, inbufp, 
+          memcpy((TYPE *)i->outc->buf + d->offset, inbufp,
                  sizeof(TYPE)*(n - d->offset)); /* fill in rest of outbuf */
-          
+
           _AFpush(i, n / i->outc->f.channelCount);
-          
+
           inbufp += n - d->offset;
           samples2push -= n - d->offset;
           assert(samples2push >= 0);
@@ -127,12 +127,12 @@ void PRFX(rebufferv2frun_push)(struct _AFmoduleinst *i)
           while (d->offset + samples2push >= d->nsamps)
             {
               int n = d->nsamps - d->offset;
-              /* 
+              /*
                  Same example as above.  Everything is the same except now
                  we can only push one group of d->nsamps samples at a time,
                  so we must loop through groups, and n takes on several
                  values:
-                 
+
                     offset  samples2push
                        |-||------------|
                        BBBNN  NNNNN  NNN....
@@ -142,21 +142,21 @@ void PRFX(rebufferv2frun_push)(struct _AFmoduleinst *i)
                  n says how many samples to take from the input chunk.
                  n first has the value d->nsamps - d->offset, and then it
                  always has the value d->nsamps.
-              */               
-              memcpy((TYPE *)i->outc->buf + d->offset, inbufp, 
+              */
+              memcpy((TYPE *)i->outc->buf + d->offset, inbufp,
                      sizeof(TYPE)*n); /* fill in rest of outbuf */
-              
+
               _AFpush(i, d->nsamps / i->outc->f.channelCount);
-              
+
               inbufp += n;
               samples2push -= n;
               assert(samples2push >= 0);
               d->offset = 0;                /* clear out the buffer */
             }
         }
-     
+
       /* if we pushed blocks, then we must have used all stored samples */
-      assert(d->offset == 0);   
+      assert(d->offset == 0);
     }
 
   /* at this point: guaranteed that  d->offset + samples2push < d->nsamps */
@@ -174,21 +174,21 @@ void PRFX(rebufferv2frun_push)(struct _AFmoduleinst *i)
 
 void PRFX(rebufferv2fsync1)(struct _AFmoduleinst *i)
 {
-  REBUFFER_DATA *d = i->modspec;    
+  REBUFFER_DATA *d = i->modspec;
 
   assert(d->offset >= 0 && d->offset < d->nsamps);
 
-  /* 
+  /*
     save all the samples and the offset so we can
      restore our state later.
   */
   memcpy(d->saved_buf, d->buf, sizeof(TYPE)*d->nsamps);
-  d->saved_offset = d->offset;  
+  d->saved_offset = d->offset;
 }
 
 void PRFX(rebufferv2fsync2)(struct _AFmoduleinst *i)
 {
-  REBUFFER_DATA *d = i->modspec;    
+  REBUFFER_DATA *d = i->modspec;
 
   /* d->offset could be from 0 to nsamps. 0 is no saved samples,
      nsamps is all saved samples (should never be nsamps though)
@@ -196,10 +196,10 @@ void PRFX(rebufferv2fsync2)(struct _AFmoduleinst *i)
 
   assert(d->offset >= 0 && d->offset < d->nsamps);
 
-  /* 
+  /*
      push the currently buffered samples through--even if there
-     are none! 
-     
+     are none!
+
      in other words, push a SHORT CHUNK -- see modules.c TOF for more info !
   */
   if (d->offset != 0)
@@ -212,14 +212,14 @@ void PRFX(rebufferv2fsync2)(struct _AFmoduleinst *i)
   /* restore state saved in sync1 */
 
   memcpy(d->buf, d->saved_buf, sizeof(TYPE)*d->nsamps);
-  d->offset = d->saved_offset;  
+  d->offset = d->saved_offset;
 
   assert(d->offset >= 0 && d->offset < d->nsamps);
 }
 
 void PRFX(rebufferv2ffree)(struct _AFmoduleinst *i)
 {
-  REBUFFER_DATA *d = i->modspec;  
+  REBUFFER_DATA *d = i->modspec;
   if (d->buf)
     free(d->buf);
   if (d->saved_buf)
@@ -247,7 +247,7 @@ _AFmoduleinst INITFUNC(rebufferv2f)(AFframecount nsamps, bool multiple_of)
   d->multiple_of = multiple_of;
   d->saved_buf = _af_malloc(sizeof (TYPE) * nsamps);
   ret.modspec = d;
-  
+
   DEBG(printf("%s nsamps=%d multiple_of=%d\n", NAMESTRING(rebufferv2f),
               nsamps, multiple_of));
 
@@ -258,25 +258,25 @@ _AFmoduleinst INITFUNC(rebufferv2f)(AFframecount nsamps, bool multiple_of)
 
 void PRFX(rebufferf2vmax_pull)(struct _AFmoduleinst *i)
 {
-  REBUFFER_DATA *d = i->modspec;    
+  REBUFFER_DATA *d = i->modspec;
   long nframes = d->nsamps / i->inc->f.channelCount;
 
   if (d->multiple_of)
     /* actually, it can be less, but this is ok */
-    i->inc->nframes = i->outc->nframes + nframes; 
+    i->inc->nframes = i->outc->nframes + nframes;
   else
     i->inc->nframes = nframes;
 }
 
 void PRFX(rebufferf2vrun_pull)(struct _AFmoduleinst *i)
 {
-  REBUFFER_DATA *d = i->modspec;    
+  REBUFFER_DATA *d = i->modspec;
   long samples2pull = i->outc->nframes * i->outc->f.channelCount;
   TYPE *outbufp = i->outc->buf;
-  
+
   /* d->offset could be from 0 to nsamps. 0=saved all samples,
-     nsamps=saved no samples (should never be 0 though) 
-     offset is thus offset of first valid sample in buffer 
+     nsamps=saved no samples (should never be 0 though)
+     offset is thus offset of first valid sample in buffer
   */
   assert(d->offset > 0 && d->offset <= d->nsamps);
 
@@ -302,8 +302,8 @@ void PRFX(rebufferf2vrun_pull)(struct _AFmoduleinst *i)
                   samples2pull=11
                 >-------------|
        XXXXX  XXBBB  NNNNN  NNNNN
-       |---|  |---|  |---|  |---| 
-       nsamps nsamps nsamps nsamps 
+       |---|  |---|  |---|  |---|
+       nsamps nsamps nsamps nsamps
 
      Think of samples2pull as a distance which shrinks as we satisfy the
      request.  The way it shrinks is that the left side of it (shown as '>'
@@ -323,8 +323,8 @@ void PRFX(rebufferf2vrun_pull)(struct _AFmoduleinst *i)
 
   /* ----- first try and use currently buffered samples */
 
-  CHNK(printf("%*.*s%s buffer holds %d samples\n", 
-              i->margin, i->margin, "", i->mod->name, 
+  CHNK(printf("%*.*s%s buffer holds %d samples\n",
+              i->margin, i->margin, "", i->mod->name,
               d->nsamps-d->offset));
 
   if (d->offset != d->nsamps)
@@ -332,10 +332,10 @@ void PRFX(rebufferf2vrun_pull)(struct _AFmoduleinst *i)
       int buffered = d->nsamps - d->offset;
       int n = min(samples2pull, buffered);
       memcpy(outbufp, d->buf+d->offset, sizeof(TYPE)*n);
-      CHNK(printf("%*.*s%s taking %d currently buffered samples\n", 
-                  i->margin, i->margin, "", i->mod->name, 
+      CHNK(printf("%*.*s%s taking %d currently buffered samples\n",
+                  i->margin, i->margin, "", i->mod->name,
                   n));
-      /* 
+      /*
         this may make samples2pull negative and outbufp invalid:
         that's ok, it means we have some samples left over after
         satisfying the output's request
@@ -349,18 +349,18 @@ void PRFX(rebufferf2vrun_pull)(struct _AFmoduleinst *i)
       d->offset += n;
     }
 
-  CHNK(printf("%*.*s%s now samples2pull=%d\n", 
-              i->margin, i->margin, "", i->mod->name, 
+  CHNK(printf("%*.*s%s now samples2pull=%d\n",
+              i->margin, i->margin, "", i->mod->name,
               samples2pull));
 
   /*
      at this point the picture from above looks something like:
-  
+
                    samples2pull=8
                      >--------|
        XXXXX  XXBBB  NNNNN  NNNNN
-       |---|  |---|  |---|  |---| 
-       nsamps nsamps nsamps nsamps 
+       |---|  |---|  |---|  |---|
+       nsamps nsamps nsamps nsamps
 
      note that samples2pull has shrunk by the number of samples we
      had buffered up.
@@ -381,7 +381,7 @@ void PRFX(rebufferf2vrun_pull)(struct _AFmoduleinst *i)
        XXXXX  XXBBB
        |---|  |---|
        nsamps nsamps
-       
+
      Which is just fine.  It means we should re-save that 1 sample for
      later use.
   */
@@ -392,7 +392,7 @@ void PRFX(rebufferf2vrun_pull)(struct _AFmoduleinst *i)
     {
       int req, got;
 
-      /* 
+      /*
          req is the number of "N" frames (from the pictures above) which
          we want to pull at a time.
       */
@@ -401,36 +401,36 @@ void PRFX(rebufferf2vrun_pull)(struct _AFmoduleinst *i)
         req = ( ( ((samples2pull-1)/d->nsamps) + 1) * d->nsamps);
       else
         req = d->nsamps;
-      
+
       assert(req > 0);
-      
+
       /* pull chunk(s) of data from source */
-      
+
       _AFpull(i, req / i->inc->f.channelCount);
-      
+
       got = i->inc->nframes * i->inc->f.channelCount; /* may be short chunk */
-      
+
       if (got != req)       /* short chunk on input */
         d->eof = AF_TRUE;
-      
+
       memcpy(outbufp, i->inc->buf, sizeof(TYPE)*min(samples2pull, got));
-      
-      /* 
+
+      /*
         this may make samples2pull negative and outbufp invalid:
         that's ok, it means we have some samples left over after
         satisfying the output's request
       */
       outbufp += got;
       samples2pull -= got;
-      
+
       /* we should only do loop once for multiple_of */
 
       if (d->multiple_of)
         assert(d->eof || samples2pull <= 0);
-      
+
       if (samples2pull < 0)
         {
-          /* 
+          /*
              we pulled more frames than needed for the user's request
              (and the loop is about to exit) so save the remaining samples
              in d->buf.
@@ -442,7 +442,7 @@ void PRFX(rebufferf2vrun_pull)(struct _AFmoduleinst *i)
 
           assert(d->offset > 0 && d->offset <= d->nsamps);
 
-          memcpy(d->buf+d->offset, (TYPE *)i->inc->buf+d->offset, 
+          memcpy(d->buf+d->offset, (TYPE *)i->inc->buf+d->offset,
                  sizeof(TYPE)*(d->nsamps-d->offset));
         }
       else
@@ -451,12 +451,12 @@ void PRFX(rebufferf2vrun_pull)(struct _AFmoduleinst *i)
         }
     }
 
-  CHNK(printf("%*.*s%s ... and now samples2pull=%d\n", 
-              i->margin, i->margin, "", i->mod->name, 
+  CHNK(printf("%*.*s%s ... and now samples2pull=%d\n",
+              i->margin, i->margin, "", i->mod->name,
               samples2pull));
-  
+
   /* -----
-     at this point we have done all we can to try and satisfy the output's 
+     at this point we have done all we can to try and satisfy the output's
      request.  We may have hit eof on input.
 
      If samples2pull <= 0, we have pulled enough samples to satisfy the
@@ -468,7 +468,7 @@ void PRFX(rebufferf2vrun_pull)(struct _AFmoduleinst *i)
      If we did hit end of file, then we may or may not have satisfied the request.
 
      If we hit eof and we did not satisfy the request, then we push the
-     SHORT CHUNK, after which the module on our output is not allowed to 
+     SHORT CHUNK, after which the module on our output is not allowed to
      pull any more samples.
 
      Otherwise we save any samples left over into d->buf.
@@ -496,8 +496,8 @@ void PRFX(rebufferf2vrun_pull)(struct _AFmoduleinst *i)
     }
   assert(d->offset > 0 && d->offset <= d->nsamps);
 
-  CHNK(printf("%*.*s%s ... and now buffer holds %d samples\n", 
-              i->margin, i->margin, "", i->mod->name, 
+  CHNK(printf("%*.*s%s ... and now buffer holds %d samples\n",
+              i->margin, i->margin, "", i->mod->name,
               d->nsamps-d->offset));
 }
 
@@ -520,7 +520,7 @@ void PRFX(rebufferf2vreset2)(struct _AFmoduleinst *i)
 
 void PRFX(rebufferf2vfree)(struct _AFmoduleinst *i)
 {
-  REBUFFER_DATA *d = i->modspec;  
+  REBUFFER_DATA *d = i->modspec;
   if (d->buf)
     free(d->buf);
 }
