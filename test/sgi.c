@@ -87,7 +87,7 @@ void setrate (ALport port, double rate)
 	rv = alGetResource(port);
 
 	params.param = AL_RATE;
-	params.value.ll = ((long long) rate) << 32;
+	params.value.ll = alDoubleToFixed(rate);
 
 	if (alSetParams(rv, &params, 1) < 0)
 	{
