@@ -90,6 +90,7 @@ AC_OUTPUT([
 	audiofile.pc
 	sfcommands/Makefile 
 	test/Makefile 
+	examples/Makefile 
 	libaudiofile/Makefile 
 	libaudiofile/modules/Makefile 
 	docs/Makefile 
