@@ -25,6 +25,10 @@
 	This file contains routines for configuring compressed audio.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <assert.h>
 
 #include "audiofile.h"

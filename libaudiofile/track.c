@@ -25,6 +25,10 @@
 	audio file.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stddef.h>
 #include <string.h>
 #include <assert.h>

@@ -24,6 +24,10 @@
 	This module implements Microsoft ADPCM compression.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <errno.h>
 #include <string.h>
 #include <assert.h>

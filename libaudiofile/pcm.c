@@ -25,6 +25,10 @@
 	This file declares default PCM mappings.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "afinternal.h"
 #include "pcm.h"
 #include "util.h"

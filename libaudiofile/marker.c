@@ -25,6 +25,10 @@
 	This file contains routines for dealing with loop markers.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>

@@ -25,6 +25,10 @@
 	All routines that operate on loops.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "audiofile.h"
 #include "afinternal.h"
 #include "util.h"

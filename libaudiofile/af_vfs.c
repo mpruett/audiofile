@@ -24,6 +24,10 @@
 	Virtual file operations for the Audio File Library.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "afinternal.h"
 #include "af_vfs.h"
 

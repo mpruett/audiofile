@@ -42,6 +42,10 @@
 	the parameter whose value is given in i.value[N].
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <audiofile.h>
 #include "afinternal.h"
 #include "instrument.h"

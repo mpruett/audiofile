@@ -27,6 +27,10 @@
 	the Audio File Library implementation and its supported formats.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <assert.h>
 #include <stdlib.h>
 

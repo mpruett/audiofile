@@ -22,6 +22,10 @@
 	raw.c
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "afinternal.h"
 #include "audiofile.h"
 #include "raw.h"

@@ -24,6 +24,10 @@
 	This file contains the file format units.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "audiofile.h"
 #include "afinternal.h"
 #include "units.h"

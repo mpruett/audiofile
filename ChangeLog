@@ -1,6 +1,10 @@
+2003-09-09  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/*.c: Include <config.h> as necessary.
+
 2003-09-08  Michael Pruett <michael@68k.org>
 
-	* test/*.c: Update test programs to include <config.h>.
+	* test/*.c: Update test programs to include <config.h> as necessary.
 
 2003-09-04  Michael Pruett <michael@68k.org>
 
