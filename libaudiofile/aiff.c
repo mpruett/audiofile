@@ -420,6 +420,11 @@ static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 			track->f.sampleWidth = 64;
 			track->f.compressionType = AF_COMPRESSION_NONE;
 		}
+		else if (!memcmp(compressionID, "sowt", 4))
+		{
+			track->f.compressionType = AF_COMPRESSION_NONE;
+			track->f.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
+		}
 		else
 		{
 			_af_error(AF_BAD_NOT_IMPLEMENTED, "AIFF-C compression type '%c%c%c%c' not currently supported",

@@ -5,6 +5,9 @@
 
 	* libaudiofile/aiff.c: Skip zero-length miscellaneous chunks.
 
+	* libaudiofile/aiff.c: Add support for reading AIFF-C files with
+	little-endian audio data.
+
 2003-12-17  Michael Pruett <michael@68k.org>
 
 	Fix two bugs related to processing 24-bit audio data.
