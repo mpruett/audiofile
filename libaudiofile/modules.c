@@ -1382,6 +1382,7 @@ format_code get_format_code (_AudioFormat *fmt)
 		}
 	}
 
+	/* NOTREACHED */
 	assert(0);
 	return -1;
 }

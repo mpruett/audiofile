@@ -38,7 +38,8 @@ bool _af_filehandle_ok (AFfilehandle file);
 bool _af_filehandle_can_read (AFfilehandle file);
 
 void _af_printid (u_int32_t id);
-void _af_printfilehandle (AFfilehandle filehandle);
+void _af_print_filehandle (AFfilehandle filehandle);
+void _af_print_tracks (AFfilehandle filehandle);
 void _af_print_channel_matrix (double *matrix, int fchans, int vchans);
 
 void *_af_malloc (size_t size);
