@@ -42,6 +42,7 @@
 #include "compression.h"
 #include "byteorder.h"
 #include "print.h"
+#include "debug.h"
 
 #include "modules/rebuffer.h"
 

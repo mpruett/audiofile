@@ -7,7 +7,7 @@ lib_LTLIBRARIES = libaudiofile.la
 libaudiofile_la_SOURCES = \
 	openclose.c setup.c format.c data.c pcm.c \
 	error.c byteorder.c af_vfs.c \
-	util.c aupv.c units.c compression.c \
+	util.c debug.c aupv.c units.c compression.c \
 	aes.c instrument.c loop.c marker.c misc.c track.c query.c \
 	raw.c raw.h \
 	aiff.c aiffwrite.c extended.c aiff.h \
@@ -18,7 +18,7 @@ libaudiofile_la_SOURCES = \
 	afinternal.h aupvinternal.h aupvlist.h byteorder.h \
 	compression.h error.h extended.h instrument.h marker.h \
 	pcm.h setup.h track.h units.h \
-	print.h util.h \
+	print.h util.h debug.h \
 	modules.c modules.h
 
 libaudiofile_la_LIBADD = modules/libmodules.la

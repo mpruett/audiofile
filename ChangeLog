@@ -1,3 +1,12 @@
+2004-01-12  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/Makefile.am, libaudiofile/util.[ch],
+	libaudiofile/debug.[ch]: Move debugging routines into a
+	separate file.
+
+	* libaudiofile/modules.c: Include "debug.h" for debugging
+	routines.
+
 2004-01-06  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/afinternal.h, libaudiofile/aiff.h,

@@ -37,12 +37,6 @@ bool _af_filehandle_ok (AFfilehandle file);
 
 bool _af_filehandle_can_read (AFfilehandle file);
 
-void _af_printid (u_int32_t id);
-void _af_print_filehandle (AFfilehandle filehandle);
-void _af_print_tracks (AFfilehandle filehandle);
-void _af_print_channel_matrix (double *matrix, int fchans, int vchans);
-void _af_print_pvlist (AUpvlist list);
-
 void *_af_malloc (size_t size);
 void *_af_realloc (void *ptr, size_t size);
 void *_af_calloc (size_t nmemb, size_t size);
@@ -70,11 +64,5 @@ status _af_set_sample_format (_AudioFormat *f, int sampleFormat, int sampleWidth
 
 bool _af_filehandle_can_read (AFfilehandle file);
 bool _af_filehandle_can_write (AFfilehandle file);
-
-void _af_print_audioformat (_AudioFormat *format);
-void _af_print_chunk (_AFchunk *chunk);
-void _af_print_frame (AFframecount frameno, double *frame, int nchannels,
-	char *formatstring, int numberwidth,
-	double slope, double intercept, double minclip, double maxclip);
 
 #endif
