@@ -170,9 +170,9 @@ void afInitMarkComment(AFfilesetup setup, int trackid, int markid,
 
 	length = strlen(commstr);
 
-	if (track->markers[markno].name)
-		free(track->markers[markno].name);
-	if ((track->markers[markno].name = _af_malloc(length+1)) == NULL)
+	if (track->markers[markno].comment)
+		free(track->markers[markno].comment);
+	if ((track->markers[markno].comment = _af_malloc(length+1)) == NULL)
 		return;
 	strcpy(track->markers[markno].comment, commstr);
 }
