@@ -28,7 +28,7 @@ noinst_PROGRAMS = \
 
 EXTRA_DIST = transparency.sh misc.sh
 
-EXTRA_PROGRAMS = irixread irixtest irixtestloop linuxtest
+EXTRA_PROGRAMS = irixread irixtestloop linuxtest
 
 TESTS = error writeaiff writeircam writenext writewave \
 	writeulaw writealaw \
@@ -37,9 +37,6 @@ TESTS = error writeaiff writeircam writenext writewave \
 
 irixread_SOURCES = irixread.c sgi.c
 irixread_LDADD = $(top_builddir)/libaudiofile/libaudiofile.la @AUDIO_LIB@
-
-irixtest_SOURCES = irixtest.c sgi.c sgi.h
-irixtest_LDADD = $(top_builddir)/libaudiofile/libaudiofile.la @AUDIO_LIB@
 
 irixtestloop_SOURCES = irixtestloop.c sgi.c
 irixtestloop_LDADD = $(top_builddir)/libaudiofile/libaudiofile.la @AUDIO_LIB@
