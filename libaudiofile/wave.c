@@ -167,9 +167,24 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 			break;
 
 		case WAVE_FORMAT_IEEE_FLOAT:
-			track->f.sampleWidth = 32;
-			track->f.sampleFormat = AF_SAMPFMT_FLOAT;
-			break;
+		{
+			u_int16_t	bitsPerSample;
+
+			af_fread(&bitsPerSample, 1, 2, fp);
+			bitsPerSample = LENDIAN_TO_HOST_INT16(bitsPerSample);
+
+			if (bitsPerSample == 64)
+			{
+				track->f.sampleWidth = 64;
+				track->f.sampleFormat = AF_SAMPFMT_DOUBLE;
+			}
+			else
+			{
+				track->f.sampleWidth = 32;
+				track->f.sampleFormat = AF_SAMPFMT_FLOAT;
+			}
+		}
+		break;
 
 		case WAVE_FORMAT_ADPCM:
 		case WAVE_FORMAT_DVI_ADPCM:
