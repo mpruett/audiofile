@@ -1,0 +1,52 @@
+Audio File Library Development Notes
+Thursday, 15 December 2000
+Michael Pruett <mpruett@sgi.com / michael@68k.org>
+
+----
+
+Error handling is at the present quite robust, but more work can always
+be done in this area.
+
+Recognition of other audio files should include some of the following
+file formats which I discovered through the `file' command on Linux:
+
+[ 0 string,=.snd,"Sun/NeXT audio data:"]
+[ 0 lelong,=6583086,"DEC audio data:"]
+[> 8 string,=WAVE,", WAVE audio data"]
+[ 0 belong,=779248125,"realaudio sound file"]
+[> 8 string,=AIFF,", AIFF audio"]
+[> 8 string,=AIFC,", AIFF-C compressed audio"]
+[> 8 string,=SAMP,", SAMP sampled audio"]
+
+I do not know what DEC audio data or SAMP sampled audio are.  I have
+no plans to support RealAudio since it provides quite poor sound
+quality (that is to say that it sucks a fat dick).
+
+Compressed data formats are not supported.  I would like to add
+support for the non-proprietary codecs sometime soon, but I have more
+important issues to address first.
+
+SGI's Audio File Library on IRIX implements the following formats which
+this version of the library does not:
+	Berkeley/IRCAM/CARL SoundFile
+	MPEG1 audio bitstream
+	Sound Designer II
+	Audio Visual Research
+	Amiga IFF/8SVX
+	SampleVision
+	VOC
+	SoundFont2
+
+I plan to implement some of these as time permits.  Sound Designer
+II is out of the question because of its dependency upon Macintosh
+resource forks.  Handling these files on Unix systems is simply not
+worth the effort.
+
+----
+
+This version of the Audio File Library has been tested under the
+following operating environments:
+	mips-sgi-irix6.5 / IRIX 6.5 (gcc 2.8.1)
+	i386-redhat-linux / Red Hat Linux 6.2 for i386 (egcs 1.1.2)
+	i386-debian-linux / Debian Linux 2.2 for i386 (gcc 2.95.2)
+	sparc-sun-solaris2.7 / Solaris 2.7 for SPARC (gcc 2.8.1)

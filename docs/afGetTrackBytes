@@ -1,0 +1,55 @@
+NAME
+
+afGetFrameCount, afGetTrackBytes, afGetDataOffset - get the total sample
+frame count, length of audio track in bytes, offset of the audio track for a
+specified audio track in a specified AFfilehandle structure
+
+
+SYNOPSIS
+
+#include <audiofile.h>
+
+AFframecount afGetFrameCount (AFfilehandle file, int track);
+
+AFfileoffset afGetTrackBytes (AFfilehandle file, int track);
+
+AFfileoffset afGetDataOffset (AFfilehandle file, int track);
+
+
+PARAMETERS
+
+file is an AFfilehandle that has been created by a previous call to
+afOpenFile.
+
+track is an integer which specifies an audio track within file.  All
+supported file formats contain exactly one audio track per file, so the
+constant AF_DEFAULT_TRACK should always be used.
+
+
+DESCRIPTION
+
+afGetFrameCount returns the total number of sample frames contained
+within the specified track of the specified file.
+
+Each sample frame of audio consists of a fixed number of samples (equal to
+the number of audio channels in the file, equal to the value returned by
+afGetChannels for the particular track and file).  For monaural data, a
+sample frame consists of one audio sample.  For stereophonic data, a sample
+frame consists of a stereo pair.
+
+afGetTrackBytes returns the total number of bytes of raw audio data
+(i.e., prior to decompression) in track.  This is useful for determining
+raw file seek points, etc.
+
+afGetDataOffset returns the offset in bytes of the start of the audio
+data contained within the specified track of the specified file.
+
+
+RETURN VALUE
+
+afGetFrameCount returns the total number of sample frames in track.
+afGetTrackBytes() returns the total number of bytes of audio data in
+track.  afGetDataOffset() returns the offset in bytes to the beginning
+of the audio data in track.
+
+If an error occurs, -1 is returned by all of these routines.

@@ -1,0 +1,9 @@
+News for the Audio File Library version 0.2.1
+Michael Pruett <mpruett@sgi.com / michael@68k.org>
+
+Not much has changed.
+
+The library can now be used with old programs which link against old
+versions of the library.
+
+Some compiler warnings have been cleaned up.

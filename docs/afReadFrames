@@ -1,0 +1,46 @@
+afReadFrames reads sample frames from a given audio track in an audio file.
+
+SYNOPSIS
+
+#include <audiofile.h>
+
+int afReadFrames (const AFfilehandle file, int track, void *samples,
+	const int count)
+
+PARAMETERS
+
+file is the AFfilehandle structure for the audio file from which audio
+sample data will be read.
+
+track is the track number within the audio file referred to by file.
+track should be set to the default value of AF_DEFAULT_TRACK at the
+present time.
+
+samples is a pointer to a buffer capable of storing count frames read
+from the file referred to by file.
+
+count is the number of sample frames to be read from the track
+specified by track within the file specified by file.
+
+RETURN VALUE
+
+afReadFrames returns the number of frames successfully read from file into the
+array referred to by samples.
+
+ERRORS
+
+Possible errors include
+(old school)
+AF_BAD_READ
+AF_BAD_FILEHANDLE
+AF_BAD_LSEEK
+AF_BAD_TRACKID (the track parameter differs from AF_DEFAULT_TRACK)
+AF_BAD_AIFF_SSND
+
+(new school--unsupported)
+AF_ERR_BAD_READ
+AF_ERR_BAD_LSEEK
+
+SEE ALSO
+
+afWriteFrames

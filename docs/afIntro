@@ -1,0 +1,92 @@
+The purpose of the Audio File Library is to provide transparency to
+the programmer of file formats and data formats.
+
+BASICS
+
+Audio files contain a sequence of amplitudes sampled at a particular
+rate, called the sampling frequency.  The method by which sounds can
+be acquired or generated in this manner is referred to as pulse-code
+modulation (PCM).  The representation of these amplitudes varies from
+one file format to another.  Common representations for these data are
+two's complement integers, unsigned integers, and floating-point
+numbers.
+
+For uncompressed audio, a track within an audio file consists of a
+sequence of frames, each of which contains a number of samples equal to
+the number of channels in the track.  For example, in a stereo track,
+every frame contains two samples.
+
+To read from a file containing audio data, the following sequence of
+function calls are typically used:
+
+afOpenFile
+afReadFrames
+afCloseFile
+
+To write to a file, a similar sequence of commands is typically
+employed:
+
+afNewFileSetup
+afOpenFile
+afWriteFrames
+afCloseFile
+
+Data format transparency is achieved in the Audio File Library by
+providing the data in a virtual format.  The virtual format consists of
+a virtual byte order and a virtual sample format.  Virtual byte order
+is by default set to the host byte order and does not depend on the
+native byte order of the file format being used.  Virtual sample format
+is by default in an uncompressed format.
+
+The current Audio File Library does not support the concept of a virtual
+sampling rate, but this may be supported in the future.
+
+At the present, the Audio File Library supports only CCITT G.711
+mu-law/A-law compression.
+
+PROGRAMMING PARADIGM
+
+An audio file is manipulated through the AFfilehandle opaque data
+type.  Calls to the library are made with this file handle as an
+argument.  When opening a file for writing, another opaque data
+structure called AFfilsetup is used.  This structure is then passed to
+calls which set various file parameters which are set at the time the
+file is created, such as its file type and data format; such
+properties cannot be modified for an existing file.
+
+FUNCTIONS
+
+Calls available through the library include the following:
+
+afNewFileSetup - create a file setup structure
+afFreeFileSetup - free a file setup structure
+afOpenFile - create a file handle structure given a file name and
+	optionally a file setup
+afCloseFile - close an open audio file
+afSyncFile - update an audio file which has been opened for writing
+afSetVirtual{ByteOrder,Channels,PCMMapping,SampleFormat} - set virtual
+	format for audio data within a specified track
+afInit{ByteOrder,Channels,Rate,SampleFormat} - set parameters of an
+	AFfilesetup structure which will be used to open an audio file for
+	writing
+
+afQuery - query regarding the capabilities of the Audio File Library
+afQueryLong
+afQueryPointer
+afQueryDouble
+
+afSetLoop* - set loop parameters
+afGetLoop* - get loop parameters
+
+afSetMark* - set mark parameters
+afGetMark* - get mark parameters
+
+afSetInst* - set instrument parameters
+afGetInst* - get instrument parameters
+
+afGetAESChannelData - get AES channel data for a given audio file
+afSetAESChannelData - set AES channel data for a given audio file
+afInitAESChannelData - specify that storage space is to be allocated
+	for AES channel status data in a given audio file
+afInitAESChannelDataTo - specify whether storage space is to be allocated
+	for AES channel status data in a given audio file

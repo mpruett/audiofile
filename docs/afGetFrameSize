@@ -1,0 +1,34 @@
+afGetFrameSize returns the frame size in bytes for a specified audio
+track.
+
+SYNOPSIS
+#include <audiofile.h>
+
+float afGetFrameSize (AFfilehandle file, int track, int expand3to4);
+
+PARAMETERS
+file is a valid AFfilehandle.
+
+track is an integer which refers to a specific audio track in the
+file.  At present no supported audio file format allows for more than
+one audio track within a file, so track should always be
+AF_DEFAULT_TRACK.
+
+If expand3to4 is a non-zero value, then 3-byte frames will be treated
+as taking up 4 bytes in memory.  This is useful for calculating how
+much memory will be needed to store audio data suitable for playback
+since 24-bit audio data is typically aligned on 32-bit boundaries.  (At
+least that's how it's done on SGI systems; I know of no other computer
+system that has support for 24-bit audio.)
+
+DESCRIPTION
+afGetFrameSize returns the number of bytes in a frame in the given
+track of the specified file.
+
+A sample frame consists of one or more samples.  For a monaural track,
+a sample frame will always contain one sample.  For a stereophonic
+track, a sample frame will always contain two samples, one for the left
+channel and one for the right channel.
+
+The parameter expand3to4 is ignored unless the specified audio track
+contains 24-bit sampled audio data.

@@ -1,0 +1,23 @@
+Audio File Library 0.2.1
+Michael Pruett <mpruett@sgi.com / michael@68k.org>
+
+Short-term:
+Sample rate conversion needs to be handled.
+
+Longer-term:
+(These will hopefully be resolved by version 0.3.)
+
+Add locale support for error messages.
+
+Documentation should probably be in the SGML DocBook format.
+
+More compressed data formats need to be handled.
+
+More comprehensive tests should be developed to stress-test the
+library.
+
+Thread-safe error handling would be nice.
+
+Whenever a compression format is requested, the library should scan
+through /usr/lib/audiofile/*.so to see if any DSOs support the requested
+format.

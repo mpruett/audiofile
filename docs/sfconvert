@@ -1,0 +1,6 @@
+sfconvert <input-file> <output-file> format f
+
+sfconvert converts input-file to output-file which has the format f,
+where f is specified as one of aiff, aifc, next, or wave.
+
+It will do more sometime soon.

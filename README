@@ -1,0 +1,49 @@
+Audio File Library
+Version 0.2.1
+20 February 2001
+
+Copyright (C) 1998-2000, Michael Pruett
+Copyright (C) 2000, Silicon Graphics, Inc.
+
+michael@68k.org / mpruett@sgi.com
+http://www.68k.org./~michael/audiofile/
+http://oss.sgi.com/projects/audiofile/
+
+----
+
+The Silicon Graphics Audio File Library provides a uniform programming
+interface to standard digital audio file formats.
+
+This library allows the processing of audio data to and from audio
+files of many common formats (currently AIFF, AIFF-C, WAVE, and
+NeXT/Sun .snd/.au).  The library also supports compression (currently
+only G.711 mu-law and A-law) as well as PCM formats of all flavors (signed
+and unsigned integer, floating point and double-precision floating point).
+
+One premise of the Audio File Library is that the data presented to
+an application need not be in the same format as the data contained in
+the file.  Another, however, is that the capabilities of the file format
+are exposed to the application programmer should the programmer wish to
+take advantage of them.
+
+The Audio File Library itself is available under the GNU Library General
+Public License, and the programs in this package are available under
+the GNU General Public License.  The two licenses are included in the
+files COPYING and COPYING.GPL, respectively.
+
+----
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Library General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Library General Public License for more details.
+
+You should have received a copy of the GNU Library General Public
+License along with this library; if not, write to the 
+Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
+Boston, MA  02111-1307  USA.
