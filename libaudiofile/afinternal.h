@@ -326,7 +326,7 @@ typedef struct _AFfilehandle
 
 	bool	seekok;
 
-        AF_VirtualFile	*fh;
+        AFvirtualfile	*fh;
 
 	int	fileFormat;
 

@@ -28,12 +28,12 @@
 #include "byteorder.h"
 #include "util.h"
 
-u_int16_t _af_byteswapint16 (u_int16_t x)
+u_int16_t _af_byteswap_int16 (u_int16_t x)
 {
 	return ((x << 8) | (x >> 8));
 }
 
-u_int32_t _af_byteswapint32 (u_int32_t x)
+u_int32_t _af_byteswap_int32 (u_int32_t x)
 {
 	u_int8_t	b1, b2, b3, b4;
 
@@ -45,18 +45,18 @@ u_int32_t _af_byteswapint32 (u_int32_t x)
 	return b1 | (b2 << 8) | (b3 << 16) | (b4 << 24);
 }
 
-float _af_byteswapfloat32 (float x)
+float _af_byteswap_float32 (float x)
 {
 	float		f = x;
 	u_int32_t	*l = (u_int32_t *) &f;
 
-	*l = _af_byteswapint32(*l);
+	*l = _af_byteswap_int32(*l);
 
 	return f;
 }
 
 /*
-uint64_t _af_byteswapint64 (uint64_t x)
+uint64_t _af_byteswap_int64 (uint64_t x)
 {
 	u_int8_t	b1, b2, b3, b4, b5, b6, b7, b8;
 
@@ -78,8 +78,8 @@ main ()
 	long				ldata = '1234';
 	unsigned long long	data = 0x1122334455667788;
 	printf("%llx\n", data);
-	printf("%llx\n", _af_byteswapint64(data));
+	printf("%llx\n", _af_byteswap_int64(data));
 	printf("%x\n", ldata);
-	printf("%x\n", _af_byteswapint32(ldata));
+	printf("%x\n", _af_byteswap_int32(ldata));
 }
 */

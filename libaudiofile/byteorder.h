@@ -60,15 +60,15 @@ typedef u_int32_t uint32;
 
 #else
 
-#define HOST_TO_LENDIAN_INT16(x)		_af_byteswapint16(x)
-#define HOST_TO_LENDIAN_INT32(x)		_af_byteswapint32(x)
-#define HOST_TO_LENDIAN_FLOAT32(x)		_af_byteswapfloat32(x)
-#define HOST_TO_LENDIAN_DOUBLE64(x)		_af_byteswapdouble64(x)
+#define HOST_TO_LENDIAN_INT16(x)		_af_byteswap_int16(x)
+#define HOST_TO_LENDIAN_INT32(x)		_af_byteswap_int32(x)
+#define HOST_TO_LENDIAN_FLOAT32(x)		_af_byteswap_float32(x)
+#define HOST_TO_LENDIAN_DOUBLE64(x)		_af_byteswap_double64(x)
 
-#define LENDIAN_TO_HOST_INT16(x)		_af_byteswapint16(x)
-#define LENDIAN_TO_HOST_INT32(x)		_af_byteswapint32(x)
-#define LENDIAN_TO_HOST_FLOAT32(x)		_af_byteswapfloat32(x)
-#define LENDIAN_TO_HOST_DOUBLE64(x)		_af_byteswapdouble64(x)
+#define LENDIAN_TO_HOST_INT16(x)		_af_byteswap_int16(x)
+#define LENDIAN_TO_HOST_INT32(x)		_af_byteswap_int32(x)
+#define LENDIAN_TO_HOST_FLOAT32(x)		_af_byteswap_float32(x)
+#define LENDIAN_TO_HOST_DOUBLE64(x)		_af_byteswap_double64(x)
 
 #endif
 
@@ -86,19 +86,21 @@ typedef u_int32_t uint32;
 
 #else
 
-#define HOST_TO_BENDIAN_INT16(x)		_af_byteswapint16(x)
-#define HOST_TO_BENDIAN_INT32(x)		_af_byteswapint32(x)
-#define HOST_TO_BENDIAN_FLOAT32(x)		_af_byteswapfloat32(x)
-#define HOST_TO_BENDIAN_DOUBLE64(x)		_af_byteswapdouble64(x)
+#define HOST_TO_BENDIAN_INT16(x)		_af_byteswap_int16(x)
+#define HOST_TO_BENDIAN_INT32(x)		_af_byteswap_int32(x)
+#define HOST_TO_BENDIAN_FLOAT32(x)		_af_byteswap_float32(x)
+#define HOST_TO_BENDIAN_DOUBLE64(x)		_af_byteswap_double64(x)
 
-#define BENDIAN_TO_HOST_INT16(x)		_af_byteswapint16(x)
-#define BENDIAN_TO_HOST_INT32(x)		_af_byteswapint32(x)
-#define BENDIAN_TO_HOST_FLOAT32(x)		_af_byteswapfloat32(x)
-#define BENDIAN_TO_HOST_DOUBLE64(x)		_af_byteswapdouble64(x)
+#define BENDIAN_TO_HOST_INT16(x)		_af_byteswap_int16(x)
+#define BENDIAN_TO_HOST_INT32(x)		_af_byteswap_int32(x)
+#define BENDIAN_TO_HOST_FLOAT32(x)		_af_byteswap_float32(x)
+#define BENDIAN_TO_HOST_DOUBLE64(x)		_af_byteswap_double64(x)
 
 #endif
 
-u_int16_t _af_byteswapint16 (u_int16_t x);
-u_int32_t _af_byteswapint32 (u_int32_t x);
+u_int16_t _af_byteswap_int16 (u_int16_t x);
+u_int32_t _af_byteswap_int32 (u_int32_t x);
+float _af_byteswap_float32 (float x);
+double _af_byteswap_double64 (double x);
 
 #endif

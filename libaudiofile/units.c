@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 2000, Silicon Graphics, Inc.
+	Copyright (C) 2000-2001, Silicon Graphics, Inc.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -30,8 +30,9 @@
 
 #include "raw.h"
 #include "aiff.h"
-#include "wave.h"
 #include "next.h"
+#include "wave.h"
+#include "ircam.h"
 
 #include "compression.h"
 
@@ -120,6 +121,21 @@ _Unit _af_units[_AF_NUM_UNITS] =
 		AF_NUM_UNLIMITED,	/* maximum number of loops per instrument */
 		_AF_WAVE_NUM_INSTPARAMS,
 		_af_wave_inst_params
+	},
+	{
+		AF_FILE_IRCAM,
+		"BICSF", "Berkeley/IRCAM/CARL Sound Format", "bicsf",
+		AF_TRUE, NULL, _af_ircam_complete_setup,
+		{_af_ircam_recognize, _af_ircam_read_init},
+		{_af_ircam_write_init, NULL, _af_ircam_update},
+		AF_SAMPFMT_TWOSCOMP, 16,
+		0,	/* number of compression types */
+		NULL,	/* compression types */
+		0,	/* maximum marker count */
+		0,	/* maximum instrument count */
+		0,	/* maximum number of loops per instrument */
+		0,	/* number of instrument parameters */
+		NULL	/* instrument parameters */
 	}
 };
 

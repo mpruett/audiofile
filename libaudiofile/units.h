@@ -94,7 +94,7 @@ typedef struct _CompressionUnit
 		bool seekok, bool headerless, AFframecount *chunkframes);
 } _CompressionUnit;
 
-#define _AF_NUM_UNITS 5
+#define _AF_NUM_UNITS 6
 #define _AF_NUM_COMPRESSION 3
 
 #endif /* UNIT_H */

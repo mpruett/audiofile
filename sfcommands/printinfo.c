@@ -39,36 +39,26 @@ char *copyrightstring (AFfilehandle file);
 
 void printfileinfo (char *filename)
 {
-	int				version;
+	int		version;
 	AFfilehandle	file;
-	int				sampleFormat, sampleWidth, byteOrder;
-	char			*copyright;
+	int		sampleFormat, sampleWidth, byteOrder;
+	char		*copyright, *formatstring, *labelstring;
 
 	file = afOpenFile(filename, "r", NULL);
 
 	if (file == NULL)
 		return;
 
+	formatstring = afQueryPointer(AF_QUERYTYPE_FILEFMT, AF_QUERY_DESC,
+		afGetFileFormat(file, &version), 0, 0);
+	labelstring = afQueryPointer(AF_QUERYTYPE_FILEFMT, AF_QUERY_LABEL,
+		afGetFileFormat(file, &version), 0, 0);
+
+	if (formatstring == NULL || labelstring == NULL)
+		return;
+
 	printf("File Name      %s\n", filename);
-	printf("File Format    ");
-	switch (afGetFileFormat(file, &version))
-	{
-		case AF_FILE_AIFFC:
-			printf("Audio Interchange File Format AIFF-C (aifc)");
-			break;
-		case AF_FILE_AIFF:
-			printf("Audio Interchange File Format (aiff)");
-			break;
-		case AF_FILE_NEXTSND:
-			printf("NeXT .snd/Sun .au Format (next)");
-			break;
-		case AF_FILE_WAVE:
-			printf("MS RIFF WAVE Format (wave)");
-			break;
-		default:
-			printf("Unknown file");
-	}
-	putchar('\n');
+	printf("File Format    %s (%s)\n", formatstring, labelstring);
 
 	afGetSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
 	byteOrder = afGetByteOrder(file, AF_DEFAULT_TRACK);
