@@ -1,3 +1,9 @@
+2001-06-19  Michael Pruett <mpruett@sgi.com>
+
+	* test/power.c: Adding a new example program which calculates
+	the power and peak amplitudes of an audio file.  This program
+	is based on Chris Vaill's normalize.
+
 2001-06-06  Michael Pruett <mpruett@sgi.com>
 
 	* libaudiofile/modules.c: Fix conversion between 24-bit and

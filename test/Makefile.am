@@ -23,6 +23,7 @@ noinst_PROGRAMS = \
 	instparamtest \
 	sixteen-to-eight \
 	twentyfour \
+	power \
 	@TEST_BIN@
 
 EXTRA_DIST = transparency.sh misc.sh
