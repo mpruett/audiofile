@@ -16,12 +16,16 @@ linuxtest
 loop
 miscread
 miscwrite
+pipe
 power
+printmarkers
 query
 query2
 sixteen-to-eight
 testaupv
+testchannelmatrix
 testfloat
+testmarkers
 transparency
 twentyfour
 virtual
@@ -29,5 +33,6 @@ writeaiff
 writealaw
 writeircam
 writenext
+writeraw
 writeulaw
 writewave
