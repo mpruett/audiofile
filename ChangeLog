@@ -1,3 +1,16 @@
+2001-05-09  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/aiffwrite.c: Fix a memory leak in WriteMARK, and
+	make WriteMARK use the afGetMark* calls rather than accessing
+	track->markers directly.
+
+	* libaudiofile/util.[ch]: Add _af_print_pvlist for debugging.
+
+2001-05-04  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/ircam.[ch]: Make a first pass at supporting the
+	IRCAM file format.
+
 2001-04-25  Michael Pruett <mpruett@sgi.com>
 
 	* libaudiofile/query.c: Although the documentation states that

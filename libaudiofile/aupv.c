@@ -170,6 +170,9 @@ int AUpvsetval (AUpvlist list, int item, void *val)
 		case AU_PVTYPE_PTR:
 			list->items[item].value.v = *((void **) val);
 			break;
+		default:
+			assert(0);
+			return AU_BAD_PVLIST;
 	}
 
 	return _AU_SUCCESS;

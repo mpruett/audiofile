@@ -41,6 +41,7 @@ void _af_printid (u_int32_t id);
 void _af_print_filehandle (AFfilehandle filehandle);
 void _af_print_tracks (AFfilehandle filehandle);
 void _af_print_channel_matrix (double *matrix, int fchans, int vchans);
+void _af_print_pvlist (AUpvlist list);
 
 void *_af_malloc (size_t size);
 void *_af_realloc (void *ptr, size_t size);

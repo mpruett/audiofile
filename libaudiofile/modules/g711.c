@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 2000, Silicon Graphics, Inc.
+	Copyright (C) 2000-2001, Silicon Graphics, Inc.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -33,6 +33,9 @@
 #include "compression.h"
 #include "g711.h"
 #include "byteorder.h"
+#include "util.h"
+
+#include "../g711.h"
 
 #define CHNK(X)
 
