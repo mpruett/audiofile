@@ -1,5 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(libaudiofile/aiff.c)
+AC_INIT
+AC_CONFIG_SRCDIR([libaudiofile/aiff.c])
 
 PACKAGE=audiofile
 AUDIOFILE_MAJOR_VERSION=0
@@ -19,7 +20,7 @@ AC_SUBST(AUDIOFILE_VERSION_INFO)
 VERSION=$AUDIOFILE_VERSION
 
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADER([config.h])
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -91,7 +92,7 @@ esac
 AC_MSG_RESULT($platform)
 AC_SUBST(TEST_BIN)
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 	audiofile.spec
 	audiofile.pc
 	sfcommands/Makefile 
@@ -102,4 +103,7 @@ AC_OUTPUT([
 	docs/Makefile 
 	win32/Makefile 
 	Makefile 
-	audiofile-config], [case "$CONFIG_FILES" in *audiofile-config*) chmod +x audiofile-config;; esac])
+	audiofile-config])
+AC_CONFIG_COMMANDS([default],
+	[[case "$CONFIG_FILES" in *audiofile-config*) chmod +x audiofile-config;; esac]])
+AC_OUTPUT
