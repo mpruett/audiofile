@@ -190,7 +190,7 @@ void g711run_push (_AFmoduleinst *i)
 
 	d->trk->nextfframe += nfr;
 	d->trk->totalfframes = d->trk->nextfframe;
-	d->trk->fpos_next_frame += (nfr>0) ? nfr/framesize : 0;
+	d->trk->fpos_next_frame += (nfr>0) ? nfr*framesize : 0;
 
 	assert(!d->seekok || (af_ftell(d->fh) == d->trk->fpos_next_frame));
 }
