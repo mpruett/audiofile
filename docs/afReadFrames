@@ -30,16 +30,11 @@ array referred to by samples.
 ERRORS
 
 Possible errors include
-(old school)
 AF_BAD_READ
 AF_BAD_FILEHANDLE
 AF_BAD_LSEEK
 AF_BAD_TRACKID (the track parameter differs from AF_DEFAULT_TRACK)
 AF_BAD_AIFF_SSND
-
-(new school--unsupported)
-AF_ERR_BAD_READ
-AF_ERR_BAD_LSEEK
 
 SEE ALSO
 

@@ -41,8 +41,8 @@ is by default in an uncompressed format.
 The current Audio File Library does not support the concept of a virtual
 sampling rate, but this may be supported in the future.
 
-At the present, the Audio File Library supports only CCITT G.711
-mu-law/A-law compression.
+At present the Audio File Library supports CCITT G.711 mu-law and A-law
+compression as well as IMA and MS ADPCM compression.
 
 PROGRAMMING PARADIGM
 

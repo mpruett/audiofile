@@ -14,12 +14,9 @@ file.  At present no supported audio file format allows for more than
 one audio track within a file, so track should always be
 AF_DEFAULT_TRACK.
 
-If expand3to4 is a non-zero value, then 3-byte frames will be treated
-as taking up 4 bytes in memory.  This is useful for calculating how
-much memory will be needed to store audio data suitable for playback
-since 24-bit audio data is typically aligned on 32-bit boundaries.  (At
-least that's how it's done on SGI systems; I know of no other computer
-system that has support for 24-bit audio.)
+expand3to4 is a boolean-valued integer indicating whether frame size
+calculation will treat 24-bit data as having a size of 3 bytes or 4
+bytes.
 
 DESCRIPTION
 afGetFrameSize returns the number of bytes in a frame in the given
@@ -30,5 +27,9 @@ a sample frame will always contain one sample.  For a stereophonic
 track, a sample frame will always contain two samples, one for the left
 channel and one for the right channel.
 
-The parameter expand3to4 is ignored unless the specified audio track
-contains 24-bit sampled audio data.
+A non-zero value of expand3to4 should be used when calculating the
+frame size for storage in memory (since 24-bit audio data is presented
+in memory as a 4-byte sign-extended integer), while a value of zero
+should be used for calculating storage on disk where no padding is
+added.  The parameter expand3to4 is ignored unless the specified audio
+track contains 24-bit audio data.

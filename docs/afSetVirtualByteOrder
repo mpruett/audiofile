@@ -30,9 +30,7 @@ PARAMETERS
 
 * sampleFormat is an integer which denotes a virtual sample format.
   Valid values are AF_SAMPFMT_TWOSCOMP, AF_SAMPFMT_UNSIGNED,
-  AF_SAMPFMT_FLOAT, and AF_SAMPFMT_DOUBLE.  Note that this
-  implementation of the Audio File Library only supports the two's
-  complement sample format at present.
+  AF_SAMPFMT_FLOAT, and AF_SAMPFMT_DOUBLE.
 
 * sampleWidth is a positive integer which specifies the number of bits in a
   virtual sample.
