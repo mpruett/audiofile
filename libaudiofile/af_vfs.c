@@ -43,10 +43,12 @@ af_virtual_file_destroy(AF_VirtualFile *vfile)
   free(vfile);
 }
 
-size_t
-af_fread(void *data, size_t size, size_t nmemb, AF_VirtualFile *vfile)
+size_t af_fread (void *data, size_t size, size_t nmemb, AFvirtualfile *vfile)
 {
-  if(vfile->read) {
+  if (size == 0 || nmemb == 0)
+    return 0;
+
+  if (vfile->read) {
     int retval;
 
     retval = (* vfile->read) (vfile, data, size * nmemb);
@@ -56,10 +58,13 @@ af_fread(void *data, size_t size, size_t nmemb, AF_VirtualFile *vfile)
     return 0;
 }
 
-size_t
-af_fwrite(const void *data, size_t size, size_t nmemb, AF_VirtualFile *vfile)
+size_t af_fwrite (const void *data, size_t size, size_t nmemb,
+	AFvirtualfile *vfile)
 {
-  if(vfile->write) {
+  if (size == 0 || nmemb == 0)
+    return 0;
+
+  if (vfile->write) {
     int retval;
 
     retval = (* vfile->write) (vfile, data, size * nmemb);

@@ -1,3 +1,11 @@
+2001-06-05  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/af_vfs.c: Prevent division by zero in af_fread
+	and af_fwrite when size is zero.
+
+	* libaudiofile/aiff.c: Check that the number of markers in a
+	MARK chunk is positive before allocating markers.
+
 2001-05-19  Michael Pruett <mpruett@sgi.com>
 
 	* libaudiofile/nist.[ch]: Checked in support for recognizing

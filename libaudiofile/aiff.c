@@ -286,7 +286,8 @@ static status ParseMARK (AFfilehandle file, AF_VirtualFile *fh, u_int32_t type,
 	numMarkers = BENDIAN_TO_HOST_INT16(numMarkers);
 
 	track->markerCount = numMarkers;
-	track->markers = _af_marker_new(numMarkers);
+	if (numMarkers)
+		track->markers = _af_marker_new(numMarkers);
 
 	for (i=0; i<numMarkers; i++)
 	{
