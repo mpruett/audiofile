@@ -1,3 +1,8 @@
+2001-05-19  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/nist.[ch]: Checked in support for recognizing
+	NIST SPHERE files.
+
 2001-05-16  Michael Pruett <mpruett@sgi.com>
 
 	* libaudiofile/query.c: Backing out last change.  The file
