@@ -1,6 +1,6 @@
 noinst_LTLIBRARIES = libmodules.la
 
-INCLUDES = -I..
+INCLUDES = -I$(srcdir)/..
 
 libmodules_la_SOURCES = \
 	g711.c g711.h \

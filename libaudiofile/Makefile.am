@@ -2,8 +2,6 @@
 
 SUBDIRS = modules
 
-INCLUDES = -I.
-
 lib_LTLIBRARIES = libaudiofile.la
 
 libaudiofile_la_SOURCES = \
