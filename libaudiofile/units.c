@@ -37,6 +37,7 @@
 #include "next.h"
 #include "wave.h"
 #include "ircam.h"
+#include "nist.h"
 
 #include "compression.h"
 
@@ -142,6 +143,61 @@ _Unit _af_units[_AF_NUM_UNITS] =
 		0,	/* maximum number of loops per instrument */
 		0,	/* number of instrument parameters */
 		NULL	/* instrument parameters */
+	},
+	{
+		AF_FILE_MPEG1BITSTREAM,
+		"MPEG", "MPEG Audio Bitstream", "mpeg",
+		AF_FALSE
+	},
+	{
+		AF_FILE_SOUNDDESIGNER1,
+		"Sound Designer 1", "Sound Designer 1 File Format", "sd1",
+		AF_FALSE
+	},
+	{
+		AF_FILE_SOUNDDESIGNER2,
+		"Sound Designer 2", "Sound Designer 2 File Format", "sd2",
+		AF_FALSE
+	},
+	{
+		AF_FILE_AVR,
+		"AVR", "Audio Visual Research File Format", "avr",
+		AF_FALSE
+	},
+	{
+		AF_FILE_IFF_8SVX,
+		"IFF/8SVX", "Amiga IFF/8SVX Sound File Format", "iff",
+		AF_FALSE
+	},
+	{
+		AF_FILE_SAMPLEVISION,
+		"Sample Vision", "Sample Vision File Format", "smp",
+		AF_FALSE
+	},
+	{
+		AF_FILE_VOC,
+		"VOC", "Creative Voice File Format", "voc",
+		AF_FALSE
+	},
+	{
+		AF_FILE_NIST_SPHERE,
+		"NIST SPHERE", "NIST SPHERE File Format", "nist",
+		AF_TRUE, NULL, _af_nist_complete_setup,
+		{_af_nist_recognize, _af_nist_read_init},
+		{_af_nist_write_init, NULL, _af_nist_update},
+		AF_SAMPFMT_TWOSCOMP, 16,
+		0,	/* number of compression types */
+		NULL,	/* compression types */
+		0,	/* maximum marker count */
+		0,	/* maximum instrument count */
+		0,	/* maximum number of loops per instrument */
+		0,	/* number of instrument parameters */
+		NULL	/* instrument parameters */
+	},
+	{
+		AF_FILE_SOUNDFONT2,
+		"SoundFont 2", "SoundFont 2 File Format", "sf2",
+		AF_FALSE
 	}
 };
 

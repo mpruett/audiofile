@@ -1,3 +1,15 @@
+2004-01-15  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/Makefile.am, libaudiofile/nist.c,
+	libaudiofile/nist.h, libaudiofile/nistwrite.c: Add support for
+	reading and writing NIST SPHERE files.
+
+	* libaudiofile/audiofile.h: Add constants for new file
+	formats.
+
+	* libaudiofile/units.c, libaudiofile/units.h: Define units for
+	new file formats.
+
 2004-01-12  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/Makefile.am, libaudiofile/util.[ch],

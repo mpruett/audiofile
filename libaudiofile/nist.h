@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 2001, Silicon Graphics, Inc.
+	Copyright (C) 2004, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -21,7 +21,7 @@
 /*
 	nist.h
 
-	This file declares code for recognizing NIST SPHERE files.
+	This file declares code for reading and writing NIST SPHERE files.
 */
 
 #ifndef NIST_H
@@ -29,6 +29,13 @@
 
 #include "audiofile.h"
 
+#define NIST_SPHERE_HEADER_LENGTH 1024
+#define NIST_SPHERE_MAX_FIELD_LENGTH 80
+
 bool _af_nist_recognize (AFvirtualfile *fh);
+AFfilesetup _af_nist_complete_setup (AFfilesetup setup);
+status _af_nist_read_init (AFfilesetup setup, AFfilehandle handle);
+status _af_nist_write_init (AFfilesetup setup, AFfilehandle handle);
+status _af_nist_update (AFfilehandle file);
 
 #endif /* NIST_H */

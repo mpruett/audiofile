@@ -83,7 +83,16 @@ enum
 	AF_FILE_NEXTSND = 3,
 	AF_FILE_WAVE = 4,
 	AF_FILE_BICSF = 5,
-	AF_FILE_IRCAM = AF_FILE_BICSF
+	AF_FILE_IRCAM = AF_FILE_BICSF,
+	AF_FILE_MPEG1BITSTREAM = 6,	/* not implemented */
+	AF_FILE_SOUNDDESIGNER1 = 7,	/* not implemented */
+	AF_FILE_SOUNDDESIGNER2 = 8,	/* not implemented */
+	AF_FILE_AVR = 9,		/* not implemented */
+	AF_FILE_IFF_8SVX = 10,		/* not implemented */
+	AF_FILE_SAMPLEVISION = 11,	/* not implemented */
+	AF_FILE_VOC = 12,		/* not implemented */
+	AF_FILE_NIST_SPHERE = 13,
+	AF_FILE_SOUNDFONT2 = 14		/* not implemented */
 };
 
 enum
