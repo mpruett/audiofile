@@ -1,3 +1,8 @@
+2001-08-29  Michael Pruett <mpruett@sgi.com>
+
+	* test/pipe.{c,sh}: Added simple test of Audio File Library
+	operation on non-seekable file handles.
+
 2001-08-28  Michael Pruett <mpruett@sgi.com>
 
 	* libaudiofile/openclose.c: Applied Chris Wolf's patch invoking

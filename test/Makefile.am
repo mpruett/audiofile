@@ -24,15 +24,16 @@ noinst_PROGRAMS = \
 	testfloat \
 	twentyfour \
 	power \
+	pipe \
 	@TEST_BIN@
 
-EXTRA_DIST = transparency.sh misc.sh
+EXTRA_DIST = transparency.sh misc.sh pipe.sh
 
 EXTRA_PROGRAMS = irixread irixtestloop linuxtest
 
 TESTS = error writeaiff writeircam writenext writewave \
 	writeulaw writealaw \
-	misc.sh transparency.sh \
+	misc.sh transparency.sh pipe.sh \
 	query2 sixteen-to-eight twentyfour floatto24 testfloat
 
 irixread_SOURCES = irixread.c sgi.c sgi.h
@@ -44,5 +45,6 @@ irixtestloop_LDADD = $(top_builddir)/libaudiofile/libaudiofile.la @AUDIO_LIB@
 linuxtest_SOURCES = linuxtest.c
 
 LDADD = $(top_builddir)/libaudiofile/libaudiofile.la
+LDFLAGS = -static
 
 DEPENDENCIES = $(top_builddir)/libaudiofile/libaudiofile.la
