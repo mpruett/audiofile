@@ -648,6 +648,17 @@ status _af_filesetup_make_handle (AFfilesetup setup, AFfilehandle handle)
 			}
 
 			track->hasAESData = tracksetup->aesDataSet;
+
+			track->ms.modulesdirty = AF_TRUE;
+			track->ms.nmodules = 0;
+			track->ms.chunk = NULL;
+			track->ms.module = NULL;
+			track->ms.buffer = NULL;
+
+			track->ms.filemodinst.valid = AF_FALSE;
+			track->ms.filemod_rebufferinst.valid = AF_FALSE;
+			track->ms.rateconvertinst.valid = AF_FALSE;
+			track->ms.rateconvert_rebufferinst.valid = AF_FALSE;
 		}
 	}
 
