@@ -41,7 +41,7 @@ void printfileinfo (char *filename)
 {
 	int		version;
 	AFfilehandle	file;
-	int		sampleFormat, sampleWidth, byteOrder;
+	int		sampleFormat, sampleWidth, byteOrder, compressionType;
 	char		*copyright, *formatstring, *labelstring;
 
 	file = afOpenFile(filename, "r", NULL);
@@ -65,33 +65,52 @@ void printfileinfo (char *filename)
 
 	printf("Data Format    ");
 
-	switch (sampleFormat)
+	compressionType = afGetCompression(file, AF_DEFAULT_TRACK);
+
+	if (compressionType == AF_COMPRESSION_NONE)
 	{
-		case AF_SAMPFMT_TWOSCOMP:
-			printf("%d-bit integer (2's complement, %s)\n",
-				sampleWidth,
-				byteOrder == AF_BYTEORDER_BIGENDIAN ?
-					"big endian" : "little endian");
-			break;
-		case AF_SAMPFMT_UNSIGNED:
-			printf("%d-bit integer (unsigned, %s)\n", sampleWidth,
-				byteOrder == AF_BYTEORDER_BIGENDIAN ?
-					"big endian" : "little endian");
-			break;
-		case AF_SAMPFMT_FLOAT:
-			printf("single-precision (32-bit) floating point, %s\n",
-				byteOrder == AF_BYTEORDER_BIGENDIAN ?
-					"big endian" : "little endian");
-			break;
-		case AF_SAMPFMT_DOUBLE:
-			printf("double-precision (64-bit) floating point, %s\n",
-				byteOrder == AF_BYTEORDER_BIGENDIAN ?
-					"big endian" : "little endian");
-			break;
-		default:
-			printf("unknown\n");
-			break;
+		switch (sampleFormat)
+		{
+			case AF_SAMPFMT_TWOSCOMP:
+				printf("%d-bit integer (2's complement, %s)",
+					sampleWidth,
+					byteOrder == AF_BYTEORDER_BIGENDIAN ?
+						"big endian" : "little endian");
+				break;
+			case AF_SAMPFMT_UNSIGNED:
+				printf("%d-bit integer (unsigned, %s)",
+					sampleWidth,
+					byteOrder == AF_BYTEORDER_BIGENDIAN ?
+						"big endian" : "little endian");
+				break;
+			case AF_SAMPFMT_FLOAT:
+				printf("single-precision (32-bit) floating point, %s",
+					byteOrder == AF_BYTEORDER_BIGENDIAN ?
+						"big endian" : "little endian");
+				break;
+			case AF_SAMPFMT_DOUBLE:
+				printf("double-precision (64-bit) floating point, %s",
+					byteOrder == AF_BYTEORDER_BIGENDIAN ?
+						"big endian" : "little endian");
+				break;
+			default:
+				printf("unknown");
+				break;
+		}
 	}
+	else
+	{
+		char	*compressionName;
+		compressionName = afQueryPointer(AF_QUERYTYPE_COMPRESSION,
+			AF_QUERY_NAME, compressionType,
+			0, 0);
+
+		if (compressionName == NULL)
+			printf("unknown compression");
+		else
+			printf("%s compression", compressionName);
+	}
+	printf("\n");
 
 	printf("Audio Data     %ld bytes begins at offset %ld (%lx hex)\n",
 		afGetTrackBytes(file, AF_DEFAULT_TRACK),
