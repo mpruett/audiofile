@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 1998-2000, Michael Pruett <michael@68k.org>
+	Copyright (C) 1998-2000, 2003, Michael Pruett <michael@68k.org>
 	Copyright (C) 2000, Silicon Graphics, Inc.
 
 	This library is free software; you can redistribute it and/or
@@ -153,7 +153,10 @@ static status ParseMiscellaneous (AFfilehandle file, AFvirtualfile *fh,
 	assert(!memcmp(&type, "NAME", 4) || !memcmp(&type, "AUTH", 4) ||
 		!memcmp(&type, "(c) ", 4) || !memcmp(&type, "ANNO", 4) ||
 		!memcmp(&type, "APPL", 4) || !memcmp(&type, "MIDI", 4));
-	assert(size >= 0);
+
+	/* Skip zero-length miscellaneous chunks. */
+	if (size == 0)
+		return AF_FAIL;
 
 	file->miscellaneousCount++;
 	file->miscellaneous = _af_realloc(file->miscellaneous,
@@ -417,6 +420,15 @@ static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 			track->f.sampleWidth = 64;
 			track->f.compressionType = AF_COMPRESSION_NONE;
 		}
+		else
+		{
+			_af_error(AF_BAD_NOT_IMPLEMENTED, "AIFF-C compression type '%c%c%c%c' not currently supported",
+				compressionID[0],
+				compressionID[1],
+				compressionID[2],
+				compressionID[3]);
+			return AF_FAIL;
+		}
 	}
 
 	_af_set_sample_format(&track->f, track->f.sampleFormat, track->f.sampleWidth);
@@ -517,6 +529,7 @@ status _af_aiff_read_init (AFfilesetup setup, AFfilehandle file)
 	while (index < size)
 	{
 		u_int32_t	chunkid = 0, chunksize = 0;
+		status		result = AF_SUCCEED;
 
 #ifdef DEBUG
 		printf("index: %d\n", index);
@@ -533,7 +546,7 @@ status _af_aiff_read_init (AFfilesetup setup, AFfilehandle file)
 		if (!memcmp("COMM", &chunkid, 4))
 		{
 			hasCOMM = AF_TRUE;
-			ParseCOMM(file, file->fh, chunkid, chunksize);
+			result = ParseCOMM(file, file->fh, chunkid, chunksize);
 		}
 		else if (!memcmp("FVER", &chunkid, 4))
 		{
@@ -576,8 +589,11 @@ status _af_aiff_read_init (AFfilesetup setup, AFfilehandle file)
 				return AF_FAIL;
 			}
 			hasSSND = AF_TRUE;
-			ParseSSND(file, file->fh, chunkid, chunksize);
+			result = ParseSSND(file, file->fh, chunkid, chunksize);
 		}
+
+		if (result == AF_FAIL)
+			return AF_FAIL;
 
 		index += chunksize + 8;
 

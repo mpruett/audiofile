@@ -1,5 +1,12 @@
 2003-12-17  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/aiff.c: When reading an AIFF-C file with an
+	unknown compression type, return an error.
+
+	* libaudiofile/aiff.c: Skip zero-length miscellaneous chunks.
+
+2003-12-17  Michael Pruett <michael@68k.org>
+
 	Fix two bugs related to processing 24-bit audio data.
 
 	* libaudiofile/data.c: Fix calculation of bytes per virtual frame
