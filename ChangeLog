@@ -1,6 +1,9 @@
 2003-12-03  Michael Pruett <michael@68k.org>
 
 	* sfcommands/sfconvert.c: Fix argument parsing in sfconvert.
+	* sfcommands/printinfo.c: Fix format strings to handle different
+	sizes of off_t when printing track byte count, data offset,
+	and frame count.
 
 2003-10-01  Michael Pruett <michael@68k.org>
 

@@ -26,6 +26,10 @@
 	information regarding a file.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifdef __USE_SGI_HEADERS__
 #include <dmedia/audiofile.h>
 #else
@@ -112,11 +116,20 @@ void printfileinfo (char *filename)
 	}
 	printf("\n");
 
+#if SIZEOF_OFF_T > SIZEOF_LONG
+	printf("Audio Data     %lld bytes begins at offset %lld (%llx hex)\n",
+#else
 	printf("Audio Data     %ld bytes begins at offset %ld (%lx hex)\n",
+#endif
 		afGetTrackBytes(file, AF_DEFAULT_TRACK),
 		afGetDataOffset(file, AF_DEFAULT_TRACK),
 		afGetDataOffset(file, AF_DEFAULT_TRACK));
+
+#if SIZEOF_OFF_T > SIZEOF_LONG
+	printf("               %d channel%s, %lld frames\n",
+#else
 	printf("               %d channel%s, %ld frames\n",
+#endif
 		afGetChannels(file, AF_DEFAULT_TRACK),
 		afGetChannels(file, AF_DEFAULT_TRACK) > 1 ? "s" : "",
 		afGetFrameCount(file, AF_DEFAULT_TRACK));
