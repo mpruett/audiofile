@@ -1,3 +1,9 @@
+2004-02-18  Michael Pruett <michael@68k.org>
+
+	* test/Makefile.am, test/writeavr.c. test/writeiff.c,
+	test/writenist.c: Add regression tests for AVR, IFF/8SVX, and
+	NIST SPHERE file formats.
+
 2004-02-14  Michael Pruett <michael@68k.org>
 
 	* configure.in, examples/Makefile.am, examples/osxplay.c: Add

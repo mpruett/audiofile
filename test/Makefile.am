@@ -13,6 +13,9 @@ noinst_PROGRAMS = \
 	writenext \
 	writewave \
 	writeraw \
+	writeavr \
+	writeiff \
+	writenist \
 	writeulaw \
 	writealaw \
 	loop \
@@ -31,6 +34,7 @@ noinst_PROGRAMS = \
 EXTRA_DIST = transparency.sh misc.sh pipe.sh
 
 TESTS = error writeaiff writeircam writenext writewave writeraw \
+	writeavr writeiff writenist \
 	writeulaw writealaw \
 	misc.sh transparency.sh pipe.sh \
 	query2 sixteen-to-eight twentyfour twentyfour2 floatto24 \
