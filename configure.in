@@ -81,6 +81,12 @@ case "$host_os" in
     TEST_BIN="irixread irixtestloop"
     platform=irix
     ;;
+  darwin*)
+    if test -e /System/Library/Frameworks/CoreAudio.framework; then
+      TEST_BIN="osxplay"
+      platform="Mac OS X"
+    fi
+    ;;
 esac
 AC_MSG_RESULT($platform)
 AC_SUBST(TEST_BIN)

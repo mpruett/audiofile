@@ -1,3 +1,9 @@
+2004-02-14  Michael Pruett <michael@68k.org>
+
+	* configure.in, examples/Makefile.am, examples/osxplay.c: Add
+	example program for Mac OS X demonstrating audio file playback
+	using the Audio File Library and Core Audio.
+
 2004-02-09  Michael Pruett <michael@68k.org>
 
 	Fabrizio Gennari has contributed several Windows-related fixes:
