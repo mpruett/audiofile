@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <assert.h>
+#include <string.h>
 #include <math.h>
 
 #include <audiofile.h>
