@@ -29,31 +29,27 @@
 
 #include <stdio.h>
 
-/*
-	Note: AF_VirtualFile and _AF_VirtualFile will be renamed to
-	AFvirtualfile and _AFvirtualfile in the near future.
-*/
-struct _AF_VirtualFile
+struct _AFvirtualfile
 {
-  int  (*read)   (AF_VirtualFile *vfile, unsigned char *data, int nbytes);
-  long (*length) (AF_VirtualFile *vfile);
-  int  (*write)  (AF_VirtualFile *vfile, const unsigned char *data, int nbytes);
-  void (*destroy)(AF_VirtualFile *vfile);
-  long (*seek)   (AF_VirtualFile *vfile, long offset, int is_relative);
-  long (*tell)   (AF_VirtualFile *vfile);
+  ssize_t (*read) (AFvirtualfile *vfile, void *data, size_t nbytes);
+  long (*length) (AFvirtualfile *vfile);
+  ssize_t (*write) (AFvirtualfile *vfile, const void *data, size_t nbytes);
+  void (*destroy)(AFvirtualfile *vfile);
+  long (*seek)   (AFvirtualfile *vfile, long offset, int is_relative);
+  long (*tell)   (AFvirtualfile *vfile);
 
   void *closure;
 };
 
-AF_VirtualFile *af_virtual_file_new(void);
-AF_VirtualFile *af_virtual_file_new_for_file(FILE *fh);
-void af_virtual_file_destroy(AF_VirtualFile *vfile);
+AFvirtualfile *af_virtual_file_new (void);
+AFvirtualfile *af_virtual_file_new_for_file (FILE *fh);
+void af_virtual_file_destroy (AFvirtualfile *vfile);
 
-size_t af_fread(void *data, size_t size, size_t nmemb, AF_VirtualFile *vfile);
-size_t af_fwrite(const void *data, size_t size, size_t nmemb, AF_VirtualFile *vfile);
-int af_fclose(AF_VirtualFile *vfile);
-long af_flength(AF_VirtualFile *vfile);
-int af_fseek(AF_VirtualFile *vfile, long offset, int whence);
-long af_ftell(AF_VirtualFile *vfile);
+size_t af_fread (void *data, size_t size, size_t nmemb, AFvirtualfile *vfile);
+size_t af_fwrite (const void *data, size_t size, size_t nmemb, AFvirtualfile *vfile);
+int af_fclose (AFvirtualfile *vfile);
+long af_flength (AFvirtualfile *vfile);
+int af_fseek (AFvirtualfile *vfile, long offset, int whence);
+long af_ftell (AFvirtualfile *vfile);
 
 #endif

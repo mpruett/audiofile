@@ -38,12 +38,7 @@ extern "C"
 {
 #endif /* __cplusplus */
 
-/*
-	AFvirtualfile is the preferred type to use; AF_VirtualFile will go
-	away.
-*/
-typedef struct _AF_VirtualFile AFvirtualfile;
-typedef struct _AF_VirtualFile AF_VirtualFile;
+typedef struct _AFvirtualfile AFvirtualfile;
 
 typedef struct _AFfilesetup *AFfilesetup;
 typedef struct _AFfilehandle *AFfilehandle;
@@ -402,7 +397,8 @@ int afIdentifyNamedFD (int, const char *filename, int *implemented);
 
 AFfilehandle afOpenFile (const char *filename, const char *mode,
 	AFfilesetup setup);
-AFfilehandle afOpenVirtualFile(AF_VirtualFile *vfile, const char *mode, AFfilesetup setup);
+AFfilehandle afOpenVirtualFile (AFvirtualfile *vfile, const char *mode,
+	AFfilesetup setup);
 AFfilehandle afOpenFD (int fd, const char *mode, AFfilesetup setup);
 AFfilehandle afOpenNamedFD (int fd, const char *mode, AFfilesetup setup,
 	const char *filename);

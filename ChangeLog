@@ -6,6 +6,10 @@
 	* test/testfloat.c: Add a test for reading and writing
 	floating-point audio files.
 
+	* libaudiofile/af_vfs.[ch]: Change the virtual file read and
+	write operations to use size_t and ssize_t as read(2) and
+	write(2) do.
+
 2001-07-07  Michael Pruett <mpruett@sgi.com>
 
 	* configure.in, test/Makefile.am: Link against libaudio.so only
