@@ -1,5 +1,9 @@
 2001-07-19  Michael Pruett <mpruett@sgi.com>
 
+	* Released version 0.2.2 of the Audio File Library.
+
+2001-07-19  Michael Pruett <mpruett@sgi.com>
+
 	* libaudiofile/format.c: Add afSetChannelMatrix and
 	afGetVirtualChannels.
 
