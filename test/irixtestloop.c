@@ -52,7 +52,8 @@ main (int argc, char **argv)
 	void		*buffer;
 
 	AFframecount	frameCount;
-	int		frameSize, sampleFormat, sampleWidth, channelCount;
+	int		sampleFormat, sampleWidth, channelCount;
+	float		frameSize;
 	double		sampleRate;
 
 	int		*loopids, *markids;
@@ -68,10 +69,22 @@ main (int argc, char **argv)
 
 	file = afOpenFile(argv[1], "r", NULL);
 	frameCount = afGetFrameCount(file, AF_DEFAULT_TRACK);
-	frameSize = afGetFrameSize(file, AF_DEFAULT_TRACK, 1);
-	channelCount = afGetChannels(file, AF_DEFAULT_TRACK);
-	afGetSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
+	frameSize = afGetVirtualFrameSize(file, AF_DEFAULT_TRACK, 1);
+	channelCount = afGetVirtualChannels(file, AF_DEFAULT_TRACK);
+	afGetVirtualSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
 	sampleRate = afGetRate(file, AF_DEFAULT_TRACK);
+
+	/*
+		If the file's sample format is unsigned integer data,
+		change the virtual sample format to two's complement
+		since the SGI Audio Library won't accept unsigned
+		data.
+	*/
+	if (sampleFormat == AF_SAMPFMT_UNSIGNED)
+	{
+		afSetVirtualSampleFormat(file, AF_DEFAULT_TRACK,
+			AF_SAMPFMT_TWOSCOMP, sampleWidth);
+	}
 
 	printf("frame count: %lld\n", frameCount);
 	printf("frame size: %d bytes\n", frameSize);
@@ -119,7 +132,8 @@ main (int argc, char **argv)
 	{
 		printf("iteration %d: start %lld, end %lld, length %lld\n",
 			i, endloop, startloop, endloop - startloop);
-		alWriteFrames(outport, (char *) buffer + startloop * frameSize,
+		alWriteFrames(outport,
+			(char *) buffer + (int) (startloop * frameSize),
 			endloop - startloop);
 	}
 

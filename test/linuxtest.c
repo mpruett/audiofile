@@ -1,7 +1,8 @@
 /*
 	Audio File Library
 
-	Copyright 1998-1999, Michael Pruett <michael@68k.org>
+	Copyright (c) 1998-1999, Michael Pruett <michael@68k.org>
+	Copyright (c) 2001, Silicon Graphics, Inc.
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License as
@@ -66,7 +67,8 @@ int main (int argc, char **argv)
 {
 	AFfilehandle	file;
 	AFframecount	frameCount, framesRead;
-	int		sampleFormat, sampleWidth, channelCount, frameSize;
+	int		sampleFormat, sampleWidth, channelCount;
+	float		frameSize;
 	void		*buffer;
 	int		audiofd;
 
@@ -77,10 +79,11 @@ int main (int argc, char **argv)
 	frameCount = afGetFrameCount(file, AF_DEFAULT_TRACK);
 	printf("frame count: %d\n", (int) frameCount);
 
-	channelCount = afGetChannels(file, AF_DEFAULT_TRACK);
-	afGetSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
+	channelCount = afGetVirtualChannels(file, AF_DEFAULT_TRACK);
+	afGetVirtualSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat,
+		&sampleWidth);
 
-	frameSize = afGetFrameSize(file, AF_DEFAULT_TRACK, 1);
+	frameSize = afGetVirtualFrameSize(file, AF_DEFAULT_TRACK, 1);
 
 	printf("sample format: %d, sample width: %d, channels: %d\n",
 		sampleFormat, sampleWidth, channelCount);
@@ -88,13 +91,13 @@ int main (int argc, char **argv)
 	if ((sampleFormat != AF_SAMPFMT_TWOSCOMP) &&
 		(sampleFormat != AF_SAMPFMT_UNSIGNED))
 	{
-		printf("The audio file must contain integer data in two's complement or unsigned format.\n");
+		fprintf(stderr, "The audio file must contain integer data in two's complement or unsigned format.\n");
 		exit(-1);
 	}
 
 	if ((sampleWidth != 16) || (channelCount > 2))
 	{
-		printf("The audio file must be of a 16-bit monophonic or stereophonic format.\n");
+		fprintf(stderr, "The audio file must be of a 16-bit monophonic or stereophonic format.\n");
 		exit(-1);
 	}
 

@@ -54,7 +54,8 @@ main (int argc, char **argv)
 {
 	AFfilehandle	file;
 	AFframecount	count, frameCount;
-	int		frameSize, channelCount, sampleFormat, sampleWidth;
+	int		channelCount, sampleFormat, sampleWidth;
+	float		frameSize;
 	void		*buffer;
 	double		sampleRate;
 
@@ -66,10 +67,17 @@ main (int argc, char **argv)
 
 	file = afOpenFile(argv[1], "r", NULL);
 	frameCount = afGetFrameCount(file, AF_DEFAULT_TRACK);
-	frameSize = afGetFrameSize(file, AF_DEFAULT_TRACK, 1);
-	channelCount = afGetChannels(file, AF_DEFAULT_TRACK);
+	frameSize = afGetVirtualFrameSize(file, AF_DEFAULT_TRACK, 1);
+	channelCount = afGetVirtualChannels(file, AF_DEFAULT_TRACK);
 	sampleRate = afGetRate(file, AF_DEFAULT_TRACK);
-	afGetSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
+	afGetVirtualSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat,
+		&sampleWidth);
+
+	if (sampleFormat == AF_SAMPFMT_UNSIGNED)
+	{
+		afSetVirtualSampleFormat(file, AF_DEFAULT_TRACK,
+			AF_SAMPFMT_TWOSCOMP, sampleWidth);
+	}
 
 	printf("frame count: %d\n", frameCount);
 	printf("frame size: %d bytes\n", frameSize);
