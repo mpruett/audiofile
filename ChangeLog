@@ -1,3 +1,8 @@
+2003-09-29  Michael Pruett <michael@68k.org>
+
+	* test/seek.c: Include <string.h> for memcmp.  Thanks to Christian
+	Weisgerber for catching this omission.
+
 2003-09-25  Michael Pruett <michael@68k.org>
 
 	* Released version 0.2.4 of the Audio File Library.
