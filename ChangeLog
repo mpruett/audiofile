@@ -1,3 +1,17 @@
+2001-04-19  Michael Pruett <mpruett@sgi.com>
+
+	* sfcommands/sfconvert.c: Make sfconvert use the sample rate of
+	the input file.
+
+2001-04-09  Michael Pruett <mpruett@sgi.com>
+
+	* Include <string.h> in source files which use string functions.
+	(Thanks to Michael Madore for pointing out this omission.)
+	* Fix calculation of file position for G.711 compression.
+	(Thanks to Bruce Forsberg for pointing out this bug.)
+	* configure.in: Check for int{8,16,32}_t and define them
+	appropriately if they are missing.
+
 2001-02-20  Michael Pruett <mpruett@sgi.com>
 
 	* Released version 0.2.1.

@@ -51,10 +51,13 @@ AC_CHECK_SIZEOF(off_t)
 AC_CHECK_SIZEOF(size_t)
 AC_CHECK_SIZEOF(long)
 
-dnl Workaround the lack of these typedefs
+dnl Workaround the lack of these types.
 AC_CHECK_TYPE(u_int8_t, unsigned char)
 AC_CHECK_TYPE(u_int16_t, unsigned short)
 AC_CHECK_TYPE(u_int32_t, unsigned int)
+AC_CHECK_TYPE(int8_t, signed char)
+AC_CHECK_TYPE(int16_t, short)
+AC_CHECK_TYPE(int32_t, int)
 
 dnl Checks for library functions.
 AC_PROG_GCC_TRADITIONAL

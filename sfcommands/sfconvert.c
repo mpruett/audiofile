@@ -1,6 +1,7 @@
 /*
 	Audio File Library
 
+	Copyright 2001, Silicon Graphics, Inc.
 	Copyright 1998, Michael Pruett <michael@68k.org>
 
 	This program is free software; you can redistribute it and/or
@@ -25,7 +26,7 @@
 	sfconvert is a program which can convert various parameters of
 	sound files.
 
-	The real Irix version has a lot of options.  Mine can only
+	The real IRIX version has a lot of options.  Mine can only
 	convert the file format.  I'm working on expanding the
 	capabilities of this command.
 */
@@ -38,24 +39,24 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 void usageerror (void);
 void printfileinfo (char *filename);
 
 int main (int argc, char **argv)
 {
-	int		i = 1;
+	int	i = 1;
 	char	*infilename, *outfilename;
-	int		format = AF_FILE_UNKNOWN;
+	int	format = AF_FILE_UNKNOWN;
 
 	AFfilehandle	infile, outfile;
-	AFfilesetup		outfilesetup;
-	int				sampleFormat, sampleWidth, channelCount;
-	char			*buffer;
+	AFfilesetup	outfilesetup;
+	int		sampleFormat, sampleWidth, channelCount;
+	double		sampleRate;
+	char		*buffer;
 
 	AFframecount	frameCount;
-	int				frameSize;
+	int		frameSize;
 
 	if (argc < 3)
 		usageerror();
@@ -111,6 +112,7 @@ int main (int argc, char **argv)
 	frameCount = afGetFrameCount(infile, AF_DEFAULT_TRACK);
 	frameSize = afGetFrameSize(infile, AF_DEFAULT_TRACK, 1);
 	channelCount = afGetChannels(infile, AF_DEFAULT_TRACK);
+	sampleRate = afGetRate(infile, AF_DEFAULT_TRACK);
 	afGetSampleFormat(infile, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
 
 	buffer = malloc(frameCount * frameSize);
@@ -123,6 +125,7 @@ int main (int argc, char **argv)
 	afInitChannels(outfilesetup, AF_DEFAULT_TRACK, channelCount);
 	afInitSampleFormat(outfilesetup, AF_DEFAULT_TRACK, sampleFormat,
 		sampleWidth);
+	afInitRate(outfilesetup, AF_DEFAULT_TRACK, sampleRate);
 
 	outfile = afOpenFile(outfilename, "w", outfilesetup);
 	if (outfile == AF_NULL_FILEHANDLE)
