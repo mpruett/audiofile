@@ -395,6 +395,84 @@ AUpvlist _af_pv_pointer (void *val)
 	return ret;
 }
 
+bool _af_pv_getlong (AUpvlist pvlist, int param, long *l)
+{
+	int	i;
+
+	for (i=0; i<AUpvgetmaxitems(pvlist); i++)
+	{
+		int	p, t;
+
+		AUpvgetparam(pvlist, i, &p);
+
+		if (p != param)
+			continue;
+
+		AUpvgetvaltype(pvlist, i, &t);
+
+		/* Ensure that this parameter is of type AU_PVTYPE_LONG. */
+		if (t != AU_PVTYPE_LONG)
+			return AF_FALSE;
+
+		AUpvgetval(pvlist, i, l);
+		return AF_TRUE;
+	}
+
+	return AF_FALSE;
+}
+
+bool _af_pv_getdouble (AUpvlist pvlist, int param, double *d)
+{
+	int	i;
+
+	for (i=0; i<AUpvgetmaxitems(pvlist); i++)
+	{
+		int	p, t;
+
+		AUpvgetparam(pvlist, i, &p);
+
+		if (p != param)
+			continue;
+
+		AUpvgetvaltype(pvlist, i, &t);
+
+		/* Ensure that this parameter is of type AU_PVTYPE_DOUBLE. */
+		if (t != AU_PVTYPE_DOUBLE)
+			return AF_FALSE;
+
+		AUpvgetval(pvlist, i, d);
+		return AF_TRUE;
+	}
+
+	return AF_FALSE;
+}
+
+bool _af_pv_getptr (AUpvlist pvlist, int param, void **v)
+{
+	int	i;
+
+	for (i=0; i<AUpvgetmaxitems(pvlist); i++)
+	{
+		int	p, t;
+
+		AUpvgetparam(pvlist, i, &p);
+
+		if (p != param)
+			continue;
+
+		AUpvgetvaltype(pvlist, i, &t);
+
+		/* Ensure that this parameter is of type AU_PVTYPE_PTR. */
+		if (t != AU_PVTYPE_PTR)
+			return AF_FALSE;
+
+		AUpvgetval(pvlist, i, v);
+		return AF_TRUE;
+	}
+
+	return AF_FALSE;
+}
+
 _TrackSetup *_af_filesetup_get_tracksetup (AFfilesetup setup, int trackid)
 {
 	int	i;

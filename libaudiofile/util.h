@@ -52,6 +52,10 @@ AUpvlist _af_pv_long (long val);
 AUpvlist _af_pv_double (double val);
 AUpvlist _af_pv_pointer (void *val);
 
+bool _af_pv_getlong (AUpvlist pvlist, int param, long *l);
+bool _af_pv_getdouble (AUpvlist pvlist, int param, double *d);
+bool _af_pv_getptr (AUpvlist pvlist, int param, void **v);
+
 _TrackSetup *_af_filesetup_get_tracksetup (AFfilesetup setup, int trackid);
 _Track *_af_filehandle_get_track (AFfilehandle file, int trackid);
 

@@ -1,3 +1,8 @@
+2001-08-04  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/util.c, libaudiofile/util.h: Add utility
+	routines _af_pv_getlong, _af_pv_getdouble, and _af_pv_getptr.
+
 2001-07-19  Michael Pruett <mpruett@sgi.com>
 
 	* Released version 0.2.2 of the Audio File Library.
