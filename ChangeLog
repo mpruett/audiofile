@@ -1,3 +1,31 @@
+2001-06-28  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/pcm.c: Added afInitPCMMapping(),
+	afGetPCMMapping(), and afGetVirtualPCMMapping().
+
+2001-06-28  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/{wave.c,wavewrite.c}: Improved support for
+	floating-point WAVE files.
+
+	* libaudiofile/wave.c: Made error messages more informative for
+	currently unsupported data formats such as ADPCM and MPEG
+	audio.
+
+	* libaudiofile/wave.h: Declared additional WAVE format tag
+	constants.
+
+2001-06-28  Mark Murnane <mark.murnane@sun.com>
+
+	* libaudiofile/{openclose.c,track.c}: Included string.h to
+	ensure proper declaration of memset().
+
+	* libaudiofile/util.c: Ditto for memset(), strlen() and strcpy().
+
+	* libaudiofile/modules/g711.c: Ditto for strerror().
+
+	* sfcommands/sfconvert.c: Ditto for strcmp().
+
 2001-06-19  Michael Pruett <mpruett@sgi.com>
 
 	* test/power.c: Adding a new example program which calculates

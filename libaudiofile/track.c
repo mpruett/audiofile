@@ -26,7 +26,9 @@
 */
 
 #include <stddef.h>
+#include <string.h>
 #include <assert.h>
+
 #include "audiofile.h"
 #include "afinternal.h"
 #include "util.h"

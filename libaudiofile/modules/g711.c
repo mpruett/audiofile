@@ -24,9 +24,11 @@
 
 #include <unistd.h>
 #include <errno.h>
+#include <string.h>
 #include <assert.h>
 
 #include <audiofile.h>
+
 #include "afinternal.h"
 #include "modules.h"
 #include "units.h"
