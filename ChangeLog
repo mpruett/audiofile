@@ -1,3 +1,15 @@
+2001-04-25  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/query.c: Although the documentation states that
+	certain selectors return an array of integers, the AUpv structure
+	uses only long integers.  I'm resolving the ambiguity in the
+	documentation by making such selectors return an array of long
+	integers.
+
+	This change has no impact on platforms where sizeof (int) ==
+	sizeof (long), but it makes the query system consistent on
+	platforms where the above is not the case.
+
 2001-04-23  Michael Pruett <mpruett@sgi.com>
 
 	* libaudiofile/wavewrite.c: Fixed a bug seen on 64-bit systems
