@@ -1,3 +1,8 @@
+2001-07-04  Michael Pruett <mpruett@sgi.com>
+
+	* test/floatto24.c: Added program to test virtual sample format
+	conversion from float to 24-bit signed integer.
+
 2001-06-28  Michael Pruett <mpruett@sgi.com>
 
 	* libaudiofile/pcm.c: Added afInitPCMMapping(),

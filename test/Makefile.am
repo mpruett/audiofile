@@ -5,6 +5,7 @@ noinst_PROGRAMS = \
 	bitdepth \
 	copy \
 	error \
+	floatto24 \
 	transparency \
 	miscread \
 	miscwrite \
@@ -32,7 +33,7 @@ EXTRA_PROGRAMS = irixread irixtest irixtestloop linuxtest
 TESTS = error writeaiff writenext writewave \
 	writeulaw writealaw \
 	misc.sh transparency.sh \
-	query2 sixteen-to-eight twentyfour
+	query2 sixteen-to-eight twentyfour floatto24
 
 irixread_SOURCES = irixread.c sgi.c
 irixread_LDADD = -laudio $(top_builddir)/libaudiofile/libaudiofile.la
