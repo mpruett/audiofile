@@ -4,8 +4,8 @@ Michael Pruett <michael@68k.org>
 Short-term
 ----------
 
-Handle more compressed data formats, most importantly Ogg Vorbis.  GSM
-06.10 would also be nice.
+Handle more compressed data formats, most importantly Ogg Vorbis and FLAC.
+GSM 06.10 would also be nice.
 
 Handle sample rate conversion.
 

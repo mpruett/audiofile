@@ -1,12 +1,17 @@
-Audio File Library Development Notes
-Thursday, 25 October 2001
-Michael Pruett <mpruett@sgi.com>
+Audio File Library 0.2.4
+Development Notes
+Michael Pruett <michael@68k.org>
 
 ----
 
-The Audio File Library supports CCITT G.711 mu-law and A-law
-compression.  Many compressed data formats are not supported.  This is
-currently the most important issue to address.
+Large file support is now available on many systems by running configure
+with the flag --enable-largefile.  By default support for large files
+is turned off.  This option is unnecessary on systems where off_t is
+always 64 bits (e.g. IRIX, FreeBSD, NetBSD, OpenBSD, Mac OS X).
+
+The Audio File Library supports CCITT G.711 mu-law and A-law as well
+as IMA and MS ADPCM.  Many compressed data formats are not supported.
+This is currently the most important issue to address.
 
 Error handling is at the present quite robust, but more work can always
 be done in this area.
@@ -32,31 +37,7 @@ worth the effort.
 This version of the Audio File Library has been tested under the
 following operating environments:
 
-	mips-sgi-irix6.5 / IRIX 6.5 (MIPSpro cc 7.3.1.2m)
-	mips-sgi-irix6.5 / IRIX 6.5 (MIPSpro cc 7.2.1.3m)
-	mips-sgi-irix6.5 / IRIX 6.5 (gcc 2.8.1)
-	i686-pc-linux-gnu / Debian GNU/Linux 2.2 (gcc 2.95.2)
+	mips-sgi-irix6.5 / IRIX 6.5 (MIPSpro cc 7.4m)
+	i686-pc-linux-gnu / Debian GNU/Linux 3.0 (gcc 2.95.4)
 	i686-pc-linux-gnu / Red Hat Linux 7.1 (gcc 2.96)
-	i686-pc-linux-gnu / Red Hat Linux 6.1 (egcs 1.1.2)
-	powerpc-apple-linux-gnu / Debian GNU/Linux (gcc 2.95.4)
-
-The version of GNU cc shipped with some versions of Red Hat 7.0 [1] is
-known to fail on an internal compiler error while compiling some of the
-test programs:
-
-gcc -DHAVE_CONFIG_H -I. -I. -I.. -I../libaudiofile -g -O2 -c twentyfour.c
-twentyfour.c: In function `main':
-twentyfour.c:231: Internal error: Floating point exception.
-
-Updated versions of GNU cc available from Red Hat fix this problem.
-This problem is not present in Red Hat 7.1 [2].
-
-[1] On a Red Hat 7.0 system, gcc has the following version information:
-% gcc -v
-Reading specs from /usr/lib/gcc-lib/i386-redhat-linux/2.96/specs
-gcc version 2.96 20000731 (Red Hat Linux 7.0)
-
-[2] On a Red Hat 7.1 system, gcc has the following version information:
-% gcc -v
-Reading specs from /usr/lib/gcc-lib/i386-redhat-linux/2.96/specs
-gcc version 2.96 20000731 (Red Hat Linux 7.1 2.96-81)
+	sparc-sun-solaris2.8 / Solaris 8 (gcc 2.95.2)

@@ -1,8 +1,11 @@
-News for the Audio File Library version 0.2.3
-Michael Pruett <mpruett@sgi.com>
+News for the Audio File Library version 0.2.4
+Michael Pruett <michael@68k.org>
 
-Added support for IMA and MS ADPCM.
+Added support for large files.  This option is disabled by default; to
+enable large file support, run configure with the flag --enable-largefile.
 
-Added support for AF_QUERYTYPE_COMPRESSION.
+Improved support for markers in WAVE files.
+
+Added support for miscellaneous data in WAVE files.
 
 Cleaned up code in many places.
