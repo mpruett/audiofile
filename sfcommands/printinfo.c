@@ -123,7 +123,7 @@ void printfileinfo (char *filename)
 
 	printf("Sampling Rate  %.2f Hz\n", afGetRate(file, AF_DEFAULT_TRACK));
 
-	printf("Duration       %.2f seconds\n",
+	printf("Duration       %.3f seconds\n",
 		afGetFrameCount(file, AF_DEFAULT_TRACK) /
 		afGetRate(file, AF_DEFAULT_TRACK));
 
