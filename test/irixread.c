@@ -1,7 +1,8 @@
 /*
 	Audio File Library
 
-	Copyright 1998-1999, Michael Pruett <michael@68k.org>
+	Copyright (C) 1998-1999, Michael Pruett <michael@68k.org>
+	Copyright (C) 2001, Silicon Graphics, Inc.
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License as
@@ -49,21 +50,21 @@ void usage (void)
 	exit(-1);
 }
 
-main (int ac, char **av)
+main (int argc, char **argv)
 {
 	AFfilehandle	file;
 	AFframecount	count, frameCount;
-	int				frameSize, channelCount, sampleFormat, sampleWidth;
-	char			*buffer;
-	double			sampleRate;
+	int		frameSize, channelCount, sampleFormat, sampleWidth;
+	void		*buffer;
+	double		sampleRate;
 
-	ALport			outport;
-	ALconfig		outportconfig;
+	ALport		outport;
+	ALconfig	outportconfig;
 
-	if (ac < 2)
+	if (argc < 2)
 		usage();
 
-	file = afOpenFile(av[1], "r", NULL);
+	file = afOpenFile(argv[1], "r", NULL);
 	frameCount = afGetFrameCount(file, AF_DEFAULT_TRACK);
 	frameSize = afGetFrameSize(file, AF_DEFAULT_TRACK, 1);
 	channelCount = afGetChannels(file, AF_DEFAULT_TRACK);
@@ -74,15 +75,16 @@ main (int ac, char **av)
 	printf("frame size: %d bytes\n", frameSize);
 	printf("channel count: %d\n", channelCount);
 	printf("sample rate: %.2f Hz\n", sampleRate);
-	buffer = (char *) malloc(BUFFERED_FRAME_COUNT * frameSize);
+	buffer = malloc(BUFFERED_FRAME_COUNT * frameSize);
 
 	outportconfig = alNewConfig();
 	setwidth(outportconfig, sampleWidth);
+	setsampleformat(outportconfig, sampleFormat);
 	alSetChannels(outportconfig, channelCount);
 
 	count = afReadFrames(file, AF_DEFAULT_TRACK, buffer, BUFFERED_FRAME_COUNT);
 
-	outport = alOpenPort("dick", "w", outportconfig);
+	outport = alOpenPort("irixread", "w", outportconfig);
 	setrate(outport, sampleRate);
 
 	do
@@ -90,8 +92,10 @@ main (int ac, char **av)
 		printf("count = %d\n", count);
 		alWriteFrames(outport, buffer, count);
 
+		count = afReadFrames(file, AF_DEFAULT_TRACK, buffer,
+			BUFFERED_FRAME_COUNT);
 	}
-	while (count = afReadFrames(file, AF_DEFAULT_TRACK, buffer, BUFFERED_FRAME_COUNT));
+	while (count > 0);
 
 	waitport(outport);
 

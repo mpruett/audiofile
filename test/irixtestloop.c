@@ -1,7 +1,8 @@
 /*
 	Audio File Library
 
-	Copyright 1998-1999, Michael Pruett <michael@68k.org>
+	Copyright (C) 1998-1999, Michael Pruett <michael@68k.org>
+	Copyright (C) 2001, Silicon Graphics, Inc.
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License as
@@ -24,8 +25,8 @@
 
 	This file reads the loop points from a file (presumably AIFF) and
 	loops that part of the file several times.  Audio output is routed
-	to Irix's default audio output device.  This program will not
-	compile on any platform other than Irix.
+	to IRIX's default audio output device.  This program will not
+	compile on any platform other than IRIX.
 */
 
 #include <stdio.h>
@@ -48,19 +49,19 @@ void usage (void)
 main (int argc, char **argv)
 {
 	AFfilehandle	file;
-	char			*buffer;
+	void		*buffer;
 
 	AFframecount	frameCount;
-	int				frameSize, sampleFormat, sampleWidth, channelCount;
-	double			sampleRate;
+	int		frameSize, sampleFormat, sampleWidth, channelCount;
+	double		sampleRate;
 
-	int				*loopids, *markids;
-	int				i, loopCount, markCount;
-	int				startmarkid, endmarkid;
+	int		*loopids, *markids;
+	int		i, loopCount, markCount;
+	int		startmarkid, endmarkid;
 	AFframecount	startloop, endloop;
 
-	ALport			outport;
-	ALconfig		outportconfig;
+	ALport		outport;
+	ALconfig	outportconfig;
 
 	if (argc < 2)
 		usage();
@@ -72,7 +73,7 @@ main (int argc, char **argv)
 	afGetSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
 	sampleRate = afGetRate(file, AF_DEFAULT_TRACK);
 
-	printf("frame count: %d\n", frameCount);
+	printf("frame count: %lld\n", frameCount);
 	printf("frame size: %d bytes\n", frameSize);
 	printf("channel count: %d\n", channelCount);
 	printf("sample rate: %.2f Hz\n", sampleRate);
@@ -106,17 +107,20 @@ main (int argc, char **argv)
 	afCloseFile(file);
 
 	outportconfig = alNewConfig();
-	alSetChannels(outportconfig, channelCount);
 	setwidth(outportconfig, sampleWidth);
+	setsampleformat(outportconfig, sampleFormat);
+	alSetChannels(outportconfig, channelCount);
 
-	outport = alOpenPort("dick", "w", outportconfig);
+	outport = alOpenPort("irixtestloop", "w", outportconfig);
 	setrate(outport, sampleRate);
 
 	alWriteFrames(outport, buffer, startloop);
 	for (i=0; i<REPEAT_COUNT; i++)
 	{
-		printf("starting iteration %d: %d, %d, %d\n", i, endloop, startloop, endloop - startloop);
-		alWriteFrames(outport, buffer + startloop * channelCount * ((sampleWidth + 7) / 8), endloop - startloop);
+		printf("iteration %d: start %lld, end %lld, length %lld\n",
+			i, endloop, startloop, endloop - startloop);
+		alWriteFrames(outport, (char *) buffer + startloop * frameSize,
+			endloop - startloop);
 	}
 
 	waitport(outport);

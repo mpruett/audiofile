@@ -36,6 +36,11 @@
 void setwidth (ALconfig config, int width);
 
 /*
+	Set the sample format of an audio configuration.
+*/
+void setsampleformat (ALconfig config, int width);
+
+/*
 	Set the sample rate of an audio port.
 */
 void setrate (ALport port, double rate);

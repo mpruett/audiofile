@@ -35,10 +35,10 @@ TESTS = error writeaiff writeircam writenext writewave \
 	misc.sh transparency.sh \
 	query2 sixteen-to-eight twentyfour floatto24 testfloat
 
-irixread_SOURCES = irixread.c sgi.c
+irixread_SOURCES = irixread.c sgi.c sgi.h
 irixread_LDADD = $(top_builddir)/libaudiofile/libaudiofile.la @AUDIO_LIB@
 
-irixtestloop_SOURCES = irixtestloop.c sgi.c
+irixtestloop_SOURCES = irixtestloop.c sgi.c sgi.h
 irixtestloop_LDADD = $(top_builddir)/libaudiofile/libaudiofile.la @AUDIO_LIB@
 
 linuxtest_SOURCES = linuxtest.c

@@ -27,6 +27,9 @@
 
 #include <stdio.h>
 #include <unistd.h>
+
+#include <audiofile.h>
+
 #include <dmedia/audio.h>
 
 /*
@@ -48,6 +51,28 @@ void setwidth (ALconfig config, int sampleWidth)
 	{
 		printf("setting width to 24\n");
 		alSetWidth(config, AL_SAMPLE_24);
+	}
+}
+
+/*
+	Set the sample format of an audio configuration.
+*/
+void setsampleformat (ALconfig config, int audioFileSampleFormat)
+{
+	if (audioFileSampleFormat == AF_SAMPFMT_TWOSCOMP)
+	{
+		printf("setting sample format to 2's complement\n");
+		alSetSampFmt(config, AL_SAMPFMT_TWOSCOMP);
+	}
+	else if (audioFileSampleFormat == AF_SAMPFMT_FLOAT)
+	{
+		printf("setting sample format to float\n");
+		alSetSampFmt(config, AL_SAMPFMT_FLOAT);
+	}
+	else if (audioFileSampleFormat == AF_SAMPFMT_DOUBLE)
+	{
+		printf("setting sample format to double\n");
+		alSetSampFmt(config, AL_SAMPFMT_DOUBLE);
 	}
 }
 

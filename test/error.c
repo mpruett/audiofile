@@ -1,4 +1,26 @@
+/*
+	Audio File Library
+
+	Copyright (C) 2000-2001, Silicon Graphics, Inc.
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License as
+	published by the Free Software Foundation; either version 2 of
+	the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be
+	useful, but WITHOUT ANY WARRANTY; without even the implied
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+	PURPOSE.  See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public
+	License along with this program; if not, write to the Free
+	Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+	MA 02111-1307, USA.
+*/
+
 #include <stdio.h>
+#include <stdlib.h>
 #include <audiofile.h>
 
 int expectedError;
@@ -14,7 +36,7 @@ void myerrorfunc (long error, const char *description)
 			printf("%s [error code %ld]--", description, error);
 			printf("expected error code %d\n", expectedError);
 		}
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	else
 	{
@@ -56,6 +78,21 @@ void test2 (void)
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, 3992, 3932);
 
 	afFreeFileSetup(setup);
+
+	expectedError = AF_BAD_FILESETUP;
+	if (verbose) printf("initializing file format on a file setup which has been deallocated\n");
+	afInitFileFormat(setup, AF_FILE_AIFFC);
+}
+
+void test3 (void)
+{
+	expectedError = AF_BAD_QUERY;
+	if (verbose) printf("querying on bad selectors\n");
+	afQueryLong(AF_QUERYTYPE_FILEFMT, 9999, 9999, 9999, 9999);
+
+	expectedError = AF_BAD_QUERYTYPE;
+	if (verbose) printf("querying using bad query type\n");
+	afQueryLong(9999, 9999, 9999, 9999, 9999);
 }
 
 int main (int argc, char **argv)
@@ -67,6 +104,7 @@ int main (int argc, char **argv)
 
 	test1();
 	test2();
+	test3();
 
 	return 0;
 }
