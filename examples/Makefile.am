@@ -16,6 +16,5 @@ irixtestloop_LDADD = $(top_builddir)/libaudiofile/libaudiofile.la @AUDIO_LIB@
 linuxtest_SOURCES = linuxtest.c
 
 LDADD = $(top_builddir)/libaudiofile/libaudiofile.la
-LDFLAGS = -static
 
 DEPENDENCIES = $(top_builddir)/libaudiofile/libaudiofile.la

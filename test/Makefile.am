@@ -37,6 +37,5 @@ TESTS = error writeaiff writeircam writenext writewave writeraw \
 	testfloat testmarkers testchannelmatrix seek
 
 LDADD = $(top_builddir)/libaudiofile/libaudiofile.la
-LDFLAGS = -static
 
 DEPENDENCIES = $(top_builddir)/libaudiofile/libaudiofile.la
