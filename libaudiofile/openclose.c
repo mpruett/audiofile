@@ -131,6 +131,81 @@ int afIdentifyNamedFD (int fd, const char *filename, int *implemented)
 	return result;
 }
 
+AFfilehandle afOpenFD (int fd, const char *mode, AFfilesetup setup)
+{
+	FILE		*fp;
+	AFvirtualfile	*vf;
+	AFfilehandle	filehandle;
+	int		access;
+
+	if (mode == NULL)
+	{
+		_af_error(AF_BAD_ACCMODE, "null access mode");
+		return AF_NULL_FILEHANDLE;
+	}
+
+	if (mode[0] == 'r')
+		access = _AF_READ_ACCESS;
+	else if (mode[0] == 'w')
+		access = _AF_WRITE_ACCESS;
+	else
+	{
+		_af_error(AF_BAD_ACCMODE, "unrecognized access mode '%s'", mode);
+		return AF_NULL_FILEHANDLE;
+	}
+
+	if ((fp = fdopen(fd, mode)) == NULL)
+	{
+		_af_error(AF_BAD_OPEN, "could not open file");
+		return AF_NULL_FILEHANDLE;
+	}
+
+	vf = af_virtual_file_new_for_file(fp);
+
+	if (_afOpenFile(access, vf, NULL, &filehandle, setup) != AF_SUCCEED)
+		af_fclose(vf);
+
+	return filehandle;
+}
+
+AFfilehandle afOpenNamedFD (int fd, const char *mode, AFfilesetup setup,
+	const char *filename)
+{
+	FILE		*fp;
+	AFvirtualfile	*vf;
+	AFfilehandle	filehandle;
+	int		access;
+
+	if (mode == NULL)
+	{
+		_af_error(AF_BAD_ACCMODE, "null access mode");
+		return AF_NULL_FILEHANDLE;
+	}
+
+	if (mode[0] == 'r')
+		access = _AF_READ_ACCESS;
+	else if (mode[0] == 'w')
+		access = _AF_WRITE_ACCESS;
+	else
+	{
+		_af_error(AF_BAD_ACCMODE, "unrecognized access mode '%s'", mode);
+		return AF_NULL_FILEHANDLE;
+	}
+
+	if ((fp = fdopen(fd, mode)) == NULL)
+	{
+		_af_error(AF_BAD_OPEN, "could not open file '%s'", filename);
+		return AF_NULL_FILEHANDLE;
+	}
+
+	vf = af_virtual_file_new_for_file(fp);
+
+	if (_afOpenFile(access, vf, filename, &filehandle, setup) != AF_SUCCEED)
+		af_fclose(vf);
+
+	return filehandle;
+}
+
 AFfilehandle afOpenFile (const char *filename, const char *mode, AFfilesetup setup)
 {
 	FILE		*fp;
@@ -208,8 +283,13 @@ static status _afOpenFile (int access, AFvirtualfile *vf, const char *filename,
 
 	if (fileFormat == AF_FILE_UNKNOWN)
 	{
-		_af_error(AF_BAD_NOT_IMPLEMENTED,
-			"'%s': unrecognized audio file format", filename);
+		if (filename != NULL)
+			_af_error(AF_BAD_NOT_IMPLEMENTED,
+				"'%s': unrecognized audio file format",
+				filename);
+		else
+			_af_error(AF_BAD_NOT_IMPLEMENTED,
+				"unrecognized audio file format");
 		return AF_FAIL;
 	}
 

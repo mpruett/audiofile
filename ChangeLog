@@ -3,8 +3,8 @@
 	* libaudiofile/format.c: Add afSetChannelMatrix and
 	afGetVirtualChannels.
 
-	* libaudiofile/openclose.c: Add afIdentifyFD and
-	afIdentifyNamedFD.
+	* libaudiofile/openclose.c: Add afIdentifyFD, afIdentifyNamedFD,
+	afOpenFD, and afOpenNamedFD.
 
 2001-07-18  Michael Pruett <mpruett@sgi.com>
 
