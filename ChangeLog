@@ -1,3 +1,9 @@
+2003-12-08  Michael Pruett <michael@68k.org>
+
+	* examples/*, test/*: Add examples subdirectory. Separate
+	example programs from regression test programs. Remove obsolete
+	test programs.
+
 2003-12-03  Michael Pruett <michael@68k.org>
 
 	* sfcommands/sfconvert.c: Fix argument parsing in sfconvert.
