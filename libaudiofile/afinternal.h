@@ -255,8 +255,8 @@ typedef struct _TrackSetup
 	int		markerCount;
 	_MarkerSetup	*markers;
 
-	off_t	dataOffset;
-	off_t	frameCount;
+	AFfileoffset	dataOffset;
+	AFframecount	frameCount;
 } _TrackSetup;
 
 typedef struct _LoopSetup

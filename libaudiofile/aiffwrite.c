@@ -404,7 +404,7 @@ static status WriteINST (AFfilehandle file)
 
 static status WriteMARK (AFfilehandle file)
 {
-	off_t		chunkStartPosition, chunkEndPosition;
+	AFfileoffset	chunkStartPosition, chunkEndPosition;
 	u_int32_t	length = 0;
 	u_int16_t	numMarkers, sb;
 	int		i, *markids;

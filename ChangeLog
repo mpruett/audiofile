@@ -1,3 +1,10 @@
+2003-09-11  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/*.c: Replace use of off_t with AFfileoffset and
+	AFframecount, as appropriate.
+	* configure.in: Add AC_SYS_LARGEFILE in order to support large
+	files.
+
 2003-09-09  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/*.c: Include <config.h> as necessary.

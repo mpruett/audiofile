@@ -508,10 +508,10 @@ static status ParseCues (AFfilehandle filehandle, AFvirtualfile *fp,
 static status ParseList (AFfilehandle filehandle, AFvirtualfile *fp,
 	u_int32_t id, size_t size)
 {
-	_Track	*track;
-	char	typeID[4];
-	int	i;
-	off_t	endPos=af_ftell(fp)+size;
+	_Track		*track;
+	char		typeID[4];
+	int		i;
+	AFfileoffset	endPos=af_ftell(fp)+size;
 
 	track = _af_filehandle_get_track(filehandle, AF_DEFAULT_TRACK);
 

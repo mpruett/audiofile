@@ -86,7 +86,7 @@ status _af_raw_read_init (AFfilesetup filesetup, AFfilehandle filehandle)
 	}
 	else
 	{
-		off_t	filesize;
+		AFfileoffset	filesize;
 		filesize = af_flength(filehandle->fh);
 		if (filesize == -1)
 			track->totalfframes = -1;

@@ -86,11 +86,11 @@ bool _af_wave_instparam_valid (AFfilehandle, AUpvlist, int);
 
 typedef struct _WAVEInfo
 {
-	off_t	factOffset;	/* start of fact (frame count) chunk */
-	off_t	miscellaneousStartOffset;
-	off_t	totalMiscellaneousSize;
-	off_t	markOffset;
-	off_t	dataSizeOffset;
+	AFfileoffset	factOffset;	/* start of fact (frame count) chunk */
+	AFfileoffset	miscellaneousStartOffset;
+	AFfileoffset	totalMiscellaneousSize;
+	AFfileoffset	markOffset;
+	AFfileoffset	dataSizeOffset;
 
 	/*
 		The following information is specified in the format

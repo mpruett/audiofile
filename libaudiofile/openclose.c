@@ -50,8 +50,8 @@ static status _afOpenFile (int access, AFvirtualfile *vf, const char *filename,
 
 int _af_identify (AFvirtualfile *vf, int *implemented)
 {
-	off_t	curpos;
-	int	i;
+	AFfileoffset	curpos;
+	int		i;
 
 	curpos = af_ftell(vf);
 
