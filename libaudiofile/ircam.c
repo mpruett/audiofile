@@ -77,10 +77,7 @@ bool _af_ircam_recognize (AFvirtualfile *fh)
 	af_fseek(fh, 0, SEEK_SET);
 
 	if (af_fread(buffer, 4, 1, fh) != 1)
-	{
-		printf("failed to recognize as IRCAM\n");
 		return AF_FALSE;
-	}
 
 	/* Check to see if the file's magic number matches. */
 	if (memcmp(buffer, ircam_vax_magic, 4) == 0 ||
@@ -88,11 +85,9 @@ bool _af_ircam_recognize (AFvirtualfile *fh)
 		memcmp(buffer, ircam_mips_magic, 4) == 0 ||
 		memcmp(buffer, ircam_next_magic, 4) == 0)
 	{
-		printf("recognized as IRCAM\n");
 		return AF_TRUE;
 	}
 
-	printf("failed to recognize as IRCAM\n");
 	return AF_FALSE;
 }
 
@@ -232,7 +227,7 @@ status _af_ircam_read_init (AFfilesetup setup, AFfilehandle handle)
 		the file is little endian.
 	*/
 	isLittleEndian = (memcmp(magic, ircam_vax_magic, 4) == 0 ||
-		memcmp(magic, ircam_mips_magic, 4));
+		memcmp(magic, ircam_mips_magic, 4) == 0);
 
 #ifdef WORDS_BIGENDIAN
 	isSwapped = isLittleEndian;
