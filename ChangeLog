@@ -1,3 +1,10 @@
+2001-08-28  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/openclose.c: Applied Chris Wolf's patch invoking
+	the macro SETBINARYMODE on all file pointers before handing
+	them off to the AF VFS.  This macro does nothing on non-Windows
+	systems.
+
 2001-08-27  Michael Pruett <mpruett@sgi.com>
 
 	* win32/*: Added Chris Wolf's Windows port of the Audio File Library.
