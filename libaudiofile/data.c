@@ -36,7 +36,8 @@
 #include "util.h"
 #include "modules.h"
 
-int afWriteFrames (AFfilehandle file, int trackid, void *samples, int nvframes2write)
+int afWriteFrames (AFfilehandle file, int trackid, const void *samples,
+	int nvframes2write)
 {
 	_AFmoduleinst	*firstmod;
 	_AFchunk	*userc;
@@ -122,7 +123,8 @@ int afWriteFrames (AFfilehandle file, int trackid, void *samples, int nvframes2w
 	return vframe;
 }
 
-int afReadFrames (AFfilehandle file, int trackid, void *samples, int nvframeswanted)
+int afReadFrames (AFfilehandle file, int trackid, void *samples,
+	int nvframeswanted)
 {
 	_Track	*track;
 	_AFmoduleinst	*firstmod;

@@ -43,7 +43,7 @@ _AFfilesetup _af_default_file_setup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 #if WORDS_BIGENDIAN
-	AF_FILE_AIFF,	/* file format */
+	AF_FILE_AIFFC,	/* file format */
 #else
 	AF_FILE_WAVE,	/* file format */
 #endif

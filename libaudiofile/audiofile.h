@@ -417,7 +417,7 @@ int afGetTrackIDs (AFfilehandle, int *trackids);
 
 /* track data: reading, writng, seeking, sizing frames */
 int afReadFrames (AFfilehandle, int track, void *buffer, int frameCount);
-int afWriteFrames (AFfilehandle, int track, void *buffer, int frameCount);
+int afWriteFrames (AFfilehandle, int track, const void *buffer, int frameCount);
 AFframecount afSeekFrame (AFfilehandle, int track, AFframecount frameoffset);
 AFfileoffset afTellFrame (AFfilehandle, int track);
 AFfileoffset afGetTrackBytes (AFfilehandle, int track);
