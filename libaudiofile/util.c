@@ -450,3 +450,79 @@ bool _af_unique_ids (int *ids, int nids, char *idname, int iderr)
 
 	return AF_TRUE;
 }
+
+status af_read_uint32_be (u_int32_t *value, AFvirtualfile *vf)
+{
+	u_int32_t	v;
+
+	if (af_fread(&v, sizeof (v), 1, vf) != 1)
+		return AF_FAIL;
+	*value = BENDIAN_TO_HOST_INT32(v);
+	return AF_SUCCEED;
+}
+
+status af_read_uint32_le (u_int32_t *value, AFvirtualfile *vf)
+{
+	u_int32_t	v;
+
+	if (af_fread(&v, sizeof (v), 1, vf) != 1)
+		return AF_FAIL;
+	*value = LENDIAN_TO_HOST_INT32(v);
+	return AF_SUCCEED;
+}
+
+status af_read_uint16_be (u_int16_t *value, AFvirtualfile *vf)
+{
+	u_int16_t	v;
+
+	if (af_fread(&v, sizeof (v), 1, vf) != 1)
+		return AF_FAIL;
+	*value = BENDIAN_TO_HOST_INT16(v);
+	return AF_SUCCEED;
+}
+
+status af_read_uint16_le (u_int16_t *value, AFvirtualfile *vf)
+{
+	u_int16_t	v;
+
+	if (af_fread(&v, sizeof (v), 1, vf) != 1)
+		return AF_FAIL;
+	*value = LENDIAN_TO_HOST_INT16(v);
+	return AF_SUCCEED;
+}
+
+status af_write_uint32_be (u_int32_t *value, AFvirtualfile *vf)
+{
+	u_int32_t	v;
+	v = HOST_TO_BENDIAN_INT32(*value);
+	if (af_fwrite(&v, sizeof (v), 1, vf) != 1)
+		return AF_FAIL;
+	return AF_SUCCEED;
+}
+
+status af_write_uint32_le (u_int32_t *value, AFvirtualfile *vf)
+{
+	u_int32_t	v;
+	v = HOST_TO_LENDIAN_INT32(*value);
+	if (af_fwrite(&v, sizeof (v), 1, vf) != 1)
+		return AF_FAIL;
+	return AF_SUCCEED;
+}
+
+status af_write_uint16_be (u_int16_t *value, AFvirtualfile *vf)
+{
+	u_int16_t	v;
+	v = HOST_TO_BENDIAN_INT16(*value);
+	if (af_fwrite(&v, sizeof (v), 1, vf) != 1)
+		return AF_FAIL;
+	return AF_SUCCEED;
+}
+
+status af_write_uint16_le (u_int16_t *value, AFvirtualfile *vf)
+{
+	u_int16_t	v;
+	v = HOST_TO_LENDIAN_INT16(*value);
+	if (af_fwrite(&v, sizeof (v), 1, vf) != 1)
+		return AF_FAIL;
+	return AF_SUCCEED;
+}
