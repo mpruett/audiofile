@@ -30,6 +30,10 @@
 #include <config.h>
 #endif
 
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
+
 #include <audiofile.h>
 #include <stdio.h>
 #include <stdlib.h>

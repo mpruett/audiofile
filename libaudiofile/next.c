@@ -35,6 +35,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
+
 #include "next.h"
 #include "audiofile.h"
 #include "afinternal.h"

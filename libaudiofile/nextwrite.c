@@ -24,10 +24,18 @@
 	This file contains routines for writing NeXT/Sun format sound files.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
 
 #include "audiofile.h"
 #include "afinternal.h"

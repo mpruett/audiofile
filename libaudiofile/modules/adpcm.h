@@ -7,6 +7,14 @@
 #ifndef ADPCM_H
 #define ADPCM_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
+
 struct adpcm_state {
     short	valprev;	/* Previous output value */
     char	index;		/* Index into stepsize table */

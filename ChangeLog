@@ -1,3 +1,14 @@
+2003-09-04  Michael Pruett <michael@68k.org>
+
+	* configure.in, libaudiofile/{aiff.c,aiff.h,aiffwrite.c},
+	libaudiofile/{ircam.c,ircamwrite.c}, libaudiofile/modules.h,
+	libaudiofile/{next.c,nextwrite.c}, libaudiofile/nist.c,
+	libaudiofile/{wave.c,wavewrite.c}, libaudiofile/modules/adpcm.h,
+	test/{pipe.c,sixteen-to-eight.c,twentyfour.c}: Check for
+	<inttypes.h> and include it if available.
+
+	Thanks to Daniel Bergstrom for proposing this change.
+
 2003-08-21  Michael Pruett <mpruett@sgi.com>
 
 	* configure.in, Makefile.am, win32/Makefile.am: Include win32

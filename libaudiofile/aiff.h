@@ -28,6 +28,14 @@
 #ifndef AIFF_H
 #define AIFF_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
+
 #define _AF_AIFF_NUM_INSTPARAMS 9
 #define _AF_AIFF_NUM_COMPTYPES 2
 

@@ -25,8 +25,17 @@
 #ifndef MODULES_H
 #define MODULES_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
+
 #include <sys/types.h>
-#include <audiofile.h>
+
+#include "audiofile.h"
 #include "afinternal.h"
 
 typedef u_int8_t uchar1;
