@@ -22,5 +22,6 @@
 #define MARKER_H
 
 _Marker *_af_marker_new (int count);
+_Marker *_af_marker_find_by_id (_Track *track, int id);
 
 #endif /* MARKER_H */

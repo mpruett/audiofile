@@ -441,7 +441,7 @@ static status ParsePlayList (AFfilehandle filehandle, AFvirtualfile *fp,
 	return AF_SUCCEED;
 }
 
-static status ParseCue (AFfilehandle filehandle, AFvirtualfile *fp,
+static status ParseCues (AFfilehandle filehandle, AFvirtualfile *fp,
 	u_int32_t id, size_t size)
 {
 	_Track		*track;
@@ -467,7 +467,7 @@ static status ParseCue (AFfilehandle filehandle, AFvirtualfile *fp,
 	{
 		u_int32_t	id, position, chunkid;
 		u_int32_t	chunkByteOffset, blockByteOffset;
-		u_int32_t	sampleByteOffset;
+		u_int32_t	sampleFrameOffset;
 		_Marker		*marker = &track->markers[i];
 
 		af_fread(&id, 4, 1, fp);
@@ -485,13 +485,94 @@ static status ParseCue (AFfilehandle filehandle, AFvirtualfile *fp,
 		af_fread(&blockByteOffset, 4, 1, fp);
 		blockByteOffset = LENDIAN_TO_HOST_INT32(blockByteOffset);
 
-		af_fread(&sampleByteOffset, 4, 1, fp);
-		sampleByteOffset = LENDIAN_TO_HOST_INT32(sampleByteOffset);
+		/*
+			sampleFrameOffset represents the position of
+			the mark in units of frames.
+		*/
+		af_fread(&sampleFrameOffset, 4, 1, fp);
+		sampleFrameOffset = LENDIAN_TO_HOST_INT32(sampleFrameOffset);
 
 		marker->id = id;
-		marker->position = sampleByteOffset;
+		marker->position = sampleFrameOffset;
 		marker->name = _af_strdup("");
 		marker->comment = _af_strdup("");
+	}
+
+	return AF_SUCCEED;
+}
+
+static status ParseList (AFfilehandle filehandle, AFvirtualfile *fp,
+	u_int32_t id, size_t size)
+{
+	_Track	*track;
+	char	typeID[4];
+	int	i;
+	off_t	endPos=af_ftell(fp)+size;
+
+	track = _af_filehandle_get_track(filehandle, AF_DEFAULT_TRACK);
+
+	af_fread(typeID, 4, 1, fp);
+
+	/* We currently handle only adtl chunks. */
+	if (memcmp(typeID, "adtl", 4) != 0)
+	{
+		af_fseek(fp, size-4, SEEK_CUR);
+		return(AF_SUCCEED);
+	}
+
+	while (af_ftell(fp) < endPos)
+	{
+		char		chunkID[4];
+		u_int32_t	chunkSize;
+
+		af_fread(chunkID, 4, 1, fp);
+		af_fread(&chunkSize, 4, 1, fp);
+		chunkSize = LENDIAN_TO_HOST_INT32(chunkSize);
+
+		if (memcmp(chunkID, "labl", 4)==0 || memcmp(chunkID, "note", 4)==0)
+		{
+			_Marker *marker=NULL;
+			u_int32_t id;
+			long length=chunkSize-4;
+			char *p=_af_malloc(length);
+
+			af_fread(&id, 4, 1, fp);
+			af_fread(p, length, 1, fp);
+
+			id = LENDIAN_TO_HOST_INT32(id);
+
+			marker = _af_marker_find_by_id(track, id);
+
+			if (marker != NULL)
+			{
+				if (memcmp(chunkID, "labl", 4)==0)
+				{
+					free(marker->name);
+					marker->name = p;
+				}
+				else if (memcmp(chunkID, "note", 4)==0)
+				{
+					free(marker->comment);
+					marker->comment = p;
+				}
+				else
+					free(p);
+			}
+			else
+				free(p);
+
+			/*
+				If chunkSize is odd, skip an extra byte
+				at the end of the chunk.
+			*/
+			if ((chunkSize % 2) != 0)
+				af_fseek(fp, 1, SEEK_CUR);
+		}
+		else
+		{
+			/* If chunkSize is odd, skip an extra byte. */
+			af_fseek(fp, chunkSize + (chunkSize % 2), SEEK_CUR);
+		}
 	}
 
 	return AF_SUCCEED;
@@ -536,7 +617,7 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 	_Track		*track;
 	u_int32_t	type, size, formtype;
 	u_int32_t	index = 0;
-	bool		hasFormat, hasData, hasCue, hasPlayList, hasFrameCount,
+	bool		hasFormat, hasData, hasCue, hasList, hasPlayList, hasFrameCount,
 			hasINST, hasINFO;
 	_WAVEInfo	*wave = _af_malloc(sizeof (_WAVEInfo));
 
@@ -546,6 +627,7 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 	hasFormat = AF_FALSE;
 	hasData = AF_FALSE;
 	hasCue = AF_FALSE;
+	hasList = AF_FALSE;
 	hasPlayList = AF_FALSE;
 	hasFrameCount = AF_FALSE;
 	hasINST = AF_FALSE;
@@ -635,7 +717,14 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 		else if (memcmp(&chunkid, "cue ", 4) == 0)
 		{
 			hasCue = AF_TRUE;
-			result = ParseCue(filehandle, filehandle->fh, chunkid, chunksize);
+			result = ParseCues(filehandle, filehandle->fh, chunkid, chunksize);
+			if (result == AF_FAIL)
+				return AF_FAIL;
+		}
+		else if (memcmp(&chunkid, "LIST", 4) == 0)
+		{
+			hasList = AF_TRUE;
+			result = ParseList(filehandle, filehandle->fh, chunkid, chunksize);
 			if (result == AF_FAIL)
 				return AF_FAIL;
 		}
@@ -684,31 +773,11 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 	if (hasFrameCount == AF_FALSE)
 	{
 		/*
-			Calculate using double-precision arithmetic so
-			as to preserve accuracy.
+			Perform arithmetic in double-precision so as
+			to preserve accuracy.
 		*/
 		track->totalfframes = ceil((double) track->data_size /
 			_af_format_frame_size(&track->f, AF_FALSE));
-	}
-
-	/*
-		The format and data chunks must be present.
-
-		The WAVE format requires only that the format chunk must
-		precede the data chunk.  All other chunks can occur in
-		any order.
-
-		Because we allow chunks to come in any order, we must
-		post-process the markers' position now that we know the
-		track's audio format has been initialized.
-
-		Perhaps it's a hack, but no more so than the WAVE format.
-	*/
-	if (hasCue)
-	{
-		int	i;
-		for (i=0; i<track->markerCount; i++)
-			track->markers[i].position /= _af_format_frame_size(&track->f, AF_FALSE);
 	}
 
 	if (track->f.compressionType != AF_COMPRESSION_NONE &&

@@ -33,7 +33,7 @@
 #include "afinternal.h"
 #include "util.h"
 
-static _Marker *findMarkerByID (_Track *track, int markerid)
+_Marker *_af_marker_find_by_id (_Track *track, int markerid)
 {
 	int	i;
 
@@ -191,7 +191,7 @@ char *afGetMarkName (AFfilehandle file, int trackid, int markid)
 	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
 		return NULL;
 
-	if ((marker = findMarkerByID(track, markid)) == NULL)
+	if ((marker = _af_marker_find_by_id(track, markid)) == NULL)
 		return NULL;
 
 	return marker->name;
@@ -211,7 +211,7 @@ char *afGetMarkComment (AFfilehandle file, int trackid, int markid)
 	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
 		return NULL;
 
-	if ((marker = findMarkerByID(track, markid)) == NULL)
+	if ((marker = _af_marker_find_by_id(track, markid)) == NULL)
 		return NULL;
 
 	return marker->comment;
@@ -235,7 +235,7 @@ void afSetMarkPosition (AFfilehandle file, int trackid, int markid,
 	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
 		return;
 
-	if ((marker = findMarkerByID(track, markid)) == NULL)
+	if ((marker = _af_marker_find_by_id(track, markid)) == NULL)
 		return;
 
 	if (pos < 0)
@@ -286,7 +286,7 @@ AFframecount afGetMarkPosition (AFfilehandle file, int trackid, int markid)
 	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
 		return 0L;
 
-	if ((marker = findMarkerByID(track, markid)) == NULL)
+	if ((marker = _af_marker_find_by_id(track, markid)) == NULL)
 		return 0L;
 
 	return marker->position;

@@ -89,6 +89,7 @@ typedef struct _WAVEInfo
 	off_t	factOffset;	/* start of fact (frame count) chunk */
 	off_t	miscellaneousStartOffset;
 	off_t	totalMiscellaneousSize;
+	off_t	markOffset;
 	off_t	dataSizeOffset;
 
 	/*

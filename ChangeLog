@@ -1,3 +1,22 @@
+2002-05-17  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/wave.c: Add support for reading names of markers
+	in WAVE files.  Locations of WAVE markers are now assumed to be
+	in units of frames as is the case with Sound Forge.
+	* libaudiofile/wavewrite.c, libaudiofile/wave.h: Add support
+	for writing markers in WAVE files.
+
+	Thanks to Davy Durham for the above patches.
+
+	* libaudiofile/marker.[ch]: Change static function findMarkByID
+	to non-static _af_mark_find_by_id for use by WAVE file marker
+	code.
+
+	* test/testmarkers.c: Add a regression test for markers.
+	* test/printmarkers.c: Add a utility for printing marker
+	information.
+	* test/Makefile.am: Add testmarkers and printmarkers.
+
 2002-05-16  Michael Pruett <mpruett@sgi.com>
 
 	* libaudiofile/wave.c: Compute the frame count of uncompressed

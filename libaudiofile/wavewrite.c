@@ -47,15 +47,17 @@ status _af_wave_update (AFfilehandle file);
 static status WriteFormat (AFfilehandle file);
 static status WriteFrameCount (AFfilehandle file);
 static status WriteMiscellaneous (AFfilehandle file);
+static status WriteCues (AFfilehandle file);
 static status WriteData (AFfilehandle file);
 
-static _WAVEInfo *waveinfo_new (void)
+_WAVEInfo *waveinfo_new (void)
 {
 	_WAVEInfo	*waveinfo = _af_malloc(sizeof (_WAVEInfo));
 
 	waveinfo->factOffset = 0;
 	waveinfo->miscellaneousStartOffset = 0;
 	waveinfo->totalMiscellaneousSize = 0;
+	waveinfo->markOffset = 0;
 	waveinfo->dataSizeOffset = 0;
 
 	return waveinfo;
@@ -253,6 +255,8 @@ status _af_wave_update (AFfilehandle file)
 		af_fwrite(&fileLength, 4, 1, file->fh);
 	}
 
+	WriteCues(file); // to write the new positions, the data will be the same size
+
 	return AF_SUCCEED;
 }
 
@@ -291,6 +295,140 @@ status WriteMiscellaneous (AFfilehandle filehandle)
 	return AF_SUCCEED;
 }
 
+static status WriteCues (AFfilehandle file)
+{
+	int		i, *markids, markCount;
+	u_int32_t	numCues, cueChunkSize, listChunkSize;
+	_Track		*track = &file->tracks[0];
+	_WAVEInfo	*wave;
+
+	assert(file);
+
+	markCount = afGetMarkIDs(file, AF_DEFAULT_TRACK, NULL);
+	if (markCount == 0)
+		return AF_SUCCEED;
+
+	wave = file->formatSpecific;
+
+	if (wave->markOffset == 0)
+		wave->markOffset = af_ftell(file->fh);
+	else
+		af_fseek(file->fh, wave->markOffset, SEEK_SET);
+
+	af_fwrite("cue ", 4, 1, file->fh);
+
+	/*
+		The cue chunk consists of 4 bytes for the number of cue points
+		followed by 24 bytes for each cue point record.
+	*/
+	cueChunkSize = 4 + markCount * 24;
+	cueChunkSize = HOST_TO_LENDIAN_INT32(cueChunkSize);
+	af_fwrite(&cueChunkSize, sizeof (u_int32_t), 1, file->fh);
+	numCues = HOST_TO_LENDIAN_INT32(markCount);
+	af_fwrite(&numCues, sizeof (u_int32_t), 1, file->fh);
+
+	markids = _af_calloc(markCount, sizeof (int));
+	assert(markids != NULL);
+	afGetMarkIDs(file, AF_DEFAULT_TRACK, markids);
+
+	/* Write each marker to the file. */
+	for (i=0; i < markCount; i++)
+	{
+		u_int32_t	identifier, position, chunkStart, blockStart;
+		u_int32_t	sampleOffset;
+		AFframecount	markposition;
+
+		identifier = HOST_TO_LENDIAN_INT32(markids[i]);
+		af_fwrite(&identifier, sizeof (u_int32_t), 1, file->fh);
+
+		position = HOST_TO_LENDIAN_INT32(i);
+		af_fwrite(&position, sizeof (u_int32_t), 1, file->fh);
+
+		/* For now the RIFF id is always the first data chunk. */
+		af_fwrite("data", 4, 1, file->fh);
+
+		/*
+			For an uncompressed WAVE file which contains
+			only one data chunk, chunkStart and blockStart
+			are zero.
+		*/
+		chunkStart = 0;
+		af_fwrite(&chunkStart, sizeof (u_int32_t), 1, file->fh);
+
+		blockStart = 0;
+		af_fwrite(&blockStart, sizeof (u_int32_t), 1, file->fh);
+
+		markposition = afGetMarkPosition(file, AF_DEFAULT_TRACK, markids[i]);
+
+		/* Sample offsets are stored in the WAVE file as frames. */
+		sampleOffset = HOST_TO_LENDIAN_INT32(markposition);
+		af_fwrite(&sampleOffset, sizeof (u_int32_t), 1, file->fh);
+	}
+
+	/*
+		Now write the cue names which is in a master list chunk
+		with a subchunk for each cue's name.
+	*/
+
+	listChunkSize = 4;
+	for (i=0; i<markCount; i++)
+	{
+		const char *name;
+
+		name = afGetMarkName(file, AF_DEFAULT_TRACK, markids[i]);
+
+		/*
+			Each label chunk consists of 4 bytes for the
+			"labl" chunk ID, 4 bytes for the chunk data
+			size, 4 bytes for the cue point ID, and then
+			the length of the label as a Pascal-style string.
+
+			In all, this is 12 bytes plus the length of the
+			string, its size byte, and a trailing pad byte
+			if the length of the chunk is otherwise odd.
+		*/
+		listChunkSize += 12 + (strlen(name) + 1) +
+			((strlen(name) + 1) % 2);
+	}
+
+	af_fwrite("LIST", 4, 1, file->fh);
+	listChunkSize = HOST_TO_LENDIAN_INT32(listChunkSize);
+	af_fwrite(&listChunkSize, sizeof (u_int32_t), 1, file->fh);
+	af_fwrite("adtl", 4, 1, file->fh);
+
+	for (i=0; i<markCount; i++)
+	{
+		const char	*name;
+		u_int32_t	labelSize, cuePointID;
+
+		name = afGetMarkName(file, AF_DEFAULT_TRACK, markids[i]);
+
+		/* Make labelSize even if it is not already. */
+		labelSize = 4+(strlen(name)+1) + ((strlen(name) + 1) % 2);
+		labelSize = HOST_TO_LENDIAN_INT32(labelSize);
+		cuePointID = HOST_TO_LENDIAN_INT32(markids[i]);
+
+		af_fwrite("labl", 4, 1, file->fh);
+		af_fwrite(&labelSize, 4, 1, file->fh);
+		af_fwrite(&cuePointID, 4, 1, file->fh);
+		af_fwrite(name, strlen(name) + 1, 1, file->fh);
+		/*
+			If the name plus the size byte comprises an odd
+			length, add another byte to make the string an
+			even length.
+		*/
+		if (((strlen(name) + 1) % 2) != 0)
+		{
+			u_int8_t	c=0;
+			af_fwrite(&c, 1, 1, file->fh);
+		}
+	}
+
+	free(markids);
+
+	return AF_SUCCEED;
+}
+
 status _af_wave_write_init (AFfilesetup setup, AFfilehandle filehandle)
 {
 	u_int32_t	zero = 0;
@@ -306,6 +444,7 @@ status _af_wave_write_init (AFfilesetup setup, AFfilehandle filehandle)
 	af_fwrite("WAVE", 4, 1, filehandle->fh);
 
 	WriteMiscellaneous(filehandle);
+	WriteCues(filehandle);
 	WriteFormat(filehandle);
 	WriteFrameCount(filehandle);
 	WriteData(filehandle);
