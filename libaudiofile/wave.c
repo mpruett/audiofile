@@ -357,62 +357,6 @@ static status ParseData (AFfilehandle filehandle, AFvirtualfile *fp,
 	return AF_SUCCEED;
 }
 
-static status ParseInfo (AFfilehandle file, AFvirtualfile *fp,
-	u_int32_t id, size_t size)
-{
-	int	location = 0;
-
-	while (location < size)
-	{
-		int		misctype = AF_MISC_UNRECOGNIZED;
-		u_int32_t	miscid, miscsize;
-
-		af_fread(&miscid, 4, 1, fp);
-		location += 4;
-		af_fread(&miscsize, 4, 1, fp);
-		miscsize = LENDIAN_TO_HOST_INT32(miscsize);
-		location += 4;
-
-		if (memcmp(&miscid, "IART", 4) == 0)
-			misctype = AF_MISC_AUTH;
-		else if (memcmp(&miscid, "INAM", 4) == 0)
-			misctype = AF_MISC_NAME;
-		else if (memcmp(&miscid, "ICOP", 4) == 0)
-			misctype = AF_MISC_COPY;
-		else if (memcmp(&miscid, "ICMT", 4) == 0)
-			misctype = AF_MISC_ICMT;
-		else if (memcmp(&miscid, "ICRD", 4) == 0)
-			misctype = AF_MISC_ICRD;
-		else if (memcmp(&miscid, "ISFT", 4) == 0)
-			misctype = AF_MISC_ISFT;
-
-		if (misctype != AF_MISC_UNRECOGNIZED)
-		{
-			char	*string = _af_malloc(miscsize);
-
-			af_fread(string, miscsize, 1, fp);
-
-			file->miscellaneousCount++;
-			file->miscellaneous = _af_realloc(file->miscellaneous, sizeof (_Miscellaneous) * file->miscellaneousCount);
-
-			file->miscellaneous[file->miscellaneousCount-1].id = file->miscellaneousCount;
-			file->miscellaneous[file->miscellaneousCount-1].type = misctype;
-			file->miscellaneous[file->miscellaneousCount-1].size = miscsize;
-			file->miscellaneous[file->miscellaneousCount-1].position = 0;
-			file->miscellaneous[file->miscellaneousCount-1].buffer = string;
-
-			location += miscsize;
-		}
-
-		/*
-			Make the current position an even number of bytes.
-		*/
-		if (miscsize % 2 != 0)
-			af_fseek(fp, 1, SEEK_CUR);
-	}
-	return AF_SUCCEED;
-}
-
 static status ParsePlayList (AFfilehandle filehandle, AFvirtualfile *fp,
 	u_int32_t id, size_t size)
 {
@@ -505,24 +449,14 @@ static status ParseCues (AFfilehandle filehandle, AFvirtualfile *fp,
 	return AF_SUCCEED;
 }
 
-static status ParseList (AFfilehandle filehandle, AFvirtualfile *fp,
+/* Parse an adtl sub-chunk within a LIST chunk. */
+static status ParseADTLSubChunk (AFfilehandle filehandle, AFvirtualfile *fp,
 	u_int32_t id, size_t size)
 {
 	_Track		*track;
-	char		typeID[4];
-	int		i;
 	AFfileoffset	endPos=af_ftell(fp)+size;
 
 	track = _af_filehandle_get_track(filehandle, AF_DEFAULT_TRACK);
-
-	af_fread(typeID, 4, 1, fp);
-
-	/* We currently handle only adtl chunks. */
-	if (memcmp(typeID, "adtl", 4) != 0)
-	{
-		af_fseek(fp, size-4, SEEK_CUR);
-		return(AF_SUCCEED);
-	}
 
 	while (af_ftell(fp) < endPos)
 	{
@@ -578,7 +512,88 @@ static status ParseList (AFfilehandle filehandle, AFvirtualfile *fp,
 			af_fseek(fp, chunkSize + (chunkSize % 2), SEEK_CUR);
 		}
 	}
+	return AF_SUCCEED;
+}
 
+/* Parse an INFO sub-chunk within a LIST chunk. */
+static status ParseINFOSubChunk (AFfilehandle filehandle, AFvirtualfile *fp,
+	u_int32_t id, size_t size)
+{
+	AFfileoffset	endPos=af_ftell(fp)+size;
+
+	while (af_ftell(fp) < endPos)
+	{
+		int		misctype = AF_MISC_UNRECOGNIZED;
+		u_int32_t	miscid, miscsize;
+
+		af_fread(&miscid, 4, 1, fp);
+		af_fread(&miscsize, 4, 1, fp);
+		miscsize = LENDIAN_TO_HOST_INT32(miscsize);
+
+		if (memcmp(&miscid, "IART", 4) == 0)
+			misctype = AF_MISC_AUTH;
+		else if (memcmp(&miscid, "INAM", 4) == 0)
+			misctype = AF_MISC_NAME;
+		else if (memcmp(&miscid, "ICOP", 4) == 0)
+			misctype = AF_MISC_COPY;
+		else if (memcmp(&miscid, "ICMT", 4) == 0)
+			misctype = AF_MISC_ICMT;
+		else if (memcmp(&miscid, "ICRD", 4) == 0)
+			misctype = AF_MISC_ICRD;
+		else if (memcmp(&miscid, "ISFT", 4) == 0)
+			misctype = AF_MISC_ISFT;
+
+		if (misctype != AF_MISC_UNRECOGNIZED)
+		{
+			char	*string = _af_malloc(miscsize);
+
+			af_fread(string, miscsize, 1, fp);
+
+			filehandle->miscellaneousCount++;
+			filehandle->miscellaneous = _af_realloc(filehandle->miscellaneous, sizeof (_Miscellaneous) * filehandle->miscellaneousCount);
+
+			filehandle->miscellaneous[filehandle->miscellaneousCount-1].id = filehandle->miscellaneousCount;
+			filehandle->miscellaneous[filehandle->miscellaneousCount-1].type = misctype;
+			filehandle->miscellaneous[filehandle->miscellaneousCount-1].size = miscsize;
+			filehandle->miscellaneous[filehandle->miscellaneousCount-1].position = 0;
+			filehandle->miscellaneous[filehandle->miscellaneousCount-1].buffer = string;
+		}
+		else
+		{
+			af_fseek(fp, miscsize, SEEK_CUR);
+		}
+
+		/* Make the current position an even number of bytes.  */
+		if (miscsize % 2 != 0)
+			af_fseek(fp, 1, SEEK_CUR);
+	}
+	return AF_SUCCEED;
+}
+
+static status ParseList (AFfilehandle filehandle, AFvirtualfile *fp,
+	u_int32_t id, size_t size)
+{
+	u_int32_t	typeID;
+
+	af_fread(&typeID, 4, 1, fp);
+	size-=4;
+
+	if (memcmp(&typeID, "adtl", 4) == 0)
+	{
+		/* Handle adtl sub-chunks. */
+		return ParseADTLSubChunk(filehandle, fp, typeID, size);
+	}
+	else if (memcmp(&typeID, "INFO", 4) == 0)
+	{
+		/* Handle INFO sub-chunks. */
+		return ParseINFOSubChunk(filehandle, fp, typeID, size);
+	}
+	else
+	{
+		/* Skip unhandled sub-chunks. */
+		af_fseek(fp, size, SEEK_CUR);
+		return AF_SUCCEED;
+	}
 	return AF_SUCCEED;
 }
 
@@ -725,17 +740,10 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 			if (result == AF_FAIL)
 				return AF_FAIL;
 		}
-		else if (memcmp(&chunkid, "LIST", 4) == 0)
+		else if (memcmp(&chunkid, "LIST", 4) == 0 || memcmp(&chunkid, "list", 4) == 0)
 		{
 			hasList = AF_TRUE;
 			result = ParseList(filehandle, filehandle->fh, chunkid, chunksize);
-			if (result == AF_FAIL)
-				return AF_FAIL;
-		}
-		else if (memcmp(&chunkid, "INFO", 4) == 0)
-		{
-			hasINFO = AF_TRUE;
-			result = ParseInfo(filehandle, filehandle->fh, chunkid, chunksize);
 			if (result == AF_FAIL)
 				return AF_FAIL;
 		}

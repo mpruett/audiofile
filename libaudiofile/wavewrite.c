@@ -259,7 +259,36 @@ status _af_wave_update (AFfilehandle file)
 		af_fwrite(&fileLength, 4, 1, file->fh);
 	}
 
-	WriteCues(file); // to write the new positions, the data will be the same size
+	/*
+		Write the actual data that was set after initializing
+		the miscellaneous IDs.	The size of the data will be
+		unchanged.
+	*/
+	WriteMiscellaneous(file);
+
+	/* Write the new positions; the size of the data will be unchanged. */
+	WriteCues(file);
+
+	return AF_SUCCEED;
+}
+
+/* Convert an Audio File Library miscellaneous type to a WAVE type. */
+static status misc_type_to_wave (int misctype, u_int32_t *miscid)
+{
+	if (misctype == AF_MISC_AUTH)
+		memcpy(miscid, "IART", 4);
+	else if (misctype == AF_MISC_NAME)
+		memcpy(miscid, "INAM", 4);
+	else if (misctype == AF_MISC_COPY)
+		memcpy(miscid, "ICOP", 4);
+	else if (misctype == AF_MISC_ICMT)
+		memcpy(miscid, "ICMT", 4);
+	else if (misctype == AF_MISC_ICRD)
+		memcpy(miscid, "ICRD", 4);
+	else if (misctype == AF_MISC_ISFT)
+		memcpy(miscid, "ISFT", 4);
+	else
+		return AF_FAIL;
 
 	return AF_SUCCEED;
 }
@@ -272,12 +301,21 @@ status WriteMiscellaneous (AFfilehandle filehandle)
 	{
 		int		i;
 		u_int32_t	miscellaneousBytes;
+		u_int32_t 	chunkSize;
 
-		/* Start at 4 to account for 'INFO' chunk id. */
-		miscellaneousBytes = 4;
+		/* Start at 12 to account for 'LIST', size, and 'INFO'. */
+		miscellaneousBytes = 12;
 
+		/* Then calculate the size of the whole INFO chunk. */
 		for (i=0; i<filehandle->miscellaneousCount; i++)
 		{
+			u_int32_t	miscid;
+
+			/* Skip miscellaneous data of an unsupported type. */
+			if (misc_type_to_wave(filehandle->miscellaneous[i].type,
+				&miscid) == AF_FAIL)
+				continue;
+
 			/* Account for miscellaneous type and size. */
 			miscellaneousBytes += 8;
 			miscellaneousBytes += filehandle->miscellaneous[i].size;
@@ -289,11 +327,67 @@ status WriteMiscellaneous (AFfilehandle filehandle)
 			assert(miscellaneousBytes % 2 == 0);
 		}
 
-		wave->miscellaneousStartOffset = af_ftell(filehandle->fh);
+		if (wave->miscellaneousStartOffset == 0)
+			wave->miscellaneousStartOffset = af_ftell(filehandle->fh);
+		else
+			af_fseek(filehandle->fh, wave->miscellaneousStartOffset, SEEK_SET);
+
 		wave->totalMiscellaneousSize = miscellaneousBytes;
 
-		/* Add 8 to account for length of 'LIST' chunk id and size. */
-		af_fseek(filehandle->fh, miscellaneousBytes + 8, SEEK_CUR);
+		/*
+			Write the data.  On the first call to this
+			function (from _af_wave_write_init), the
+			data won't be available, af_fseek is used to
+			reserve space until the data has been provided.
+			On subseuent calls to this function (from
+			_af_wave_update), the data will really be written.
+		*/
+
+		/* Write 'LIST'. */
+		af_fwrite("LIST", 4, 1, filehandle->fh);
+
+		/* Write the size of the following chunk. */
+		chunkSize = miscellaneousBytes-8;
+		chunkSize = HOST_TO_LENDIAN_INT32(chunkSize);
+		af_fwrite(&chunkSize, sizeof (u_int32_t), 1, filehandle->fh);
+
+		/* Write 'INFO'. */
+		af_fwrite("INFO", 4, 1, filehandle->fh);
+
+		/* Write each miscellaneous chunk. */
+		for (i=0; i<filehandle->miscellaneousCount; i++)
+		{
+			u_int32_t	miscsize = HOST_TO_LENDIAN_INT32(filehandle->miscellaneous[i].size);
+			u_int32_t 	miscid = 0;
+
+			/* Skip miscellaneous data of an unsupported type. */
+			if (misc_type_to_wave(filehandle->miscellaneous[i].type,
+				&miscid) == AF_FAIL)
+				continue;
+
+			af_fwrite(&miscid, 4, 1, filehandle->fh);
+			af_fwrite(&miscsize, 4, 1, filehandle->fh);
+			if (filehandle->miscellaneous[i].buffer != NULL)
+			{
+				u_int8_t	zero = 0;
+
+				af_fwrite(filehandle->miscellaneous[i].buffer, filehandle->miscellaneous[i].size, 1, filehandle->fh);
+
+				/* Pad if necessary. */
+				if ((filehandle->miscellaneous[i].size%2) != 0)
+					af_fwrite(&zero, 1, 1, filehandle->fh);
+			}
+			else
+			{
+				int	size;
+				size = filehandle->miscellaneous[i].size;
+
+				/* Pad if necessary. */
+				if ((size % 2) != 0)
+					size++;
+				af_fseek(filehandle->fh, size, SEEK_CUR);
+			}
+		}
 	}
 
 	return AF_SUCCEED;
