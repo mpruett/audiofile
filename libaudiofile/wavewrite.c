@@ -191,19 +191,21 @@ status _af_wave_update (AFfilehandle file)
 
 	if (track->fpos_first_frame != 0)
 	{
-		size_t	dataLength, fileLength;
+		u_int32_t	dataLength, fileLength;
+
+		printf("in _af_wave_update\n");
 
 		/*
 			We call _af_format_frame_size to calculate the
 			frame size of normal PCM data or compressed data.
 		*/
-		dataLength = track->totalfframes * _af_format_frame_size(&track->f, AF_FALSE);
+		dataLength = (u_int32_t) track->totalfframes * _af_format_frame_size(&track->f, AF_FALSE);
 
 		dataLength = HOST_TO_LENDIAN_INT32(dataLength);
 		af_fseek(file->fh, track->fpos_first_frame - 4, SEEK_SET);
 		af_fwrite(&dataLength, 4, 1, file->fh);
 
-		fileLength = af_flength(file->fh);
+		fileLength = (u_int32_t) af_flength(file->fh);
 		fileLength -= 8;
 		fileLength = HOST_TO_LENDIAN_INT32(fileLength);
 

@@ -1,3 +1,10 @@
+2001-04-23  Michael Pruett <mpruett@sgi.com>
+
+	* libaudiofile/wavewrite.c: Fixed a bug seen on 64-bit systems
+	in which WAVE files would be created with zero-length RIFF and
+	data chunks.  (Thanks to Wayne Price for bringing this bug to
+	my attention.)
+
 2001-04-19  Michael Pruett <mpruett@sgi.com>
 
 	* sfcommands/sfconvert.c: Make sfconvert use the sample rate of

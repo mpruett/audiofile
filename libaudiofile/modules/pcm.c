@@ -34,6 +34,7 @@
 #include "afinternal.h"
 #include "compression.h"
 #include "modules.h"
+#include "print.h"
 
 #ifdef DEBUG
 #define CHNK(X) (X)
@@ -95,17 +96,20 @@ void pcmrun_push (_AFmoduleinst *i)
 	AFframecount n;
 
 	/*
-	WARNING: due to the optimization explained at the end of arrangemodules(),
-	the pcm file module cannot depend on the presence of the intermediate
-	working buffer which _AFsetupmodules usually allocates for file modules in
-	their input or output chunk (for reading or writing, respectively).
+		WARNING: due to the optimization explained at the end
+		of arrangemodules(), the pcm file module cannot depend
+		on the presence of the intermediate working buffer
+		which _AFsetupmodules usually allocates for file
+		modules in their input or output chunk (for reading or
+		writing, respectively).
 
-	Fortunately, the pcm module has no need for such a buffer.
+		Fortunately, the pcm module has no need for such a buffer.
 	*/
 
 	n = af_fwrite(i->inc->buf, d->bytes_per_frame, frames2write, d->fh);
 
-	CHNK(printf("writing %d frames to pcm file\n", frames2write));
+	CHNK(printf("writing %" AF_FRAMECOUNT_PRINT_FMT " frames to pcm file\n",
+		frames2write));
 
 	if (n != frames2write)
 	{
@@ -207,7 +211,8 @@ void pcmrun_pull (_AFmoduleinst *i)
 
 	n = af_fread(i->outc->buf, d->bytes_per_frame, frames2read, d->fh);
 
-	CHNK(printf("reading %d frames from pcm file (got %d)\n",
+	CHNK(printf("reading %" AF_FRAMECOUNT_PRINT_FMT " frames from pcm file "
+		"(got %" AF_FRAMECOUNT_PRINT_FMT ")\n",
 		frames2read, n));
 
 	d->trk->nextfframe += n;

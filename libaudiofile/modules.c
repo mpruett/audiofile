@@ -42,11 +42,17 @@
 #include "units.h"
 #include "compression.h"
 #include "byteorder.h"
+#include "print.h"
 
 #include "modules/rebuffer.h"
 
+#ifdef DEBUG
+#define CHNK(X) X
+#define DEBG(X) X
+#else
 #define CHNK(X)
 #define DEBG(X)
+#endif
 
 extern _PCMInfo _af_default_signed_integer_pcm_mappings[];
 extern _PCMInfo _af_default_unsigned_integer_pcm_mappings[];
@@ -98,12 +104,12 @@ AFframecount _AFpull (_AFmoduleinst *i, AFframecount nframes2pull)
 	_AFmoduleinst *src = i->u.pull.source;
 
 	i->inc->nframes = nframes2pull;
-	CHNK(printf("%s pulling %d frames from %s\n",
+	CHNK(printf("%s pulling %" AF_FRAMECOUNT_PRINT_FMT " frames from %s\n",
 		i->mod->name, i->inc->nframes, src->mod->name));
 	(*src->mod->run_pull)(src);
 	CHNK(_af_print_chunk(i->inc));
 
-	CHNK(printf("%s received %d frames from %s\n",
+	CHNK(printf("%s received %" AF_FRAMECOUNT_PRINT_FMT " frames from %s\n",
 		i->mod->name, i->inc->nframes, src->mod->name));
 	return i->inc->nframes;
 }
@@ -124,7 +130,7 @@ void _AFpush (_AFmoduleinst *i, AFframecount nframes2push)
 {
 	_AFmoduleinst *snk = i->u.push.sink;
 	i->outc->nframes = nframes2push;
-	CHNK(printf("%s pushing %d frames into %s\n",
+	CHNK(printf("%s pushing %" AF_FRAMECOUNT_PRINT_FMT " frames into %s\n",
 		i->mod->name, i->outc->nframes, snk->mod->name));
 	CHNK(_af_print_chunk(i->outc));
 	(*(snk->mod->run_push))(snk);
@@ -143,7 +149,8 @@ void _AFpushat (_AFmoduleinst *i, AFframecount startframe, bool stretchint,
 		(_af_format_frame_size_uncompressed(&i->outc->f,stretchint) * startframe);
 
 	i->outc->nframes = nframes2push;
-	CHNK(printf("%s pushing %d frames into %s with OFFSET %d frames\n",
+	CHNK(printf("%s pushing %" AF_FRAMECOUNT_PRINT_FMT " frames into %s "
+		"with OFFSET %" AF_FILEOFFSET_PRINT_FMT " frames\n",
 		i->mod->name, i->outc->nframes, snk->mod->name, startframe));
 	CHNK(_af_print_chunk(i->outc));
 	(*(snk->mod->run_push))(snk);
