@@ -51,7 +51,7 @@ const int BUFFERED_FRAME_COUNT = 65536;
 void usage (void)
 {
 	fprintf(stderr, "usage: irixread filename\n");
-	exit(-1);
+	exit(EXIT_FAILURE);
 }
 
 main (int argc, char **argv)

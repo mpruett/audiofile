@@ -32,11 +32,12 @@
 #define TEST_FILE "/tmp/test"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 void usage (void)
 {
 	fprintf(stderr, "usage: virtual filename\n");
-	exit(-1);
+	exit(EXIT_FAILURE);
 }
 
 int main (int argc, char **argv)
@@ -53,7 +54,7 @@ int main (int argc, char **argv)
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		fprintf(stderr, "could not open file for reading");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	afFreeFileSetup(setup);
 
@@ -61,7 +62,7 @@ int main (int argc, char **argv)
 	if (result != 3)
 	{
 		fprintf(stderr, "wrote %d frames: expected 3\n", result);
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	afCloseFile(file);
@@ -70,7 +71,7 @@ int main (int argc, char **argv)
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		fprintf(stderr, "could not open file for reading");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	afSetVirtualChannels(file, AF_DEFAULT_TRACK, 1);
@@ -79,7 +80,7 @@ int main (int argc, char **argv)
 	if (result != 3)
 	{
 		fprintf(stderr, "wrote %d frames: expected 3\n", result);
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	printf("buffer: %d %d %d\n",

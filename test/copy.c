@@ -46,7 +46,7 @@ int main (int ac, char **av)
 	int format = 0;
 
 	if (ac < 3)
-		exit(-1);
+		exit(EXIT_FAILURE);
 	if (ac >= 5)
 	{
 		if (!strcmp(av[4], "wave"))

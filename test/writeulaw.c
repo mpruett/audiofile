@@ -47,6 +47,7 @@
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #define TEST_FILE "/tmp/test.ulaw"
@@ -69,7 +70,7 @@ void ensure (int condition, const char *message)
 	{
 		printf("%s.\n", message);
 		cleanup();
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 }
 

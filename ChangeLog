@@ -1,5 +1,10 @@
 2003-09-11  Michael Pruett <michael@68k.org>
 
+	* test/*.c: Update tests to use exit(EXIT_FAILURE) upon abnormal
+	termination.
+
+2003-09-11  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/wave.c, libaudiofile/wavewrite.c: Add support
 	for miscellaneous data in WAVE files.  Thanks to Davy Durham
 	for this patch.

@@ -22,6 +22,7 @@
 
 #include <audiofile.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 main (int argc, char **argv)
 {
@@ -32,14 +33,14 @@ main (int argc, char **argv)
 	if (argc != 2)
 	{
 		fprintf(stderr, "usage: %s filename\n", argv[0]);
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	file = afOpenFile(argv[1], "r", NULL);
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		fprintf(stderr, "could not open file '%s'\n", argv[1]);
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	count = afGetInstIDs(file, &instids);

@@ -45,7 +45,7 @@ void ensure (int condition, const char *message)
 	{
 		printf("%s.\n", message);
 		cleanup();
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 }
 

@@ -92,13 +92,13 @@ int main (int argc, char **argv)
 		(sampleFormat != AF_SAMPFMT_UNSIGNED))
 	{
 		fprintf(stderr, "The audio file must contain integer data in two's complement or unsigned format.\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	if ((sampleWidth != 16) || (channelCount > 2))
 	{
 		fprintf(stderr, "The audio file must be of a 16-bit monophonic or stereophonic format.\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	buffer = malloc(BUFFER_FRAMES * frameSize);
@@ -107,7 +107,7 @@ int main (int argc, char **argv)
 	if (audiofd < 0)
 	{
 		perror("open");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	setupdsp(audiofd, channelCount);
@@ -137,27 +137,27 @@ void setupdsp (int audiofd, int channelCount)
 	if (ioctl(audiofd, SNDCTL_DSP_SETFMT, &format) == -1)
 	{
 		perror("set format");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	if (format != AFMT_S16_NE)
 	{
 		fprintf(stderr, "format not correct.\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	channels = channelCount;
 	if (ioctl(audiofd, SNDCTL_DSP_CHANNELS, &channels) == -1)
 	{
 		perror("set channels");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	frequency = 44100;
 	if (ioctl(audiofd, SNDCTL_DSP_SPEED, &frequency) == -1)
 	{
 		perror("set frequency");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -166,5 +166,5 @@ void usage (void)
 	fprintf(stderr, "usage: linuxtest file\n");
 	fprintf(stderr,
 		"where file refers to a 16-bit monophonic or stereophonic 44.1 kHz audio file\n");
-	exit(-1);
+	exit(EXIT_FAILURE);
 }

@@ -88,7 +88,7 @@ int main (int argc, char **argv)
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		fprintf(stderr, "could not open file for reading\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	/* Test virtual sample width of 24 bits. */
@@ -155,7 +155,7 @@ int main (int argc, char **argv)
 		if (memcmp(y, z, 4) != 0)
 		{
 			fprintf(stderr, "Data read from file is incorrect.\n");
-			exit(-1);
+			exit(EXIT_FAILURE);
 		}
 	}
 
@@ -221,7 +221,7 @@ int main (int argc, char **argv)
 		if (memcmp(y, z, 4) != 0)
 		{
 			fprintf(stderr, "Data read from file is incorrect.\n");
-			exit(-1);
+			exit(EXIT_FAILURE);
 		}
 	}
 

@@ -95,5 +95,5 @@ void adddcoffset (float offset, char *infilename, char *outfilename)
 void usageerror (void)
 {
 	fprintf(stderr, "usage: adddcoffset offset infile outfile\n");
-	exit(-1);
+	exit(EXIT_FAILURE);
 }

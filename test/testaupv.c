@@ -47,7 +47,7 @@ int main (int argc, char **argv)
 	if (argc != 2)
 	{
 		fprintf(stderr, "usage: testaupv filename\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	file = afOpenFile(argv[1], "r", NULL);

@@ -47,7 +47,7 @@ void usage (void)
 {
 	printf("usage: irixtestloop file\n");
 	printf("where file is of a format which contains a loop (e.g. AIFF)\n");
-	exit(-1);
+	exit(EXIT_FAILURE);
 }
 
 main (int argc, char **argv)
