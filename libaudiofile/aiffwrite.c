@@ -337,6 +337,10 @@ static status WriteMARK (AFfilehandle file)
 
 	assert(file);
 
+	numMarkers = afGetMarkIDs(file, AF_DEFAULT_TRACK, NULL);
+	if (numMarkers == 0)
+		return AF_SUCCEED;
+
 	aiff = file->formatSpecific;
 
 	if (aiff->MARK_offset == 0)
@@ -349,10 +353,9 @@ static status WriteMARK (AFfilehandle file)
 
 	chunkStartPosition = af_ftell(file->fh);
 
-	numMarkers = afGetMarkIDs(file, AF_DEFAULT_TRACK, NULL);
 	markids = _af_calloc(numMarkers, sizeof (int));
-	afGetMarkIDs(file, AF_DEFAULT_TRACK, markids);
 	assert(markids);
+	afGetMarkIDs(file, AF_DEFAULT_TRACK, markids);
 
 	sb = HOST_TO_BENDIAN_INT16(numMarkers);
 	af_fwrite(&sb, 2, 1, file->fh);
@@ -365,7 +368,7 @@ static status WriteMARK (AFfilehandle file)
 		char		*name;
 
 		id = markids[i];
-		position = afGetMarkPosition(file, AF_DEFAULT_TRACK, id);
+		position = afGetMarkPosition(file, AF_DEFAULT_TRACK, markids[i]);
 
 		id = HOST_TO_BENDIAN_INT16(id);
 		position = HOST_TO_BENDIAN_INT32(position);
@@ -373,7 +376,7 @@ static status WriteMARK (AFfilehandle file)
 		af_fwrite(&id, 2, 1, file->fh);
 		af_fwrite(&position, 4, 1, file->fh);
 
-		name = afGetMarkName(file, AF_DEFAULT_TRACK, id);
+		name = afGetMarkName(file, AF_DEFAULT_TRACK, markids[i]);
 		assert(name);
 		namelength = strlen(name);
 
