@@ -14,6 +14,7 @@ noinst_PROGRAMS = \
 	writeircam \
 	writenext \
 	writewave \
+	writeraw \
 	writeulaw \
 	writealaw \
 	virtual \
@@ -33,7 +34,7 @@ EXTRA_DIST = transparency.sh misc.sh pipe.sh
 
 EXTRA_PROGRAMS = irixread irixtestloop linuxtest
 
-TESTS = error writeaiff writeircam writenext writewave \
+TESTS = error writeaiff writeircam writenext writewave writeraw \
 	writeulaw writealaw \
 	misc.sh transparency.sh pipe.sh \
 	query2 sixteen-to-eight twentyfour floatto24 testfloat testmarkers
