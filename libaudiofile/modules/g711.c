@@ -254,7 +254,7 @@ void g711run_pull (_AFmoduleinst *i)
 	g711_data *d = (g711_data *) i->modspec;
 	AFframecount frames2read = i->outc->nframes;
 	AFframecount samps2read = i->outc->nframes * i->outc->f.channelCount;
-	int framesize = sizeof(g711samp)*(i->outc->f.channelCount);
+	int framesize = sizeof (g711samp) * (i->outc->f.channelCount);
 	AFframecount nfr;
 
 	/* Read the compressed frames. */
@@ -272,7 +272,7 @@ void g711run_pull (_AFmoduleinst *i)
 		frames2read, nfr));
 
 	d->trk->nextfframe += nfr;
-	d->trk->fpos_next_frame += (nfr>0) ? nfr/framesize : 0;
+	d->trk->fpos_next_frame += (nfr>0) ? nfr*framesize : 0;
 	assert(!d->seekok || (af_ftell(d->fh) == d->trk->fpos_next_frame));
 
 	/*

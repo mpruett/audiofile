@@ -29,6 +29,7 @@
 */
 
 #include <stdio.h>
+#include <string.h>
 
 #ifdef __USE_SGI_HEADERS__
 #include <dmedia/audiofile.h>
