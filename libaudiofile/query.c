@@ -36,9 +36,11 @@
 #include "error.h"
 #include "util.h"
 #include "units.h"
+#include "compression.h"
 #include "instrument.h"
 
 extern _Unit _af_units[];
+extern _CompressionUnit _af_compression[];
 
 AUpvlist _afQueryFileFormat (int arg1, int arg2, int arg3, int arg4);
 AUpvlist _afQueryInstrument (int arg1, int arg2, int arg3, int arg4);
@@ -62,8 +64,7 @@ AUpvlist afQuery (int querytype, int arg1, int arg2, int arg3, int arg4)
 		case AF_QUERYTYPE_FILEFMT:
 			return _afQueryFileFormat(arg1, arg2, arg3, arg4);
 		case AF_QUERYTYPE_COMPRESSION:
-			/* FIXME: This selector is not implemented. */
-			return AU_NULL_PVLIST;
+			return _afQueryCompression(arg1, arg2, arg3, arg4);
 		case AF_QUERYTYPE_COMPRESSIONPARAM:
 			/* FIXME: This selector is not implemented. */
 			return AU_NULL_PVLIST;
@@ -422,6 +423,52 @@ AUpvlist _afQueryMarker (int arg1, int arg2, int arg3, int arg4)
 /* ARGSUSED0 */
 AUpvlist _afQueryCompression (int arg1, int arg2, int arg3, int arg4)
 {
-	_af_error(AF_BAD_NOT_IMPLEMENTED, "not implemented yet");
+	int	count, i, index;
+	int	*buf;
+
+	switch (arg1)
+	{
+		case AF_QUERY_ID_COUNT:
+			count = 0;
+			for (i = 0; i < _AF_NUM_COMPRESSION; i++)
+				if (_af_compression[i].implemented == AF_TRUE)
+					count++;
+			return _af_pv_long(count);
+
+		case AF_QUERY_IDS:
+			buf = _af_calloc(_AF_NUM_COMPRESSION, sizeof (int));
+			if (!buf)
+				return AU_NULL_PVLIST;
+
+			count = 0;
+			for (i = 0; i < _AF_NUM_COMPRESSION; i++)
+			{
+				if (_af_compression[i].implemented)
+					buf[count++] = _af_compression[i].compressionID;
+			}
+			return _af_pv_pointer(buf);
+
+		case AF_QUERY_NATIVE_SAMPFMT:
+			index = _af_compression_index_from_id(arg2);
+			return _af_pv_long(_af_compression[index].nativeSampleFormat);
+
+		case AF_QUERY_NATIVE_SAMPWIDTH:
+			index = _af_compression_index_from_id(arg2);
+			return _af_pv_long(_af_compression[_af_compression_index_from_id(arg2)].nativeSampleWidth);
+
+		case AF_QUERY_LABEL:
+			index = _af_compression_index_from_id(arg2);
+			return _af_pv_pointer(_af_compression[index].label);
+
+		case AF_QUERY_NAME:
+			index = _af_compression_index_from_id(arg2);
+			return _af_pv_pointer(_af_compression[index].shortname);
+
+		case AF_QUERY_DESC:
+			index = _af_compression_index_from_id(arg2);
+			return _af_pv_pointer(_af_compression[index].name);
+	}
+
+	_af_error(AF_BAD_QUERY, "unrecognized query selector %d\n", arg1);
 	return AU_NULL_PVLIST;
 }
