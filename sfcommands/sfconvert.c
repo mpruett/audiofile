@@ -41,25 +41,38 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef int bool;
+
+#ifndef FALSE
+#define FALSE 0
+#endif
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+
 #define BUFFER_FRAME_COUNT 65536
 
 void usageerror (void);
 void printfileinfo (char *filename);
+int copyaudiodata (AFfilehandle infile, AFfilehandle outfile, int trackid,
+	AFframecount totalFrameCount);
 
 int main (int argc, char **argv)
 {
 	int	i = 1;
 	char	*infilename, *outfilename;
-	int	format = AF_FILE_UNKNOWN;
+	int	outFileFormat = AF_FILE_UNKNOWN;
 
 	AFfilehandle	infile, outfile;
 	AFfilesetup	outfilesetup;
 	int		sampleFormat, sampleWidth, channelCount;
 	double		sampleRate;
-	void		*buffer;
+	int		outSampleFormat = -1, outSampleWidth = -1,
+			outChannelCount = -1;
+	double		outMaxAmp = 1.0;
 
-	AFframecount	totalFrames, totalFramesWritten;
-	int		frameSize;
+	AFframecount	totalFrames;
 
 	if (argc < 3)
 		usageerror();
@@ -76,20 +89,58 @@ int main (int argc, char **argv)
 			if (i + 1 >= argc)
 				usageerror();
 			if (!strcmp(argv[i+1], "aiff"))
-				format = AF_FILE_AIFF;
+				outFileFormat = AF_FILE_AIFF;
 			else if (!strcmp(argv[i+1], "aifc"))
-				format = AF_FILE_AIFFC;
+				outFileFormat = AF_FILE_AIFFC;
 			else if (!strcmp(argv[i+1], "wave"))
-				format = AF_FILE_WAVE;
+				outFileFormat = AF_FILE_WAVE;
 			else if (!strcmp(argv[i+1], "next"))
-				format = AF_FILE_NEXTSND;
-			else if (!strcmp(argv[i+1], "bicsf"))
-				format = AF_FILE_BICSF;
+				outFileFormat = AF_FILE_NEXTSND;
+			else if (!strcmp(argv[i+1], "bics"))
+				outFileFormat = AF_FILE_BICSF;
 			else
 			{
 				fprintf(stderr, "sfconvert: Unknown format %s.\n", argv[i+1]);
 				exit(EXIT_FAILURE);
 			}
+
+			i++;
+		}
+		else if (!strcmp(argv[i], "channels"))
+		{
+			if (i + 1 >= argc)
+				usageerror();
+
+			outChannelCount = atoi(argv[i+1]);
+			if (outChannelCount < 1)
+				usageerror();
+		}
+		else if (!strcmp(argv[i], "float"))
+		{
+			if (i + 1 >= argc)
+				usageerror();
+
+			outSampleFormat = AF_SAMPFMT_FLOAT;
+			outSampleWidth = 32;
+			outMaxAmp = atof(argv[i+1]);
+
+			i++;
+		}
+		else if (!strcmp(argv[i], "integer"))
+		{
+			if (i + 2 >= argc)
+				usageerror();
+
+			outSampleWidth = atoi(argv[i+1]);
+			if (outSampleWidth < 1 || outSampleWidth > 32)
+				usageerror();
+
+			if (!strcmp(argv[i+2], "2scomp"))
+				outSampleFormat = AF_SAMPFMT_TWOSCOMP;
+			else if (!strcmp(argv[i+2], "unsigned"))
+				outSampleFormat = AF_SAMPFMT_UNSIGNED;
+			else
+				usageerror();
 
 			i++;
 		}
@@ -101,12 +152,6 @@ int main (int argc, char **argv)
 		i++;
 	}
 
-	if (format < 0)
-	{
-		printf("You must specify an output format ('format <fmtname>' as a command).\n");
-		return 1;
-	}
-
 	infile = afOpenFile(infilename, "r", AF_NULL_FILESETUP);
 	if (infile == AF_NULL_FILEHANDLE)
 	{
@@ -116,17 +161,30 @@ int main (int argc, char **argv)
 
 	/* Get audio format parameters from input file. */
 	totalFrames = afGetFrameCount(infile, AF_DEFAULT_TRACK);
-	frameSize = afGetFrameSize(infile, AF_DEFAULT_TRACK, 1);
 	channelCount = afGetChannels(infile, AF_DEFAULT_TRACK);
 	sampleRate = afGetRate(infile, AF_DEFAULT_TRACK);
 	afGetSampleFormat(infile, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
 
 	/* Initialize output audio format parameters. */
 	outfilesetup = afNewFileSetup();
-	afInitFileFormat(outfilesetup, format);
-	afInitChannels(outfilesetup, AF_DEFAULT_TRACK, channelCount);
-	afInitSampleFormat(outfilesetup, AF_DEFAULT_TRACK, sampleFormat,
-		sampleWidth);
+
+	if (outFileFormat != -1)
+	{
+		afInitFileFormat(outfilesetup, outFileFormat);
+	}
+
+	if (outSampleFormat != -1 && outSampleWidth != -1)
+	{
+		afInitSampleFormat(outfilesetup, AF_DEFAULT_TRACK,
+			outSampleFormat, outSampleWidth);
+	}
+
+	if (outChannelCount == -1)
+	{
+		outChannelCount = channelCount;
+	}
+
+	afInitChannels(outfilesetup, AF_DEFAULT_TRACK, outChannelCount);
 	afInitRate(outfilesetup, AF_DEFAULT_TRACK, sampleRate);
 
 	outfile = afOpenFile(outfilename, "w", outfilesetup);
@@ -136,38 +194,17 @@ int main (int argc, char **argv)
 		return 1;
 	}
 
+	/*
+		Set the output file's virtual audio format parameters
+		to match the audio format parameters of the input file.
+	*/
+	afSetVirtualChannels(outfile, AF_DEFAULT_TRACK, channelCount);
+	afSetVirtualSampleFormat(outfile, AF_DEFAULT_TRACK, sampleFormat,
+		sampleWidth);
+
 	afFreeFileSetup(outfilesetup);
 
-	buffer = malloc(BUFFER_FRAME_COUNT * frameSize);
-
-	totalFramesWritten = 0;
-	do
-	{
-		AFframecount	framesToRead = BUFFER_FRAME_COUNT;
-		AFframecount	framesRead, framesWritten;
-
-		framesRead = afReadFrames(infile, AF_DEFAULT_TRACK, buffer,
-			framesToRead);
-
-		if (framesRead < 0)
-		{
-			fprintf(stderr, "Bad read of audio track data.\n");
-			break;
-		}
-
-		framesWritten = afWriteFrames(outfile, AF_DEFAULT_TRACK, buffer,
-			framesRead);
-
-		if (framesWritten < 0)
-		{
-			fprintf(stderr, "Bad write of audio track data.\n");
-			break;
-		}
-		else
-		{
-			totalFramesWritten += framesWritten;
-		}
-	} while (totalFramesWritten < totalFrames);
+	copyaudiodata(infile, outfile, AF_DEFAULT_TRACK, totalFrames);
 
 	afCloseFile(infile);
 	afCloseFile(outfile);
@@ -181,6 +218,82 @@ int main (int argc, char **argv)
 
 void usageerror (void)
 {
-	fprintf(stderr, "usage: sfconvert infile outfile [ options ... ] [ output keywords ... ]\n");
+	printf("usage: sfconvert infile outfile [ options ... ] [ output keywords ... ]\n");
+	printf("\n");
+
+	printf("Where keywords specify format of input or output soundfile:\n");
+	printf("    byteorder e    endian (e is big or little)\n");
+	printf("    channels n     n-channel file (1 or 2)\n");
+	printf("    format f       file format f (see below)\n");
+	printf("    integer n s    n-bit integer file, where s is one of\n");
+	printf("                       2scomp: 2's complement signed data\n");
+	printf("                       unsigned: unsigned data\n");
+	printf("    float m        floating point file, maxamp m (usually 1.0)\n");
+	printf("\n");
+
+	printf("Currently supported formats are:\n");
+	printf("\n");
+	printf("    aiff    Audio Interchange File Format\n");
+	printf("    aifc    AIFF-C File Format\n");
+	printf("    next    NeXT/Sun Format\n");
+	printf("    wave    MS RIFF WAVE Format\n");
+	printf("    bics    Berkeley/IRCAM/CARL Sound File Format\n");
+	printf("\n");
+
 	exit(EXIT_FAILURE);
+}
+
+/*
+	Copy audio data from one file to another.  This function
+	assumes that the virtual sample formats of the two files
+	match.
+*/
+int copyaudiodata (AFfilehandle infile, AFfilehandle outfile, int trackid,
+	AFframecount totalFrameCount)
+{
+	AFframecount	totalFramesWritten = 0;
+	void		*buffer;
+	int		frameSize;
+	bool		ok = TRUE, done = FALSE;
+
+	frameSize = afGetVirtualFrameSize(infile, trackid, 1);
+
+	buffer = malloc(BUFFER_FRAME_COUNT * frameSize);
+
+	while (done == FALSE)
+	{
+		AFframecount	framesToRead = BUFFER_FRAME_COUNT;
+		AFframecount	framesRead, framesWritten;
+
+		framesRead = afReadFrames(infile, trackid, buffer,
+			framesToRead);
+
+		if (framesRead < 0)
+		{
+			fprintf(stderr, "Bad read of audio track data.\n");
+			ok = FALSE;
+			done = TRUE;
+		}
+
+		framesWritten = afWriteFrames(outfile, trackid, buffer,
+			framesRead);
+
+		if (framesWritten < 0)
+		{
+			fprintf(stderr, "Bad write of audio track data.\n");
+			ok = FALSE;
+			done = TRUE;
+		}
+		else
+		{
+			totalFramesWritten += framesWritten;
+		}
+
+		if (totalFramesWritten == totalFrameCount)
+			done = TRUE;
+	}
+
+	free(buffer);
+
+	return ok;
 }

@@ -2,7 +2,14 @@
 
 	* sfcommands/sfconvert.c: Use a fixed-size buffer for reading
 	and writing audio data, thus reducing memory usage when
-	converting large sound files.
+	converting large sound files.  Add float, integer, and channels
+	keywords to sfconvert.
+
+	* libaudiofile/setup.c: Change the default file format for
+	big-endian systems from AIFF to AIFF-C.
+
+	* libaudiofile/{data.c,audiofile.h}: Change the type of the
+	buffer parameter of afWriteFrames from void * to const void *.
 
 2001-07-12  Michael Pruett <mpruett@sgi.com>
 
