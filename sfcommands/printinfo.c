@@ -68,7 +68,8 @@ void printfileinfo (char *filename)
 	switch (sampleFormat)
 	{
 		case AF_SAMPFMT_TWOSCOMP:
-			printf("%d-bit integer (2's complement, %s)\n", sampleWidth,
+			printf("%d-bit integer (2's complement, %s)\n",
+				sampleWidth,
 				byteOrder == AF_BYTEORDER_BIGENDIAN ?
 					"big endian" : "little endian");
 			break;
@@ -78,8 +79,17 @@ void printfileinfo (char *filename)
 					"big endian" : "little endian");
 			break;
 		case AF_SAMPFMT_FLOAT:
+			printf("single-precision (32-bit) floating point, %s\n",
+				byteOrder == AF_BYTEORDER_BIGENDIAN ?
+					"big endian" : "little endian");
 			break;
 		case AF_SAMPFMT_DOUBLE:
+			printf("double-precision (64-bit) floating point, %s\n",
+				byteOrder == AF_BYTEORDER_BIGENDIAN ?
+					"big endian" : "little endian");
+			break;
+		default:
+			printf("unknown\n");
 			break;
 	}
 
