@@ -29,6 +29,7 @@ noinst_PROGRAMS = \
 	testmarkers \
 	testchannelmatrix \
 	printmarkers \
+	seek \
 	@TEST_BIN@
 
 EXTRA_DIST = transparency.sh misc.sh pipe.sh
@@ -39,7 +40,7 @@ TESTS = error writeaiff writeircam writenext writewave writeraw \
 	writeulaw writealaw \
 	misc.sh transparency.sh pipe.sh \
 	query2 sixteen-to-eight twentyfour floatto24 \
-	testfloat testmarkers testchannelmatrix
+	testfloat testmarkers testchannelmatrix seek
 
 irixread_SOURCES = irixread.c sgi.c sgi.h
 irixread_LDADD = $(top_builddir)/libaudiofile/libaudiofile.la @AUDIO_LIB@

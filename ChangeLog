@@ -1,3 +1,8 @@
+2003-09-15  Michael Pruett <michael@68k.org>
+
+	* test/Makefile.am, test/seek.c: Add test case for seeking within
+	an audio file.
+
 2003-09-11  Michael Pruett <michael@68k.org>
 
 	* test/*.c: Update tests to use exit(EXIT_FAILURE) upon abnormal

@@ -36,3 +36,4 @@ writenext
 writeraw
 writeulaw
 writewave
+seek
