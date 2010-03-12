@@ -1,9 +1,3 @@
-*.la
-*.lo
-.deps
-.libs
-Makefile
-Makefile.in
 adddcoffset
 copy
 error
@@ -21,6 +15,7 @@ power
 printmarkers
 query
 query2
+seek
 sixteen-to-eight
 testaupv
 testchannelmatrix
@@ -28,12 +23,15 @@ testfloat
 testmarkers
 transparency
 twentyfour
+twentyfour2
 virtual
 writeaiff
 writealaw
+writeavr
+writeiff
 writeircam
 writenext
+writenist
 writeraw
 writeulaw
 writewave
-seek
