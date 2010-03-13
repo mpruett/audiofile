@@ -383,7 +383,6 @@ static status WriteCues (AFfilehandle file)
 {
 	int		i, *markids, markCount;
 	u_int32_t	numCues, cueChunkSize, listChunkSize;
-	_Track		*track = &file->tracks[0];
 	_WAVEInfo	*wave;
 
 	assert(file);

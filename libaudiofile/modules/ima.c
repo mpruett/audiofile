@@ -128,9 +128,7 @@ _AFmoduleinst _af_ima_adpcm_init_decompress (_Track *track, AFvirtualfile *fh,
 	_AFmoduleinst	ret = _AFnewmodinst(&ima_adpcm_decompress);
 	ima_adpcm_data	*d;
 	AUpvlist	pv;
-	int		i;
 	long		l;
-	void		*v;
 
 	assert(af_ftell(fh) == track->fpos_first_frame);
 

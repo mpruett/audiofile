@@ -251,7 +251,6 @@ _AFmoduleinst _af_ms_adpcm_init_decompress (_Track *track, AFvirtualfile *fh,
 	_AFmoduleinst	ret = _AFnewmodinst(&ms_adpcm_decompress);
 	ms_adpcm_data	*d;
 	AUpvlist	pv;
-	int		i;
 	long		l;
 	void		*v;
 

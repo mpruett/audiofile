@@ -259,7 +259,7 @@ void _af_print_frame (AFframecount frameno, double *frame, int nchannels,
 	double slope, double intercept, double minclip, double maxclip)
 {
 	char linebuf[81];
-	int wavewidth = wavewidth = 78 - numberwidth*nchannels - 6;
+	int wavewidth = 78 - numberwidth*nchannels - 6;
 	int c;
 
 	memset(linebuf, ' ', 80);

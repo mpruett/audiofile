@@ -458,7 +458,7 @@ AUpvlist _afQueryCompression (int arg1, int arg2, int arg3, int arg4)
 
 		case AF_QUERY_NATIVE_SAMPWIDTH:
 			index = _af_compression_index_from_id(arg2);
-			return _af_pv_long(_af_compression[_af_compression_index_from_id(arg2)].nativeSampleWidth);
+			return _af_pv_long(_af_compression[index].nativeSampleWidth);
 
 		case AF_QUERY_LABEL:
 			index = _af_compression_index_from_id(arg2);
