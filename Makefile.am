@@ -6,13 +6,13 @@ bin_SCRIPTS = \
 SRC_SUBDIRS = libaudiofile sfcommands test examples
 SUBDIRS = $(SRC_SUBDIRS) docs win32
 
-EXTRA_DIST= \
+EXTRA_DIST = \
 	ACKNOWLEDGEMENTS \
 	NOTES \
 	README \
 	TODO \
 	COPYING.GPL \
-	configure configure.in\
+	configure configure.ac \
 	audiofile.m4 \
 	audiofile.spec.in \
 	audiofile.pc.in
