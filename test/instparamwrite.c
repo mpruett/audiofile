@@ -23,7 +23,7 @@
 
 #include <audiofile.h>
 
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	AFfilehandle	file;
 	AFfilesetup	setup;
@@ -52,4 +52,6 @@ main (int argc, char **argv)
 	afSetInstParamLong(file, AF_DEFAULT_INST, AF_INST_NUMCENTS_DETUNE, -30);
 
 	afCloseFile(file);
+
+	return 0;
 }

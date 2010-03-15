@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	AFfilehandle	file;
 	long		result;
@@ -74,4 +74,6 @@ main (int argc, char **argv)
 	printf("release loop id: %ld\n", result);
 
 	afCloseFile(file);
+
+	return 0;
 }

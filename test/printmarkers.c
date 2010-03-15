@@ -29,9 +29,10 @@
 #include <config.h>
 #endif
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
+
 #include <audiofile.h>
 
 void printtime (AFframecount position, double rate)
