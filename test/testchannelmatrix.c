@@ -30,9 +30,10 @@
 #include <config.h>
 #endif
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
+
 #include <audiofile.h>
 
 #define TEST_FILE "/tmp/test.aiff"

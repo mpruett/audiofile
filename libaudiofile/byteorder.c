@@ -24,9 +24,11 @@
 	This file defines functions which swap bytes.
 */
 
-#include <sys/types.h>
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "byteorder.h"
-#include "util.h"
 
 uint16_t _af_byteswap_int16 (uint16_t x)
 {

@@ -30,14 +30,10 @@
 #endif
 
 #include <assert.h>
-#include <sys/types.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
 
 #include "next.h"
 #include "audiofile.h"

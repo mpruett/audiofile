@@ -53,7 +53,7 @@
 #include "setup.h"
 #include "util.h"
 
-#include <stdio.h>
+#include <stdlib.h>
 
 extern _Unit _af_units[];
 

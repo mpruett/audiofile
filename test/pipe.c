@@ -30,13 +30,11 @@
 #include <config.h>
 #endif
 
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
-
-#include <audiofile.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <audiofile.h>
 
 #define SAMPLE_COUNT 12
 #define FRAME_COUNT 6

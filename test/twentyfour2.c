@@ -35,12 +35,9 @@
 #include <config.h>
 #endif
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
 
 #include <audiofile.h>
 

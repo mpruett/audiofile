@@ -28,7 +28,9 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include <sys/types.h>
+#include <stdint.h>
+#include <stdlib.h>
+
 #include "audiofile.h"
 #include "afinternal.h"
 

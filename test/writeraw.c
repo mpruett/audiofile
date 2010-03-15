@@ -37,9 +37,10 @@
 #include <audiofile.h>
 #endif
 
+#include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <stdio.h>
 
 #define TEST_FILE "/tmp/test.raw"
 

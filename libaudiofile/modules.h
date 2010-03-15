@@ -29,11 +29,7 @@
 #include <config.h>
 #endif
 
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
-
-#include <sys/types.h>
+#include <stdint.h>
 
 #include "audiofile.h"
 #include "afinternal.h"

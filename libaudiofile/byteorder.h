@@ -30,31 +30,23 @@
 
 #include <config.h>
 
+#include <stdint.h>
+
 #if WORDS_BIGENDIAN
-	#define __BIGENDIAN__
 	#define _AF_BYTEORDER_NATIVE (AF_BYTEORDER_BIGENDIAN)
 #else
-	#define __LITTLEENDIAN__
 	#define _AF_BYTEORDER_NATIVE (AF_BYTEORDER_LITTLEENDIAN)
 #endif
 
-#ifndef uint16
-typedef uint16_t uint16;
-#endif
+#if !WORDS_BIGENDIAN
 
-#ifndef uint32
-typedef uint32_t uint32;
-#endif
-
-#ifdef __LITTLEENDIAN__
-
-#define HOST_TO_LENDIAN_INT16(x)		((uint16) (x))
-#define HOST_TO_LENDIAN_INT32(x)		((uint32) (x))
+#define HOST_TO_LENDIAN_INT16(x)		((uint16_t) (x))
+#define HOST_TO_LENDIAN_INT32(x)		((uint32_t) (x))
 #define HOST_TO_LENDIAN_FLOAT32(x)		((float) (x))
 #define HOST_TO_LENDIAN_DOUBLE64(x)		((double) (x))
 
-#define LENDIAN_TO_HOST_INT16(x)		((uint16) (x))
-#define LENDIAN_TO_HOST_INT32(x)		((uint32) (x))
+#define LENDIAN_TO_HOST_INT16(x)		((uint16_t) (x))
+#define LENDIAN_TO_HOST_INT32(x)		((uint32_t) (x))
 #define LENDIAN_TO_HOST_FLOAT32(x)		((float) (x))
 #define LENDIAN_TO_HOST_DOUBLE64(x)		((double) (x))
 
@@ -72,15 +64,15 @@ typedef uint32_t uint32;
 
 #endif
 
-#ifdef __BIGENDIAN__
+#if WORDS_BIGENDIAN
 
-#define HOST_TO_BENDIAN_INT16(x)		((uint16) (x))
-#define HOST_TO_BENDIAN_INT32(x)		((uint32) (x))
+#define HOST_TO_BENDIAN_INT16(x)		((uint16_t) (x))
+#define HOST_TO_BENDIAN_INT32(x)		((uint32_t) (x))
 #define HOST_TO_BENDIAN_FLOAT32(x)		((float) (x))
 #define HOST_TO_BENDIAN_DOUBLE64(x)		((double) (x))
 
-#define BENDIAN_TO_HOST_INT16(x)		((uint16) (x))
-#define BENDIAN_TO_HOST_INT32(x)		((uint32) (x))
+#define BENDIAN_TO_HOST_INT16(x)		((uint16_t) (x))
+#define BENDIAN_TO_HOST_INT32(x)		((uint32_t) (x))
 #define BENDIAN_TO_HOST_FLOAT32(x)		((float) (x))
 #define BENDIAN_TO_HOST_DOUBLE64(x)		((double) (x))
 

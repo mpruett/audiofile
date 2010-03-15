@@ -29,15 +29,10 @@
 #include <config.h>
 #endif
 
-#include <sys/types.h>
-#include <stdio.h>
+#include <assert.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
-
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
 
 #include "audiofile.h"
 #include "afinternal.h"

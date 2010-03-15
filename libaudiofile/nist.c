@@ -28,14 +28,11 @@
 #include <config.h>
 #endif
 
-#include <sys/types.h>
-#include <stdio.h>
-#include <string.h>
 #include <assert.h>
-
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "afinternal.h"
 #include "audiofile.h"

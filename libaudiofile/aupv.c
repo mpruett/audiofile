@@ -25,7 +25,6 @@
 	value list functions.
 */
 
-#include <sys/types.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>

@@ -23,9 +23,9 @@
 #include <config.h>
 #endif
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
 
 #ifdef __USE_SGI_HEADERS__
 #include <dmedia/audiofile.h>

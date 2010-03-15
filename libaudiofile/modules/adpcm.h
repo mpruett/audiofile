@@ -11,9 +11,7 @@
 #include <config.h>
 #endif
 
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
+#include <stdint.h>
 
 struct adpcm_state {
     short	valprev;	/* Previous output value */

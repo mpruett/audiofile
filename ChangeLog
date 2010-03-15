@@ -1,6 +1,6 @@
 2010-03-15  Michael Pruett <michael@68k.org>
 
-	* Use C99 uintN_t types rather than u_intN_t.
+	* Use C99 integer types.
 
 2010-03-12  Wim Lewis <wiml@omnigroup.com>
 

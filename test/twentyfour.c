@@ -31,14 +31,12 @@
 #include <config.h>
 #endif
 
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
-
+#include <assert.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <audiofile.h>
-#include <assert.h>
 
 #define TEST_FILE "/tmp/test.aiff"
 #define FRAME_COUNT 6

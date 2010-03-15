@@ -28,7 +28,7 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#include <sys/types.h>
+#include <stdint.h>
 #include "audiofile.h"
 #include "afinternal.h"
 
