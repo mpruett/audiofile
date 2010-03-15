@@ -49,10 +49,10 @@
 #include "iff.h"
 
 static status ParseMiscellaneous (AFfilehandle file, AFvirtualfile *fh,
-	u_int32_t type, size_t size);
-static status ParseVHDR (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
+	uint32_t type, size_t size);
+static status ParseVHDR (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	size_t size);
-static status ParseBODY (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
+static status ParseBODY (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	size_t size);
 
 _AFfilesetup _af_iff_default_filesetup =
@@ -72,7 +72,7 @@ _AFfilesetup _af_iff_default_filesetup =
 
 bool _af_iff_recognize (AFvirtualfile *fh)
 {
-	u_int8_t	buffer[8];
+	uint8_t	buffer[8];
 
 	af_fseek(fh, 0, SEEK_SET);
 
@@ -89,7 +89,7 @@ bool _af_iff_recognize (AFvirtualfile *fh)
 	and annotation chunks.
 */
 static status ParseMiscellaneous (AFfilehandle file, AFvirtualfile *fh,
-	u_int32_t type, size_t size)
+	uint32_t type, size_t size)
 {
 	int	misctype = AF_MISC_UNRECOGNIZED;
 
@@ -127,14 +127,14 @@ static status ParseMiscellaneous (AFfilehandle file, AFvirtualfile *fh,
 /*
 	Parse voice header chunk.
 */
-static status ParseVHDR (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
+static status ParseVHDR (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	size_t size)
 {
 	_Track		*track;
-	u_int32_t	oneShotSamples, repeatSamples, samplesPerRepeat;
-	u_int16_t	sampleRate;
-	u_int8_t	octaves, compression;
-	u_int32_t	volume;
+	uint32_t	oneShotSamples, repeatSamples, samplesPerRepeat;
+	uint16_t	sampleRate;
+	uint8_t		octaves, compression;
+	uint32_t	volume;
 
 	assert(!memcmp(&type, "VHDR", 4));
 
@@ -160,7 +160,7 @@ static status ParseVHDR (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 	return AF_SUCCEED;
 }
 
-static status ParseBODY (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
+static status ParseBODY (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	size_t size)
 {
 	_Track		*track;
@@ -183,7 +183,7 @@ static status ParseBODY (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 
 status _af_iff_read_init (AFfilesetup setup, AFfilehandle file)
 {
-	u_int32_t	type, size, formtype;
+	uint32_t	type, size, formtype;
 	size_t		index;
 	_Track		*track;
 
@@ -214,7 +214,7 @@ status _af_iff_read_init (AFfilesetup setup, AFfilehandle file)
 
 	while (index < size)
 	{
-		u_int32_t	chunkid = 0, chunksize = 0;
+		uint32_t	chunkid = 0, chunksize = 0;
 		status		result = AF_SUCCEED;
 
 		af_fread(&chunkid, 4, 1, file->fh);

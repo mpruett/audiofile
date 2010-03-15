@@ -50,7 +50,7 @@ int main (int argc, char **argv)
 	/* All elements in frames32 must be in the range -2^23 to 2^23 - 1. */
 	const int32_t frames32[FRAME_COUNT] =
 		{4314298, -49392, 3923, -143683, 43, -992129};
-	const u_int8_t frames24[FRAME_COUNT*3] =
+	const uint8_t frames24[FRAME_COUNT*3] =
 		{
 			0x41, 0xd4, 0xba,	/* 4314298 */
 			0xff, 0x3f, 0x10,	/* -49392 */
@@ -99,9 +99,9 @@ int main (int argc, char **argv)
 
 	for (i=0; i<FRAME_COUNT; i++)
 	{
-		u_int8_t	x[4];
-		u_int8_t	y[4];
-		u_int8_t	z[4];
+		uint8_t	x[4];
+		uint8_t	y[4];
+		uint8_t	z[4];
 
 		if ((frames32[i] & 0x800000) != 0)
 			x[0] = 0xff;
@@ -168,9 +168,9 @@ int main (int argc, char **argv)
 
 	for (i=0; i<FRAME_COUNT; i++)
 	{
-		u_int8_t	x[4];
-		u_int8_t	y[4];
-		u_int8_t	z[4];
+		uint8_t	x[4];
+		uint8_t	y[4];
+		uint8_t	z[4];
 
 		x[0] = (frames32[i] >> 16) & 0xff;
 		x[1] = (frames32[i] >> 8) & 0xff;

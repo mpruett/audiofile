@@ -34,7 +34,7 @@
 #endif
 
 /* Two frames of 16-bit stereo samples. */
-u_int16_t data[] = {0, 1, 2, 3};
+uint16_t data[] = {0, 1, 2, 3};
 
 int main (int argc, char **argv)
 {

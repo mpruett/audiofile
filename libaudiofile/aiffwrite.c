@@ -70,7 +70,7 @@ static _AIFFInfo *aiffinfo_new (void)
 
 status _af_aiff_write_init (AFfilesetup setup, AFfilehandle file)
 {
-	u_int32_t	fileSize = 0;
+	uint32_t	fileSize = 0;
 
 	assert(file);
 	assert(file->fileFormat == AF_FILE_AIFF ||
@@ -105,7 +105,7 @@ status _af_aiff_write_init (AFfilesetup setup, AFfilehandle file)
 status _af_aiff_update (AFfilehandle file)
 {
 	_Track		*track;
-	u_int32_t	length;
+	uint32_t	length;
 
 	assert(file);
 
@@ -139,15 +139,15 @@ status _af_aiff_update (AFfilehandle file)
 static status WriteCOMM (const AFfilehandle file)
 {
 	_Track		*track;
-	u_int32_t	chunkSize;
+	uint32_t	chunkSize;
 	_AIFFInfo	*aiff;
 	bool		isAIFFC;
 
-	u_int16_t	sb;
-	u_int32_t	lb;
+	uint16_t	sb;
+	uint32_t	lb;
 	unsigned char	eb[10];
 
-	u_int8_t	compressionTag[4];
+	uint8_t		compressionTag[4];
 	/* Pascal strings can occupy only 255 bytes (+ a size byte). */
 	char		compressionName[256];
 
@@ -244,7 +244,7 @@ static status WriteCOMM (const AFfilehandle file)
 
 	if (file->fileFormat == AF_FILE_AIFFC)
 	{
-		u_int8_t	sizeByte, zero = 0;
+		uint8_t	sizeByte, zero = 0;
 
 		af_fwrite(compressionTag, 4, 1, file->fh);
 
@@ -273,7 +273,7 @@ static status WriteCOMM (const AFfilehandle file)
 static status WriteAESD (const AFfilehandle file)
 {
 	_Track		*track;
-	u_int32_t	size = 24;
+	uint32_t	size = 24;
 	_AIFFInfo	*aiff;
 
 	assert(file);
@@ -305,7 +305,7 @@ static status WriteAESD (const AFfilehandle file)
 static status WriteSSND (AFfilehandle file)
 {
 	_Track		*track;
-	u_int32_t	chunkSize, zero = 0;
+	uint32_t	chunkSize, zero = 0;
 	_AIFFInfo	*aiff;
 
 	assert(file);
@@ -339,7 +339,7 @@ static status WriteSSND (AFfilehandle file)
 
 static status WriteINST (AFfilehandle file)
 {
-	u_int32_t	length;
+	uint32_t	length;
 	struct _INST	instrumentdata;
 
 	length = 20;
@@ -399,8 +399,8 @@ static status WriteINST (AFfilehandle file)
 static status WriteMARK (AFfilehandle file)
 {
 	AFfileoffset	chunkStartPosition, chunkEndPosition;
-	u_int32_t	length = 0;
-	u_int16_t	numMarkers;
+	uint32_t	length = 0;
+	uint16_t	numMarkers;
 	int		i, *markids;
 	_AIFFInfo	*aiff;
 
@@ -430,9 +430,9 @@ static status WriteMARK (AFfilehandle file)
 
 	for (i=0; i<numMarkers; i++)
 	{
-		u_int8_t	namelength, zero = 0;
-		u_int16_t	id;
-		u_int32_t	position;
+		uint8_t		namelength, zero = 0;
+		uint16_t	id;
+		uint32_t	position;
 		char		*name;
 
 		id = markids[i];
@@ -481,7 +481,7 @@ static status WriteMARK (AFfilehandle file)
 */
 static status WriteFVER (AFfilehandle file)
 {
-	u_int32_t	chunkSize, timeStamp;
+	uint32_t	chunkSize, timeStamp;
 	_AIFFInfo	*aiff;
 
 	assert(file->fileFormat == AF_FILE_AIFFC);
@@ -523,8 +523,8 @@ static status WriteMiscellaneous (AFfilehandle file)
 	for (i=0; i<file->miscellaneousCount; i++)
 	{
 		_Miscellaneous	*misc = &file->miscellaneous[i];
-		u_int32_t	chunkType, chunkSize;
-		u_int8_t	padByte = 0;
+		uint32_t	chunkType, chunkSize;
+		uint8_t		padByte = 0;
 
 #ifdef DEBUG
 		printf("WriteMiscellaneous: %d, type %d\n", i, misc->type);

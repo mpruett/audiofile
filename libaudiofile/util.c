@@ -451,9 +451,9 @@ bool _af_unique_ids (int *ids, int nids, char *idname, int iderr)
 	return AF_TRUE;
 }
 
-status af_read_uint32_be (u_int32_t *value, AFvirtualfile *vf)
+status af_read_uint32_be (uint32_t *value, AFvirtualfile *vf)
 {
-	u_int32_t	v;
+	uint32_t	v;
 
 	if (af_fread(&v, sizeof (v), 1, vf) != 1)
 		return AF_FAIL;
@@ -461,9 +461,9 @@ status af_read_uint32_be (u_int32_t *value, AFvirtualfile *vf)
 	return AF_SUCCEED;
 }
 
-status af_read_uint32_le (u_int32_t *value, AFvirtualfile *vf)
+status af_read_uint32_le (uint32_t *value, AFvirtualfile *vf)
 {
-	u_int32_t	v;
+	uint32_t	v;
 
 	if (af_fread(&v, sizeof (v), 1, vf) != 1)
 		return AF_FAIL;
@@ -471,9 +471,9 @@ status af_read_uint32_le (u_int32_t *value, AFvirtualfile *vf)
 	return AF_SUCCEED;
 }
 
-status af_read_uint16_be (u_int16_t *value, AFvirtualfile *vf)
+status af_read_uint16_be (uint16_t *value, AFvirtualfile *vf)
 {
-	u_int16_t	v;
+	uint16_t	v;
 
 	if (af_fread(&v, sizeof (v), 1, vf) != 1)
 		return AF_FAIL;
@@ -481,9 +481,9 @@ status af_read_uint16_be (u_int16_t *value, AFvirtualfile *vf)
 	return AF_SUCCEED;
 }
 
-status af_read_uint16_le (u_int16_t *value, AFvirtualfile *vf)
+status af_read_uint16_le (uint16_t *value, AFvirtualfile *vf)
 {
-	u_int16_t	v;
+	uint16_t	v;
 
 	if (af_fread(&v, sizeof (v), 1, vf) != 1)
 		return AF_FAIL;
@@ -491,36 +491,36 @@ status af_read_uint16_le (u_int16_t *value, AFvirtualfile *vf)
 	return AF_SUCCEED;
 }
 
-status af_write_uint32_be (const u_int32_t *value, AFvirtualfile *vf)
+status af_write_uint32_be (const uint32_t *value, AFvirtualfile *vf)
 {
-	u_int32_t	v;
+	uint32_t	v;
 	v = HOST_TO_BENDIAN_INT32(*value);
 	if (af_fwrite(&v, sizeof (v), 1, vf) != 1)
 		return AF_FAIL;
 	return AF_SUCCEED;
 }
 
-status af_write_uint32_le (const u_int32_t *value, AFvirtualfile *vf)
+status af_write_uint32_le (const uint32_t *value, AFvirtualfile *vf)
 {
-	u_int32_t	v;
+	uint32_t	v;
 	v = HOST_TO_LENDIAN_INT32(*value);
 	if (af_fwrite(&v, sizeof (v), 1, vf) != 1)
 		return AF_FAIL;
 	return AF_SUCCEED;
 }
 
-status af_write_uint16_be (const u_int16_t *value, AFvirtualfile *vf)
+status af_write_uint16_be (const uint16_t *value, AFvirtualfile *vf)
 {
-	u_int16_t	v;
+	uint16_t	v;
 	v = HOST_TO_BENDIAN_INT16(*value);
 	if (af_fwrite(&v, sizeof (v), 1, vf) != 1)
 		return AF_FAIL;
 	return AF_SUCCEED;
 }
 
-status af_write_uint16_le (const u_int16_t *value, AFvirtualfile *vf)
+status af_write_uint16_le (const uint16_t *value, AFvirtualfile *vf)
 {
-	u_int16_t	v;
+	uint16_t	v;
 	v = HOST_TO_LENDIAN_INT16(*value);
 	if (af_fwrite(&v, sizeof (v), 1, vf) != 1)
 		return AF_FAIL;

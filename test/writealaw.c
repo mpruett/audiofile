@@ -92,9 +92,9 @@ void testalaw (int fileFormat)
 {
 	AFfilehandle	file;
 	AFfilesetup	setup;
-	u_int16_t	samples[] = {8, 24, 88, 120, 184, 784, 912, 976,
+	uint16_t	samples[] = {8, 24, 88, 120, 184, 784, 912, 976,
                         1120, 1440, 1888, 8960, 9984, 16128, 19968, 32256};
-	u_int16_t	readsamples[SAMPLE_COUNT];
+	uint16_t	readsamples[SAMPLE_COUNT];
 	AFframecount	framesWritten, framesRead;
 	int		i;
 

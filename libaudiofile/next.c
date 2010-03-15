@@ -70,7 +70,7 @@ _AFfilesetup _af_next_default_filesetup =
 
 status _af_next_read_init (AFfilesetup setup, AFfilehandle file)
 {
-	u_int32_t	id, offset, length, encoding, sampleRate, channelCount;
+	uint32_t	id, offset, length, encoding, sampleRate, channelCount;
 	_Track		*track;
 
 	assert(file != NULL);
@@ -179,7 +179,7 @@ status _af_next_read_init (AFfilesetup setup, AFfilehandle file)
 
 bool _af_next_recognize (AFvirtualfile *fh)
 {
-	u_int8_t	buffer[4];
+	uint8_t	buffer[4];
 
 	af_fseek(fh, 0, SEEK_SET);
 

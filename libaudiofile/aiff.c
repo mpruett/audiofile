@@ -49,19 +49,19 @@
 #include "track.h"
 #include "marker.h"
 
-static status ParseFVER (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
+static status ParseFVER (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	size_t size);
-static status ParseAESD (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
+static status ParseAESD (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	size_t size);
 static status ParseMiscellaneous (AFfilehandle file, AFvirtualfile *fh,
-	u_int32_t type, size_t size);
-static status ParseINST (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
+	uint32_t type, size_t size);
+static status ParseINST (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	size_t size);
-static status ParseMARK (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
+static status ParseMARK (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	size_t size);
-static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
+static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	size_t size);
-static status ParseSSND (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
+static status ParseSSND (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	size_t size);
 
 _InstParamInfo _af_aiff_inst_params[_AF_AIFF_NUM_INSTPARAMS] =
@@ -101,9 +101,9 @@ _AFfilesetup _af_aiff_default_filesetup =
 /*
 	FVER chunks are only present in AIFF-C files.
 */
-static status ParseFVER (AFfilehandle file, AFvirtualfile *fh, u_int32_t type, size_t size)
+static status ParseFVER (AFfilehandle file, AFvirtualfile *fh, uint32_t type, size_t size)
 {
-	u_int32_t	timestamp;
+	uint32_t	timestamp;
 
 	assert(!memcmp(&type, "FVER", 4));
 
@@ -116,7 +116,7 @@ static status ParseFVER (AFfilehandle file, AFvirtualfile *fh, u_int32_t type, s
 /*
 	Parse AES recording data.
 */
-static status ParseAESD (AFfilehandle file, AFvirtualfile *fh, u_int32_t type, size_t size)
+static status ParseAESD (AFfilehandle file, AFvirtualfile *fh, uint32_t type, size_t size)
 {
 	_Track		*track;
 	unsigned char	aesChannelStatusData[24];
@@ -145,7 +145,7 @@ static status ParseAESD (AFfilehandle file, AFvirtualfile *fh, u_int32_t type, s
 	and annotation chunks.
 */
 static status ParseMiscellaneous (AFfilehandle file, AFvirtualfile *fh,
-	u_int32_t type, size_t size)
+	uint32_t type, size_t size)
 {
 	int	misctype = AF_MISC_UNRECOGNIZED;
 
@@ -189,17 +189,17 @@ static status ParseMiscellaneous (AFfilehandle file, AFvirtualfile *fh,
 	Parse instrument chunks, which contain information about using
 	sound data as a sampled instrument.
 */
-static status ParseINST (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
+static status ParseINST (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	size_t size)
 {
 	_Instrument	*instrument;
-	u_int8_t	baseNote;
+	uint8_t		baseNote;
 	int8_t		detune;
-	u_int8_t	lowNote, highNote, lowVelocity, highVelocity;
+	uint8_t		lowNote, highNote, lowVelocity, highVelocity;
 	int16_t		gain;
 
-	u_int16_t	sustainLoopPlayMode, sustainLoopBegin, sustainLoopEnd;
-	u_int16_t	releaseLoopPlayMode, releaseLoopBegin, releaseLoopEnd;
+	uint16_t	sustainLoopPlayMode, sustainLoopBegin, sustainLoopEnd;
+	uint16_t	releaseLoopPlayMode, releaseLoopBegin, releaseLoopEnd;
 
 	assert(!memcmp(&type, "INST", 4));
 
@@ -271,12 +271,12 @@ static status ParseINST (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 /*
 	Parse marker chunks, which contain the positions and names of loop markers.
 */
-static status ParseMARK (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
+static status ParseMARK (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	size_t size)
 {
 	_Track		*track;
 	int		i;
-	u_int16_t	numMarkers;
+	uint16_t	numMarkers;
 
 	assert(!memcmp(&type, "MARK", 4));
 
@@ -290,9 +290,9 @@ static status ParseMARK (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 
 	for (i=0; i<numMarkers; i++)
 	{
-		u_int16_t	markerID = 0;
-		u_int32_t	markerPosition = 0;
-		u_int8_t	sizeByte = 0;
+		uint16_t	markerID = 0;
+		uint32_t	markerPosition = 0;
+		uint8_t		sizeByte = 0;
 		char		*markerName = NULL;
 
 		af_read_uint16_be(&markerID, fh);
@@ -333,13 +333,13 @@ static status ParseMARK (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 	sampling rate, the number of sample frames, and the number of
 	sound channels.
 */
-static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
+static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	size_t size)
 {
 	_Track		*track;
-	u_int16_t	numChannels;
-	u_int32_t	numSampleFrames;
-	u_int16_t	sampleSize;
+	uint16_t	numChannels;
+	uint32_t	numSampleFrames;
+	uint16_t	sampleSize;
 	unsigned char	sampleRate[10];
 
 	assert(!memcmp(&type, "COMM", 4));
@@ -364,7 +364,7 @@ static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 
 	if (file->fileFormat == AF_FILE_AIFFC)
 	{
-		u_int8_t	compressionID[4];
+		uint8_t		compressionID[4];
 		/* Pascal strings are at most 255 bytes long. */
 		unsigned char	compressionName[256];
 		unsigned char	compressionNameLength;
@@ -448,11 +448,11 @@ static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 	Parse the stored sound chunk, which usually contains little more
 	than the sound data.
 */
-static status ParseSSND (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
+static status ParseSSND (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	size_t size)
 {
 	_Track		*track;
-	u_int32_t	offset, blockSize;
+	uint32_t	offset, blockSize;
 
 	assert(!memcmp(&type, "SSND", 4));
 
@@ -485,7 +485,7 @@ static status ParseSSND (AFfilehandle file, AFvirtualfile *fh, u_int32_t type,
 
 status _af_aiff_read_init (AFfilesetup setup, AFfilehandle file)
 {
-	u_int32_t	type, size, formtype;
+	uint32_t	type, size, formtype;
 	size_t		index = 0;
 	bool		hasCOMM, hasFVER, hasSSND, hasMARK, hasINST;
 	bool		hasAESD, hasNAME, hasAUTH, hasCOPY;
@@ -533,7 +533,7 @@ status _af_aiff_read_init (AFfilesetup setup, AFfilehandle file)
 
 	while (index < size)
 	{
-		u_int32_t	chunkid = 0, chunksize = 0;
+		uint32_t	chunkid = 0, chunksize = 0;
 		status		result = AF_SUCCEED;
 
 #ifdef DEBUG
@@ -619,7 +619,7 @@ status _af_aiff_read_init (AFfilesetup setup, AFfilehandle file)
 
 bool _af_aiff_recognize (AFvirtualfile *fh)
 {
-	u_int8_t	buffer[8];
+	uint8_t	buffer[8];
 
 	af_fseek(fh, 0, SEEK_SET);
 
@@ -633,7 +633,7 @@ bool _af_aiff_recognize (AFvirtualfile *fh)
 
 bool _af_aifc_recognize (AFvirtualfile *fh)
 {
-	u_int8_t	buffer[8];
+	uint8_t	buffer[8];
 
 	af_fseek(fh, 0, SEEK_SET);
 

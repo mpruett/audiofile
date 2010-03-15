@@ -28,14 +28,14 @@
 #include "byteorder.h"
 #include "util.h"
 
-u_int16_t _af_byteswap_int16 (u_int16_t x)
+uint16_t _af_byteswap_int16 (uint16_t x)
 {
 	return ((x << 8) | (x >> 8));
 }
 
-u_int32_t _af_byteswap_int32 (u_int32_t x)
+uint32_t _af_byteswap_int32 (uint32_t x)
 {
-	u_int8_t	b1, b2, b3, b4;
+	uint8_t	b1, b2, b3, b4;
 
 	b1 = x>>24;
 	b2 = (x>>16) & 0xff;
@@ -48,7 +48,7 @@ u_int32_t _af_byteswap_int32 (u_int32_t x)
 float _af_byteswap_float32 (float x)
 {
 	float		f = x;
-	u_int32_t	*l = (u_int32_t *) &f;
+	uint32_t	*l = (uint32_t *) &f;
 
 	*l = _af_byteswap_int32(*l);
 
@@ -58,7 +58,7 @@ float _af_byteswap_float32 (float x)
 /*
 uint64_t _af_byteswap_int64 (uint64_t x)
 {
-	u_int8_t	b1, b2, b3, b4, b5, b6, b7, b8;
+	uint8_t	b1, b2, b3, b4, b5, b6, b7, b8;
 
 	b1 = (x>>56) & 0xff;
 	b2 = (x>>48) & 0xff;

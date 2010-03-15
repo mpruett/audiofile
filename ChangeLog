@@ -1,3 +1,7 @@
+2010-03-15  Michael Pruett <michael@68k.org>
+
+	* Use C99 uintN_t types rather than u_intN_t.
+
 2010-03-12  Wim Lewis <wiml@omnigroup.com>
 
 	* libaudiofile/debug.c, libaudiofile/modules/msadpcm.c,

@@ -57,7 +57,7 @@ typedef struct
 	AFframecount	framesToIgnore;
 } ima_adpcm_data;
 
-static int ima_adpcm_decode_block (ima_adpcm_data *ima, u_int8_t *encoded,
+static int ima_adpcm_decode_block (ima_adpcm_data *ima, uint8_t *encoded,
 	int16_t *decoded)
 {
 	int outputLength;
@@ -190,7 +190,7 @@ static void ima_adpcm_run_pull (_AFmoduleinst *module)
 	for (i=0; i<blockCount; i++)
 	{
 		bytesDecoded = ima_adpcm_decode_block(d,
-			(u_int8_t *) module->inc->buf + i * d->blockAlign,
+			(uint8_t *) module->inc->buf + i * d->blockAlign,
 			(int16_t *) module->outc->buf + i * d->samplesPerBlock);
 
 		nframes += framesPerBlock;

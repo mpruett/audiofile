@@ -65,7 +65,7 @@ _AFfilesetup _af_avr_default_filesetup =
 
 bool _af_avr_recognize (AFvirtualfile *fh)
 {
-	u_int32_t	magic;
+	uint32_t	magic;
 
 	af_fseek(fh, 0, SEEK_SET);
 
@@ -77,10 +77,10 @@ bool _af_avr_recognize (AFvirtualfile *fh)
 
 status _af_avr_read_init (AFfilesetup setup, AFfilehandle file)
 {
-	u_int32_t	magic;
+	uint32_t	magic;
 	char		name[8];
-	u_int16_t	mono, resolution, sign, loop, midi;
-	u_int32_t	rate, size, loopStart, loopEnd;
+	uint16_t	mono, resolution, sign, loop, midi;
+	uint32_t	rate, size, loopStart, loopEnd;
 	char		reserved[26];
 	char		user[64];
 

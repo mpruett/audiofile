@@ -49,7 +49,7 @@
 status _af_avr_update (AFfilehandle file)
 {
 	_Track		*track;
-	u_int32_t	size, loopStart, loopEnd;
+	uint32_t	size, loopStart, loopEnd;
 
 	track = _af_filehandle_get_track(file, AF_DEFAULT_TRACK);
 
@@ -83,8 +83,8 @@ status _af_avr_write_init (AFfilesetup setup, AFfilehandle filehandle)
 {
 	_Track		*track;
 	char		name[8];
-	u_int16_t	mono, resolution, sign, loop, midi;
-	u_int32_t	rate, size, loopStart, loopEnd;
+	uint16_t	mono, resolution, sign, loop, midi;
+	uint32_t	rate, size, loopStart, loopEnd;
 	char		reserved[26];
 	char		user[64];
 

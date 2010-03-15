@@ -54,7 +54,7 @@
 	Here ircam_mips_magic refers to little-endian MIPS, not SGI IRIX,
 	which uses big-endian MIPS.
 */
-const u_int8_t _af_ircam_vax_magic[4] = {0x64, 0xa3, 0x01, 0x00},
+const uint8_t _af_ircam_vax_magic[4] = {0x64, 0xa3, 0x01, 0x00},
 	_af_ircam_sun_magic[4] = {0x64, 0xa3, 0x02, 0x00},
 	_af_ircam_mips_magic[4] = {0x64, 0xa3, 0x03, 0x00},
 	_af_ircam_next_magic[4] = {0x64, 0xa3, 0x04, 0x00};
@@ -76,7 +76,7 @@ _AFfilesetup _af_ircam_default_filesetup =
 
 bool _af_ircam_recognize (AFvirtualfile *fh)
 {
-	u_int8_t	buffer[4];
+	uint8_t	buffer[4];
 
 	af_fseek(fh, 0, SEEK_SET);
 
@@ -191,10 +191,10 @@ AFfilesetup _af_ircam_complete_setup (AFfilesetup setup)
 status _af_ircam_read_init (AFfilesetup setup, AFfilehandle handle)
 {
 	_Track		*track;
-	u_int8_t	magic[4];
+	uint8_t		magic[4];
 	float		rate;
-	u_int32_t	channels;
-	u_int32_t	packMode;
+	uint32_t	channels;
+	uint32_t	packMode;
 
 	float		maxAmp = 1.0;
 

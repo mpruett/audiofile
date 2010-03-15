@@ -63,7 +63,7 @@ _AFfilesetup _af_nist_default_filesetup =
 
 bool _af_nist_recognize (AFvirtualfile *fh)
 {
-	u_int8_t	buffer[16];
+	uint8_t	buffer[16];
 
 	af_fseek(fh, 0, SEEK_SET);
 

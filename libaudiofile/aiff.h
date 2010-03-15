@@ -43,19 +43,19 @@
 
 struct _INST
 {
-	u_int8_t	baseNote;
+	uint8_t		baseNote;
 	int8_t		detune;
-	u_int8_t	lowNote, highNote;
-	u_int8_t	lowVelocity, highVelocity;
+	uint8_t		lowNote, highNote;
+	uint8_t		lowVelocity, highVelocity;
 	int16_t		gain;
 
-	u_int16_t	sustainLoopPlayMode;
-	u_int16_t	sustainLoopBegin;
-	u_int16_t	sustainLoopEnd;
+	uint16_t	sustainLoopPlayMode;
+	uint16_t	sustainLoopBegin;
+	uint16_t	sustainLoopEnd;
 
-	u_int16_t	releaseLoopPlayMode;
-	u_int16_t	releaseLoopBegin;
-	u_int16_t	releaseLoopEnd;
+	uint16_t	releaseLoopPlayMode;
+	uint16_t	releaseLoopBegin;
+	uint16_t	releaseLoopEnd;
 };
 
 bool _af_aiff_recognize (AFvirtualfile *fh);

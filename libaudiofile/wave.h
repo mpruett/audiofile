@@ -96,11 +96,11 @@ typedef struct _WAVEInfo
 		The following information is specified in the format
 		chunk and is for use with compressed data formats.
 	*/
-	u_int32_t	blockAlign, samplesPerBlock;
+	uint32_t	blockAlign, samplesPerBlock;
 
 	/*
 		The index into the coefficient array is of type
-		u_int8_t, so we can safely limit msadpcmCoefficients to
+		uint8_t, so we can safely limit msadpcmCoefficients to
 		be 256 coefficient pairs.
 	*/
 	int16_t		msadpcmCoefficients[256][2];

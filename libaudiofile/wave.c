@@ -82,9 +82,9 @@ _AFfilesetup _af_wave_default_filesetup =
 };
 
 static status ParseFrameCount (AFfilehandle filehandle, AFvirtualfile *fp,
-	u_int32_t id, size_t size)
+	uint32_t id, size_t size)
 {
-	u_int32_t	totalFrames;
+	uint32_t	totalFrames;
 	_Track		*track;
 
 	track = _af_filehandle_get_track(filehandle, AF_DEFAULT_TRACK);
@@ -97,12 +97,12 @@ static status ParseFrameCount (AFfilehandle filehandle, AFvirtualfile *fp,
 }
 
 static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
-	u_int32_t id, size_t size)
+	uint32_t id, size_t size)
 {
 	_Track		*track;
-	u_int16_t	formatTag, channelCount;
-	u_int32_t	sampleRate, averageBytesPerSecond;
-	u_int16_t	blockAlign;
+	uint16_t	formatTag, channelCount;
+	uint32_t	sampleRate, averageBytesPerSecond;
+	uint16_t	blockAlign;
 	_WAVEInfo	*wave;
 
 	assert(filehandle != NULL);
@@ -131,7 +131,7 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 	{
 		case WAVE_FORMAT_PCM:
 		{
-			u_int16_t	bitsPerSample;
+			uint16_t	bitsPerSample;
 
 			af_read_uint16_le(&bitsPerSample, fp);
 
@@ -168,7 +168,7 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 
 		case WAVE_FORMAT_IEEE_FLOAT:
 		{
-			u_int16_t	bitsPerSample;
+			uint16_t	bitsPerSample;
 
 			af_read_uint16_le(&bitsPerSample, fp);
 
@@ -187,7 +187,7 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 
 		case WAVE_FORMAT_ADPCM:
 		{
-			u_int16_t	bitsPerSample, extraByteCount,
+			uint16_t	bitsPerSample, extraByteCount,
 					samplesPerBlock, numCoefficients;
 			int		i;
 			AUpvlist	pv;
@@ -260,7 +260,7 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 			AUpvlist	pv;
 			long		l;
 
-			u_int16_t	bitsPerSample, extraByteCount,
+			uint16_t	bitsPerSample, extraByteCount,
 					samplesPerBlock;
 
 			af_read_uint16_le(&bitsPerSample, fp);
@@ -318,7 +318,7 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 }
 
 static status ParseData (AFfilehandle filehandle, AFvirtualfile *fp,
-	u_int32_t id, size_t size)
+	uint32_t id, size_t size)
 {
 	_Track	*track;
 
@@ -335,10 +335,10 @@ static status ParseData (AFfilehandle filehandle, AFvirtualfile *fp,
 }
 
 static status ParsePlayList (AFfilehandle filehandle, AFvirtualfile *fp,
-	u_int32_t id, size_t size)
+	uint32_t id, size_t size)
 {
 	_Instrument	*instrument;
-	u_int32_t	segmentCount;
+	uint32_t	segmentCount;
 	int		segment;
 
 	af_read_uint32_le(&segmentCount, fp);
@@ -352,7 +352,7 @@ static status ParsePlayList (AFfilehandle filehandle, AFvirtualfile *fp,
 
 	for (segment=0; segment<segmentCount; segment++)
 	{
-		u_int32_t	startMarkID, loopLength, loopCount;
+		uint32_t	startMarkID, loopLength, loopCount;
 
 		af_read_uint32_le(&startMarkID, fp);
 		af_read_uint32_le(&loopLength, fp);
@@ -363,10 +363,10 @@ static status ParsePlayList (AFfilehandle filehandle, AFvirtualfile *fp,
 }
 
 static status ParseCues (AFfilehandle filehandle, AFvirtualfile *fp,
-	u_int32_t id, size_t size)
+	uint32_t id, size_t size)
 {
 	_Track		*track;
-	u_int32_t	markerCount;
+	uint32_t	markerCount;
 	int		i;
 
 	track = _af_filehandle_get_track(filehandle, AF_DEFAULT_TRACK);
@@ -385,9 +385,9 @@ static status ParseCues (AFfilehandle filehandle, AFvirtualfile *fp,
 
 	for (i=0; i<markerCount; i++)
 	{
-		u_int32_t	id, position, chunkid;
-		u_int32_t	chunkByteOffset, blockByteOffset;
-		u_int32_t	sampleFrameOffset;
+		uint32_t	id, position, chunkid;
+		uint32_t	chunkByteOffset, blockByteOffset;
+		uint32_t	sampleFrameOffset;
 		_Marker		*marker = &track->markers[i];
 
 		af_read_uint32_le(&id, fp);
@@ -413,7 +413,7 @@ static status ParseCues (AFfilehandle filehandle, AFvirtualfile *fp,
 
 /* Parse an adtl sub-chunk within a LIST chunk. */
 static status ParseADTLSubChunk (AFfilehandle filehandle, AFvirtualfile *fp,
-	u_int32_t id, size_t size)
+	uint32_t id, size_t size)
 {
 	_Track		*track;
 	AFfileoffset	endPos=af_ftell(fp)+size;
@@ -423,7 +423,7 @@ static status ParseADTLSubChunk (AFfilehandle filehandle, AFvirtualfile *fp,
 	while (af_ftell(fp) < endPos)
 	{
 		char		chunkID[4];
-		u_int32_t	chunkSize;
+		uint32_t	chunkSize;
 
 		af_fread(chunkID, 4, 1, fp);
 		af_read_uint32_le(&chunkSize, fp);
@@ -431,7 +431,7 @@ static status ParseADTLSubChunk (AFfilehandle filehandle, AFvirtualfile *fp,
 		if (memcmp(chunkID, "labl", 4)==0 || memcmp(chunkID, "note", 4)==0)
 		{
 			_Marker *marker=NULL;
-			u_int32_t id;
+			uint32_t id;
 			long length=chunkSize-4;
 			char *p=_af_malloc(length);
 
@@ -476,14 +476,14 @@ static status ParseADTLSubChunk (AFfilehandle filehandle, AFvirtualfile *fp,
 
 /* Parse an INFO sub-chunk within a LIST chunk. */
 static status ParseINFOSubChunk (AFfilehandle filehandle, AFvirtualfile *fp,
-	u_int32_t id, size_t size)
+	uint32_t id, size_t size)
 {
 	AFfileoffset	endPos=af_ftell(fp)+size;
 
 	while (af_ftell(fp) < endPos)
 	{
 		int		misctype = AF_MISC_UNRECOGNIZED;
-		u_int32_t	miscid, miscsize;
+		uint32_t	miscid, miscsize;
 
 		af_fread(&miscid, 4, 1, fp);
 		af_read_uint32_le(&miscsize, fp);
@@ -529,9 +529,9 @@ static status ParseINFOSubChunk (AFfilehandle filehandle, AFvirtualfile *fp,
 }
 
 static status ParseList (AFfilehandle filehandle, AFvirtualfile *fp,
-	u_int32_t id, size_t size)
+	uint32_t id, size_t size)
 {
-	u_int32_t	typeID;
+	uint32_t	typeID;
 
 	af_fread(&typeID, 4, 1, fp);
 	size-=4;
@@ -556,12 +556,12 @@ static status ParseList (AFfilehandle filehandle, AFvirtualfile *fp,
 }
 
 static status ParseInstrument (AFfilehandle filehandle, AFvirtualfile *fp,
-	u_int32_t id, size_t size)
+	uint32_t id, size_t size)
 {
-	u_int8_t	baseNote;
-	int8_t		detune, gain;
-	u_int8_t	lowNote, highNote, lowVelocity, highVelocity;
-	u_int8_t	padByte;
+	uint8_t	baseNote;
+	int8_t	detune, gain;
+	uint8_t	lowNote, highNote, lowVelocity, highVelocity;
+	uint8_t	padByte;
 
 	af_fread(&baseNote, 1, 1, fp);
 	af_fread(&detune, 1, 1, fp);
@@ -577,7 +577,7 @@ static status ParseInstrument (AFfilehandle filehandle, AFvirtualfile *fp,
 
 bool _af_wave_recognize (AFvirtualfile *fh)
 {
-	u_int8_t	buffer[8];
+	uint8_t	buffer[8];
 
 	af_fseek(fh, 0, SEEK_SET);
 
@@ -592,8 +592,8 @@ bool _af_wave_recognize (AFvirtualfile *fh)
 status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 {
 	_Track		*track;
-	u_int32_t	type, size, formtype;
-	u_int32_t	index = 0;
+	uint32_t	type, size, formtype;
+	uint32_t	index = 0;
 	bool		hasFormat, hasData, hasCue, hasList, hasPlayList, hasFrameCount,
 			hasINST, hasINFO;
 	_WAVEInfo	*wave = _af_malloc(sizeof (_WAVEInfo));
@@ -638,7 +638,7 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 
 	while (index < size)
 	{
-		u_int32_t	chunkid = 0, chunksize = 0;
+		uint32_t	chunkid = 0, chunksize = 0;
 		status		result;
 
 #ifdef DEBUG

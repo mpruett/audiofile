@@ -39,11 +39,11 @@
 #endif
 
 #ifndef uint16
-typedef u_int16_t uint16;
+typedef uint16_t uint16;
 #endif
 
 #ifndef uint32
-typedef u_int32_t uint32;
+typedef uint32_t uint32;
 #endif
 
 #ifdef __LITTLEENDIAN__
@@ -98,8 +98,8 @@ typedef u_int32_t uint32;
 
 #endif
 
-u_int16_t _af_byteswap_int16 (u_int16_t x);
-u_int32_t _af_byteswap_int32 (u_int32_t x);
+uint16_t _af_byteswap_int16 (uint16_t x);
+uint32_t _af_byteswap_int32 (uint32_t x);
 float _af_byteswap_float32 (float x);
 double _af_byteswap_double64 (double x);
 

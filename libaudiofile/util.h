@@ -65,14 +65,14 @@ status _af_set_sample_format (_AudioFormat *f, int sampleFormat, int sampleWidth
 bool _af_filehandle_can_read (AFfilehandle file);
 bool _af_filehandle_can_write (AFfilehandle file);
 
-status af_read_uint32_be (u_int32_t *value, AFvirtualfile *vf);
-status af_read_uint32_le (u_int32_t *value, AFvirtualfile *vf);
-status af_read_uint16_be (u_int16_t *value, AFvirtualfile *vf);
-status af_read_uint16_le (u_int16_t *value, AFvirtualfile *vf);
+status af_read_uint32_be (uint32_t *value, AFvirtualfile *vf);
+status af_read_uint32_le (uint32_t *value, AFvirtualfile *vf);
+status af_read_uint16_be (uint16_t *value, AFvirtualfile *vf);
+status af_read_uint16_le (uint16_t *value, AFvirtualfile *vf);
 
-status af_write_uint32_be (const u_int32_t *value, AFvirtualfile *vf);
-status af_write_uint32_le (const u_int32_t *value, AFvirtualfile *vf);
-status af_write_uint16_be (const u_int16_t *value, AFvirtualfile *vf);
-status af_write_uint16_le (const u_int16_t *value, AFvirtualfile *vf);
+status af_write_uint32_be (const uint32_t *value, AFvirtualfile *vf);
+status af_write_uint32_le (const uint32_t *value, AFvirtualfile *vf);
+status af_write_uint16_be (const uint16_t *value, AFvirtualfile *vf);
+status af_write_uint16_le (const uint16_t *value, AFvirtualfile *vf);
 
 #endif

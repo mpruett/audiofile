@@ -51,7 +51,7 @@
 
 extern _CompressionUnit _af_compression[];
 
-void _af_printid (u_int32_t id)
+void _af_printid (uint32_t id)
 {
 	printf("%c%c%c%c",
 		(id >> 24) & 0xff,

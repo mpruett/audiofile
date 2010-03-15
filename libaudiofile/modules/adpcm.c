@@ -73,11 +73,11 @@ static const int stepsizeTable[89] =
 	15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767
 };
     
-void _af_adpcm_coder (int16_t *indata, u_int8_t *outdata, int len,
+void _af_adpcm_coder (int16_t *indata, uint8_t *outdata, int len,
 	struct adpcm_state *state)
 {
     int16_t *inp;		/* Input buffer pointer */
-    u_int8_t *outp;		/* Output buffer pointer */
+    uint8_t *outp;		/* Output buffer pointer */
     int val;			/* Current input sample value */
     int sign;			/* Current adpcm sign bit */
     int delta;			/* Current adpcm output value */
@@ -172,10 +172,10 @@ void _af_adpcm_coder (int16_t *indata, u_int8_t *outdata, int len,
     state->index = index;
 }
 
-void _af_adpcm_decoder (u_int8_t *indata, int16_t *outdata, int len,
+void _af_adpcm_decoder (uint8_t *indata, int16_t *outdata, int len,
 	struct adpcm_state *state)
 {
-    u_int8_t *inp;		/* Input buffer pointer */
+    uint8_t *inp;		/* Input buffer pointer */
     int16_t *outp;		/* output buffer pointer */
     int sign;			/* Current adpcm sign bit */
     int delta;			/* Current adpcm output value */

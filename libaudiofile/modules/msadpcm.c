@@ -49,8 +49,8 @@ static _AFmodule ms_adpcm_decompress;
 
 typedef struct ms_adpcm_state
 {
-	u_int8_t	predictor;
-	u_int16_t	delta;
+	uint8_t		predictor;
+	uint16_t	delta;
 	int16_t		sample1, sample2;
 } ms_adpcm_state;
 
@@ -77,7 +77,7 @@ typedef struct ms_adpcm_data
 	value.
 */
 static int16_t ms_adpcm_decode_sample (struct ms_adpcm_state *state,
-	u_int8_t code, const int16_t *coefficient)
+	uint8_t code, const int16_t *coefficient)
 {
 	const int32_t MAX_INT16 = 32767, MIN_INT16 = -32768;
 	const int32_t adaptive[] =
@@ -119,7 +119,7 @@ static int16_t ms_adpcm_decode_sample (struct ms_adpcm_state *state,
 }
 
 /* Decode one block of MS ADPCM data. */
-static int ms_adpcm_decode_block (ms_adpcm_data *msadpcm, u_int8_t *encoded,
+static int ms_adpcm_decode_block (ms_adpcm_data *msadpcm, uint8_t *encoded,
 	int16_t *decoded)
 {
 	int		i, outputLength, samplesRemaining;
@@ -151,20 +151,20 @@ static int ms_adpcm_decode_block (ms_adpcm_data *msadpcm, u_int8_t *encoded,
 	for (i=0; i<channelCount; i++)
 	{
 		state[i]->delta = (encoded[1]<<8) | encoded[0];
-		encoded += sizeof (u_int16_t);
+		encoded += sizeof (uint16_t);
 	}
 
 	/* Initialize first two samples. */
 	for (i=0; i<channelCount; i++)
 	{
 		state[i]->sample1 = (encoded[1]<<8) | encoded[0];
-		encoded += sizeof (u_int16_t);
+		encoded += sizeof (uint16_t);
 	}
 
 	for (i=0; i<channelCount; i++)
 	{
 		state[i]->sample2 = (encoded[1]<<8) | encoded[0];
-		encoded += sizeof (u_int16_t);
+		encoded += sizeof (uint16_t);
 	}
 
 	coefficient[0] = msadpcm->coefficients[state[0]->predictor];
@@ -185,8 +185,8 @@ static int ms_adpcm_decode_block (ms_adpcm_data *msadpcm, u_int8_t *encoded,
 
 	while (samplesRemaining > 0)
 	{
-		u_int8_t	code;
-		int16_t		newSample;
+		uint8_t code;
+		int16_t newSample;
 
 		code = *encoded >> 4;
 		newSample = ms_adpcm_decode_sample(state[0], code,
@@ -310,7 +310,7 @@ static void ms_adpcm_run_pull (_AFmoduleinst *module)
 	for (i=0; i<blockCount; i++)
 	{
 		bytesDecoded = ms_adpcm_decode_block(d,
-			(u_int8_t *) module->inc->buf + i * d->blockAlign,
+			(uint8_t *) module->inc->buf + i * d->blockAlign,
 			(int16_t *) module->outc->buf + i * d->samplesPerBlock);
 
 		nframes += framesPerBlock;

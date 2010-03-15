@@ -63,7 +63,7 @@ int main (int argc, char **argv)
 {
 	AFfilehandle	file;
 	AFfilesetup		setup;
-	u_int16_t		samples[] = {11, 51, 101, 501, 1001, 5001, 10001, 50001};
+	uint16_t		samples[] = {11, 51, 101, 501, 1001, 5001, 10001, 50001};
 	int				i;
 	int				sampleFormat, sampleWidth;
 	int				framesRead, framesWritten;
@@ -103,7 +103,7 @@ int main (int argc, char **argv)
 
 	for (i=0; i<8; i++)
 	{
-		u_int16_t	temporary;
+		uint16_t	temporary;
 
 		framesRead = afReadFrames(file, AF_DEFAULT_TRACK, &temporary, 1);
 		ensure(framesRead == 1,

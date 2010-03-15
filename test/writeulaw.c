@@ -92,9 +92,9 @@ void testulaw (int fileFormat)
 {
 	AFfilehandle	file;
 	AFfilesetup	setup;
-	u_int16_t	samples[] = {8, 16, 80, 120, 180, 780, 924, 988,
+	uint16_t	samples[] = {8, 16, 80, 120, 180, 780, 924, 988,
 			1116, 1436, 1884, 8828, 9852, 15996, 19836, 32124};
-	u_int16_t	readsamples[SAMPLE_COUNT];
+	uint16_t	readsamples[SAMPLE_COUNT];
 	AFframecount	framesWritten, framesRead;
 	int		i;
 

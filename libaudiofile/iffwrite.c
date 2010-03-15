@@ -61,7 +61,7 @@ static _IFFinfo *iff_info_new (void)
 
 status _af_iff_write_init (AFfilesetup setup, AFfilehandle file)
 {
-	u_int32_t	fileSize = 0;
+	uint32_t	fileSize = 0;
 
 	if (_af_filesetup_make_handle(setup, file) == AF_FAIL)
 		return AF_FAIL;
@@ -82,7 +82,7 @@ status _af_iff_write_init (AFfilesetup setup, AFfilehandle file)
 
 status _af_iff_update (AFfilehandle file)
 {
-	u_int32_t	length;
+	uint32_t	length;
 
 	WriteVHDR(file);
 	WriteMiscellaneous(file);
@@ -103,11 +103,11 @@ static status WriteVHDR (const AFfilehandle file)
 {
 	_Track		*track;
 	_IFFinfo	*iff;
-	u_int32_t	chunkSize;
-	u_int32_t	oneShotSamples, repeatSamples, samplesPerRepeat;
-	u_int16_t	sampleRate;
-	u_int8_t	octaves, compression;
-	u_int32_t	volume;
+	uint32_t	chunkSize;
+	uint32_t	oneShotSamples, repeatSamples, samplesPerRepeat;
+	uint16_t	sampleRate;
+	uint8_t		octaves, compression;
+	uint32_t	volume;
 
 	iff = (_IFFinfo *) file->formatSpecific;
 
@@ -156,7 +156,7 @@ static status WriteVHDR (const AFfilehandle file)
 static status WriteBODY (AFfilehandle file)
 {
 	_Track		*track;
-	u_int32_t	chunkSize;
+	uint32_t	chunkSize;
 	_IFFinfo	*iff = (_IFFinfo *) file->formatSpecific;
 
 	track = _af_filehandle_get_track(file, AF_DEFAULT_TRACK);
@@ -182,7 +182,7 @@ static status WriteBODY (AFfilehandle file)
 	/* Add a pad byte to the end of the chunk if the chunk size is odd. */
 	if ((chunkSize % 2) == 1)
 	{
-		u_int8_t	zero = 0;
+		uint8_t	zero = 0;
 		af_fseek(file->fh, iff->BODY_offset + 8 + chunkSize, SEEK_SET);
 		af_fwrite(&zero, 1, 1, file->fh);
 	}
@@ -209,8 +209,8 @@ static status WriteMiscellaneous (AFfilehandle file)
 	for (i=0; i<file->miscellaneousCount; i++)
 	{
 		_Miscellaneous	*misc = &file->miscellaneous[i];
-		u_int32_t	chunkType, chunkSize;
-		u_int8_t	padByte = 0;
+		uint32_t	chunkType, chunkSize;
+		uint8_t		padByte = 0;
 
 		switch (misc->type)
 		{

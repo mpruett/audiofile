@@ -71,11 +71,11 @@ static status WriteFormat (AFfilehandle file)
 {
 	_Track		*track = NULL;
 
-	u_int16_t	formatTag, channelCount;
-	u_int32_t	sampleRate, averageBytesPerSecond;
-	u_int16_t	blockAlign;
-	u_int32_t	chunkSize;
-	u_int16_t	bitsPerSample;
+	uint16_t	formatTag, channelCount;
+	uint32_t	sampleRate, averageBytesPerSecond;
+	uint16_t	blockAlign;
+	uint32_t	chunkSize;
+	uint16_t	bitsPerSample;
 
 	assert(file != NULL);
 
@@ -149,7 +149,7 @@ static status WriteFormat (AFfilehandle file)
 	if (track->f.compressionType == AF_COMPRESSION_G711_ULAW ||
 		track->f.compressionType == AF_COMPRESSION_G711_ALAW)
 	{
-		u_int16_t	zero = 0;
+		uint16_t	zero = 0;
 		af_fwrite(&zero, 2, 1, file->fh);
 	}
 
@@ -160,8 +160,8 @@ static status WriteFrameCount (AFfilehandle file)
 {
 	_Track		*track = NULL;
 	_WAVEInfo	*waveinfo = NULL;
-	u_int32_t	factSize = 4;
-	u_int32_t	totalFrameCount;
+	uint32_t	factSize = 4;
+	uint32_t	totalFrameCount;
 
 	assert(file != NULL);
 
@@ -193,7 +193,7 @@ static status WriteFrameCount (AFfilehandle file)
 static status WriteData (AFfilehandle file)
 {
 	_Track		*track;
-	u_int32_t	chunkSize;
+	uint32_t	chunkSize;
 	_WAVEInfo	*waveinfo;
 
 	assert(file);
@@ -222,7 +222,7 @@ status _af_wave_update (AFfilehandle file)
 
 	if (track->fpos_first_frame != 0)
 	{
-		u_int32_t	dataLength, fileLength;
+		uint32_t	dataLength, fileLength;
 
 		/* Update the frame count chunk if present. */
 		WriteFrameCount(file);
@@ -234,12 +234,12 @@ status _af_wave_update (AFfilehandle file)
 			We call _af_format_frame_size to calculate the
 			frame size of normal PCM data or compressed data.
 		*/
-		dataLength = (u_int32_t) track->totalfframes *
+		dataLength = (uint32_t) track->totalfframes *
 			_af_format_frame_size(&track->f, AF_FALSE);
 		af_write_uint32_le(&dataLength, file->fh);
 
 		/* Update the length of the RIFF chunk. */
-		fileLength = (u_int32_t) af_flength(file->fh);
+		fileLength = (uint32_t) af_flength(file->fh);
 		fileLength -= 8;
 
 		af_fseek(file->fh, 4, SEEK_SET);
@@ -260,7 +260,7 @@ status _af_wave_update (AFfilehandle file)
 }
 
 /* Convert an Audio File Library miscellaneous type to a WAVE type. */
-static status misc_type_to_wave (int misctype, u_int32_t *miscid)
+static status misc_type_to_wave (int misctype, uint32_t *miscid)
 {
 	if (misctype == AF_MISC_AUTH)
 		memcpy(miscid, "IART", 4);
@@ -287,8 +287,8 @@ status WriteMiscellaneous (AFfilehandle filehandle)
 	if (filehandle->miscellaneousCount != 0)
 	{
 		int		i;
-		u_int32_t	miscellaneousBytes;
-		u_int32_t 	chunkSize;
+		uint32_t	miscellaneousBytes;
+		uint32_t 	chunkSize;
 
 		/* Start at 12 to account for 'LIST', size, and 'INFO'. */
 		miscellaneousBytes = 12;
@@ -296,7 +296,7 @@ status WriteMiscellaneous (AFfilehandle filehandle)
 		/* Then calculate the size of the whole INFO chunk. */
 		for (i=0; i<filehandle->miscellaneousCount; i++)
 		{
-			u_int32_t	miscid;
+			uint32_t	miscid;
 
 			/* Skip miscellaneous data of an unsupported type. */
 			if (misc_type_to_wave(filehandle->miscellaneous[i].type,
@@ -343,8 +343,8 @@ status WriteMiscellaneous (AFfilehandle filehandle)
 		/* Write each miscellaneous chunk. */
 		for (i=0; i<filehandle->miscellaneousCount; i++)
 		{
-			u_int32_t	miscsize = filehandle->miscellaneous[i].size;
-			u_int32_t 	miscid = 0;
+			uint32_t	miscsize = filehandle->miscellaneous[i].size;
+			uint32_t 	miscid = 0;
 
 			/* Skip miscellaneous data of an unsupported type. */
 			if (misc_type_to_wave(filehandle->miscellaneous[i].type,
@@ -355,7 +355,7 @@ status WriteMiscellaneous (AFfilehandle filehandle)
 			af_write_uint32_le(&miscsize, filehandle->fh);
 			if (filehandle->miscellaneous[i].buffer != NULL)
 			{
-				u_int8_t	zero = 0;
+				uint8_t	zero = 0;
 
 				af_fwrite(filehandle->miscellaneous[i].buffer, filehandle->miscellaneous[i].size, 1, filehandle->fh);
 
@@ -382,7 +382,7 @@ status WriteMiscellaneous (AFfilehandle filehandle)
 static status WriteCues (AFfilehandle file)
 {
 	int		i, *markids, markCount;
-	u_int32_t	numCues, cueChunkSize, listChunkSize;
+	uint32_t	numCues, cueChunkSize, listChunkSize;
 	_WAVEInfo	*wave;
 
 	assert(file);
@@ -416,8 +416,8 @@ static status WriteCues (AFfilehandle file)
 	/* Write each marker to the file. */
 	for (i=0; i < markCount; i++)
 	{
-		u_int32_t	identifier, position, chunkStart, blockStart;
-		u_int32_t	sampleOffset;
+		uint32_t	identifier, position, chunkStart, blockStart;
+		uint32_t	sampleOffset;
 		AFframecount	markposition;
 
 		identifier = markids[i];
@@ -435,10 +435,10 @@ static status WriteCues (AFfilehandle file)
 			are zero.
 		*/
 		chunkStart = 0;
-		af_fwrite(&chunkStart, sizeof (u_int32_t), 1, file->fh);
+		af_fwrite(&chunkStart, sizeof (uint32_t), 1, file->fh);
 
 		blockStart = 0;
-		af_fwrite(&blockStart, sizeof (u_int32_t), 1, file->fh);
+		af_fwrite(&blockStart, sizeof (uint32_t), 1, file->fh);
 
 		markposition = afGetMarkPosition(file, AF_DEFAULT_TRACK, markids[i]);
 
@@ -480,7 +480,7 @@ static status WriteCues (AFfilehandle file)
 	for (i=0; i<markCount; i++)
 	{
 		const char	*name;
-		u_int32_t	labelSize, cuePointID;
+		uint32_t	labelSize, cuePointID;
 
 		name = afGetMarkName(file, AF_DEFAULT_TRACK, markids[i]);
 
@@ -499,7 +499,7 @@ static status WriteCues (AFfilehandle file)
 		*/
 		if (((strlen(name) + 1) % 2) != 0)
 		{
-			u_int8_t	c=0;
+			uint8_t	c=0;
 			af_fwrite(&c, 1, 1, file->fh);
 		}
 	}
@@ -511,7 +511,7 @@ static status WriteCues (AFfilehandle file)
 
 status _af_wave_write_init (AFfilesetup setup, AFfilehandle filehandle)
 {
-	u_int32_t	zero = 0;
+	uint32_t	zero = 0;
 
 	if (_af_filesetup_make_handle(setup, filehandle) == AF_FAIL)
 		return AF_FAIL;

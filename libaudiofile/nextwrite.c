@@ -46,7 +46,7 @@
 
 status _af_next_update (AFfilehandle file);
 
-static u_int32_t nextencodingtype (_AudioFormat *format);
+static uint32_t nextencodingtype (_AudioFormat *format);
 static status next_write_header (AFfilehandle file);
 
 /* A return value of zero indicates successful synchronisation. */
@@ -60,7 +60,7 @@ static status next_write_header (AFfilehandle file)
 {
 	_Track		*track;
 	int		frameSize;
-	u_int32_t	offset, length, encoding, sampleRate, channelCount;
+	uint32_t	offset, length, encoding, sampleRate, channelCount;
 
 	track = _af_filehandle_get_track(file, AF_DEFAULT_TRACK);
 
@@ -85,9 +85,9 @@ static status next_write_header (AFfilehandle file)
 	return AF_SUCCEED;
 }
 
-static u_int32_t nextencodingtype (_AudioFormat *format)
+static uint32_t nextencodingtype (_AudioFormat *format)
 {
-	u_int32_t	encoding = 0;
+	uint32_t	encoding = 0;
 
 	if (format->compressionType != AF_COMPRESSION_NONE)
 	{

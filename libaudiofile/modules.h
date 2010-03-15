@@ -38,10 +38,10 @@
 #include "audiofile.h"
 #include "afinternal.h"
 
-typedef u_int8_t uchar1;
-typedef u_int16_t uchar2;
-typedef u_int32_t uchar3;
-typedef u_int32_t uchar4;
+typedef uint8_t uchar1;
+typedef uint16_t uchar2;
+typedef uint32_t uchar3;
+typedef uint32_t uchar4;
 
 typedef int8_t schar1;
 typedef int16_t schar2;
