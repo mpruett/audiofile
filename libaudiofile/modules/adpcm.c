@@ -48,8 +48,8 @@ OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <config.h>
 #endif
 
-#include <sys/types.h>
-#include <stdio.h> /*DBG*/
+#include <stdint.h>
+#include <assert.h>
 
 #include "adpcm.h"
 
@@ -72,11 +72,18 @@ static const int stepsizeTable[89] =
 	5894, 6484, 7132, 7845, 8630, 9493, 10442, 11487, 12635, 13899,
 	15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767
 };
-    
-void _af_adpcm_coder (int16_t *indata, uint8_t *outdata, int len,
-	struct adpcm_state *state)
+
+static inline int clamp (int x, int low, int high)
 {
-    int16_t *inp;		/* Input buffer pointer */
+	if (x < low) return low;
+	if (x > high) return high;
+	return x;
+}
+
+void _af_adpcm_coder (const int16_t *indata, uint8_t *outdata, int frameCount,
+	int channelCount, struct adpcm_state *state)
+{
+    const int16_t *inp;	/* Input buffer pointer */
     uint8_t *outp;		/* Output buffer pointer */
     int val;			/* Current input sample value */
     int sign;			/* Current adpcm sign bit */
@@ -98,7 +105,7 @@ void _af_adpcm_coder (int16_t *indata, uint8_t *outdata, int len,
     
     bufferstep = 1;
 
-    for ( ; len > 0 ; len-- ) {
+    for (; frameCount > 0 ; frameCount--) {
 	val = *inp++;
 
 	/* Step 1 - compute difference with previous value */
@@ -172,77 +179,85 @@ void _af_adpcm_coder (int16_t *indata, uint8_t *outdata, int len,
     state->index = index;
 }
 
-void _af_adpcm_decoder (uint8_t *indata, int16_t *outdata, int len,
-	struct adpcm_state *state)
+void _af_adpcm_decoder (const uint8_t *indata, int16_t *outdata, int frameCount,
+	int channelCount, struct adpcm_state *state)
 {
-    uint8_t *inp;		/* Input buffer pointer */
-    int16_t *outp;		/* output buffer pointer */
-    int sign;			/* Current adpcm sign bit */
-    int delta;			/* Current adpcm output value */
-    int step;			/* Stepsize */
-    int valpred;		/* Predicted value */
-    int vpdiff;			/* Current change to valpred */
-    int index;			/* Current step change index */
-    int inputbuffer;		/* place to keep next 4-bit value */
-    int bufferstep;		/* toggle between inputbuffer/input */
+	const uint8_t *inp = indata;		/* input buffer pointer */
+	int16_t *outp = outdata;		/* output buffer pointer */
+	int step[channelCount];			/* step size */
+	int valpred[channelCount];		/* predicted value */
+	int index[channelCount];		/* current step change index */
 
-    outp = outdata;
-    inp = indata;
-
-    valpred = state->valprev;
-    index = state->index;
-    step = stepsizeTable[index];
-
-    bufferstep = 0;
-    
-    for ( ; len > 0 ; len-- ) {
-	
-	/* Step 1 - get the delta value */
-	if ( bufferstep ) {
-	    delta = (inputbuffer >> 4) & 0xf;
-	} else {
-	    inputbuffer = *inp++;
-	    delta = inputbuffer & 0xf;
+	for (int c=0; c<channelCount; c++)
+	{
+		valpred[c] = state[c].valprev;
+		index[c] = state[c].index;
+		step[c] = stepsizeTable[index[c]];
 	}
-	bufferstep = !bufferstep;
 
-	/* Step 2 - Find new index value (for later) */
-	index += indexTable[delta];
-	if ( index < 0 ) index = 0;
-	if ( index > 88 ) index = 88;
+	assert((frameCount % 8) == 0);
 
-	/* Step 3 - Separate sign and magnitude */
-	sign = delta & 8;
-	delta = delta & 7;
+	for (; frameCount > 0; frameCount -= 8)
+	{
+		for (int c=0; c<channelCount; c++)
+		{
+			int bufferstep = 0;
+			uint8_t inputbuffer; /* storage for next 4-bit encoded value */
+			for (int s=0; s<8; s++)
+			{
+				int delta;
+				/* Step 1 - get the delta value */
+				if (bufferstep)
+				{
+					delta = (inputbuffer >> 4) & 0xf;
+				}
+				else
+				{
+					inputbuffer = *inp++;
+					delta = inputbuffer & 0xf;
+				}
 
-	/* Step 4 - Compute difference and new predicted value */
-	/*
-	** Computes 'vpdiff = (delta+0.5)*step/4', but see comment
-	** in adpcm_coder.
-	*/
-	vpdiff = step >> 3;
-	if ( delta & 4 ) vpdiff += step;
-	if ( delta & 2 ) vpdiff += step>>1;
-	if ( delta & 1 ) vpdiff += step>>2;
+				/* Step 2 - Find new index value (for later) */
+				index[c] += indexTable[delta];
+				index[c] = clamp(index[c], 0, 88);
 
-	if ( sign )
-	  valpred -= vpdiff;
-	else
-	  valpred += vpdiff;
+				/* Step 3 - Separate sign and magnitude */
+				int sign = delta & 8;
+				delta = delta & 7;
 
-	/* Step 5 - clamp output value */
-	if ( valpred > 32767 )
-	  valpred = 32767;
-	else if ( valpred < -32768 )
-	  valpred = -32768;
+				/* Step 4 - Compute difference and new predicted value */
+				/*
+				** Computes 'vpdiff = (delta+0.5)*step/4', but see comment
+				** in adpcm_coder.
+				*/
+				int vpdiff = step[c] >> 3;
+				if (delta & 4) vpdiff += step[c];
+				if (delta & 2) vpdiff += step[c]>>1;
+				if (delta & 1) vpdiff += step[c]>>2;
 
-	/* Step 6 - Update step value */
-	step = stepsizeTable[index];
+				if (sign)
+					valpred[c] -= vpdiff;
+				else
+					valpred[c] += vpdiff;
 
-	/* Step 7 - Output value */
-	*outp++ = valpred;
-    }
+				/* Step 5 - Clamp output value */
+				valpred[c] = clamp(valpred[c], -32768, 32767);
 
-    state->valprev = valpred;
-    state->index = index;
+				/* Step 6 - Update step value */
+				step[c] = stepsizeTable[index[c]];
+
+				/* Step 7 - Output value */
+				outp[s*channelCount + c] = valpred[c];
+
+				bufferstep = !bufferstep;
+			}
+		}
+		outp += channelCount * 8;
+	}
+
+	for (int c=0; c<channelCount; c++)
+	{
+		state[c].valprev = valpred[c];
+		state[c].index = index[c];
+	}
 }

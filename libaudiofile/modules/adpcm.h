@@ -13,12 +13,15 @@
 
 #include <stdint.h>
 
-struct adpcm_state {
-    short	valprev;	/* Previous output value */
-    char	index;		/* Index into stepsize table */
+struct adpcm_state
+{
+	int16_t	valprev;	/* Previous output value */
+	uint8_t	index;		/* Index into step size table */
 };
 
-void _af_adpcm_coder (int16_t [], uint8_t [], int, struct adpcm_state *);
-void _af_adpcm_decoder (uint8_t [], int16_t [], int, struct adpcm_state *);
+void _af_adpcm_coder (const int16_t *src, uint8_t *dst, int frameCount,
+	int channelCount, struct adpcm_state *);
+void _af_adpcm_decoder (const uint8_t *src, int16_t *dst, int frameCount,
+	int channelCount, struct adpcm_state *);
 
 #endif /* ADPCM_H */

@@ -236,7 +236,7 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 			v = wave->msadpcmCoefficients;
 			AUpvsetval(pv, 1, &v);
 
-			AUpvsetparam(pv, 2, _AF_SAMPLES_PER_BLOCK);
+			AUpvsetparam(pv, 2, _AF_FRAMES_PER_BLOCK);
 			AUpvsetvaltype(pv, 2, AU_PVTYPE_LONG);
 			l = samplesPerBlock;
 			AUpvsetval(pv, 2, &l);
@@ -262,6 +262,19 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 			af_read_uint16_le(&extraByteCount, fp);
 			af_read_uint16_le(&samplesPerBlock, fp);
 
+			if (bitsPerSample != 4)
+			{
+				_af_error(AF_BAD_NOT_IMPLEMENTED,
+					"IMA ADPCM compression supports only 4 bits per sample");
+			}
+
+			int bytesPerBlock = (samplesPerBlock + 14) / 8 * 4 * channelCount;
+			if (bytesPerBlock > blockAlign || (samplesPerBlock % 8) != 1)
+			{
+				_af_error(AF_BAD_CODEC_CONFIG,
+					"Invalid samples per block for IMA ADPCM compression");
+			}
+
 			track->f.sampleWidth = 16;
 			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
 			track->f.compressionType = AF_COMPRESSION_IMA;
@@ -269,7 +282,7 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 
 			/* Create the parameter list. */
 			pv = AUpvnew(2);
-			AUpvsetparam(pv, 0, _AF_SAMPLES_PER_BLOCK);
+			AUpvsetparam(pv, 0, _AF_FRAMES_PER_BLOCK);
 			AUpvsetvaltype(pv, 0, AU_PVTYPE_LONG);
 			l = samplesPerBlock;
 			AUpvsetval(pv, 0, &l);

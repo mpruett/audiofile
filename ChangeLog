@@ -1,3 +1,10 @@
+2010-03-16  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/afinternal.h, libaudiofile/modules/adpcm.c,
+	libaudiofile/modules/adpcm.h, libaudiofile/modules/ima.c,
+	libaudiofile/modules/msadpcm.c, libaudiofile/wave.c: Fix decoding
+	of multi-channel ADPCM audio files.
+
 2010-03-15  Michael Pruett <michael@68k.org>
 
 	* Use C99 integer types.
@@ -6,8 +13,7 @@
 
 	* libaudiofile/debug.c, libaudiofile/modules/msadpcm.c,
 	libaudiofile/modules/ima.c, libaudiofile/wavewrite.c,
-	libaudiofile/query.c: Remove unused variables and fix
-	warnings.
+	libaudiofile/query.c: Remove unused variables and fix warnings.
 
 2004-11-14  Michael Pruett <michael@68k.org>
 

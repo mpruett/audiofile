@@ -53,33 +53,32 @@ typedef struct
 	_Track		*track;
 	AFvirtualfile	*fh;
 
-	int		blockAlign, samplesPerBlock;
+	int		blockAlign, framesPerBlock;
 	AFframecount	framesToIgnore;
 } ima_adpcm_data;
 
-static int ima_adpcm_decode_block (ima_adpcm_data *ima, uint8_t *encoded,
+static int ima_adpcm_decode_block (ima_adpcm_data *ima, const uint8_t *encoded,
 	int16_t *decoded)
 {
-	int outputLength;
+	int channelCount = ima->track->f.channelCount;
+	struct adpcm_state state[channelCount];
 
-	struct adpcm_state state;
+	for (int c=0; c<channelCount; c++)
+	{
+		state[c].valprev = (encoded[1]<<8) | encoded[0];
+		if (encoded[1] & 0x80)
+			state[c].valprev -= 0x10000;
 
-	outputLength = ima->samplesPerBlock * sizeof (int16_t) *
-		ima->track->f.channelCount;
+		state[c].index = encoded[2];
 
-	state.valprev = (encoded[1]<<8) | encoded[0];
-	if (encoded[1] & 0x80)
-		state.valprev -= 0x10000;
+		*decoded++ = state[c].valprev;
 
-	state.index = encoded[2];
+		encoded += 4;
+	}
 
-	*decoded++ = state.valprev;
+	_af_adpcm_decoder(encoded, decoded, ima->framesPerBlock - 1, channelCount, state);
 
-	encoded += 4;
-
-	_af_adpcm_decoder(encoded, decoded, ima->samplesPerBlock - 1, &state);
-
-	return outputLength;
+	return ima->framesPerBlock * channelCount * sizeof (int16_t);
 }
 
 bool _af_ima_adpcm_format_ok (_AudioFormat *f)
@@ -142,8 +141,8 @@ _AFmoduleinst _af_ima_adpcm_init_decompress (_Track *track, AFvirtualfile *fh,
 
 	pv = d->track->f.compressionParams;
 
-	if (_af_pv_getlong(pv, _AF_SAMPLES_PER_BLOCK, &l))
-		d->samplesPerBlock = l;
+	if (_af_pv_getlong(pv, _AF_FRAMES_PER_BLOCK, &l))
+		d->framesPerBlock = l;
 	else
 		_af_error(AF_BAD_CODEC_CONFIG, "samples per block not set");
 
@@ -152,7 +151,7 @@ _AFmoduleinst _af_ima_adpcm_init_decompress (_Track *track, AFvirtualfile *fh,
 	else
 		_af_error(AF_BAD_CODEC_CONFIG, "block size not set");
 
-	*chunkframes = d->samplesPerBlock / d->track->f.channelCount;
+	*chunkframes = d->framesPerBlock;
 
 	ret.modspec = d;
 	return ret;
@@ -163,15 +162,13 @@ static void ima_adpcm_run_pull (_AFmoduleinst *module)
 	ima_adpcm_data	*d = (ima_adpcm_data *) module->modspec;
 	AFframecount	frames2read = module->outc->nframes;
 	AFframecount	nframes = 0;
-	int		i, framesPerBlock, blockCount;
-	ssize_t		blocksRead, bytesDecoded;
 
-	framesPerBlock = d->samplesPerBlock / d->track->f.channelCount;
+	int framesPerBlock = d->framesPerBlock;
 	assert(module->outc->nframes % framesPerBlock == 0);
-	blockCount = module->outc->nframes / framesPerBlock;
+	int blockCount = module->outc->nframes / framesPerBlock;
 
 	/* Read the compressed frames. */
-	blocksRead = af_fread(module->inc->buf, d->blockAlign, blockCount, d->fh);
+	ssize_t blocksRead = af_fread(module->inc->buf, d->blockAlign, blockCount, d->fh);
 
 	/* This condition would indicate that the file is bad. */
 	if (blocksRead < 0)
@@ -187,11 +184,11 @@ static void ima_adpcm_run_pull (_AFmoduleinst *module)
 		blockCount = blocksRead;
 
 	/* Decompress into module->outc. */
-	for (i=0; i<blockCount; i++)
+	for (int i=0; i<blockCount; i++)
 	{
-		bytesDecoded = ima_adpcm_decode_block(d,
-			(uint8_t *) module->inc->buf + i * d->blockAlign,
-			(int16_t *) module->outc->buf + i * d->samplesPerBlock);
+		ssize_t bytesDecoded = ima_adpcm_decode_block(d,
+			(const uint8_t *) module->inc->buf + i * d->blockAlign,
+			(int16_t *) module->outc->buf + i * d->framesPerBlock * d->track->f.channelCount);
 
 		nframes += framesPerBlock;
 	}
@@ -228,12 +225,9 @@ static void ima_adpcm_run_pull (_AFmoduleinst *module)
 static void ima_adpcm_reset1 (_AFmoduleinst *i)
 {
 	ima_adpcm_data	*d = (ima_adpcm_data *) i->modspec;
-	AFframecount	nextTrackFrame;
-	int		framesPerBlock;
 
-	framesPerBlock = d->samplesPerBlock / d->track->f.channelCount;
-
-	nextTrackFrame = d->track->nextfframe;
+	int framesPerBlock = d->framesPerBlock;
+	AFframecount nextTrackFrame = d->track->nextfframe;
 	d->track->nextfframe = (nextTrackFrame / framesPerBlock) *
 		framesPerBlock;
 
@@ -244,9 +238,8 @@ static void ima_adpcm_reset1 (_AFmoduleinst *i)
 static void ima_adpcm_reset2 (_AFmoduleinst *i)
 {
 	ima_adpcm_data	*d = (ima_adpcm_data *) i->modspec;
-	int		framesPerBlock;
 
-	framesPerBlock = d->samplesPerBlock / d->track->f.channelCount;
+	int framesPerBlock = d->framesPerBlock;
 
 	d->track->fpos_next_frame = d->track->fpos_first_frame +
 		d->blockAlign * (d->track->nextfframe / framesPerBlock);

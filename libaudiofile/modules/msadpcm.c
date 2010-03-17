@@ -65,7 +65,7 @@ typedef struct ms_adpcm_data
 	*/
 	AFframecount	framesToIgnore;
 
-	int		blockAlign, samplesPerBlock;
+	int		blockAlign, framesPerBlock;
 
 	/* a is an array of numCoefficients ADPCM coefficient pairs. */
 	int	numCoefficients;
@@ -119,7 +119,7 @@ static int16_t ms_adpcm_decode_sample (struct ms_adpcm_state *state,
 }
 
 /* Decode one block of MS ADPCM data. */
-static int ms_adpcm_decode_block (ms_adpcm_data *msadpcm, uint8_t *encoded,
+static int ms_adpcm_decode_block (ms_adpcm_data *msadpcm, const uint8_t *encoded,
 	int16_t *decoded)
 {
 	int		i, outputLength, samplesRemaining;
@@ -129,7 +129,7 @@ static int ms_adpcm_decode_block (ms_adpcm_data *msadpcm, uint8_t *encoded,
 	ms_adpcm_state	*state[2];
 
 	/* Calculate the number of bytes needed for decoded data. */
-	outputLength = msadpcm->samplesPerBlock * sizeof (int16_t) *
+	outputLength = msadpcm->framesPerBlock * sizeof (int16_t) *
 		msadpcm->track->f.channelCount;
 
 	channelCount = msadpcm->track->f.channelCount;
@@ -180,7 +180,7 @@ static int ms_adpcm_decode_block (ms_adpcm_data *msadpcm, uint8_t *encoded,
 		The first two samples have already been 'decoded' in
 		the block header.
 	*/
-	samplesRemaining = (msadpcm->samplesPerBlock - 2) *
+	samplesRemaining = (msadpcm->framesPerBlock - 2) *
 		msadpcm->track->f.channelCount;
 
 	while (samplesRemaining > 0)
@@ -275,8 +275,8 @@ _AFmoduleinst _af_ms_adpcm_init_decompress (_Track *track, AFvirtualfile *fh,
 	else
 		_af_error(AF_BAD_CODEC_CONFIG, "coefficient array not set");
 
-	if (_af_pv_getlong(pv, _AF_SAMPLES_PER_BLOCK, &l))
-		d->samplesPerBlock = l;
+	if (_af_pv_getlong(pv, _AF_FRAMES_PER_BLOCK, &l))
+		d->framesPerBlock = l;
 	else
 		_af_error(AF_BAD_CODEC_CONFIG, "samples per block not set");
 
@@ -285,7 +285,7 @@ _AFmoduleinst _af_ms_adpcm_init_decompress (_Track *track, AFvirtualfile *fh,
 	else
 		_af_error(AF_BAD_CODEC_CONFIG, "block size not set");
 
-	*chunkframes = d->samplesPerBlock / d->track->f.channelCount;
+	*chunkframes = d->framesPerBlock;
 
 	ret.modspec = d;
 	return ret;
@@ -299,7 +299,7 @@ static void ms_adpcm_run_pull (_AFmoduleinst *module)
 	int		i, framesPerBlock, blockCount;
 	ssize_t		blocksRead, bytesDecoded;
 
-	framesPerBlock = d->samplesPerBlock / d->track->f.channelCount;
+	framesPerBlock = d->framesPerBlock;
 	assert(module->outc->nframes % framesPerBlock == 0);
 	blockCount = module->outc->nframes / framesPerBlock;
 
@@ -310,8 +310,8 @@ static void ms_adpcm_run_pull (_AFmoduleinst *module)
 	for (i=0; i<blockCount; i++)
 	{
 		bytesDecoded = ms_adpcm_decode_block(d,
-			(uint8_t *) module->inc->buf + i * d->blockAlign,
-			(int16_t *) module->outc->buf + i * d->samplesPerBlock);
+			(const uint8_t *) module->inc->buf + i * d->blockAlign,
+			(int16_t *) module->outc->buf + i * d->framesPerBlock * d->track->f.channelCount);
 
 		nframes += framesPerBlock;
 	}
@@ -351,7 +351,7 @@ static void ms_adpcm_reset1 (_AFmoduleinst *i)
 	AFframecount	nextTrackFrame;
 	int		framesPerBlock;
 
-	framesPerBlock = d->samplesPerBlock / d->track->f.channelCount;
+	framesPerBlock = d->framesPerBlock;
 
 	nextTrackFrame = d->track->nextfframe;
 	d->track->nextfframe = (nextTrackFrame / framesPerBlock) *
@@ -366,7 +366,7 @@ static void ms_adpcm_reset2 (_AFmoduleinst *i)
 	ms_adpcm_data	*d = (ms_adpcm_data *) i->modspec;
 	int		framesPerBlock;
 
-	framesPerBlock = d->samplesPerBlock / d->track->f.channelCount;
+	framesPerBlock = d->framesPerBlock;
 
 	d->track->fpos_next_frame = d->track->fpos_first_frame +
 		d->blockAlign * (d->track->nextfframe / framesPerBlock);
