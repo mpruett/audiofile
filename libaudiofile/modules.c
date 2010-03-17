@@ -82,8 +82,8 @@ _AFmoduleinst _AFnewmodinst (_AFmodule *mod)
 	ret.modspec = NULL;
 	ret.u.pull.source = NULL;
 	ret.mod = mod;
-	ret.free_on_close = AF_FALSE;
-	ret.valid = AF_FALSE;
+	ret.free_on_close = false;
+	ret.valid = false;
 
 	return(ret);
 }
@@ -658,7 +658,7 @@ MODULE(int4_3, { f->sampleWidth = 24; f->pcm=intmap[3]; },
 
 	Internally, the module holds a copy of the matrix in which the
 	rows correspond to the output format, and the columns correspond
-	to the input format (therefore, if reading==AF_FALSE, the matrix
+	to the input format (therefore, if reading==false, the matrix
 	is transposed as it is copied).
 */
 
@@ -784,7 +784,7 @@ static _AFmoduleinst initchannelchange (_AFmodule *mod,
 	*/
 	if (!matrix)
 	{
-		bool special=AF_FALSE;
+		bool special=false;
 
 		/* Handle many common special cases. */
 
@@ -792,37 +792,37 @@ static _AFmoduleinst initchannelchange (_AFmodule *mod,
 		{
 			static double m[]={1,1};
 			matrix=m;
-			special=AF_TRUE;
+			special=true;
 		}
 		else if (inchannels==1 && outchannels==4)
 		{
 			static double m[]={1,1,0,0};
 			matrix=m;
-			special=AF_TRUE;
+			special=true;
 		}
 		else if (inchannels==2 && outchannels==1)
 		{
 			static double m[]={.5,.5};
 			matrix=m;
-			special=AF_TRUE;
+			special=true;
 		}
 		else if (inchannels==2 && outchannels==4)
 		{
 			static double m[]={1,0,0,1,0,0,0,0};
 			matrix=m;
-			special=AF_TRUE;
+			special=true;
 		}
 		else if (inchannels==4 && outchannels==1)
 		{
 			static double m[]={.5,.5,.5,.5};
 			matrix=m;
-			special=AF_TRUE;
+			special=true;
 		}
 		else if (inchannels==4 && outchannels==2)
 		{
 			static double m[]={1,0,1,0,0,1,0,1};
 			matrix=m;
-			special=AF_TRUE;
+			special=true;
 		}
 		else
 		{
@@ -883,7 +883,7 @@ typedef struct current_state
 static void addmod (current_state *current, _AFmoduleinst modinst)
 {
 	*(current->modinst) = modinst;
-	current->modinst->valid = AF_TRUE; /* at this point mod must be valid */
+	current->modinst->valid = true; /* at this point mod must be valid */
 
 	/* Assign the new module instance an input and an output chunk. */
 
@@ -943,8 +943,8 @@ static status initfilemods (_Track *track, AFfilehandle h)
 
 	/* Invalidate everything. */
 
-	track->ms.filemodinst.valid = AF_FALSE;
-	track->ms.filemod_rebufferinst.valid = AF_FALSE;
+	track->ms.filemodinst.valid = false;
+	track->ms.filemod_rebufferinst.valid = false;
 
 	/*
 		Seek to beginning of sound data in the track.
@@ -965,7 +965,7 @@ static status initfilemods (_Track *track, AFfilehandle h)
 
 	/* Create file read/write module. */
 
-	track->filemodhappy = AF_TRUE;
+	track->filemodhappy = true;
 
 	if (h->access == _AF_READ_ACCESS)
 		track->ms.filemodinst =
@@ -979,7 +979,7 @@ static status initfilemods (_Track *track, AFfilehandle h)
 	if (!track->filemodhappy)
 		return AF_FAIL;
 
-	track->ms.filemodinst.valid = AF_TRUE;
+	track->ms.filemodinst.valid = true;
 
 	/*
 		WHEN DOES THE FILE GET LSEEKED ?
@@ -1099,18 +1099,18 @@ static status initfilemods (_Track *track, AFfilehandle h)
 				_af_initint2rebufferf2v(chunkframes*track->f.channelCount,
 					compunit->multiple_of);
 
-		track->ms.filemod_rebufferinst.valid = AF_TRUE;
+		track->ms.filemod_rebufferinst.valid = true;
 	}
 	else
-		track->ms.filemod_rebufferinst.valid = AF_FALSE;
+		track->ms.filemod_rebufferinst.valid = false;
 
 	/*
 		These modules should not get freed until the file handle
 		is destroyed (i.e. the file is closed).
 	*/
 
-	track->ms.filemodinst.free_on_close = AF_TRUE;
-	track->ms.filemod_rebufferinst.free_on_close = AF_TRUE;
+	track->ms.filemodinst.free_on_close = true;
+	track->ms.filemod_rebufferinst.free_on_close = true;
 
 	return AF_SUCCEED;
 }
@@ -1165,13 +1165,13 @@ static status disposefilemods (_Track *track)
 		track->ms.filemodinst.mod->free)
 		(*track->ms.filemodinst.mod->free)(&track->ms.filemodinst);
 
-	track->ms.filemodinst.valid = AF_FALSE;
+	track->ms.filemodinst.valid = false;
 
 	if (track->ms.filemod_rebufferinst.valid &&
 		track->ms.filemod_rebufferinst.mod->free)
 		(*track->ms.filemod_rebufferinst.mod->free)(&track->ms.filemod_rebufferinst);
 
-	track->ms.filemod_rebufferinst.valid = AF_FALSE;
+	track->ms.filemod_rebufferinst.valid = false;
 
 	return AF_SUCCEED;
 }
@@ -1199,7 +1199,7 @@ static bool useAP (double inrate, double outrate,
 	*inratep = inrate;
 	*outratep = outrate;
 
-	if (instandard && outstandard) return AF_TRUE;
+	if (instandard && outstandard) return true;
 	if (incodec && outstandard && outrate != 8000.00)
 	{
 		_af_error(AF_WARNING_CODEC_RATE,
@@ -1207,7 +1207,7 @@ static bool useAP (double inrate, double outrate,
 			"to allow high-quality rate conversion",
 			inrate);
 		*inratep = 8000.00;
-		return AF_TRUE;
+		return true;
 	}
 	if (instandard && inrate != 8000.00 && outcodec)
 	{
@@ -1216,7 +1216,7 @@ static bool useAP (double inrate, double outrate,
 			"to allow high-quality rate conversion",
 			outrate);
 		*outratep = 8000.00;
-		return AF_TRUE;
+		return true;
 	}
 
 	if (!instandard && !outstandard)
@@ -1238,7 +1238,7 @@ static bool useAP (double inrate, double outrate,
 			"output file may contain audible artifacts",
 			outrate);
 
-	return AF_FALSE;
+	return false;
 }
 
 /*
@@ -1249,8 +1249,8 @@ static bool useAP (double inrate, double outrate,
 static void initrateconvertmods (bool reading, _Track *track)
 {
 	/* no rate conversion initially */
-	track->ms.rateconvertinst.valid = AF_FALSE;
-	track->ms.rateconvert_rebufferinst.valid = AF_FALSE;
+	track->ms.rateconvertinst.valid = false;
+	track->ms.rateconvert_rebufferinst.valid = false;
 }
 
 static void disposerateconvertmods (_Track *);
@@ -1271,7 +1271,7 @@ static void addrateconvertmods (current_state *current, int nchannels,
 	if (inrate == outrate)
 	{
 		disposerateconvertmods(track);
-		track->ratecvt_filter_params_set = AF_FALSE; /* XXX HACK */
+		track->ratecvt_filter_params_set = false; /* XXX HACK */
 	}
 	else
 	{
@@ -1288,7 +1288,7 @@ static void addrateconvertmods (current_state *current, int nchannels,
 			bool usingAP = useAP(inrate, outrate, &inrate, &outrate);
 
 			disposerateconvertmods(track);
-			track->ratecvt_filter_params_set = AF_FALSE; /* HACK */
+			track->ratecvt_filter_params_set = false; /* HACK */
 
 			if (usingAP)
 			{
@@ -1300,13 +1300,13 @@ static void addrateconvertmods (current_state *current, int nchannels,
 
 				if (!reading)
 					track->ms.rateconvert_rebufferinst =
-						initfloatrebufferv2f(inframes*nchannels, AF_FALSE);
+						initfloatrebufferv2f(inframes*nchannels, false);
 				else
 					track->ms.rateconvert_rebufferinst =
-						initfloatrebufferf2v(outframes*nchannels, AF_FALSE);
+						initfloatrebufferf2v(outframes*nchannels, false);
 
-				track->ms.rateconvertinst.valid = AF_TRUE;
-				track->ms.rateconvert_rebufferinst.valid = AF_TRUE;
+				track->ms.rateconvertinst.valid = true;
+				track->ms.rateconvert_rebufferinst.valid = true;
 			}
 			else
 			{
@@ -1314,15 +1314,15 @@ static void addrateconvertmods (current_state *current, int nchannels,
 					inrate, outrate,
 					nchannels, reading);
 
-				track->ms.rateconvertinst.valid = AF_TRUE;
-				track->ms.rateconvert_rebufferinst.valid = AF_FALSE;
+				track->ms.rateconvertinst.valid = true;
+				track->ms.rateconvert_rebufferinst.valid = false;
 			}
 
 			track->ms.rateconvert_inrate = inrate;
 			track->ms.rateconvert_outrate = outrate;
 
-			track->ms.rateconvertinst.free_on_close = AF_TRUE;
-			track->ms.rateconvert_rebufferinst.free_on_close = AF_TRUE;
+			track->ms.rateconvertinst.free_on_close = true;
+			track->ms.rateconvert_rebufferinst.free_on_close = true;
 		}
 
 		/* Add the rate conversion modules. */
@@ -1354,7 +1354,7 @@ static void disposerateconvertmods (_Track *track)
 			(&track->ms.rateconvertinst);
 	}
 
-	track->ms.rateconvertinst.valid = AF_FALSE;
+	track->ms.rateconvertinst.valid = false;
 
 	if (track->ms.rateconvert_rebufferinst.valid &&
 		track->ms.rateconvert_rebufferinst.mod->free)
@@ -1363,7 +1363,7 @@ static void disposerateconvertmods (_Track *track)
 			(&track->ms.rateconvert_rebufferinst);
 	}
 
-	track->ms.rateconvert_rebufferinst.valid = AF_FALSE;
+	track->ms.rateconvert_rebufferinst.valid = false;
 }
 #endif /* XXXmpruett rate conversion is disabled for now */
 
@@ -1419,7 +1419,7 @@ static format_code get_format_code (_AudioFormat *fmt)
 	if (fmt->sampleFormat == AF_SAMPFMT_TWOSCOMP ||
 		fmt->sampleFormat == AF_SAMPFMT_UNSIGNED)
 	{
-		switch (_af_format_sample_size_uncompressed(fmt, AF_FALSE))
+		switch (_af_format_sample_size_uncompressed(fmt, false))
 		{
 			case 1: return int8_fmt;
 			case 2: return int16_fmt;
@@ -1636,7 +1636,7 @@ static status arrangemodules (_AFfilehandle *h, _Track *track)
 
 	/* Handle nasty 3-byte input cases. */
 
-	insampbytes = _af_format_sample_size_uncompressed(&in, AF_FALSE);
+	insampbytes = _af_format_sample_size_uncompressed(&in, false);
 
 	if (isinteger(infc) && insampbytes == 3)
 	{
@@ -1729,8 +1729,8 @@ static status arrangemodules (_AFfilehandle *h, _Track *track)
 		out.pcm.maxClip = out.pcm.intercept + out.pcm.slope;
 	}
 
-	already_clipped_output = AF_FALSE;
-	already_transformed_output = AF_FALSE;
+	already_clipped_output = false;
+	already_transformed_output = false;
 
 	/*
 		We need to perform a transformation (in floating point)
@@ -1832,8 +1832,8 @@ static status arrangemodules (_AFfilehandle *h, _Track *track)
 		*/
 		if (isfloating(infc) && isinteger(outfc)) /* "float"->"int" */
 		{
-			already_clipped_output = AF_TRUE;
-			already_transformed_output = AF_TRUE;
+			already_clipped_output = true;
+			already_transformed_output = true;
 		}
 		addmod(&current, initpcmmod(convertmatrix[infc][outfc],
 			&in.pcm, &out.pcm));
@@ -1876,7 +1876,7 @@ static status arrangemodules (_AFfilehandle *h, _Track *track)
 
 	/* Make data unsigned if neccessary. */
 
-	outsampbytes = _af_format_sample_size_uncompressed(&out, AF_FALSE);
+	outsampbytes = _af_format_sample_size_uncompressed(&out, false);
 
 	if (out.sampleFormat == AF_SAMPFMT_UNSIGNED)
 		addmod(&current, _AFnewmodinst(signed2unsigned[outsampbytes]));
@@ -1962,11 +1962,11 @@ static status arrangemodules (_AFfilehandle *h, _Track *track)
 	if (track->ms.nmodules == 1 &&
 		track->v.compressionType == AF_COMPRESSION_NONE &&
 		track->f.compressionType == AF_COMPRESSION_NONE)
-		track->ms.mustuseatomicnvframes = AF_FALSE;
+		track->ms.mustuseatomicnvframes = false;
 	else
-		track->ms.mustuseatomicnvframes = AF_TRUE;
+		track->ms.mustuseatomicnvframes = true;
 #else
-	track->ms.mustuseatomicnvframes = AF_TRUE;
+	track->ms.mustuseatomicnvframes = true;
 #endif
 
 	return AF_SUCCEED;
@@ -2003,7 +2003,7 @@ static void disposemodules (_Track *track)
 			if (mod->valid && !mod->free_on_close && mod->mod->free)
 			{
 				(*mod->mod->free)(mod);
-				mod->valid = AF_FALSE;
+				mod->valid = false;
 			}
 		}
 
@@ -2050,7 +2050,7 @@ static status resetmodules (_AFfilehandle *h, _Track *track)
 	assert(!track->ms.modulesdirty);
 
 	/* Assume all is well with track. */
-	track->filemodhappy = AF_TRUE;
+	track->filemodhappy = true;
 
 	CHNK(printf("resetmodules running reset1 routines\n"));
 
@@ -2111,7 +2111,7 @@ status _AFsyncmodules (AFfilehandle h, _Track *track)
 	assert(!track->ms.modulesdirty);
 
 	/* Assume all is well with track. */
-	track->filemodhappy = AF_TRUE;
+	track->filemodhappy = true;
 
 	CHNK(printf("_AFsyncmodules running sync1 routines\n"));
 
@@ -2169,7 +2169,7 @@ status _AFsyncmodules (AFfilehandle h, _Track *track)
 
 	It returns AF_FAIL on any kind of error.
 
-	It sets modulesdirty to AF_FALSE if it was able to clean the
+	It sets modulesdirty to false if it was able to clean the
 	modules (although an error still could have occurred after
 	cleaning them).
 */
@@ -2188,7 +2188,7 @@ status _AFsetupmodules (AFfilehandle h, _Track *track)
 		and valid.
 
 		* track->totalvframes and track->next[fv]frame are set
-		and valid and trk->modulesdirty will be set to AF_FALSE
+		and valid and trk->modulesdirty will be set to false
 		if this function succeeds.
 
 		This function also resets the modules on files open for read.
@@ -2227,7 +2227,7 @@ status _AFsetupmodules (AFfilehandle h, _Track *track)
 	*/
 	{
 		int idx = _af_compression_index_from_id(track->v.compressionType);
-		if ((*_af_compression[idx].fmtok)(&track->v) == AF_FALSE)
+		if (!(*_af_compression[idx].fmtok)(&track->v))
 		{
 			return AF_FAIL;
 		}
@@ -2301,7 +2301,7 @@ status _AFsetupmodules (AFfilehandle h, _Track *track)
 	if (modules == AF_NULL)
 		return AF_FAIL;
 	for (i=0; i < MAX_MODULES; i++)
-		modules[i].valid = AF_FALSE;
+		modules[i].valid = false;
 
 	chunks = _af_malloc(sizeof (_AFchunk) * (MAX_MODULES+1));
 	if (chunks == AF_NULL)
@@ -2375,7 +2375,7 @@ status _AFsetupmodules (AFfilehandle h, _Track *track)
 	*/
 
 	/* filemod reports error here */
-	track->filemodhappy = AF_TRUE;
+	track->filemodhappy = true;
 	maxbufsize = 0;
 
 	if (h->access == _AF_READ_ACCESS)
@@ -2389,7 +2389,7 @@ status _AFsetupmodules (AFfilehandle h, _Track *track)
 
 			/* check bufsize needed for current output chunk */
 
-			bufsize = outc->nframes * _af_format_frame_size(&outc->f, AF_TRUE);
+			bufsize = outc->nframes * _af_format_frame_size(&outc->f, true);
 			if (bufsize > maxbufsize)
 			maxbufsize = bufsize;
 
@@ -2424,7 +2424,7 @@ status _AFsetupmodules (AFfilehandle h, _Track *track)
 		{
 			_AFmoduleinst *filemod = &track->ms.module[0];
 			bufsize = filemod->inc->nframes *
-				_af_format_frame_size(&filemod->outc->f, AF_TRUE);
+				_af_format_frame_size(&filemod->outc->f, true);
 			if (bufsize > maxbufsize)
 				maxbufsize = bufsize;
 		}
@@ -2440,7 +2440,7 @@ status _AFsetupmodules (AFfilehandle h, _Track *track)
 
 			/* Check bufsize needed for current input chunk. */
 
-			bufsize = inc->nframes * _af_format_frame_size(&inc->f, AF_TRUE);
+			bufsize = inc->nframes * _af_format_frame_size(&inc->f, true);
 			if (bufsize > maxbufsize)
 				maxbufsize = bufsize;
 
@@ -2475,7 +2475,7 @@ status _AFsetupmodules (AFfilehandle h, _Track *track)
 		{
 			_AFmoduleinst *filemod = &track->ms.module[track->ms.nmodules-1];
 			bufsize = filemod->outc->nframes *
-			_af_format_frame_size(&filemod->inc->f, AF_TRUE);
+			_af_format_frame_size(&filemod->inc->f, true);
 			if (bufsize > maxbufsize)
 				maxbufsize = bufsize;
 		}
@@ -2550,7 +2550,7 @@ status _AFsetupmodules (AFfilehandle h, _Track *track)
 
 	/*
 		Hooray!  The modules are now in a completely valid state.
-		But we can't set track->ms.modulesdirty to AF_FALSE yet...
+		But we can't set track->ms.modulesdirty to false yet...
 
 		track->totalvframes and track->next[fv]frame have not yet been
 		set to a valid state.
@@ -2587,7 +2587,7 @@ status _AFsetupmodules (AFfilehandle h, _Track *track)
 			are reported but not critical.
 		*/
 
-		track->ms.modulesdirty = AF_FALSE;
+		track->ms.modulesdirty = false;
 
 		/* Set up for next time. */
 		track->ms.old_f_rate = track->f.sampleRate;
@@ -2626,7 +2626,7 @@ status _AFsetupmodules (AFfilehandle h, _Track *track)
 			are reported but not critical.
 		*/
 
-		track->ms.modulesdirty = AF_FALSE;
+		track->ms.modulesdirty = false;
 
 		/* Set up for next time. */
 		track->ms.old_f_rate = track->f.sampleRate;
@@ -2681,23 +2681,23 @@ status _AFinitmodules (AFfilehandle h, _Track *track)
 	/* HACK: see private.h for a description of this hack */
 	track->taper = 10;
 	track->dynamic_range = 100;
-	track->ratecvt_filter_params_set = AF_TRUE;
+	track->ratecvt_filter_params_set = true;
 
 	track->ms.nmodules = 0;
 	track->ms.module = NULL;
 	track->ms.chunk = NULL;
 	track->ms.buffer = NULL;
 
-	track->ms.modulesdirty = AF_TRUE;
+	track->ms.modulesdirty = true;
 
-	track->ms.filemodinst.valid = AF_FALSE;
-	track->ms.filemod_rebufferinst.valid = AF_FALSE;
+	track->ms.filemodinst.valid = false;
+	track->ms.filemod_rebufferinst.valid = false;
 
-	track->ms.rateconvertinst.valid = AF_FALSE;
-	track->ms.rateconvert_rebufferinst.valid = AF_FALSE;
+	track->ms.rateconvertinst.valid = false;
+	track->ms.rateconvert_rebufferinst.valid = false;
 
 	/* bogus value in case of bad code */
-	track->ms.mustuseatomicnvframes = AF_TRUE;
+	track->ms.mustuseatomicnvframes = true;
 
 	/* old_f_rate and old_v_rate MUST be set to <= 0 here. */
 	track->ms.old_f_rate = -1;

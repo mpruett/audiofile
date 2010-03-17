@@ -45,7 +45,7 @@
 
 static char *sample_byte_format (_AudioFormat *fmt)
 {
-	int	nbytes = _af_format_sample_size(fmt, AF_FALSE);
+	int	nbytes = _af_format_sample_size(fmt, false);
 
 	assert(nbytes == 1 || nbytes == 2);
 
@@ -98,8 +98,8 @@ status WriteNISTHeader (AFfilehandle file)
 		track->f.channelCount,
 		(int) (track->totalfframes * track->f.channelCount),
 		(int) track->f.sampleRate,
-		(int) _af_format_sample_size(&track->f, AF_FALSE),
-		(int) _af_format_sample_size(&track->f, AF_FALSE), sample_byte_format(&track->f),
+		(int) _af_format_sample_size(&track->f, false),
+		(int) _af_format_sample_size(&track->f, false), sample_byte_format(&track->f),
 		track->f.sampleWidth,
 		(int) strlen(sample_coding(&track->f)), sample_coding(&track->f));
 

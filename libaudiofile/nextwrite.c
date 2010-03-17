@@ -60,7 +60,7 @@ static status next_write_header (AFfilehandle file)
 
 	track = _af_filehandle_get_track(file, AF_DEFAULT_TRACK);
 
-	frameSize = _af_format_frame_size(&track->f, AF_FALSE);
+	frameSize = _af_format_frame_size(&track->f, false);
 
 	offset = track->fpos_first_frame;
 	length = track->totalfframes * frameSize;

@@ -84,9 +84,9 @@ _AFfilesetup _af_aiff_default_filesetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_AIFF,		/* fileFormat */
-	AF_TRUE,		/* trackSet */
-	AF_TRUE,		/* instrumentSet */
-	AF_TRUE,		/* miscellaneousSet */
+	true,			/* trackSet */
+	true,			/* instrumentSet */
+	true,			/* miscellaneousSet */
 	1,			/* trackCount */
 	NULL,			/* tracks */
 	1,			/* instrumentCount */
@@ -123,7 +123,7 @@ static status ParseAESD (AFfilehandle file, AFvirtualfile *fh, uint32_t type, si
 
 	track = _af_filehandle_get_track(file, AF_DEFAULT_TRACK);
 
-	track->hasAESData = AF_TRUE;
+	track->hasAESData = true;
 
 	/*
 		Try to read 24 bytes of AES nonaudio data from the file.
@@ -488,15 +488,15 @@ status _af_aiff_read_init (AFfilesetup setup, AFfilehandle file)
 	bool		hasAESD, hasNAME, hasAUTH, hasCOPY;
 	_Track		*track;
 
-	hasCOMM = AF_FALSE;
-	hasFVER = AF_FALSE;
-	hasSSND = AF_FALSE;
-	hasMARK = AF_FALSE;
-	hasINST = AF_FALSE;
-	hasAESD = AF_FALSE;
-	hasNAME = AF_FALSE;
-	hasAUTH = AF_FALSE;
-	hasCOPY = AF_FALSE;
+	hasCOMM = false;
+	hasFVER = false;
+	hasSSND = false;
+	hasMARK = false;
+	hasINST = false;
+	hasAESD = false;
+	hasNAME = false;
+	hasAUTH = false;
+	hasCOPY = false;
 
 	assert(file != NULL);
 	assert(file->fh != NULL);
@@ -546,27 +546,27 @@ status _af_aiff_read_init (AFfilesetup setup, AFfilehandle file)
 
 		if (!memcmp("COMM", &chunkid, 4))
 		{
-			hasCOMM = AF_TRUE;
+			hasCOMM = true;
 			result = ParseCOMM(file, file->fh, chunkid, chunksize);
 		}
 		else if (!memcmp("FVER", &chunkid, 4))
 		{
-			hasFVER = AF_TRUE;
+			hasFVER = true;
 			ParseFVER(file, file->fh, chunkid, chunksize);
 		}
 		else if (!memcmp("INST", &chunkid, 4))
 		{
-			hasINST = AF_TRUE;
+			hasINST = true;
 			ParseINST(file, file->fh, chunkid, chunksize);
 		}
 		else if (!memcmp("MARK", &chunkid, 4))
 		{
-			hasMARK = AF_TRUE;
+			hasMARK = true;
 			ParseMARK(file, file->fh, chunkid, chunksize);
 		}
 		else if (!memcmp("AESD", &chunkid, 4))
 		{
-			hasAESD = AF_TRUE;
+			hasAESD = true;
 			ParseAESD(file, file->fh, chunkid, chunksize);
 		}
 		else if (!memcmp("NAME", &chunkid, 4) ||
@@ -589,7 +589,7 @@ status _af_aiff_read_init (AFfilesetup setup, AFfilehandle file)
 				_af_error(AF_BAD_AIFF_SSND, "AIFF file has more than one SSND chunk");
 				return AF_FAIL;
 			}
-			hasSSND = AF_TRUE;
+			hasSSND = true;
 			result = ParseSSND(file, file->fh, chunkid, chunksize);
 		}
 
@@ -621,11 +621,11 @@ bool _af_aiff_recognize (AFvirtualfile *fh)
 	af_fseek(fh, 0, SEEK_SET);
 
 	if (af_fread(buffer, 1, 8, fh) != 8 || memcmp(buffer, "FORM", 4) != 0)
-		return AF_FALSE;
+		return false;
 	if (af_fread(buffer, 1, 4, fh) != 4 || memcmp(buffer, "AIFF", 4) != 0)
-		return AF_FALSE;
+		return false;
 
-	return AF_TRUE;
+	return true;
 }
 
 bool _af_aifc_recognize (AFvirtualfile *fh)
@@ -635,11 +635,11 @@ bool _af_aifc_recognize (AFvirtualfile *fh)
 	af_fseek(fh, 0, SEEK_SET);
 
 	if (af_fread(buffer, 1, 8, fh) != 8 || memcmp(buffer, "FORM", 4) != 0)
-		return AF_FALSE;
+		return false;
 	if (af_fread(buffer, 1, 4, fh) != 4 || memcmp(buffer, "AIFC", 4) != 0)
-		return AF_FALSE;
+		return false;
 
-	return AF_TRUE;
+	return true;
 }
 
 AFfilesetup _af_aiff_complete_setup (AFfilesetup setup)
@@ -738,7 +738,7 @@ AFfilesetup _af_aiff_complete_setup (AFfilesetup setup)
 		}
 	}
 
-	return _af_filesetup_copy(setup, &_af_aiff_default_filesetup, AF_TRUE);
+	return _af_filesetup_copy(setup, &_af_aiff_default_filesetup, true);
 }
 
 bool _af_aiff_instparam_valid (AFfilehandle filehandle, AUpvlist list, int i)
@@ -748,7 +748,7 @@ bool _af_aiff_instparam_valid (AFfilehandle filehandle, AUpvlist list, int i)
 	AUpvgetparam(list, i, &param);
 	AUpvgetvaltype(list, i, &type);
 	if (type != AU_PVTYPE_LONG)
-		return AF_FALSE;
+		return false;
 
 	AUpvgetval(list, i, &lval);
 
@@ -775,14 +775,14 @@ bool _af_aiff_instparam_valid (AFfilehandle filehandle, AUpvlist list, int i)
 		case AF_INST_NUMDBS_GAIN:
 		case AF_INST_SUSLOOPID:
 		case AF_INST_RELLOOPID:
-			return AF_TRUE;
+			return true;
 
 		default:
-			return AF_FALSE;
+			return false;
 			break;
 	}
 
-	return AF_TRUE;
+	return true;
 }
 
 int _af_aifc_get_version (AFfilehandle file)

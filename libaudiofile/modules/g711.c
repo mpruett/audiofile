@@ -103,7 +103,7 @@ bool _af_g711_format_ok (_AudioFormat *f)
 		/* non-fatal */
 	}
 
-	return AF_TRUE;
+	return true;
 }
 
 static _AFmodule g711compress, g711decompress;
@@ -191,7 +191,7 @@ static void g711run_push (_AFmoduleinst *i)
 					d->trk->nextfframe + nfr,
 					d->trk->nextfframe + frames2write);
 
-			d->trk->filemodhappy = AF_FALSE;
+			d->trk->filemodhappy = false;
 		}
 	}
 
@@ -297,7 +297,7 @@ static void g711run_pull (_AFmoduleinst *i)
 				"file missing data -- read %d frames, should be %d",
 				d->trk->nextfframe,
 				d->trk->totalfframes);
-			d->trk->filemodhappy = AF_FALSE;
+			d->trk->filemodhappy = false;
 		}
 	}
 

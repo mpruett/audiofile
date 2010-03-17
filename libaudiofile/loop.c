@@ -51,7 +51,7 @@ void afInitLoopIDs (AFfilesetup setup, int instid, int *loopids, int nloops)
 	_af_setup_free_loops(setup, instno);
 
 	setup->instruments[instno].loopCount = nloops;
-	setup->instruments[instno].loopSet = AF_TRUE;
+	setup->instruments[instno].loopSet = true;
 
 	if (nloops == 0)
 		setup->instruments[instno].loops = NULL;
@@ -128,7 +128,7 @@ static _Loop *getLoop (AFfilehandle handle, int instid, int loopid,
 */
 void afSetLoopMode (AFfilehandle file, int instid, int loopid, int mode)
 {
-	_Loop	*loop = getLoop(file, instid, loopid, AF_TRUE);
+	_Loop	*loop = getLoop(file, instid, loopid, true);
 
 	if (!loop)
 		return;
@@ -149,7 +149,7 @@ void afSetLoopMode (AFfilehandle file, int instid, int loopid, int mode)
 */
 int afGetLoopMode (AFfilehandle file, int instid, int loopid)
 {
-	_Loop	*loop = getLoop(file, instid, loopid, AF_FALSE);
+	_Loop	*loop = getLoop(file, instid, loopid, false);
 
 	if (loop == NULL)
 		return -1;
@@ -162,7 +162,7 @@ int afGetLoopMode (AFfilehandle file, int instid, int loopid)
 */
 int afSetLoopCount (AFfilehandle file, int instid, int loopid, int count)
 {
-	_Loop	*loop = getLoop(file, instid, loopid, AF_TRUE);
+	_Loop	*loop = getLoop(file, instid, loopid, true);
 
 	if (loop == NULL)
 		return AF_FAIL;
@@ -182,7 +182,7 @@ int afSetLoopCount (AFfilehandle file, int instid, int loopid, int count)
 */
 int afGetLoopCount(AFfilehandle file, int instid, int loopid)
 {
-	_Loop	*loop = getLoop(file, instid, loopid, AF_FALSE);
+	_Loop	*loop = getLoop(file, instid, loopid, false);
 
 	if (loop == NULL)
 		return -1;
@@ -196,7 +196,7 @@ int afGetLoopCount(AFfilehandle file, int instid, int loopid)
 void
 afSetLoopStart(AFfilehandle file, int instid, int loopid, int markid)
 {
-	_Loop	*loop = getLoop(file, instid, loopid, AF_TRUE);
+	_Loop	*loop = getLoop(file, instid, loopid, true);
 
 	if (!loop)
 		return;
@@ -209,7 +209,7 @@ afSetLoopStart(AFfilehandle file, int instid, int loopid, int markid)
 */
 int afGetLoopStart (AFfilehandle file, int instid, int loopid)
 {
-	_Loop	*loop = getLoop(file, instid, loopid, AF_FALSE);
+	_Loop	*loop = getLoop(file, instid, loopid, false);
 
 	if (loop == NULL)
 		return -1;
@@ -223,7 +223,7 @@ int afGetLoopStart (AFfilehandle file, int instid, int loopid)
 int afSetLoopStartFrame (AFfilehandle file, int instid, int loopid, AFframecount startFrame)
 {
 	int	trackid, beginMarker;
-	_Loop	*loop = getLoop(file, instid, loopid, AF_TRUE);
+	_Loop	*loop = getLoop(file, instid, loopid, true);
 
 	if (loop == NULL)
 		return -1;
@@ -247,7 +247,7 @@ int afSetLoopStartFrame (AFfilehandle file, int instid, int loopid, AFframecount
 AFframecount afGetLoopStartFrame (AFfilehandle file, int instid, int loopid)
 {
 	int	trackid, beginMarker;
-	_Loop	*loop = getLoop(file, instid, loopid, AF_FALSE);
+	_Loop	*loop = getLoop(file, instid, loopid, false);
 
 	if (loop == NULL)
 		return -1;
@@ -263,7 +263,7 @@ AFframecount afGetLoopStartFrame (AFfilehandle file, int instid, int loopid)
 */
 void afSetLoopTrack (AFfilehandle file, int instid, int loopid, int track)
 {
-	_Loop *loop = getLoop(file, instid, loopid, AF_TRUE);
+	_Loop *loop = getLoop(file, instid, loopid, true);
 
 	if (!loop) return;
 
@@ -275,7 +275,7 @@ void afSetLoopTrack (AFfilehandle file, int instid, int loopid, int track)
 */
 int afGetLoopTrack (AFfilehandle file, int instid, int loopid)
 {
-	_Loop	*loop = getLoop(file, instid, loopid, AF_FALSE);
+	_Loop	*loop = getLoop(file, instid, loopid, false);
 
 	if (loop == NULL)
 		return -1;
@@ -288,7 +288,7 @@ int afGetLoopTrack (AFfilehandle file, int instid, int loopid)
 */
 void afSetLoopEnd (AFfilehandle file, int instid, int loopid, int markid)
 {
-	_Loop	*loop = getLoop(file, instid, loopid, AF_TRUE);
+	_Loop	*loop = getLoop(file, instid, loopid, true);
 
 	if (!loop)
 		return;
@@ -301,7 +301,7 @@ void afSetLoopEnd (AFfilehandle file, int instid, int loopid, int markid)
 */
 int afGetLoopEnd (AFfilehandle file, int instid, int loopid)
 {
-	_Loop	*loop = getLoop(file, instid, loopid, AF_FALSE);
+	_Loop	*loop = getLoop(file, instid, loopid, false);
 
 	if (loop == NULL)
 		return -1;
@@ -315,7 +315,7 @@ int afGetLoopEnd (AFfilehandle file, int instid, int loopid)
 int afSetLoopEndFrame (AFfilehandle file, int instid, int loopid, AFframecount endFrame)
 {
 	int	trackid, endMarker;
-	_Loop	*loop = getLoop(file, instid, loopid, AF_TRUE);
+	_Loop	*loop = getLoop(file, instid, loopid, true);
 
 	if (loop == NULL)
 		return -1;
@@ -340,7 +340,7 @@ int afSetLoopEndFrame (AFfilehandle file, int instid, int loopid, AFframecount e
 AFframecount afGetLoopEndFrame (AFfilehandle file, int instid, int loopid)
 {
 	int	trackid, endMarker;
-	_Loop	*loop = getLoop(file, instid, loopid, AF_FALSE);
+	_Loop	*loop = getLoop(file, instid, loopid, false);
 
 	if (loop == NULL)
 		return -1;

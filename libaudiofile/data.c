@@ -70,12 +70,12 @@ int afWriteFrames (AFfilehandle file, int trackid, const void *samples,
 
 	/* } */
 
-	bytes_per_vframe = _af_format_frame_size(&track->v, AF_TRUE);
+	bytes_per_vframe = _af_format_frame_size(&track->v, true);
 
 	firstmod = &track->ms.module[0];
 	userc = &track->ms.chunk[0];
 
-	track->filemodhappy = AF_TRUE;
+	track->filemodhappy = true;
 
 	vframe = 0;
 #ifdef UNLIMITED_CHUNK_NVFRAMES
@@ -110,7 +110,7 @@ int afWriteFrames (AFfilehandle file, int trackid, const void *samples,
 
 			(*firstmod->mod->run_push)(firstmod);
 
-			if (track->filemodhappy == AF_FALSE)
+			if (!track->filemodhappy)
 				break;
 
 			vframe += userc->nframes;
@@ -166,12 +166,12 @@ int afReadFrames (AFfilehandle file, int trackid, void *samples,
 		nvframes2read = (nvframeswanted > nvframesleft) ?
 			nvframesleft : nvframeswanted;
 	}
-	bytes_per_vframe = _af_format_frame_size(&track->v, AF_TRUE);
+	bytes_per_vframe = _af_format_frame_size(&track->v, true);
 
 	firstmod = &track->ms.module[track->ms.nmodules-1];
 	userc = &track->ms.chunk[track->ms.nmodules];
 
-	track->filemodhappy = AF_TRUE;
+	track->filemodhappy = true;
 
 	vframe = 0;
 
@@ -187,7 +187,7 @@ int afReadFrames (AFfilehandle file, int trackid, void *samples,
 	}
 	else
 	{
-		bool	eof = AF_FALSE;
+		bool	eof = false;
 
 		if (track->frames2ignore != 0)
 		{
@@ -200,7 +200,7 @@ int afReadFrames (AFfilehandle file, int trackid, void *samples,
 
 			/* Have we hit EOF? */
 			if (userc->nframes < track->frames2ignore)
-				eof = AF_TRUE;
+				eof = true;
 
 			track->frames2ignore = 0;
 
@@ -231,7 +231,7 @@ int afReadFrames (AFfilehandle file, int trackid, void *samples,
 			{
 				vframe += userc->nframes;
 				if (userc->nframes < nvframes2pull)
-					eof = AF_TRUE;
+					eof = true;
 			}
 		}
 	}

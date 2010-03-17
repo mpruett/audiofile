@@ -62,14 +62,14 @@ bool _af_filesetup_ok (AFfilesetup setup)
 	if (setup == AF_NULL_FILESETUP)
 	{
 		_af_error(AF_BAD_FILESETUP, "null file setup");
-		return AF_FALSE;
+		return false;
 	}
 	if (setup->valid != _AF_VALID_FILESETUP)
 	{
 		_af_error(AF_BAD_FILESETUP, "invalid file setup");
-		return AF_FALSE;
+		return false;
 	}
-	return AF_TRUE;
+	return true;
 }
 
 bool _af_filehandle_can_read (AFfilehandle file)
@@ -77,10 +77,10 @@ bool _af_filehandle_can_read (AFfilehandle file)
 	if (file->access != _AF_READ_ACCESS)
 	{
 		_af_error(AF_BAD_NOREADACC, "file not opened for read access");
-		return AF_FALSE;
+		return false;
 	}
 
-	return AF_TRUE;
+	return true;
 }
 
 bool _af_filehandle_can_write (AFfilehandle file)
@@ -88,10 +88,10 @@ bool _af_filehandle_can_write (AFfilehandle file)
 	if (file->access != _AF_WRITE_ACCESS)
 	{
 		_af_error(AF_BAD_NOWRITEACC, "file not opened for write access");
-		return AF_FALSE;
+		return false;
 	}
 
-	return AF_TRUE;
+	return true;
 }
 
 bool _af_filehandle_ok (AFfilehandle file)
@@ -99,14 +99,14 @@ bool _af_filehandle_ok (AFfilehandle file)
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		_af_error(AF_BAD_FILEHANDLE, "null file handle");
-		return AF_FALSE;
+		return false;
 	}
 	if (file->valid != _AF_VALID_FILEHANDLE)
 	{
 		_af_error(AF_BAD_FILEHANDLE, "invalid file handle");
-		return AF_FALSE;
+		return false;
 	}
-	return AF_TRUE;
+	return true;
 }
 
 void *_af_malloc (size_t size)
@@ -231,13 +231,13 @@ bool _af_pv_getlong (AUpvlist pvlist, int param, long *l)
 
 		/* Ensure that this parameter is of type AU_PVTYPE_LONG. */
 		if (t != AU_PVTYPE_LONG)
-			return AF_FALSE;
+			return false;
 
 		AUpvgetval(pvlist, i, l);
-		return AF_TRUE;
+		return true;
 	}
 
-	return AF_FALSE;
+	return false;
 }
 
 bool _af_pv_getdouble (AUpvlist pvlist, int param, double *d)
@@ -257,13 +257,13 @@ bool _af_pv_getdouble (AUpvlist pvlist, int param, double *d)
 
 		/* Ensure that this parameter is of type AU_PVTYPE_DOUBLE. */
 		if (t != AU_PVTYPE_DOUBLE)
-			return AF_FALSE;
+			return false;
 
 		AUpvgetval(pvlist, i, d);
-		return AF_TRUE;
+		return true;
 	}
 
-	return AF_FALSE;
+	return false;
 }
 
 bool _af_pv_getptr (AUpvlist pvlist, int param, void **v)
@@ -283,13 +283,13 @@ bool _af_pv_getptr (AUpvlist pvlist, int param, void **v)
 
 		/* Ensure that this parameter is of type AU_PVTYPE_PTR. */
 		if (t != AU_PVTYPE_PTR)
-			return AF_FALSE;
+			return false;
 
 		AUpvgetval(pvlist, i, v);
-		return AF_TRUE;
+		return true;
 	}
 
-	return AF_FALSE;
+	return false;
 }
 
 _TrackSetup *_af_filesetup_get_tracksetup (AFfilesetup setup, int trackid)
@@ -398,7 +398,7 @@ status _af_set_sample_format (_AudioFormat *f, int sampleFormat, int sampleWidth
 			f->sampleFormat = sampleFormat;
 			f->sampleWidth = sampleWidth;
 
-			bytes = _af_format_sample_size_uncompressed(f, AF_FALSE);
+			bytes = _af_format_sample_size_uncompressed(f, false);
 
 			if (sampleFormat == AF_SAMPFMT_TWOSCOMP)
 				f->pcm = _af_default_signed_integer_pcm_mappings[bytes];
@@ -444,11 +444,11 @@ bool _af_unique_ids (int *ids, int nids, char *idname, int iderr)
 			{
 				_af_error(iderr, "nonunique %s id %d",
 					idname, ids[i]);
-				return AF_FALSE;
+				return false;
 			}
 	}
 
-	return AF_TRUE;
+	return true;
 }
 
 status af_read_uint32_be (uint32_t *value, AFvirtualfile *vf)

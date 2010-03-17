@@ -86,7 +86,7 @@ void afInitMarkIDs(AFfilesetup setup, int trackid, int markids[], int nmarks)
 		track->markers[i].comment = _af_strdup("");
 	}
 
-	track->markersSet = AF_TRUE;
+	track->markersSet = true;
 }
 
 void afInitMarkName(AFfilesetup setup, int trackid, int markid,

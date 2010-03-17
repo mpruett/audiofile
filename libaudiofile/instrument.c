@@ -73,7 +73,7 @@ void afInitInstIDs (AFfilesetup setup, int *instids, int ninsts)
 	_af_setup_free_instruments(setup);
 
 	setup->instrumentCount = ninsts;
-	setup->instrumentSet = AF_TRUE;
+	setup->instrumentSet = true;
 
 	setup->instruments = _af_instsetup_new(setup->instrumentCount);
 
@@ -235,7 +235,7 @@ void _af_instparam_get (AFfilehandle file, int instid, AUpvlist pvlist, int npv,
 */
 void afGetInstParams (AFfilehandle file, int inst, AUpvlist pvlist, int npv)
 {
-	_af_instparam_get(file, inst, pvlist, npv, AF_FALSE);
+	_af_instparam_get(file, inst, pvlist, npv, false);
 }
 
 long afGetInstParamLong (AFfilehandle file, int inst, int param)
@@ -246,7 +246,7 @@ long afGetInstParamLong (AFfilehandle file, int inst, int param)
 	AUpvsetparam(pvlist, 0, param);
 	AUpvsetvaltype(pvlist, 0, AU_PVTYPE_LONG);
 
-	_af_instparam_get(file, inst, pvlist, 1, AF_TRUE);
+	_af_instparam_get(file, inst, pvlist, 1, true);
 
 	AUpvgetval(pvlist, 0, &val);
 	AUpvfree(pvlist);

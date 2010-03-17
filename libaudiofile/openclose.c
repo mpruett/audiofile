@@ -74,7 +74,7 @@ int _af_identify (AFvirtualfile *vf, int *implemented)
 	af_fseek(vf, curpos, SEEK_SET);
 
 	if (implemented != NULL)
-		*implemented = AF_FALSE;
+		*implemented = false;
 
 	return AF_FILE_UNKNOWN;
 }
@@ -307,14 +307,14 @@ static status _afOpenFile (int access, AFvirtualfile *vf, const char *filename,
 	AFfilehandle *file, AFfilesetup filesetup)
 {
 	int	fileFormat = AF_FILE_UNKNOWN;
-	bool	implemented = AF_TRUE;
+	int	implemented = true;
 	char	*formatName;
 	status	(*initfunc) (AFfilesetup, AFfilehandle);
 
 	int		userSampleFormat = 0;
 	double		userSampleRate = 0.0;
 	_PCMInfo	userPCM;
-	bool		userFormatSet = AF_FALSE;
+	bool		userFormatSet = false;
 
 	int	t;
 
@@ -355,7 +355,7 @@ static status _afOpenFile (int access, AFvirtualfile *vf, const char *filename,
 
 	formatName = _af_units[fileFormat].name;
 
-	if (implemented == AF_FALSE)
+	if (!implemented)
 	{
 		_af_error(AF_BAD_NOT_IMPLEMENTED,
 			"%s format not currently supported", formatName);
@@ -379,7 +379,7 @@ static status _afOpenFile (int access, AFvirtualfile *vf, const char *filename,
 		userSampleFormat = filesetup->tracks[0].f.sampleFormat;
 		userPCM = filesetup->tracks[0].f.pcm;
 		userSampleRate = filesetup->tracks[0].f.sampleRate;
-		userFormatSet = AF_TRUE;
+		userFormatSet = true;
 		if ((completesetup = _af_units[fileFormat].completesetup(filesetup)) == NULL)
 			return AF_FAIL;
 	}

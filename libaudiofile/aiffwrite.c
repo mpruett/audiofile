@@ -282,7 +282,7 @@ static status WriteAESD (const AFfilehandle file)
 
 	track = _af_filehandle_get_track(file, AF_DEFAULT_TRACK);
 
-	if (track->hasAESData == AF_FALSE)
+	if (!track->hasAESData)
 		return AF_SUCCEED;
 
 	if (aiff->AESD_offset == 0)
@@ -320,7 +320,7 @@ static status WriteSSND (AFfilehandle file)
 	else
 		af_fseek(file->fh, aiff->SSND_offset, SEEK_SET);
 
-	chunkSize = _af_format_frame_size(&track->f, AF_FALSE) *
+	chunkSize = _af_format_frame_size(&track->f, false) *
 		track->totalfframes + 8;
 
 	af_fwrite("SSND", 4, 1, file->fh);

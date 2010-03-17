@@ -1,5 +1,9 @@
 2010-03-16  Michael Pruett <michael@68k.org>
 
+	* Use C99 bool type.
+
+2010-03-16  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/afinternal.h, libaudiofile/modules/adpcm.c,
 	libaudiofile/modules/adpcm.h, libaudiofile/modules/ima.c,
 	libaudiofile/modules/msadpcm.c, libaudiofile/wave.c: Fix decoding

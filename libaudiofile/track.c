@@ -69,7 +69,7 @@ _Track *_af_track_new (void)
 	t->markerCount = 0;
 	t->markers = NULL;
 
-	t->hasAESData = AF_FALSE;
+	t->hasAESData = false;
 	memset(t->aesData, 0, 24);
 
 	t->totalfframes = 0;
@@ -82,16 +82,16 @@ _Track *_af_track_new (void)
 	t->nextvframe = 0;
 	t->data_size = 0;
 
-	t->ms.modulesdirty = AF_TRUE;
+	t->ms.modulesdirty = true;
 	t->ms.nmodules = 0;
 	t->ms.chunk = NULL;
 	t->ms.module = NULL;
 	t->ms.buffer = NULL;
 
-	t->ms.filemodinst.valid = AF_FALSE;
-	t->ms.filemod_rebufferinst.valid = AF_FALSE;
-	t->ms.rateconvertinst.valid = AF_FALSE;
-	t->ms.rateconvert_rebufferinst.valid = AF_FALSE;
+	t->ms.filemodinst.valid = false;
+	t->ms.filemod_rebufferinst.valid = false;
+	t->ms.rateconvertinst.valid = false;
+	t->ms.rateconvert_rebufferinst.valid = false;
 
 	return t;
 }

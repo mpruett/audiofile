@@ -99,7 +99,7 @@ void afInitMiscIDs (AFfilesetup setup, int *ids, int nids)
 		}
 	}
 
-	setup->miscellaneousSet = AF_TRUE;
+	setup->miscellaneousSet = true;
 }
 
 int afGetMiscIDs (AFfilehandle file, int *ids)

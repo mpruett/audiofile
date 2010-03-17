@@ -51,7 +51,7 @@ bool _af_pcm_format_ok (_AudioFormat *f)
 	assert(!isnan(f->pcm.minClip));
 	assert(!isnan(f->pcm.maxClip));
 
-	return AF_TRUE;
+	return true;
 }
 
 /*
@@ -83,7 +83,7 @@ _AFmoduleinst _AFpcminitcompress (_Track *trk, AFvirtualfile *fh, bool seekok,
 	d->trk = trk;
 	d->fh = fh;
 	d->seekok = seekok;
-	d->bytes_per_frame = _af_format_frame_size(&trk->f, AF_FALSE);
+	d->bytes_per_frame = _af_format_frame_size(&trk->f, false);
 
 	d->trk->fpos_next_frame = d->trk->fpos_first_frame;
 
@@ -133,7 +133,7 @@ static void pcmrun_push (_AFmoduleinst *i)
 					"wrote %d out of %d frames",
 					d->trk->nextfframe + n,
 					d->trk->nextfframe + frames2write);
-			d->trk->filemodhappy = AF_FALSE;
+			d->trk->filemodhappy = false;
 		}
 	}
 
@@ -179,7 +179,7 @@ _AFmoduleinst _AFpcminitdecompress (_Track *trk, AFvirtualfile *fh, bool seekok,
 
 	d->trk->f.compressionParams = AU_NULL_PVLIST;
 
-	d->bytes_per_frame = _af_format_frame_size(&trk->f, AF_FALSE);
+	d->bytes_per_frame = _af_format_frame_size(&trk->f, false);
 
 	ret.modspec = d;
 	return ret;
@@ -237,7 +237,7 @@ static void pcmrun_pull (_AFmoduleinst *i)
 				"should be %d",
 				d->trk->nextfframe,
 				d->trk->totalfframes);
-			d->trk->filemodhappy = AF_FALSE;
+			d->trk->filemodhappy = false;
 		}
 	}
 

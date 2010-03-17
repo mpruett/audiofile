@@ -93,7 +93,7 @@ int afSetVirtualPCMMapping (AFfilehandle file, int trackid,
 	track->v.pcm.minClip = minClip;
 	track->v.pcm.maxClip = maxClip;
 
-	track->ms.modulesdirty = AF_TRUE;
+	track->ms.modulesdirty = true;
 
 	return 0;
 }
@@ -125,7 +125,7 @@ int afSetTrackPCMMapping (AFfilehandle file, int trackid,
 	track->f.pcm.minClip = minClip;
 	track->f.pcm.maxClip = maxClip;
 
-	track->ms.modulesdirty = AF_TRUE;
+	track->ms.modulesdirty = true;
 
 	return 0;
 }

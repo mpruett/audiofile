@@ -65,9 +65,9 @@ _AFfilesetup _af_wave_default_filesetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_WAVE,		/* fileFormat */
-	AF_TRUE,		/* trackSet */
-	AF_TRUE,		/* instrumentSet */
-	AF_TRUE,		/* miscellaneousSet  */
+	true,			/* trackSet */
+	true,			/* instrumentSet */
+	true,			/* miscellaneousSet  */
 	1,			/* trackCount */
 	NULL,			/* tracks */
 	0,			/* instrumentCount */
@@ -590,11 +590,11 @@ bool _af_wave_recognize (AFvirtualfile *fh)
 	af_fseek(fh, 0, SEEK_SET);
 
 	if (af_fread(buffer, 1, 8, fh) != 8 || memcmp(buffer, "RIFF", 4) != 0)
-		return AF_FALSE;
+		return false;
 	if (af_fread(buffer, 1, 4, fh) != 4 || memcmp(buffer, "WAVE", 4) != 0)
-		return AF_FALSE;
+		return false;
 
-	return AF_TRUE;
+	return true;
 }
 
 status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
@@ -609,14 +609,14 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 	assert(filehandle != NULL);
 	assert(filehandle->fh != NULL);
 
-	hasFormat = AF_FALSE;
-	hasData = AF_FALSE;
-	hasCue = AF_FALSE;
-	hasList = AF_FALSE;
-	hasPlayList = AF_FALSE;
-	hasFrameCount = AF_FALSE;
-	hasINST = AF_FALSE;
-	hasINFO = AF_FALSE;
+	hasFormat = false;
+	hasData = false;
+	hasCue = false;
+	hasList = false;
+	hasPlayList = false;
+	hasFrameCount = false;
+	hasINST = false;
+	hasINFO = false;
 
 	filehandle->formatSpecific = wave;
 	filehandle->instruments = NULL;
@@ -666,7 +666,7 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 			if (result == AF_FAIL)
 				return AF_FAIL;
 
-			hasFormat = AF_TRUE;
+			hasFormat = true;
 		}
 		else if (memcmp(&chunkid, "data", 4) == 0)
 		{
@@ -681,7 +681,7 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 			if (result == AF_FAIL)
 				return AF_FAIL;
 
-			hasData = AF_TRUE;
+			hasData = true;
 		}
 		else if (memcmp(&chunkid, "inst", 4) == 0)
 		{
@@ -691,35 +691,35 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 		}
 		else if (memcmp(&chunkid, "fact", 4) == 0)
 		{
-			hasFrameCount = AF_TRUE;
+			hasFrameCount = true;
 			result = ParseFrameCount(filehandle, filehandle->fh, chunkid, chunksize);
 			if (result == AF_FAIL)
 				return AF_FAIL;
 		}
 		else if (memcmp(&chunkid, "cue ", 4) == 0)
 		{
-			hasCue = AF_TRUE;
+			hasCue = true;
 			result = ParseCues(filehandle, filehandle->fh, chunkid, chunksize);
 			if (result == AF_FAIL)
 				return AF_FAIL;
 		}
 		else if (memcmp(&chunkid, "LIST", 4) == 0 || memcmp(&chunkid, "list", 4) == 0)
 		{
-			hasList = AF_TRUE;
+			hasList = true;
 			result = ParseList(filehandle, filehandle->fh, chunkid, chunksize);
 			if (result == AF_FAIL)
 				return AF_FAIL;
 		}
 		else if (memcmp(&chunkid, "INST", 4) == 0)
 		{
-			hasINST = AF_TRUE;
+			hasINST = true;
 			result = ParseInstrument(filehandle, filehandle->fh, chunkid, chunksize);
 			if (result == AF_FAIL)
 				return AF_FAIL;
 		}
 		else if (memcmp(&chunkid, "plst", 4) == 0)
 		{
-			hasPlayList = AF_TRUE;
+			hasPlayList = true;
 			result = ParsePlayList(filehandle, filehandle->fh, chunkid, chunksize);
 			if (result == AF_FAIL)
 				return AF_FAIL;
@@ -745,14 +745,14 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 		and a data chunk, so we can assume that track->f and
 		track->data_size have been initialized.
 	*/
-	if (hasFrameCount == AF_FALSE)
+	if (!hasFrameCount)
 	{
 		/*
 			Perform arithmetic in double-precision so as
 			to preserve accuracy.
 		*/
 		track->totalfframes = ceil((double) track->data_size /
-			_af_format_frame_size(&track->f, AF_FALSE));
+			_af_format_frame_size(&track->f, false));
 	}
 
 	if (track->f.compressionType != AF_COMPRESSION_NONE &&
@@ -852,7 +852,7 @@ AFfilesetup _af_wave_complete_setup (AFfilesetup setup)
 	*/
 	else
 	{
-		if (track->sampleWidthSet == AF_FALSE)
+		if (!track->sampleWidthSet)
 		{
 			track->f.sampleWidth = 16;
 			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
@@ -911,7 +911,7 @@ AFfilesetup _af_wave_complete_setup (AFfilesetup setup)
 		{
 			if (setup->instruments[0].loopSet &&
 				setup->instruments[0].loopCount > 0 &&
-				(track->markersSet == AF_FALSE || track->markerCount == 0))
+				(!track->markersSet || track->markerCount == 0))
 			{
 				_af_error(AF_BAD_NUMMARKS, "WAVE files with loops must contain at least 1 marker");
 				return AF_NULL_FILESETUP;
@@ -944,7 +944,7 @@ AFfilesetup _af_wave_complete_setup (AFfilesetup setup)
 	/*
 		Allocate an AFfilesetup and make all the unset fields correct.
 	*/
-	newsetup = _af_filesetup_copy(setup, &_af_wave_default_filesetup, AF_FALSE);
+	newsetup = _af_filesetup_copy(setup, &_af_wave_default_filesetup, false);
 
 	/* Make sure we do not copy loops if they are not specified in setup. */
 	if (setup->instrumentSet && setup->instrumentCount > 0 &&
@@ -964,7 +964,7 @@ bool _af_wave_instparam_valid (AFfilehandle filehandle, AUpvlist list, int i)
 	AUpvgetparam(list, i, &param);
 	AUpvgetvaltype(list, i, &type);
 	if (type != AU_PVTYPE_LONG)
-		return AF_FALSE;
+		return false;
 
 	AUpvgetval(list, i, &lval);
 
@@ -989,11 +989,11 @@ bool _af_wave_instparam_valid (AFfilehandle filehandle, AUpvlist list, int i)
 			return ((lval >= 0) && (lval <= 127));
 
 		case AF_INST_NUMDBS_GAIN:
-			return AF_TRUE;
+			return true;
 
 		default:
-			return AF_FALSE;
+			return false;
 	}
 
-	return AF_TRUE;
+	return true;
 }

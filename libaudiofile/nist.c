@@ -47,9 +47,9 @@ _AFfilesetup _af_nist_default_filesetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_NIST_SPHERE,	/* fileFormat */
-	AF_TRUE,		/* trackSet */
-	AF_TRUE,		/* instrumentSet */
-	AF_TRUE,		/* miscellaneousSet */
+	true,			/* trackSet */
+	true,			/* instrumentSet */
+	true,			/* miscellaneousSet */
 	1,			/* trackCount */
 	NULL,			/* tracks */
 	0,			/* instrumentCount */
@@ -65,13 +65,13 @@ bool _af_nist_recognize (AFvirtualfile *fh)
 	af_fseek(fh, 0, SEEK_SET);
 
 	if (af_fread(buffer, 16, 1, fh) != 1)
-		return AF_FALSE;
+		return false;
 
 	/* Check to see if the file's magic number matches. */
 	if (memcmp(buffer, "NIST_1A\n   1024\n", 16) == 0)
-		return AF_TRUE;
+		return true;
 
-	return AF_FALSE;
+	return false;
 }
 
 AFfilesetup _af_nist_complete_setup (AFfilesetup setup)
@@ -161,7 +161,7 @@ AFfilesetup _af_nist_complete_setup (AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	return _af_filesetup_copy(setup, &_af_nist_default_filesetup, AF_TRUE);
+	return _af_filesetup_copy(setup, &_af_nist_default_filesetup, true);
 }
 
 static bool nist_header_read_int (char *header, char *key, int *val)
@@ -175,10 +175,10 @@ static bool nist_header_read_int (char *header, char *key, int *val)
 	{
 		snprintf(scanstring, 256, "\n%s -i %%d", key);
 		sscanf(cp, scanstring, val);
-		return AF_TRUE;
+		return true;
 	}
 
-	return AF_FALSE;
+	return false;
 }
 
 static bool nist_header_read_string (char *header, char *key, int *length, char *val)
@@ -192,10 +192,10 @@ static bool nist_header_read_string (char *header, char *key, int *length, char 
 	{
 		snprintf(scanstring, 256, "\n%s -s%%d %%79s", key);
 		sscanf(cp, scanstring, length, val);
-		return AF_TRUE;
+		return true;
 	}
 
-	return AF_FALSE;
+	return false;
 }
 
 status _af_nist_read_init (AFfilesetup setup, AFfilehandle handle)

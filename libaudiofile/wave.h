@@ -80,7 +80,7 @@ enum
 bool _af_wave_recognize (AFvirtualfile *fh);
 status _af_wave_read_init (AFfilesetup, AFfilehandle);
 status _af_wave_write_init (AFfilesetup, AFfilehandle);
-bool _af_wave_update (AFfilehandle);
+status _af_wave_update (AFfilehandle);
 AFfilesetup _af_wave_complete_setup (AFfilesetup);
 bool _af_wave_instparam_valid (AFfilehandle, AUpvlist, int);
 

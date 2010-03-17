@@ -59,9 +59,9 @@ _AFfilesetup _af_ircam_default_filesetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_IRCAM,		/* fileFormat */
-	AF_TRUE,		/* trackSet */
-	AF_TRUE,		/* instrumentSet */
-	AF_TRUE,		/* miscellaneousSet */
+	true,			/* trackSet */
+	true,			/* instrumentSet */
+	true,			/* miscellaneousSet */
 	1,			/* trackCount */
 	NULL,			/* tracks */
 	0,			/* instrumentCount */
@@ -77,7 +77,7 @@ bool _af_ircam_recognize (AFvirtualfile *fh)
 	af_fseek(fh, 0, SEEK_SET);
 
 	if (af_fread(buffer, 4, 1, fh) != 1)
-		return AF_FALSE;
+		return false;
 
 	/* Check to see if the file's magic number matches. */
 	if (memcmp(buffer, _af_ircam_vax_magic, 4) == 0 ||
@@ -85,10 +85,10 @@ bool _af_ircam_recognize (AFvirtualfile *fh)
 		memcmp(buffer, _af_ircam_mips_magic, 4) == 0 ||
 		memcmp(buffer, _af_ircam_next_magic, 4) == 0)
 	{
-		return AF_TRUE;
+		return true;
 	}
 
-	return AF_FALSE;
+	return false;
 }
 
 AFfilesetup _af_ircam_complete_setup (AFfilesetup setup)
@@ -181,7 +181,7 @@ AFfilesetup _af_ircam_complete_setup (AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	return _af_filesetup_copy(setup, &_af_ircam_default_filesetup, AF_TRUE);
+	return _af_filesetup_copy(setup, &_af_ircam_default_filesetup, true);
 }
 
 status _af_ircam_read_init (AFfilesetup setup, AFfilehandle handle)
@@ -301,7 +301,7 @@ status _af_ircam_read_init (AFfilesetup setup, AFfilehandle handle)
 		changed if compressed data formats were supported.
 	*/
 	track->totalfframes = track->data_size /
-		_af_format_frame_size(&track->f, AF_FALSE);
+		_af_format_frame_size(&track->f, false);
 
 	track->fpos_first_frame = SIZEOF_BSD_HEADER;
 	track->nextfframe = 0;

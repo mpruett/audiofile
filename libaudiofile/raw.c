@@ -39,9 +39,9 @@ _AFfilesetup _af_raw_default_filesetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_RAWDATA,	/* fileFormat */
-	AF_TRUE,		/* trackSet */
-	AF_TRUE,		/* instrumentSet */
-	AF_TRUE,		/* miscellaneousSet */
+	true,			/* trackSet */
+	true,			/* instrumentSet */
+	true,			/* miscellaneousSet */
 	1,			/* trackCount */
 	NULL,			/* tracks */
 	0,			/* instrumentCount */
@@ -58,7 +58,7 @@ int _af_raw_compression_types[_AF_RAW_NUM_COMPTYPES] =
 
 bool _af_raw_recognize (AFvirtualfile *fh)
 {
-	return AF_FALSE;
+	return false;
 }
 
 status _af_raw_read_init (AFfilesetup filesetup, AFfilehandle filehandle)
@@ -103,7 +103,7 @@ status _af_raw_read_init (AFfilesetup filesetup, AFfilehandle filehandle)
 			}
 
 			filesize -= track->fpos_first_frame;
-			track->totalfframes = filesize / _af_format_frame_size(&track->f, AF_FALSE);
+			track->totalfframes = filesize / _af_format_frame_size(&track->f, false);
 		}
 		track->data_size = filesize;
 	}

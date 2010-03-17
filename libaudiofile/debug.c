@@ -370,7 +370,7 @@ void _af_print_chunk (_AFchunk *chnk)
 			bool issigned = (fmt.sampleFormat==AF_SAMPFMT_TWOSCOMP);
 
 			/* # of bytes taken by the value */
-			int realbytes = _af_format_sample_size_uncompressed(&fmt, AF_TRUE);
+			int realbytes = _af_format_sample_size_uncompressed(&fmt, true);
 
 			switch (realbytes)
 			{

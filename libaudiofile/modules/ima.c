@@ -87,7 +87,7 @@ bool _af_ima_adpcm_format_ok (_AudioFormat *f)
 	{
 		_af_error(AF_BAD_COMPRESSION,
 		       "IMA ADPCM compression requires 1 channel");
-		return AF_FALSE;
+		return false;
 	}
 
 	if (f->sampleFormat != AF_SAMPFMT_TWOSCOMP || f->sampleWidth != 16)
@@ -107,7 +107,7 @@ bool _af_ima_adpcm_format_ok (_AudioFormat *f)
 		/* non-fatal */
 	}
 
-	return AF_TRUE;
+	return true;
 }
 
 static void ima_adpcm_decompress_describe (_AFmoduleinst *i)
@@ -176,7 +176,7 @@ static void ima_adpcm_run_pull (_AFmoduleinst *module)
 		if (d->track->filemodhappy)
 		{
 			_af_error(AF_BAD_READ, "file missing data");
-			d->track->filemodhappy = AF_FALSE;
+			d->track->filemodhappy = false;
 		}
 	}
 
@@ -215,7 +215,7 @@ static void ima_adpcm_run_pull (_AFmoduleinst *module)
 				"file missing data -- read %d frames, should be %d",
 				d->track->nextfframe,
 				d->track->totalfframes);
-			d->track->filemodhappy = AF_FALSE;
+			d->track->filemodhappy = false;
 		}
 	}
 

@@ -46,7 +46,7 @@ void afInitAESChannelData (AFfilesetup setup, int trackid)
 	if ((track = _af_filesetup_get_tracksetup(setup, trackid)) == NULL)
 		return;
 
-	track->aesDataSet = AF_TRUE;
+	track->aesDataSet = true;
 }
 
 void afInitAESChannelDataTo (AFfilesetup setup, int trackid, int willBeData)
@@ -72,7 +72,7 @@ int afGetAESChannelData (AFfilehandle file, int trackid, unsigned char buf[24])
 	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
 		return -1;
 
-	if (track->hasAESData == AF_FALSE)
+	if (!track->hasAESData)
 	{
 		if (buf)
 			memset(buf, 0, 24);

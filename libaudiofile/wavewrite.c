@@ -41,8 +41,6 @@
 #include "setup.h"
 #include "wave.h"
 
-status _af_wave_update (AFfilehandle file);
-
 static status WriteFormat (AFfilehandle file);
 static status WriteFrameCount (AFfilehandle file);
 static status WriteMiscellaneous (AFfilehandle file);
@@ -97,8 +95,8 @@ static status WriteFormat (AFfilehandle file)
 				return AF_FAIL;
 			}
 
-			blockAlign = _af_format_frame_size(&track->f, AF_FALSE);
-			bitsPerSample = 8 * _af_format_sample_size(&track->f, AF_FALSE);
+			blockAlign = _af_format_frame_size(&track->f, false);
+			bitsPerSample = 8 * _af_format_sample_size(&track->f, false);
 			break;
 
 		/*
@@ -133,10 +131,10 @@ static status WriteFormat (AFfilehandle file)
 	af_write_uint32_le(&sampleRate, file->fh);
 
 	averageBytesPerSecond =
-		track->f.sampleRate * _af_format_frame_size(&track->f, AF_FALSE);
+		track->f.sampleRate * _af_format_frame_size(&track->f, false);
 	af_write_uint32_le(&averageBytesPerSecond, file->fh);
 
-	blockAlign = _af_format_frame_size(&track->f, AF_FALSE);
+	blockAlign = _af_format_frame_size(&track->f, false);
 	af_write_uint16_le(&blockAlign, file->fh);
 
 	af_write_uint16_le(&bitsPerSample, file->fh);
@@ -199,7 +197,7 @@ static status WriteData (AFfilehandle file)
 	af_fwrite("data", 4, 1, file->fh);
 	waveinfo->dataSizeOffset = af_ftell(file->fh);
 
-	chunkSize = _af_format_frame_size(&track->f, AF_FALSE) *
+	chunkSize = _af_format_frame_size(&track->f, false) *
 		track->totalfframes;
 
 	af_write_uint32_le(&chunkSize, file->fh);
@@ -230,7 +228,7 @@ status _af_wave_update (AFfilehandle file)
 			frame size of normal PCM data or compressed data.
 		*/
 		dataLength = (uint32_t) track->totalfframes *
-			_af_format_frame_size(&track->f, AF_FALSE);
+			_af_format_frame_size(&track->f, false);
 		af_write_uint32_le(&dataLength, file->fh);
 
 		/* Update the length of the RIFF chunk. */

@@ -435,7 +435,7 @@ AUpvlist _afQueryCompression (int arg1, int arg2, int arg3, int arg4)
 		case AF_QUERY_ID_COUNT:
 			count = 0;
 			for (i = 0; i < _AF_NUM_COMPRESSION; i++)
-				if (_af_compression[i].implemented == AF_TRUE)
+				if (_af_compression[i].implemented)
 					count++;
 			return _af_pv_long(count);
 

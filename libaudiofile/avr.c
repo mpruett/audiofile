@@ -47,9 +47,9 @@ _AFfilesetup _af_avr_default_filesetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_AVR,		/* fileFormat */
-	AF_TRUE,		/* trackSet */
-	AF_TRUE,		/* instrumentSet */
-	AF_TRUE,		/* miscellaneousSet */
+	true,			/* trackSet */
+	true,			/* instrumentSet */
+	true,			/* miscellaneousSet */
 	1,			/* trackCount */
 	NULL,			/* tracks */
 	0,			/* instrumentCount */
@@ -65,9 +65,9 @@ bool _af_avr_recognize (AFvirtualfile *fh)
 	af_fseek(fh, 0, SEEK_SET);
 
 	if (af_fread(&magic, 4, 1, fh) != 1 || memcmp(&magic, "2BIT", 4) != 0)
-		return AF_FALSE;
+		return false;
 
-	return AF_TRUE;
+	return true;
 }
 
 status _af_avr_read_init (AFfilesetup setup, AFfilehandle file)
@@ -170,7 +170,7 @@ status _af_avr_read_init (AFfilesetup setup, AFfilehandle file)
 	track->fpos_first_frame = af_ftell(file->fh);
 	track->totalfframes = size;
 	track->data_size = track->totalfframes *
-		_af_format_frame_size(&track->f, AF_FALSE);
+		_af_format_frame_size(&track->f, false);
         track->nextfframe = 0;
         track->fpos_next_frame = track->fpos_first_frame;
 
@@ -249,5 +249,5 @@ AFfilesetup _af_avr_complete_setup (AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	return _af_filesetup_copy(setup, &_af_avr_default_filesetup, AF_FALSE);
+	return _af_filesetup_copy(setup, &_af_avr_default_filesetup, false);
 }

@@ -74,8 +74,8 @@ AFfileoffset afGetTrackBytes (AFfilehandle file, int trackid)
 	afGetFrameSize returns the size (in bytes) of a sample frame from
 	the specified track of an audio file.
 
-	stretch3to4 == AF_TRUE: size which user sees
-	stretch3to4 == AF_FALSE: size used in file
+	stretch3to4 == true: size which user sees
+	stretch3to4 == false: size used in file
 */
 float afGetFrameSize (AFfilehandle file, int trackid, int stretch3to4)
 {
@@ -172,7 +172,7 @@ int afSetVirtualByteOrder (AFfilehandle handle, int track, int byteorder)
 	}
 
 	currentTrack->v.byteOrder = byteorder;
-	currentTrack->ms.modulesdirty = AF_TRUE;
+	currentTrack->ms.modulesdirty = true;
 
 	return AF_SUCCEED;
 }
@@ -284,7 +284,7 @@ int afSetVirtualSampleFormat (AFfilehandle file, int trackid,
 	if (_af_set_sample_format(&track->v, sampleFormat, sampleWidth) == AF_FAIL)
 		return -1;
 
-	track->ms.modulesdirty = AF_TRUE;
+	track->ms.modulesdirty = true;
 
 	return 0;
 }
@@ -317,7 +317,7 @@ int afSetVirtualChannels (AFfilehandle file, int trackid, int channelCount)
 		return -1;
 
 	track->v.channelCount = channelCount;
-	track->ms.modulesdirty = AF_TRUE;
+	track->ms.modulesdirty = true;
 
 	if (track->channelMatrix)
 		free(track->channelMatrix);
@@ -353,7 +353,7 @@ int afSetVirtualRate (AFfilehandle file, int trackid, double rate)
 	}
 
 	track->v.sampleRate = rate;
-	track->ms.modulesdirty = AF_TRUE;
+	track->ms.modulesdirty = true;
 
 	return 0;
 }

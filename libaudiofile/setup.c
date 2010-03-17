@@ -47,9 +47,9 @@ _AFfilesetup _af_default_file_setup =
 #else
 	AF_FILE_WAVE,	/* file format */
 #endif
-	AF_FALSE,	/* trackSet */
-	AF_FALSE,	/* instrumentSet */
-	AF_FALSE,	/* miscellaneousSet */
+	false,		/* trackSet */
+	false,		/* instrumentSet */
+	false,		/* miscellaneousSet */
 	1,		/* trackCount */
 	NULL,		/* tracks */
 	1,		/* instrumentCount */
@@ -63,7 +63,7 @@ _InstrumentSetup _af_default_instrumentsetup =
 	0,		/* id */
 	2,		/* loopCount */
 	NULL,		/* loops */
-	AF_FALSE	/* loopSet */
+	false		/* loopSet */
 };
 
 _TrackSetup _af_default_tracksetup =
@@ -83,16 +83,16 @@ _TrackSetup _af_default_tracksetup =
 		AF_COMPRESSION_NONE,
 		NULL
 	},
-	AF_FALSE,	/* rateSet */
-	AF_FALSE,	/* sampleFormatSet */
-	AF_FALSE,	/* sampleWidthSet */
-	AF_FALSE,	/* byteOrderSet */
-	AF_FALSE,	/* channelCountSet */
-	AF_FALSE,	/* compressionSet */
-	AF_FALSE,	/* aesDataSet */
-	AF_FALSE,	/* markersSet */
-	AF_FALSE,	/* dataOffsetSet */
-	AF_FALSE,	/* frameCountSet */
+	false,		/* rateSet */
+	false,		/* sampleFormatSet */
+	false,		/* sampleWidthSet */
+	false,		/* byteOrderSet */
+	false,		/* channelCountSet */
+	false,		/* compressionSet */
+	false,		/* aesDataSet */
+	false,		/* markersSet */
+	false,		/* dataOffsetSet */
+	false,		/* frameCountSet */
 
 	4,		/* markerCount */
 	NULL,		/* markers */
@@ -324,7 +324,7 @@ void afInitFileFormat (AFfilesetup setup, int filefmt)
 		return;
 	}
 
-	if (_af_units[filefmt].implemented == AF_FALSE)
+	if (!_af_units[filefmt].implemented)
 	{
 		_af_error(AF_BAD_NOT_IMPLEMENTED,
 			"%s format not currently supported",
@@ -353,7 +353,7 @@ void afInitChannels (AFfilesetup setup, int trackid, int channels)
 	}
 
 	track->f.channelCount = channels;
-	track->channelCountSet = AF_TRUE;
+	track->channelCountSet = true;
 }
 
 void afInitSampleFormat (AFfilesetup setup, int trackid, int sampfmt, int sampwidth)
@@ -368,8 +368,8 @@ void afInitSampleFormat (AFfilesetup setup, int trackid, int sampfmt, int sampwi
 
 	_af_set_sample_format(&track->f, sampfmt, sampwidth);
 
-	track->sampleFormatSet = AF_TRUE;
-	track->sampleWidthSet = AF_TRUE;
+	track->sampleFormatSet = true;
+	track->sampleWidthSet = true;
 }
 
 void afInitByteOrder (AFfilesetup setup, int trackid, int byteorder)
@@ -390,7 +390,7 @@ void afInitByteOrder (AFfilesetup setup, int trackid, int byteorder)
 	}
 
 	track->f.byteOrder = byteorder;
-	track->byteOrderSet = AF_TRUE;
+	track->byteOrderSet = true;
 }
 
 void afInitRate (AFfilesetup setup, int trackid, double rate)
@@ -410,7 +410,7 @@ void afInitRate (AFfilesetup setup, int trackid, double rate)
 	}
 
 	track->f.sampleRate = rate;
-	track->rateSet = AF_TRUE;
+	track->rateSet = true;
 }
 
 /*
@@ -433,7 +433,7 @@ void afInitDataOffset (AFfilesetup setup, int trackid, AFfileoffset offset)
 	}
 
 	track->dataOffset = offset;
-	track->dataOffsetSet = AF_TRUE;
+	track->dataOffsetSet = true;
 }
 
 /*
@@ -456,7 +456,7 @@ void afInitFrameCount (AFfilesetup setup, int trackid, AFfileoffset count)
 	}
 
 	track->frameCount = count;
-	track->frameCountSet = AF_TRUE;
+	track->frameCountSet = true;
 }
 
 #define alloccopy(type, n, var, copyfrom) \
@@ -521,8 +521,7 @@ AFfilesetup _af_filesetup_copy (AFfilesetup setup, AFfilesetup defaultSetup,
 
 		/* XXXmpruett set compression information */
 
-		if (setup->tracks[i].markersSet == AF_FALSE &&
-			copyMarks == AF_FALSE)
+		if (!setup->tracks[i].markersSet && !copyMarks)
 		{
 			track->markers = NULL;
 			track->markerCount = 0;
@@ -649,16 +648,16 @@ status _af_filesetup_make_handle (AFfilesetup setup, AFfilehandle handle)
 
 			track->hasAESData = tracksetup->aesDataSet;
 
-			track->ms.modulesdirty = AF_TRUE;
+			track->ms.modulesdirty = true;
 			track->ms.nmodules = 0;
 			track->ms.chunk = NULL;
 			track->ms.module = NULL;
 			track->ms.buffer = NULL;
 
-			track->ms.filemodinst.valid = AF_FALSE;
-			track->ms.filemod_rebufferinst.valid = AF_FALSE;
-			track->ms.rateconvertinst.valid = AF_FALSE;
-			track->ms.rateconvert_rebufferinst.valid = AF_FALSE;
+			track->ms.filemodinst.valid = false;
+			track->ms.filemod_rebufferinst.valid = false;
+			track->ms.rateconvertinst.valid = false;
+			track->ms.rateconvert_rebufferinst.valid = false;
 		}
 	}
 

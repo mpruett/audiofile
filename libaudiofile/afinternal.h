@@ -33,14 +33,10 @@
 #endif
 
 #include <sys/types.h>
-#include <stdio.h>
+#include <stdbool.h>
 #include "audiofile.h"
 #include "af_vfs.h"
 #include "error.h"
-
-typedef int bool;
-#define AF_TRUE (1)
-#define AF_FALSE (0)
 
 typedef int status;
 #define AF_SUCCEED (0)
@@ -150,7 +146,7 @@ typedef struct _AFmoduleinst
 		struct { struct _AFmoduleinst *sink; } push;
 	} u;
 	_AFmodule *mod;
-	bool free_on_close;	/* AF_TRUE=don't free module until close */
+	bool free_on_close;	/* true=don't free module until close */
 	bool valid;	/* internal use only */
 #ifdef AF_DEBUG		/* these are set in _AFsetupmodules */
 	int margin;	/* margin for printing of CHNK messages */

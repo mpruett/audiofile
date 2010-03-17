@@ -55,9 +55,9 @@ _AFfilesetup _af_iff_default_filesetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_IFF_8SVX,	/* fileFormat */
-	AF_TRUE,		/* trackSet */
-	AF_TRUE,		/* instrumentSet */
-	AF_TRUE,		/* miscellaneousSet */
+	true,			/* trackSet */
+	true,			/* instrumentSet */
+	true,			/* miscellaneousSet */
 	1,			/* trackCount */
 	NULL,			/* tracks */
 	0,			/* instrumentCount */
@@ -73,11 +73,11 @@ bool _af_iff_recognize (AFvirtualfile *fh)
 	af_fseek(fh, 0, SEEK_SET);
 
 	if (af_fread(buffer, 1, 8, fh) != 8 || memcmp(buffer, "FORM", 4) != 0)
-		return AF_FALSE;
+		return false;
 	if (af_fread(buffer, 1, 4, fh) != 4 || memcmp(buffer, "8SVX", 4) != 0)
-		return AF_FALSE;
+		return false;
 
-	return AF_TRUE;
+	return true;
 }
 
 /*
@@ -324,5 +324,5 @@ AFfilesetup _af_iff_complete_setup (AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	return _af_filesetup_copy(setup, &_af_iff_default_filesetup, AF_TRUE);
+	return _af_filesetup_copy(setup, &_af_iff_default_filesetup, true);
 }
