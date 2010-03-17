@@ -98,7 +98,7 @@ void _AFsimplemodrun_push (_AFmoduleinst *i);
 void _AFfreemodspec (_AFmoduleinst *i);
 
 /* _AFnewmodinst returns a structure, not a pointer. */
-_AFmoduleinst _AFnewmodinst (_AFmodule *mod);
+_AFmoduleinst _AFnewmodinst (const _AFmodule *mod);
 
 status _AFinitmodules (AFfilehandle h, _Track *trk);
 status _AFsetupmodules (AFfilehandle h, _Track *trk);

@@ -45,7 +45,7 @@
 
 #define CHNK(X)
 
-static _AFmodule ms_adpcm_decompress;
+static const _AFmodule ms_adpcm_decompress;
 
 typedef struct ms_adpcm_state
 {
@@ -375,7 +375,7 @@ static void ms_adpcm_reset2 (_AFmoduleinst *i)
 	assert(d->track->nextfframe % framesPerBlock == 0);
 }
 
-static _AFmodule ms_adpcm_decompress =
+static const _AFmodule ms_adpcm_decompress =
 {
 	"ms_adpcm_decompress",
 	ms_adpcm_decompress_describe,

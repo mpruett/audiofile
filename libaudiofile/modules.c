@@ -64,7 +64,7 @@ extern const _PCMInfo _af_default_double_pcm_mapping;
 extern _CompressionUnit _af_compression[];
 
 /* Define rebuffering modules. */
-extern _AFmodule int2rebufferv2f, int2rebufferf2v;
+extern const _AFmodule int2rebufferv2f, int2rebufferf2v;
 
 /*
 	module utility routines
@@ -74,7 +74,7 @@ extern _AFmodule int2rebufferv2f, int2rebufferf2v;
 	_AFnewmodinst creates a module instance from a module.
 	It returns a structure, not a pointer to a structure.
 */
-_AFmoduleinst _AFnewmodinst (_AFmodule *mod)
+_AFmoduleinst _AFnewmodinst (const _AFmodule *mod)
 {
 	_AFmoduleinst ret;
 
@@ -227,7 +227,7 @@ static void name##describe(struct _AFmoduleinst *i)\
 	desc;\
 }\
 \
-static _AFmodule name =\
+static const _AFmodule name =\
 { \
 	#name,\
 	name##describe, \
@@ -403,7 +403,7 @@ typedef struct pcmmodspec
 /*
 	initpcmmod
 */
-static _AFmoduleinst initpcmmod (_AFmodule *mod,
+static _AFmoduleinst initpcmmod (const _AFmodule *mod,
 	_PCMInfo *input_mapping, _PCMInfo *output_mapping)
 {
 	_AFmoduleinst ret = _AFnewmodinst(mod);
@@ -727,7 +727,7 @@ static void name##run(_AFchunk *inc, _AFchunk *outc, void *modspec) \
 	}\
 }\
 \
-static _AFmodule name =\
+static const _AFmodule name =\
 { \
 	#name, \
 	channelchangedescribe, \
@@ -761,7 +761,7 @@ CHANNELINTMOD(channelchange4, schar4)
 /*
 	initchannelchange
 */
-static _AFmoduleinst initchannelchange (_AFmodule *mod,
+static _AFmoduleinst initchannelchange (const _AFmodule *mod,
 	double *matrix, _PCMInfo *outpcm,
 	int inchannels, int outchannels,
 	bool reading)
@@ -1371,21 +1371,21 @@ static void disposerateconvertmods (_Track *track)
 
 /* The stuff in this section is used by arrangemodules(). */
 
-static _AFmodule *unsigned2signed[5] =
+static const _AFmodule * const unsigned2signed[5] =
 {
 	NULL,
 	&unsigned2signed1, &unsigned2signed2,
 	&unsigned2signed3, &unsigned2signed4
 };
 
-static _AFmodule *signed2unsigned[5] =
+static const _AFmodule * const signed2unsigned[5] =
 {
 	NULL,
 	&signed2unsigned1, &signed2unsigned2,
 	&signed2unsigned3, &signed2unsigned4
 };
 
-static _AFmodule *swapbytes[9] =
+static const _AFmodule * const swapbytes[9] =
 {
 	NULL, NULL, &swap2, &swap3, &swap4,
 	NULL, NULL, NULL, &swap8
@@ -1433,32 +1433,32 @@ static format_code get_format_code (_AudioFormat *fmt)
 	return -1;
 }
 
-static _AFmodule *to_flt[6] =
+static const _AFmodule * const to_flt[6] =
 {
 	&int2float1, &int2float2, &int2float3, &int2float4,
 	NULL, &double2float
 };
 
-static _AFmodule *to_dbl[6] =
+static const _AFmodule * const to_dbl[6] =
 {
 	&int2double1, &int2double2, &int2double3, &int2double4,
 	&float2double, NULL
 };
 
-static _AFmodule *clip[6] =
+static const _AFmodule * const clip[6] =
 {
 	&clip1, &clip2, &clip3, &clip4,
 	&clipfloat, &clipdouble
 };
 
-static _AFmodule *channelchanges[6] =
+static const _AFmodule * const channelchanges[6] =
 {
 	&channelchange1, &channelchange2, &channelchange3, &channelchange4,
 	&channelchangefloat, &channelchangedouble
 };
 
 /* indices are of type format_code: matrix[infmtcode][outfmtcode] */
-static _AFmodule *convertmatrix[6][6] =
+static const _AFmodule * const convertmatrix[6][6] =
 {
 	/* TO:
 	{
@@ -1511,7 +1511,7 @@ static _AFmodule *convertmatrix[6][6] =
 	}
 };
 
-static const _PCMInfo *intmappings[6] =
+static const _PCMInfo * const intmappings[6] =
 {
 	&_af_default_signed_integer_pcm_mappings[1],
 	&_af_default_signed_integer_pcm_mappings[2],

@@ -226,7 +226,7 @@ static void PRFX(rebufferv2ffree)(struct _AFmoduleinst *i)
     free(d->saved_buf);
 }
 
-static _AFmodule PRFX(rebufferv2f) =
+static const _AFmodule PRFX(rebufferv2f) =
 {
   NAMESTRING(rebufferv2f),
   AF_NULL,
@@ -525,7 +525,7 @@ static void PRFX(rebufferf2vfree)(struct _AFmoduleinst *i)
     free(d->buf);
 }
 
-static _AFmodule PRFX(rebufferf2v) =
+static const _AFmodule PRFX(rebufferf2v) =
 {
   NAMESTRING(rebufferf2v),
   AF_NULL,

@@ -1,3 +1,7 @@
+2010-03-17  Michael Pruett <michael@68k.org>
+
+	* Mark module function tables as constant.
+
 2010-03-17  Jason Allen <lorddut@gmail.com>
 
 	* Mark data as constant in order to minimize unshared data.

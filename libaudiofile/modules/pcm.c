@@ -58,7 +58,7 @@ bool _af_pcm_format_ok (_AudioFormat *f)
 	The pcm module does both reading and writing.
 */
 
-static _AFmodule pcm;
+static const _AFmodule pcm;
 
 typedef struct pcm_data
 {
@@ -262,7 +262,7 @@ static void pcmreset2 (_AFmoduleinst *i)
 	d->trk->frames2ignore = 0;
 }
 
-static _AFmodule pcm =
+static const _AFmodule pcm =
 {
 	"pcm",
 	AF_NULL,

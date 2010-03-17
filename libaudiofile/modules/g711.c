@@ -106,7 +106,7 @@ bool _af_g711_format_ok (_AudioFormat *f)
 	return true;
 }
 
-static _AFmodule g711compress, g711decompress;
+static const _AFmodule g711compress, g711decompress;
 
 typedef unsigned char g711samp;
 
@@ -323,7 +323,7 @@ static void g711reset2 (_AFmoduleinst *i)
 	d->trk->frames2ignore = 0;
 }
 
-static _AFmodule g711compress =
+static const _AFmodule g711compress =
 {
 	"g711compress",
 	g711compressdescribe,
@@ -334,7 +334,7 @@ static _AFmodule g711compress =
 	_AFfreemodspec
 };
 
-static _AFmodule g711decompress =
+static const _AFmodule g711decompress =
 {
 	"g711decompress",
 	g711decompressdescribe,

@@ -145,7 +145,7 @@ typedef struct _AFmoduleinst
 		struct { struct _AFmoduleinst *source; } pull;
 		struct { struct _AFmoduleinst *sink; } push;
 	} u;
-	_AFmodule *mod;
+	const _AFmodule *mod;
 	bool free_on_close;	/* true=don't free module until close */
 	bool valid;	/* internal use only */
 #ifdef AF_DEBUG		/* these are set in _AFsetupmodules */
