@@ -61,7 +61,7 @@ static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 static status ParseSSND (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	size_t size);
 
-_InstParamInfo _af_aiff_inst_params[_AF_AIFF_NUM_INSTPARAMS] =
+const _InstParamInfo _af_aiff_inst_params[_AF_AIFF_NUM_INSTPARAMS] =
 {
 	{ AF_INST_MIDI_BASENOTE, AU_PVTYPE_LONG, "MIDI base note", {60} },
 	{ AF_INST_NUMCENTS_DETUNE, AU_PVTYPE_LONG, "Detune in cents", {0} },
@@ -74,7 +74,7 @@ _InstParamInfo _af_aiff_inst_params[_AF_AIFF_NUM_INSTPARAMS] =
 	{ AF_INST_RELLOOPID, AU_PVTYPE_LONG, "Release loop id", {0} }
 };
 
-int _af_aiffc_compression_types[_AF_AIFF_NUM_COMPTYPES] =
+const int _af_aiffc_compression_types[_AF_AIFF_NUM_COMPTYPES] =
 {
 	AF_COMPRESSION_G711_ULAW,
 	AF_COMPRESSION_G711_ALAW

@@ -45,7 +45,7 @@
 #define SETBINARYMODE(x)
 #endif /* WIN32 || __CYGWIN__ */
 
-extern _Unit _af_units[];
+extern const _Unit _af_units[];
 
 static void freeFileHandle (AFfilehandle filehandle);
 static void freeInstParams (AFPVu *values, int fileFormat);

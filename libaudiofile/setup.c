@@ -39,7 +39,7 @@
 
 extern _Unit _af_units[];
 
-_AFfilesetup _af_default_file_setup =
+const _AFfilesetup _af_default_file_setup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 #if WORDS_BIGENDIAN
@@ -58,7 +58,7 @@ _AFfilesetup _af_default_file_setup =
 	NULL		/* miscellaneous */
 };
 
-_InstrumentSetup _af_default_instrumentsetup =
+const _InstrumentSetup _af_default_instrumentsetup =
 {
 	0,		/* id */
 	2,		/* loopCount */
@@ -66,7 +66,7 @@ _InstrumentSetup _af_default_instrumentsetup =
 	false		/* loopSet */
 };
 
-_TrackSetup _af_default_tracksetup =
+const _TrackSetup _af_default_tracksetup =
 {
 	0,
 	{

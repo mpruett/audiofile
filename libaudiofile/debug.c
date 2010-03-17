@@ -49,7 +49,7 @@
 #include "print.h"
 #include "debug.h"
 
-extern _CompressionUnit _af_compression[];
+extern const _CompressionUnit _af_compression[];
 
 void _af_printid (uint32_t id)
 {

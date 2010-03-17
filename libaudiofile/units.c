@@ -56,7 +56,7 @@ extern int _af_aiffc_compression_types[];
 extern int _af_next_compression_types[];
 extern int _af_wave_compression_types[];
 
-_Unit _af_units[_AF_NUM_UNITS] =
+const _Unit _af_units[_AF_NUM_UNITS] =
 {
 	{
 		AF_FILE_RAWDATA,
@@ -221,7 +221,7 @@ _Unit _af_units[_AF_NUM_UNITS] =
 	}
 };
 
-_CompressionUnit _af_compression[_AF_NUM_COMPRESSION] =
+const _CompressionUnit _af_compression[_AF_NUM_COMPRESSION] =
 {
 	{
 		AF_COMPRESSION_NONE,

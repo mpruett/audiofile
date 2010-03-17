@@ -44,13 +44,13 @@
 #include "setup.h"
 #include "marker.h"
 
-int _af_wave_compression_types[_AF_WAVE_NUM_COMPTYPES] =
+const int _af_wave_compression_types[_AF_WAVE_NUM_COMPTYPES] =
 {
 	AF_COMPRESSION_G711_ULAW,
 	AF_COMPRESSION_G711_ALAW
 };
 
-_InstParamInfo _af_wave_inst_params[_AF_WAVE_NUM_INSTPARAMS] =
+const _InstParamInfo _af_wave_inst_params[_AF_WAVE_NUM_INSTPARAMS] =
 {
 	{ AF_INST_MIDI_BASENOTE, AU_PVTYPE_LONG, "MIDI base note", {60} },
 	{ AF_INST_NUMCENTS_DETUNE, AU_PVTYPE_LONG, "Detune in cents", {0} },

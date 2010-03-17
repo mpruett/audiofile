@@ -50,7 +50,7 @@ _AFfilesetup _af_raw_default_filesetup =
 	NULL			/* miscellaneous */
 };
 
-int _af_raw_compression_types[_AF_RAW_NUM_COMPTYPES] =
+const int _af_raw_compression_types[_AF_RAW_NUM_COMPTYPES] =
 {
 	AF_COMPRESSION_G711_ULAW,
 	AF_COMPRESSION_G711_ALAW

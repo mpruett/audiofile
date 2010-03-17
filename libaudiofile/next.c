@@ -43,7 +43,7 @@
 #include "setup.h"
 #include "byteorder.h"
 
-int _af_next_compression_types[_AF_NEXT_NUM_COMPTYPES] =
+const int _af_next_compression_types[_AF_NEXT_NUM_COMPTYPES] =
 {
 	AF_COMPRESSION_G711_ULAW,
 	AF_COMPRESSION_G711_ALAW

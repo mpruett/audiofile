@@ -38,7 +38,7 @@
 #define	SEG_MASK	(0x70)		/* Segment field mask. */
 
 /* copy from CCITT G.711 specifications */
-static unsigned char _u2a[128] = {		/* u- to A-law conversions */
+static const unsigned char _u2a[128] = {		/* u- to A-law conversions */
 	1,	1,	2,	2,	3,	3,	4,	4,
 	5,	5,	6,	6,	7,	7,	8,	8,
 	9,	10,	11,	12,	13,	14,	15,	16,
@@ -56,7 +56,7 @@ static unsigned char _u2a[128] = {		/* u- to A-law conversions */
 	113,	114,	115,	116,	117,	118,	119,	120,
 	121,	122,	123,	124,	125,	126,	127,	128};
 
-static unsigned char _a2u[128] = {		/* A- to u-law conversions */
+static const unsigned char _a2u[128] = {		/* A- to u-law conversions */
 	1,	3,	5,	7,	9,	11,	13,	15,
 	16,	17,	18,	19,	20,	21,	22,	23,
 	24,	25,	26,	27,	28,	29,	30,	31,
@@ -77,7 +77,7 @@ static unsigned char _a2u[128] = {		/* A- to u-law conversions */
 /* see libst.h */
 #ifdef	SUPERCEDED
 
-static short seg_end[8] = {0xFF, 0x1FF, 0x3FF, 0x7FF,
+static const short seg_end[8] = {0xFF, 0x1FF, 0x3FF, 0x7FF,
 			    0xFFF, 0x1FFF, 0x3FFF, 0x7FFF};
 
 static int

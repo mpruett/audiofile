@@ -56,10 +56,10 @@
 
 #define NULLMODULEPARAM
 
-extern _PCMInfo _af_default_signed_integer_pcm_mappings[];
-extern _PCMInfo _af_default_unsigned_integer_pcm_mappings[];
-extern _PCMInfo _af_default_float_pcm_mapping;
-extern _PCMInfo _af_default_double_pcm_mapping;
+extern const _PCMInfo _af_default_signed_integer_pcm_mappings[];
+extern const _PCMInfo _af_default_unsigned_integer_pcm_mappings[];
+extern const _PCMInfo _af_default_float_pcm_mapping;
+extern const _PCMInfo _af_default_double_pcm_mapping;
 
 extern _CompressionUnit _af_compression[];
 
@@ -1511,7 +1511,7 @@ static _AFmodule *convertmatrix[6][6] =
 	}
 };
 
-static _PCMInfo *intmappings[6] =
+static const _PCMInfo *intmappings[6] =
 {
 	&_af_default_signed_integer_pcm_mappings[1],
 	&_af_default_signed_integer_pcm_mappings[2],

@@ -43,7 +43,7 @@
 #include "units.h"
 #include "modules.h"
 
-extern _Unit _af_units[];
+extern const _Unit _af_units[];
 
 AFfileoffset afGetDataOffset (AFfilehandle file, int trackid)
 {

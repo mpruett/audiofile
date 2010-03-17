@@ -46,12 +46,12 @@
 #include "byteorder.h"
 #include "aupvinternal.h"
 
-extern _PCMInfo _af_default_signed_integer_pcm_mappings[];
-extern _PCMInfo _af_default_unsigned_integer_pcm_mappings[];
-extern _PCMInfo _af_default_float_pcm_mapping;
-extern _PCMInfo _af_default_double_pcm_mapping;
+extern const _PCMInfo _af_default_signed_integer_pcm_mappings[];
+extern const _PCMInfo _af_default_unsigned_integer_pcm_mappings[];
+extern const _PCMInfo _af_default_float_pcm_mapping;
+extern const _PCMInfo _af_default_double_pcm_mapping;
 
-extern _CompressionUnit _af_compression[];
+extern const _CompressionUnit _af_compression[];
 
 /*
 	_af_filesetup_ok and _af_filehandle_ok are sanity check routines

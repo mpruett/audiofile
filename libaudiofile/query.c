@@ -43,8 +43,8 @@
 #include "compression.h"
 #include "instrument.h"
 
-extern _Unit _af_units[];
-extern _CompressionUnit _af_compression[];
+extern const _Unit _af_units[];
+extern const _CompressionUnit _af_compression[];
 
 AUpvlist _afQueryFileFormat (int arg1, int arg2, int arg3, int arg4);
 AUpvlist _afQueryInstrument (int arg1, int arg2, int arg3, int arg4);
