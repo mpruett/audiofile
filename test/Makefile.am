@@ -29,7 +29,8 @@ noinst_PROGRAMS = \
 	testmarkers \
 	testchannelmatrix \
 	printmarkers \
-	seek
+	seek \
+	large
 
 EXTRA_DIST = transparency.sh misc.sh pipe.sh
 
@@ -38,7 +39,7 @@ TESTS = error writeaiff writeircam writenext writewave writeraw \
 	writeulaw writealaw \
 	misc.sh transparency.sh pipe.sh \
 	query2 sixteen-to-eight twentyfour twentyfour2 floatto24 \
-	testfloat testmarkers testchannelmatrix seek
+	testfloat testmarkers testchannelmatrix seek large
 
 LDADD = $(top_builddir)/libaudiofile/libaudiofile.la
 

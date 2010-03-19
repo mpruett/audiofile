@@ -162,7 +162,8 @@ status _af_next_read_init (AFfilesetup setup, AFfilehandle file)
 
 	track->f.sampleRate = sampleRate;
 	track->f.channelCount = channelCount;
-	track->totalfframes = length / _af_format_frame_size(&track->f, false);
+	int frameSize = _af_format_frame_size(&track->f, false);
+	track->totalfframes = length / frameSize;
 
 #ifdef DEBUG
 	printf("_af_next_read_init\n");

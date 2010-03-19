@@ -1,3 +1,13 @@
+2010-03-18  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/aiffwrite.c, libaudiofile/avr.c, libaudiofile/ircam.c,
+	libaudiofile/next.c, libaudiofile/raw.c, libaudiofile/wave.c,
+	libaudiofile/wavewrite.c: Fix handling of audio files with more than
+	2^24 frames.
+
+	* test/Makefile.am, test/large.c: Add test for reading and writing
+	audio files with more than 2^24 frames.
+
 2010-03-17  Michael Pruett <michael@68k.org>
 
 	* Mark module function tables as constant.

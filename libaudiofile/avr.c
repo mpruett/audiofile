@@ -170,7 +170,7 @@ status _af_avr_read_init (AFfilesetup setup, AFfilehandle file)
 	track->fpos_first_frame = af_ftell(file->fh);
 	track->totalfframes = size;
 	track->data_size = track->totalfframes *
-		_af_format_frame_size(&track->f, false);
+		(int) _af_format_frame_size(&track->f, false);
         track->nextfframe = 0;
         track->fpos_next_frame = track->fpos_first_frame;
 

@@ -103,7 +103,7 @@ status _af_raw_read_init (AFfilesetup filesetup, AFfilehandle filehandle)
 			}
 
 			filesize -= track->fpos_first_frame;
-			track->totalfframes = filesize / _af_format_frame_size(&track->f, false);
+			track->totalfframes = filesize / (int) _af_format_frame_size(&track->f, false);
 		}
 		track->data_size = filesize;
 	}

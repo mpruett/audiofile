@@ -747,12 +747,8 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 	*/
 	if (!hasFrameCount)
 	{
-		/*
-			Perform arithmetic in double-precision so as
-			to preserve accuracy.
-		*/
-		track->totalfframes = ceil((double) track->data_size /
-			_af_format_frame_size(&track->f, false));
+		track->totalfframes = track->data_size /
+			(int) _af_format_frame_size(&track->f, false);
 	}
 
 	if (track->f.compressionType != AF_COMPRESSION_NONE &&

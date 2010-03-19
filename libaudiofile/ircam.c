@@ -301,7 +301,7 @@ status _af_ircam_read_init (AFfilesetup setup, AFfilehandle handle)
 		changed if compressed data formats were supported.
 	*/
 	track->totalfframes = track->data_size /
-		_af_format_frame_size(&track->f, false);
+		(int) _af_format_frame_size(&track->f, false);
 
 	track->fpos_first_frame = SIZEOF_BSD_HEADER;
 	track->nextfframe = 0;

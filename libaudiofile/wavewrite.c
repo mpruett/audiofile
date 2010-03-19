@@ -197,7 +197,7 @@ static status WriteData (AFfilehandle file)
 	af_fwrite("data", 4, 1, file->fh);
 	waveinfo->dataSizeOffset = af_ftell(file->fh);
 
-	chunkSize = _af_format_frame_size(&track->f, false) *
+	chunkSize = (int) _af_format_frame_size(&track->f, false) *
 		track->totalfframes;
 
 	af_write_uint32_le(&chunkSize, file->fh);
@@ -228,7 +228,7 @@ status _af_wave_update (AFfilehandle file)
 			frame size of normal PCM data or compressed data.
 		*/
 		dataLength = (uint32_t) track->totalfframes *
-			_af_format_frame_size(&track->f, false);
+			(int) _af_format_frame_size(&track->f, false);
 		af_write_uint32_le(&dataLength, file->fh);
 
 		/* Update the length of the RIFF chunk. */
