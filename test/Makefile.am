@@ -23,6 +23,7 @@ noinst_PROGRAMS = \
 	instparamtest \
 	sixteen-to-eight \
 	testfloat \
+	testdouble \
 	twentyfour \
 	twentyfour2 \
 	pipe \
@@ -39,7 +40,7 @@ TESTS = error writeaiff writeircam writenext writewave writeraw \
 	writeulaw writealaw \
 	misc.sh transparency.sh pipe.sh \
 	query2 sixteen-to-eight twentyfour twentyfour2 floatto24 \
-	testfloat testmarkers testchannelmatrix seek large
+	testfloat testdouble testmarkers testchannelmatrix seek large
 
 LDADD = $(top_builddir)/libaudiofile/libaudiofile.la
 

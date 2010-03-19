@@ -793,8 +793,14 @@ AFfilesetup _af_wave_complete_setup (AFfilesetup setup)
 				break;
 
 			case AF_SAMPFMT_DOUBLE:
-				_af_error(AF_BAD_SAMPFMT, "WAVE format does not support double-precision floating-point data");
-				return AF_NULL_FILESETUP;
+				if (track->sampleWidthSet &&
+					track->f.sampleWidth != 64)
+				{
+					_af_error(AF_BAD_WIDTH,
+						"Warning: invalid sample width for double-precision floating-point WAVE file: %d (must be 64 bits)\n",
+						track->f.sampleWidth);
+					_af_set_sample_format(&track->f, AF_SAMPFMT_DOUBLE, 64);
+				}
 				break;
 
 			case AF_SAMPFMT_UNSIGNED:

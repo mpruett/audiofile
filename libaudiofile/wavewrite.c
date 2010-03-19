@@ -80,7 +80,8 @@ static status WriteFormat (AFfilehandle file)
 	{
 		case AF_COMPRESSION_NONE:
 			chunkSize = 16;
-			if (track->f.sampleFormat == AF_SAMPFMT_FLOAT)
+			if (track->f.sampleFormat == AF_SAMPFMT_FLOAT ||
+				track->f.sampleFormat == AF_SAMPFMT_DOUBLE)
 			{
 				formatTag = WAVE_FORMAT_IEEE_FLOAT;
 			}

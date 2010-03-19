@@ -1,5 +1,13 @@
 2010-03-18  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/wave.c, libaudiofile/wavewrite.c: Add support
+	for writing double-precision floating-point WAVE files.
+
+	* test/Makefile.am, test/testdouble.c: Add test for reading and
+	writing double-precision floating-point audio files.
+
+2010-03-18  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/aiffwrite.c, libaudiofile/avr.c, libaudiofile/ircam.c,
 	libaudiofile/next.c, libaudiofile/raw.c, libaudiofile/wave.c,
 	libaudiofile/wavewrite.c: Fix handling of audio files with more than
