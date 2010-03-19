@@ -4,17 +4,12 @@ error
 floatto24
 instparamtest
 instparamwrite
-irixread
-irixtestloop
 large
-linuxtest
 loop
 miscread
 miscwrite
 pipe
-power
 printmarkers
-query
 query2
 seek
 sixteen-to-eight
@@ -25,7 +20,6 @@ testmarkers
 transparency
 twentyfour
 twentyfour2
-virtual
 writeaiff
 writealaw
 writeavr

@@ -1,6 +1,7 @@
 *.[ao]
 *.la
 *.lo
+.DS_Store
 .deps
 .libs
 ABOUT-NLS
