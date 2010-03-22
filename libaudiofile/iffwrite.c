@@ -143,8 +143,8 @@ static status WriteVHDR (const AFfilehandle file)
 
 	octaves = 0;
 	compression = 0;
-	af_fwrite(&octaves, 1, 1, file->fh);
-	af_fwrite(&compression, 1, 1, file->fh);
+	af_write_uint8(&octaves, file->fh);
+	af_write_uint8(&compression, file->fh);
 
 	/* Volume is in fixed-point notation; 65536 means gain of 1.0. */
 	volume = 65536;
@@ -184,7 +184,7 @@ static status WriteBODY (AFfilehandle file)
 	{
 		uint8_t	zero = 0;
 		af_fseek(file->fh, iff->BODY_offset + 8 + chunkSize, SEEK_SET);
-		af_fwrite(&zero, 1, 1, file->fh);
+		af_write_uint8(&zero, file->fh);
 	}
 
 	return AF_SUCCEED;
@@ -240,7 +240,7 @@ static status WriteMiscellaneous (AFfilehandle file)
 			af_fseek(file->fh, misc->size, SEEK_CUR);
 
 		if (misc->size % 2 != 0)
-			af_fwrite(&padByte, 1, 1, file->fh);
+			af_write_uint8(&padByte, file->fh);
 	}
 
 	return AF_SUCCEED;

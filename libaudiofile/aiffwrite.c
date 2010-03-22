@@ -244,23 +244,9 @@ static status WriteCOMM (const AFfilehandle file)
 
 	if (file->fileFormat == AF_FILE_AIFFC)
 	{
-		uint8_t	sizeByte, zero = 0;
-
 		af_fwrite(compressionTag, 4, 1, file->fh);
 
-		sizeByte = strlen(compressionName);
-
-		af_fwrite(&sizeByte, 1, 1, file->fh);
-		af_fwrite(compressionName, sizeByte, 1, file->fh);
-
-		/*
-			If sizeByte is even, then 1+sizeByte
-			(the length of the string) is odd.  Add an
-			extra byte to make the chunk's extent even
-			(even though the chunk's size may be odd).
-		*/
-		if ((sizeByte % 2) == 0)
-			af_fwrite(&zero, 1, 1, file->fh);
+		af_write_pstring(compressionName, file->fh);
 	}
 
 	return AF_SUCCEED;
@@ -363,27 +349,26 @@ static status WriteINST (AFfilehandle file)
 
 	instrumentdata.baseNote =
 		afGetInstParamLong(file, AF_DEFAULT_INST, AF_INST_MIDI_BASENOTE);
-	af_fwrite(&instrumentdata.baseNote, 1, 1, file->fh);
+	af_write_uint8(&instrumentdata.baseNote, file->fh);
 	instrumentdata.detune =
 		afGetInstParamLong(file, AF_DEFAULT_INST, AF_INST_NUMCENTS_DETUNE);
-	af_fwrite(&instrumentdata.detune, 1, 1, file->fh);
+	af_write_uint8(&instrumentdata.detune, file->fh);
 	instrumentdata.lowNote =
 		afGetInstParamLong(file, AF_DEFAULT_INST, AF_INST_MIDI_LONOTE);
-	af_fwrite(&instrumentdata.lowNote, 1, 1, file->fh);
+	af_write_uint8(&instrumentdata.lowNote, file->fh);
 	instrumentdata.highNote =
 		afGetInstParamLong(file, AF_DEFAULT_INST, AF_INST_MIDI_HINOTE);
-	af_fwrite(&instrumentdata.highNote, 1, 1, file->fh);
+	af_write_uint8(&instrumentdata.highNote, file->fh);
 	instrumentdata.lowVelocity =
 		afGetInstParamLong(file, AF_DEFAULT_INST, AF_INST_MIDI_LOVELOCITY);
-	af_fwrite(&instrumentdata.lowVelocity, 1, 1, file->fh);
+	af_write_uint8(&instrumentdata.lowVelocity, file->fh);
 	instrumentdata.highVelocity =
 		afGetInstParamLong(file, AF_DEFAULT_INST, AF_INST_MIDI_HIVELOCITY);
-	af_fwrite(&instrumentdata.highVelocity, 1, 1, file->fh);
+	af_write_uint8(&instrumentdata.highVelocity, file->fh);
 
 	instrumentdata.gain =
 		afGetInstParamLong(file, AF_DEFAULT_INST, AF_INST_NUMDBS_GAIN);
-	instrumentdata.gain = HOST_TO_BENDIAN_INT16(instrumentdata.gain);
-	af_fwrite(&instrumentdata.gain, 2, 1, file->fh);
+	af_write_uint16_be(&instrumentdata.gain, file->fh);
 
 	af_write_uint16_be(&instrumentdata.sustainLoopPlayMode, file->fh);
 	af_write_uint16_be(&instrumentdata.sustainLoopBegin, file->fh);
@@ -443,19 +428,9 @@ static status WriteMARK (AFfilehandle file)
 
 		name = afGetMarkName(file, AF_DEFAULT_TRACK, markids[i]);
 		assert(name);
-		namelength = strlen(name);
 
 		/* Write the name as a Pascal-style string. */
-		af_fwrite(&namelength, 1, 1, file->fh);
-		af_fwrite(name, 1, namelength, file->fh);
-
-		/*
-			We need a pad byte if the length of the
-			Pascal-style string (including the size byte)
-			is odd, i.e. if namelength + 1 % 2 == 1.
-		*/
-		if ((namelength % 2) == 0)
-			af_fwrite(&zero, 1, 1, file->fh);
+		af_write_pstring(name, file->fh);
 	}
 
 	free(markids);
@@ -562,7 +537,7 @@ static status WriteMiscellaneous (AFfilehandle file)
 			af_fseek(file->fh, misc->size, SEEK_CUR);
 
 		if (misc->size % 2 != 0)
-			af_fwrite(&padByte, 1, 1, file->fh);
+			af_write_uint8(&padByte, file->fh);
 	}
 
 	return AF_SUCCEED;

@@ -209,14 +209,13 @@ static status ParseINST (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	file->instrumentCount = 1;
 	file->instruments = instrument;
 
-	af_fread(&baseNote, 1, 1, fh);
-	af_fread(&detune, 1, 1, fh);
-	af_fread(&lowNote, 1, 1, fh);
-	af_fread(&highNote, 1, 1, fh);
-	af_fread(&lowVelocity, 1, 1, fh);
-	af_fread(&highVelocity, 1, 1, fh);
-	af_fread(&gain, 2, 1, fh);
-	gain = BENDIAN_TO_HOST_INT16(gain);
+	af_read_uint8(&baseNote, fh);
+	af_read_uint8(&detune, fh);
+	af_read_uint8(&lowNote, fh);
+	af_read_uint8(&highNote, fh);
+	af_read_uint8(&lowVelocity, fh);
+	af_read_uint8(&highVelocity, fh);
+	af_read_uint16_be(&gain, fh);
 
 #ifdef DEBUG
 	printf("baseNote/detune/lowNote/highNote/lowVelocity/highVelocity/gain:"
@@ -363,15 +362,12 @@ static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	{
 		uint8_t		compressionID[4];
 		/* Pascal strings are at most 255 bytes long. */
-		unsigned char	compressionName[256];
-		unsigned char	compressionNameLength;
+		char		compressionName[256];
 
 		af_fread(compressionID, 4, 1, fh);
 
 		/* Read the Pascal-style string containing the name. */
-		af_fread(&compressionNameLength, 1, 1, fh);
-		af_fread(compressionName, compressionNameLength, 1, fh);
-		compressionName[compressionNameLength] = '\0';
+		af_read_pstring(compressionName, fh);
 
 		if (!memcmp(compressionID, "NONE", 4) ||
 			!memcmp(compressionID, "twos", 4))

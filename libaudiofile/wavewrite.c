@@ -144,7 +144,7 @@ static status WriteFormat (AFfilehandle file)
 		track->f.compressionType == AF_COMPRESSION_G711_ALAW)
 	{
 		uint16_t	zero = 0;
-		af_fwrite(&zero, 2, 1, file->fh);
+		af_write_uint16_le(&zero, file->fh);
 	}
 
 	return AF_SUCCEED;
@@ -355,7 +355,7 @@ status WriteMiscellaneous (AFfilehandle filehandle)
 
 				/* Pad if necessary. */
 				if ((filehandle->miscellaneous[i].size%2) != 0)
-					af_fwrite(&zero, 1, 1, filehandle->fh);
+					af_write_uint8(&zero, filehandle->fh);
 			}
 			else
 			{
@@ -493,8 +493,8 @@ static status WriteCues (AFfilehandle file)
 		*/
 		if (((strlen(name) + 1) % 2) != 0)
 		{
-			uint8_t	c=0;
-			af_fwrite(&c, 1, 1, file->fh);
+			uint8_t	zero=0;
+			af_write_uint8(&zero, file->fh);
 		}
 	}
 

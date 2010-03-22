@@ -71,10 +71,15 @@ status af_read_uint32_be (uint32_t *value, AFvirtualfile *vf);
 status af_read_uint32_le (uint32_t *value, AFvirtualfile *vf);
 status af_read_uint16_be (uint16_t *value, AFvirtualfile *vf);
 status af_read_uint16_le (uint16_t *value, AFvirtualfile *vf);
+status af_read_uint8 (uint8_t *value, AFvirtualfile *vf);
 
 status af_write_uint32_be (const uint32_t *value, AFvirtualfile *vf);
 status af_write_uint32_le (const uint32_t *value, AFvirtualfile *vf);
 status af_write_uint16_be (const uint16_t *value, AFvirtualfile *vf);
 status af_write_uint16_le (const uint16_t *value, AFvirtualfile *vf);
+status af_write_uint8 (const uint8_t *value, AFvirtualfile *vf);
+
+status af_read_pstring (char value[256], AFvirtualfile *vf);
+status af_write_pstring (const char *value, AFvirtualfile *vf);
 
 #endif

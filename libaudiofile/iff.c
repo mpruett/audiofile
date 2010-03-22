@@ -140,8 +140,8 @@ static status ParseVHDR (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	af_read_uint32_be(&repeatSamples, fh);
 	af_read_uint32_be(&samplesPerRepeat, fh);
 	af_read_uint16_be(&sampleRate, fh);
-	af_fread(&octaves, 1, 1, fh);
-	af_fread(&compression, 1, 1, fh);
+	af_read_uint8(&octaves, fh);
+	af_read_uint8(&compression, fh);
 	af_read_uint32_be(&volume, fh);
 
 	track->f.sampleWidth = 8; 

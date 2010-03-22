@@ -491,6 +491,13 @@ status af_read_uint16_le (uint16_t *value, AFvirtualfile *vf)
 	return AF_SUCCEED;
 }
 
+status af_read_uint8 (uint8_t *value, AFvirtualfile *vf)
+{
+	if (af_fread(value, 1, 1, vf) != 1)
+		return AF_FAIL;
+	return AF_SUCCEED;
+}
+
 status af_write_uint32_be (const uint32_t *value, AFvirtualfile *vf)
 {
 	uint32_t	v;
@@ -524,5 +531,42 @@ status af_write_uint16_le (const uint16_t *value, AFvirtualfile *vf)
 	v = HOST_TO_LENDIAN_INT16(*value);
 	if (af_fwrite(&v, sizeof (v), 1, vf) != 1)
 		return AF_FAIL;
+	return AF_SUCCEED;
+}
+
+status af_write_uint8 (const uint8_t *value, AFvirtualfile *vf)
+{
+	if (af_fwrite(value, 1, 1, vf) != 1)
+		return AF_FAIL;
+	return AF_SUCCEED;
+}
+
+status af_read_pstring (char s[256], AFvirtualfile *vf)
+{
+	uint8_t length;
+	/* Read the Pascal-style string containing the name. */
+	af_read_uint8(&length, vf);
+	af_fread(s, length, 1, vf);
+	s[length] = '\0';
+	return AF_SUCCEED;
+}
+
+status af_write_pstring (const char *s, AFvirtualfile *vf)
+{
+	size_t length = strlen(s);
+	if (length > 255)
+		return AF_FAIL;
+	uint8_t sizeByte = (uint8_t) length;
+	af_write_uint8(&sizeByte, vf);
+	af_fwrite(s, sizeByte, 1, vf);
+	/*
+		Add a pad byte if the length of the Pascal-style string
+		(including the size byte) is odd.
+	*/
+	if ((length % 2) == 0)
+	{
+		uint8_t zero = 0;
+		af_write_uint8(&zero, vf);
+	}
 	return AF_SUCCEED;
 }

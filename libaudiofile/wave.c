@@ -209,11 +209,8 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 			{
 				int16_t	a0, a1;
 
-				af_fread(&a0, 1, 2, fp);
-				af_fread(&a1, 1, 2, fp);
-
-				a0 = LENDIAN_TO_HOST_INT16(a0);
-				a1 = LENDIAN_TO_HOST_INT16(a1);
+				af_read_uint16_le(&a0, fp);
+				af_read_uint16_le(&a1, fp);
 
 				wave->msadpcmCoefficients[i][0] = a0;
 				wave->msadpcmCoefficients[i][1] = a1;
@@ -571,14 +568,14 @@ static status ParseInstrument (AFfilehandle filehandle, AFvirtualfile *fp,
 	uint8_t	lowNote, highNote, lowVelocity, highVelocity;
 	uint8_t	padByte;
 
-	af_fread(&baseNote, 1, 1, fp);
-	af_fread(&detune, 1, 1, fp);
-	af_fread(&gain, 1, 1, fp);
-	af_fread(&lowNote, 1, 1, fp);
-	af_fread(&highNote, 1, 1, fp);
-	af_fread(&lowVelocity, 1, 1, fp);
-	af_fread(&highVelocity, 1, 1, fp);
-	af_fread(&padByte, 1, 1, fp);
+	af_read_uint8(&baseNote, fp);
+	af_read_uint8(&detune, fp);
+	af_read_uint8(&gain, fp);
+	af_read_uint8(&lowNote, fp);
+	af_read_uint8(&highNote, fp);
+	af_read_uint8(&lowVelocity, fp);
+	af_read_uint8(&highVelocity, fp);
+	af_read_uint8(&padByte, fp);
 
 	return AF_SUCCEED;
 }

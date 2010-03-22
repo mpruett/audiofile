@@ -1,3 +1,11 @@
+2010-03-21  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/aiff.c, libaudiofile/aiffwrite.c,
+	libaudiofile/iff.c, libaudiofile/iffwrite.c,
+	libaudiofile/util.c, libaudiofile/util.h, libaudiofile/wave.c,
+	libaudiofile/wavewrite.c: Add convenience functions for reading
+	and writing bytes and Pascal strings.
+
 2010-03-18  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/wave.c, libaudiofile/wavewrite.c: Add support
