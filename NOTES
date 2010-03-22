@@ -1,4 +1,4 @@
-Audio File Library 0.2.6
+Audio File Library 0.2.7
 Development Notes
 Michael Pruett <michael@68k.org>
 
@@ -35,7 +35,6 @@ worth the effort.
 This version of the Audio File Library has been tested under the
 following operating environments:
 
-	mips-sgi-irix6.5 / IRIX 6.5 (MIPSpro cc 7.4m)
-	powerpc-apple-darwin7.2.0 / Mac OS X 10.3.2 (gcc 3.3)
-	i686-pc-linux-gnu / Debian GNU/Linux 3.0 (gcc 2.95.4)
-	sparc-sun-solaris2.9 / Solaris 9 (gcc 3.0.4)
+	mips-sgi-irix6.5 / IRIX 6.5 (MIPSpro cc 7.4)
+	powerpc-apple-darwin8.11.0 / Mac OS X 10.4.11 (gcc 4.0.1)
+	i686-pc-linux-gnu / Ubuntu 9.10 (gcc 4.4.1)

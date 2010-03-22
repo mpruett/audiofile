@@ -1,5 +1,13 @@
-News for Audio File Library version 0.2.6
+News for Audio File Library version 0.2.7
 
-Added support for AVR, IFF/8SVX, and NIST SPHERE file formats.
+Fix decoding of multi-channel ADPCM WAVE files.
 
-Added example program demonstrating audio file playback on Mac OS X.
+Reduce unshared data in library.
+
+Fix handling of audio files with more than 2^24 frames.
+
+Add support for writing double-precision floating-point WAVE files.
+
+Add support for reading certain uncompressed AIFF-C files created by Mac OS X.
+
+Write fact chunk in floating-point WAVE files.

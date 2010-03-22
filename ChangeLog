@@ -1,5 +1,9 @@
 2010-03-21  Michael Pruett <michael@68k.org>
 
+	* Released version 0.2.7 of the Audio File Library.
+
+2010-03-21  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/wavewrite.c: Write fact chunk in WAVE files
 	with floating-point audio data.
 
