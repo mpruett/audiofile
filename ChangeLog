@@ -1,5 +1,10 @@
 2010-03-21  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/wavewrite.c: Write fact chunk in WAVE files
+	with floating-point audio data.
+
+2010-03-21  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/aiff.c, libaudiofile/aiffwrite.c,
 	libaudiofile/iff.c, libaudiofile/iffwrite.c,
 	libaudiofile/util.c, libaudiofile/util.h, libaudiofile/wave.c,

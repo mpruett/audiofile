@@ -162,8 +162,10 @@ static status WriteFrameCount (AFfilehandle file)
 	track = _af_filehandle_get_track(file, AF_DEFAULT_TRACK);
 	waveinfo = (_WAVEInfo *) file->formatSpecific;
 
-	/* We only write the fact chunk for compressed audio. */
-	if (track->f.compressionType == AF_COMPRESSION_NONE)
+	/* Omit the fact chunk only for uncompressed integer audio formats. */
+	if (track->f.compressionType == AF_COMPRESSION_NONE &&
+		(track->f.sampleFormat == AF_SAMPFMT_TWOSCOMP ||
+		track->f.sampleFormat == AF_SAMPFMT_UNSIGNED))
 		return AF_SUCCEED;
 
 	/*
