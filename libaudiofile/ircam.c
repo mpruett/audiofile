@@ -45,8 +45,6 @@
 #include "ircam.h"
 
 /*
-	These magic numbers are fucking stupid.
-
 	Here ircam_mips_magic refers to little-endian MIPS, not SGI IRIX,
 	which uses big-endian MIPS.
 */
