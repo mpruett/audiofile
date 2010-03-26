@@ -7,5 +7,6 @@ Name: audiofile
 Description: audiofile
 Requires:
 Version: @VERSION@
-Libs: -L${libdir} -laudiofile -lm
+Libs: -L${libdir} -laudiofile
+Libs.private: -lm
 Cflags: -I${includedir}
