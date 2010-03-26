@@ -1,5 +1,9 @@
 2010-03-25  Daniel Kobras <kobras@debian.org>
 
+	* libaudiofile/af_vfs.h: Include <audiofile.h>.
+
+2010-03-25  Daniel Kobras <kobras@debian.org>
+
 	* audiofile.pc.in: Link against libm only for static builds.
 
 2010-03-21  Michael Pruett <michael@68k.org>

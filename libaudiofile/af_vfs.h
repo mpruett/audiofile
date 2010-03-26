@@ -28,6 +28,7 @@
 #define AUDIOFILE_VFS_H 1
 
 #include <stdio.h>
+#include <audiofile.h>
 
 struct _AFvirtualfile
 {
