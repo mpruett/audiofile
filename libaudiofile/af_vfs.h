@@ -30,6 +30,10 @@
 #include <stdio.h>
 #include <audiofile.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct _AFvirtualfile
 {
   ssize_t (*read) (AFvirtualfile *vfile, void *data, size_t nbytes);
@@ -52,5 +56,9 @@ int af_fclose (AFvirtualfile *vfile);
 long af_flength (AFvirtualfile *vfile);
 int af_fseek (AFvirtualfile *vfile, long offset, int whence);
 long af_ftell (AFvirtualfile *vfile);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -1,3 +1,7 @@
+2010-03-29  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/af_vfs.h: Specify C linkage.
+
 2010-03-25  Daniel Kobras <kobras@debian.org>
 
 	* libaudiofile/af_vfs.h: Include <audiofile.h>.
