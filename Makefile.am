@@ -15,7 +15,8 @@ EXTRA_DIST = \
 	configure configure.ac \
 	audiofile.m4 \
 	audiofile.spec.in \
-	audiofile.pc.in
+	audiofile.pc.in \
+	audiofile-uninstalled.pc.in
 
 m4datadir = $(datadir)/aclocal
 m4data_DATA = audiofile.m4

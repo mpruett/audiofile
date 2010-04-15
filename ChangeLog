@@ -1,3 +1,8 @@
+2010-04-14  Brian Cameron <brian.cameron@oracle.com>
+
+	* audiofile-uninstalled.pc.in, configure.ac: Add uninstalled
+	pkg-config file.
+
 2010-03-29  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/af_vfs.h: Specify C linkage.

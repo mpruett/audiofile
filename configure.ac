@@ -95,6 +95,7 @@ AC_SUBST(TEST_BIN)
 AC_CONFIG_FILES([
 	audiofile.spec
 	audiofile.pc
+	audiofile-uninstalled.pc
 	sfcommands/Makefile 
 	test/Makefile 
 	examples/Makefile 
