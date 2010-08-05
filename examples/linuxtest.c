@@ -57,7 +57,7 @@
 #endif /* WORDS_BIGENDIAN */
 #endif /* AFMT_S16_NE */
 
-void setupdsp (int audiofd, int channelCount);
+void setupdsp (int audiofd, int channelCount, int frequency);
 void usage (void);
 
 /* BUFFER_FRAMES represents the size of the buffer in frames. */
@@ -65,25 +65,20 @@ void usage (void);
 
 int main (int argc, char **argv)
 {
-	AFfilehandle	file;
-	AFframecount	frameCount, framesRead;
-	int		sampleFormat, sampleWidth, channelCount;
-	float		frameSize;
-	void		*buffer;
-	int		audiofd;
-
 	if (argc != 2)
 		usage();
 
-	file = afOpenFile(argv[1], "r", NULL);
-	frameCount = afGetFrameCount(file, AF_DEFAULT_TRACK);
+	AFfilehandle file = afOpenFile(argv[1], "r", NULL);
+	AFframecount frameCount = afGetFrameCount(file, AF_DEFAULT_TRACK);
 	printf("frame count: %d\n", (int) frameCount);
 
-	channelCount = afGetVirtualChannels(file, AF_DEFAULT_TRACK);
+	int channelCount = afGetVirtualChannels(file, AF_DEFAULT_TRACK);
+	int sampleFormat, sampleWidth;
 	afGetVirtualSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat,
 		&sampleWidth);
+	double frequency = afGetRate(file, AF_DEFAULT_TRACK);
 
-	frameSize = afGetVirtualFrameSize(file, AF_DEFAULT_TRACK, 1);
+	float frameSize = afGetVirtualFrameSize(file, AF_DEFAULT_TRACK, 1);
 
 	printf("sample format: %d, sample width: %d, channels: %d\n",
 		sampleFormat, sampleWidth, channelCount);
@@ -101,18 +96,18 @@ int main (int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	buffer = malloc(BUFFER_FRAMES * frameSize);
+	void *buffer = malloc(BUFFER_FRAMES * frameSize);
 
-	audiofd = open("/dev/dsp", O_WRONLY);
+	int audiofd = open("/dev/dsp", O_WRONLY);
 	if (audiofd < 0)
 	{
 		perror("open");
 		exit(EXIT_FAILURE);
 	}
 
-	setupdsp(audiofd, channelCount);
+	setupdsp(audiofd, channelCount, frequency);
 
-	framesRead = afReadFrames(file, AF_DEFAULT_TRACK, buffer,
+	AFframecount framesRead = afReadFrames(file, AF_DEFAULT_TRACK, buffer,
 		BUFFER_FRAMES);
 
 	while (framesRead > 0)
@@ -129,11 +124,9 @@ int main (int argc, char **argv)
 	return 0;
 }
 
-void setupdsp (int audiofd, int channelCount)
+void setupdsp (int audiofd, int channelCount, int frequency)
 {
-	int	format, frequency, channels;
-
-	format = AFMT_S16_NE;
+	int format = AFMT_S16_NE;
 	if (ioctl(audiofd, SNDCTL_DSP_SETFMT, &format) == -1)
 	{
 		perror("set format");
@@ -146,14 +139,12 @@ void setupdsp (int audiofd, int channelCount)
 		exit(EXIT_FAILURE);
 	}
 
-	channels = channelCount;
-	if (ioctl(audiofd, SNDCTL_DSP_CHANNELS, &channels) == -1)
+	if (ioctl(audiofd, SNDCTL_DSP_CHANNELS, &channelCount) == -1)
 	{
 		perror("set channels");
 		exit(EXIT_FAILURE);
 	}
 
-	frequency = 44100;
 	if (ioctl(audiofd, SNDCTL_DSP_SPEED, &frequency) == -1)
 	{
 		perror("set frequency");
