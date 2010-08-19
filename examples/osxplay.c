@@ -39,9 +39,10 @@
 	File Library and Core Audio.
 */
 
+#include <audiofile.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <audiofile.h>
+#include <unistd.h>
 
 #include <CoreServices/CoreServices.h>
 #include <AudioUnit/AudioUnit.h>
