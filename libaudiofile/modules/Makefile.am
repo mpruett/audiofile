@@ -15,4 +15,4 @@ libmodules_la_SOURCES = \
 # SGI MIPSpro cc
 # AM_CFLAGS = -fullwarn -g
 # No debugging.
-AM_CFLAGS = -DNDEBUG
+AM_CFLAGS = -DNDEBUG $(COVERAGE_CFLAGS)

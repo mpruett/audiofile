@@ -1,5 +1,11 @@
 2010-09-11  Michael Pruett <michael@68k.org>
 
+	* configure.ac, Makefile.am, libaudiofile/Makefile.am,
+	libaudiofile/modules/Makefile.am, test/Makefile.am: Enable code
+	coverage reporting with lcov.
+
+2010-09-11  Michael Pruett <michael@68k.org>
+
 	* audiofile-config.in, audiofile.m4: Remove configuration files
 	superseded by pkg-config.
 

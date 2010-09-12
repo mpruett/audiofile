@@ -1,4 +1,6 @@
-*.[ao]
+*.a
+*.o
+*.gcno
 *.la
 *.lo
 .DS_Store

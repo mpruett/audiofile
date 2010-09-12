@@ -26,7 +26,7 @@ libaudiofile_la_SOURCES = \
 	print.h util.h debug.h \
 	modules.c modules.h
 
-libaudiofile_la_LIBADD = modules/libmodules.la
+libaudiofile_la_LIBADD = modules/libmodules.la $(COVERAGE_LIBS)
 
 libaudiofile_la_LDFLAGS = -version-info 0:2:0 -no-undefined \
 	-export-symbols $(srcdir)/audiofile.exports
@@ -38,4 +38,4 @@ include_HEADERS = audiofile.h aupvlist.h af_vfs.h
 # SGI MIPSpro cc
 # AM_CFLAGS = -fullwarn -g
 # No debugging.
-AM_CFLAGS = -DNDEBUG
+AM_CFLAGS = -DNDEBUG $(COVERAGE_CFLAGS)

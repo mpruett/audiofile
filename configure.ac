@@ -92,6 +92,27 @@ esac
 AC_MSG_RESULT($platform)
 AC_SUBST(TEST_BIN)
 
+AC_ARG_ENABLE(coverage,
+	AS_HELP_STRING([--enable-coverage], [Enable code coverage]),
+	[enable_coverage=$enableval],
+	[enable_coverage=no])
+AM_CONDITIONAL(ENABLE_COVERAGE, [test "$enable_coverage" == "yes"])
+
+AS_IF([test "$enable_coverage" == "yes"],
+	[COVERAGE_CFLAGS="-fprofile-arcs -ftest-coverage"
+	COVERAGE_LIBS="-lgcov"
+	AC_SUBST(COVERAGE_CFLAGS)
+	AC_SUBST(COVERAGE_LIBS)
+
+	AC_PATH_PROG(LCOV, lcov, :)
+	AC_PATH_PROG(GENHTML, genhtml, :)
+	AC_SUBST(LCOV)
+	AC_SUBST(GENHTML)
+	AS_IF([test "$LCOV" = :],
+		[AC_MSG_ERROR([lcov must be installed for code coverage: http://ltp.sourceforge.net/coverage/lcov.php])]
+	)]
+)
+
 AC_CONFIG_FILES([
 	audiofile.spec
 	audiofile.pc
