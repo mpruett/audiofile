@@ -9,7 +9,6 @@ COPYING
 Makefile
 Makefile.in
 aclocal.m4
-audiofile-config
 audiofile-uninstalled.pc
 audiofile.pc
 audiofile.spec

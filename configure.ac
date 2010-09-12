@@ -103,8 +103,5 @@ AC_CONFIG_FILES([
 	libaudiofile/modules/Makefile 
 	docs/Makefile 
 	win32/Makefile 
-	Makefile 
-	audiofile-config])
-AC_CONFIG_COMMANDS([default],
-	[[case "$CONFIG_FILES" in *audiofile-config*) chmod +x audiofile-config;; esac]])
+	Makefile])
 AC_OUTPUT

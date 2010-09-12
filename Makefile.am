@@ -1,8 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-bin_SCRIPTS = \
-         audiofile-config
-
 SRC_SUBDIRS = libaudiofile sfcommands test examples
 SUBDIRS = $(SRC_SUBDIRS) docs win32
 
@@ -13,13 +10,9 @@ EXTRA_DIST = \
 	TODO \
 	COPYING.GPL \
 	configure configure.ac \
-	audiofile.m4 \
 	audiofile.spec.in \
 	audiofile.pc.in \
 	audiofile-uninstalled.pc.in
-
-m4datadir = $(datadir)/aclocal
-m4data_DATA = audiofile.m4
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = audiofile.pc
