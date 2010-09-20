@@ -28,12 +28,12 @@
 #define PCM_H
 
 /*
-	SLOPE_INTN = 2^(N-1) - 1
+	SLOPE_INTN = 2^(N-1)
 */
-#define SLOPE_INT8 (127.0)
-#define SLOPE_INT16 (32767.0)
-#define SLOPE_INT24 (8388607.0)
-#define SLOPE_INT32 (2147483647.0)
+#define SLOPE_INT8 (128.0)
+#define SLOPE_INT16 (32768.0)
+#define SLOPE_INT24 (8388608.0)
+#define SLOPE_INT32 (2147483648.0)
 
 /*
 	INTERCEPT_U_INTN = 2^(N-1)

@@ -38,7 +38,6 @@
 #include <unistd.h>
 
 #define TEST_FILE "/tmp/test.sf"
-#define FRAME_COUNT 10
 
 /*
 	When converted to samples with width 24 bits, the samples
@@ -50,7 +49,6 @@ const float samples[] =
 	0,
 	0.5,
 	-0.5,
-	0,
 	1,
 	-1,
 	-0.25,
@@ -62,27 +60,21 @@ const float samples[] =
 const int referenceConvertedSamples[] =
 {
 	0,
-	4194303,	/* = (2^23 - 1) / 2 */
-	-4194303,
-	0,
-	8388607,	/* = 2^23 - 1 */
-	-8388607,
-	-2097151,
-	2097151,	/* = (2^23 - 1) / 4 */
-	6291455,	/* = (2^23 - 1) * 3 / 4 */
-	-6291455
+	4194304,	// = 2^23 * 0.5
+	-4194304,	// = 2^23 * -0.5
+	8388607,	// = 2^23 - 1
+	-8388608,	// = 2^23 * -1
+	-2097152,	// = 2^23 * -0.25
+	2097152,	// = 2^23 * 0.25
+	6291456,	// = 2^23 * 0.75
+	-6291456	// = 2^23 * -0.75
 };
+
+const int frameCount = sizeof (samples) / sizeof (samples[0]);
 
 int main (int argc, char **argv)
 {
-	AFfilehandle	file;
 	AFfilesetup	setup;
-	AFframecount	framesWritten, framesRead;
-
-	int	readsamples[FRAME_COUNT] = {-1000, -1001, -1002, -1003,
-			-1004, -1005, -1006, -1007};
-	int	i;
-
 	if ((setup = afNewFileSetup()) == AF_NULL_FILESETUP)
 	{
 		fprintf(stderr, "Could not allocate file setup.\n");
@@ -93,17 +85,17 @@ int main (int argc, char **argv)
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_FLOAT, 32);
 
-	file = afOpenFile(TEST_FILE, "w", setup);
+	AFfilehandle file = afOpenFile(TEST_FILE, "w", setup);
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		printf("could not open file for writing\n");
 		exit(EXIT_FAILURE);
 	}
 
-	framesWritten = afWriteFrames(file, AF_DEFAULT_TRACK, (void *) samples,
-		FRAME_COUNT);
+	AFframecount framesWritten = afWriteFrames(file, AF_DEFAULT_TRACK, samples,
+		frameCount);
 
-	if (framesWritten != FRAME_COUNT)
+	if (framesWritten != frameCount)
 	{
 		fprintf(stderr, "Wrong number of frames read.\n");
 		exit(EXIT_FAILURE);
@@ -129,22 +121,25 @@ int main (int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	framesRead = afReadFrames(file, AF_DEFAULT_TRACK, readsamples,
-		FRAME_COUNT);
+	int readSamples[frameCount];
+	for (int i=0; i<frameCount; i++)
+		readSamples[i] = -1000 - i;
+	AFframecount framesRead = afReadFrames(file, AF_DEFAULT_TRACK, readSamples,
+		frameCount);
 
-	if (framesRead != FRAME_COUNT)
+	if (framesRead != frameCount)
 	{
 		fprintf(stderr, "Wrong number of frames read.\n");
 		exit(EXIT_FAILURE);
 	}
 
-	for (i=0; i<framesRead; i++)
+	for (int i=0; i<framesRead; i++)
 	{
 #ifdef DEBUG
-		printf("[%d] = %d\n", i, readsamples[i]);
+		printf("[%d] = %d\n", i, readSamples[i]);
 #endif
 
-		if (readsamples[i] == -1000 - i)
+		if (readSamples[i] == -1000 - i)
 		{
 			fprintf(stderr, "Data in destination array untouched.\n");
 			exit(EXIT_FAILURE);
@@ -155,15 +150,15 @@ int main (int argc, char **argv)
 			sign extension: only 0x00 (+) or 0xff (-) is
 			valid.
 		*/
-		if ((readsamples[i] & 0xff000000) != 0x000000 &&
-			(readsamples[i] & 0xff000000) != 0xff000000)
+		if ((readSamples[i] & 0xff000000) != 0x000000 &&
+			(readSamples[i] & 0xff000000) != 0xff000000)
 		{
 			fprintf(stderr, "Data is not within range of "
 				"{-2^23, ..., 2^23-1}.\n");
 			exit(EXIT_FAILURE);
 		}
 
-		if (readsamples[i] != referenceConvertedSamples[i])
+		if (readSamples[i] != referenceConvertedSamples[i])
 		{
 			fprintf(stderr, "Data doesn't match reference data.\n");
 			exit(EXIT_FAILURE);
