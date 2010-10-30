@@ -1,5 +1,10 @@
 2010-10-30  Michael Pruett <michael@68k.org>
 
+	* examples/Makefile.am, examples/alsaplay.cpp: Add example
+	program demonstrating audio file playback using ALSA.
+
+2010-10-30  Michael Pruett <michael@68k.org>
+
 	* test/floattoint.cpp, test/inttofloat.cpp, test/pcmmapping.cpp,
 	test/sign.cpp: Add tests for converting between integer and
 	floating-point audio data, between signed and unsigned integer

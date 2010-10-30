@@ -76,7 +76,7 @@ platform=none
 AC_MSG_CHECKING([for platform specific tests to compile])
 case "$host_os" in
   linux*)
-    TEST_BIN="linuxtest"
+    TEST_BIN="linuxtest alsaplay"
     platform=linux
     ;;
   irix5* | irix6*)

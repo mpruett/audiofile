@@ -5,19 +5,24 @@ noinst_PROGRAMS = \
 	power \
 	@TEST_BIN@
 
-EXTRA_PROGRAMS = irixread irixtestloop linuxtest osxplay
+EXTRA_PROGRAMS = alsaplay irixread irixtestloop linuxtest osxplay
+
+LIBAUDIOFILE = $(top_builddir)/libaudiofile/libaudiofile.la
+
+alsaplay_SOURCES = alsaplay.cpp
+alsaplay_LDADD = $(LIBAUDIOFILE) -lasound
 
 irixread_SOURCES = irixread.c sgi.c sgi.h
-irixread_LDADD = $(top_builddir)/libaudiofile/libaudiofile.la @AUDIO_LIB@
+irixread_LDADD = $(LIBAUDIOFILE) @AUDIO_LIB@
 
 irixtestloop_SOURCES = irixtestloop.c sgi.c sgi.h
-irixtestloop_LDADD = $(top_builddir)/libaudiofile/libaudiofile.la @AUDIO_LIB@
+irixtestloop_LDADD = $(LIBAUDIOFILE) @AUDIO_LIB@
 
 linuxtest_SOURCES = linuxtest.c
 
 osxplay_SOURCES = osxplay.c
 osxplay_LDFLAGS = -framework AudioUnit -framework CoreServices
 
-LDADD = $(top_builddir)/libaudiofile/libaudiofile.la
+LDADD = $(LIBAUDIOFILE)
 
-DEPENDENCIES = $(top_builddir)/libaudiofile/libaudiofile.la
+DEPENDENCIES = $(LIBAUDIOFILE)
