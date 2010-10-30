@@ -1,3 +1,10 @@
+2010-10-30  Michael Pruett <michael@68k.org>
+
+	* test/floattoint.cpp, test/inttofloat.cpp, test/pcmmapping.cpp,
+	test/sign.cpp: Add tests for converting between integer and
+	floating-point audio data, between signed and unsigned integer
+	audio data, and between audio data with different PCM mappings.
+
 2010-09-20  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/pcm.h, test/floatto24.c: Update default mapping

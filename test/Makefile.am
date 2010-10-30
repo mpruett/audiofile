@@ -31,7 +31,11 @@ check_PROGRAMS = \
 	testchannelmatrix \
 	printmarkers \
 	seek \
-	large
+	large \
+	sign \
+	inttofloat \
+	floattoint \
+	pcmmapping
 
 EXTRA_DIST = transparency.sh misc.sh pipe.sh
 
@@ -40,11 +44,28 @@ TESTS = error writeaiff writeircam writenext writewave writeraw \
 	writeulaw writealaw \
 	misc.sh transparency.sh pipe.sh \
 	query2 sixteen-to-eight twentyfour twentyfour2 floatto24 \
-	testfloat testdouble testmarkers testchannelmatrix seek large
+	testfloat testdouble testmarkers testchannelmatrix seek large \
+	sign inttofloat floattoint pcmmapping
 
-LDADD = $(top_builddir)/libaudiofile/libaudiofile.la
+LIBAUDIOFILE = $(top_builddir)/libaudiofile/libaudiofile.la
 
-DEPENDENCIES = $(top_builddir)/libaudiofile/libaudiofile.la
+LDADD = $(LIBAUDIOFILE)
+
+DEPENDENCIES = $(LIBAUDIOFILE)
+
+LIBGTEST = -lgtest
+
+sign_SOURCES = sign.cpp
+sign_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+inttofloat_SOURCES = inttofloat.cpp
+inttofloat_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+floattoint_SOURCES = floattoint.cpp
+floattoint_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+pcmmapping_SOURCES = pcmmapping.cpp
+pcmmapping_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 coverage-reset:
 	$(LCOV) --base-directory=@top_srcdir@ --directory @top_srcdir@/libaudiofile --zerocounters

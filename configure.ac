@@ -67,6 +67,7 @@ AC_CHECK_TYPE(int32_t, int)
 
 dnl Checks for library functions.
 AC_PROG_GCC_TRADITIONAL
+AC_PROG_CXX
 AC_FUNC_MEMCMP
 AC_CHECK_FUNCS(strdup)
 
