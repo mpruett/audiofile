@@ -21,6 +21,14 @@
 #ifndef ERROR_H
 #define ERROR_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void _af_error (int errorCode, const char *fmt, ...);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

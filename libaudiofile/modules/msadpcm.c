@@ -304,7 +304,8 @@ static void ms_adpcm_run_pull (_AFmoduleinst *module)
 	blockCount = module->outc->nframes / framesPerBlock;
 
 	/* Read the compressed frames. */
-	blocksRead = af_fread(module->inc->buf, d->blockAlign, blockCount, d->fh);
+	ssize_t bytesRead = af_read(module->inc->buf, d->blockAlign * blockCount, d->fh);
+	blocksRead = bytesRead >= 0 ? bytesRead / d->blockAlign : 0;
 
 	/* Decompress into module->outc. */
 	for (i=0; i<blockCount; i++)

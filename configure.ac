@@ -24,6 +24,7 @@ AC_CONFIG_HEADER([config.h])
 
 dnl Checks for programs.
 AC_PROG_CC_C99
+AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_LIBTOOL_WIN32_DLL
@@ -64,12 +65,6 @@ AC_CHECK_TYPE(uint32_t, unsigned int)
 AC_CHECK_TYPE(int8_t, signed char)
 AC_CHECK_TYPE(int16_t, short)
 AC_CHECK_TYPE(int32_t, int)
-
-dnl Checks for library functions.
-AC_PROG_GCC_TRADITIONAL
-AC_PROG_CXX
-AC_FUNC_MEMCMP
-AC_CHECK_FUNCS(strdup)
 
 dnl Set up platform specific stuff
 platform=none

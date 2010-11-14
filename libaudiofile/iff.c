@@ -72,9 +72,9 @@ bool _af_iff_recognize (AFvirtualfile *fh)
 
 	af_fseek(fh, 0, SEEK_SET);
 
-	if (af_fread(buffer, 1, 8, fh) != 8 || memcmp(buffer, "FORM", 4) != 0)
+	if (af_read(buffer, 8, fh) != 8 || memcmp(buffer, "FORM", 4) != 0)
 		return false;
-	if (af_fread(buffer, 1, 4, fh) != 4 || memcmp(buffer, "8SVX", 4) != 0)
+	if (af_read(buffer, 4, fh) != 4 || memcmp(buffer, "8SVX", 4) != 0)
 		return false;
 
 	return true;
@@ -114,8 +114,8 @@ static status ParseMiscellaneous (AFfilehandle file, AFvirtualfile *fh,
 	file->miscellaneous[file->miscellaneousCount - 1].size = size;
 	file->miscellaneous[file->miscellaneousCount - 1].position = 0;
 	file->miscellaneous[file->miscellaneousCount - 1].buffer = _af_malloc(size);
-	af_fread(file->miscellaneous[file->miscellaneousCount - 1].buffer,
-		size, 1, file->fh);
+	af_read(file->miscellaneous[file->miscellaneousCount - 1].buffer,
+		size, file->fh);
 
 	return AF_SUCCEED;
 }
@@ -188,9 +188,9 @@ status _af_iff_read_init (AFfilesetup setup, AFfilehandle file)
 
 	af_fseek(file->fh, 0, SEEK_SET);
 
-	af_fread(&type, 4, 1, file->fh);
+	af_read(&type, 4, file->fh);
 	af_read_uint32_be(&size, file->fh);
-	af_fread(&formtype, 4, 1, file->fh);
+	af_read(&formtype, 4, file->fh);
 
 	if (memcmp(&type, "FORM", 4) != 0 || memcmp(&formtype, "8SVX", 4) != 0)
 		return AF_FAIL;
@@ -213,7 +213,7 @@ status _af_iff_read_init (AFfilesetup setup, AFfilehandle file)
 		uint32_t	chunkid = 0, chunksize = 0;
 		status		result = AF_SUCCEED;
 
-		af_fread(&chunkid, 4, 1, file->fh);
+		af_read(&chunkid, 4, file->fh);
 		af_read_uint32_be(&chunksize, file->fh);
 
 		if (!memcmp("VHDR", &chunkid, 4))

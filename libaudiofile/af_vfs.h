@@ -34,24 +34,14 @@
 extern "C" {
 #endif
 
-struct _AFvirtualfile
-{
-  ssize_t (*read) (AFvirtualfile *vfile, void *data, size_t nbytes);
-  long (*length) (AFvirtualfile *vfile);
-  ssize_t (*write) (AFvirtualfile *vfile, const void *data, size_t nbytes);
-  void (*destroy)(AFvirtualfile *vfile);
-  long (*seek)   (AFvirtualfile *vfile, long offset, int is_relative);
-  long (*tell)   (AFvirtualfile *vfile);
+#ifdef __cplusplus
+typedef class File AFvirtualfile;
+#else
+typedef struct File AFvirtualfile;
+#endif
 
-  void *closure;
-};
-
-AFvirtualfile *af_virtual_file_new (void);
-AFvirtualfile *af_virtual_file_new_for_file (FILE *fh);
-void af_virtual_file_destroy (AFvirtualfile *vfile);
-
-size_t af_fread (void *data, size_t size, size_t nmemb, AFvirtualfile *vfile);
-size_t af_fwrite (const void *data, size_t size, size_t nmemb, AFvirtualfile *vfile);
+ssize_t af_read (void *data, size_t size, AFvirtualfile *vfile);
+ssize_t af_write (const void *data, size_t size, AFvirtualfile *vfile);
 int af_fclose (AFvirtualfile *vfile);
 long af_flength (AFvirtualfile *vfile);
 int af_fseek (AFvirtualfile *vfile, long offset, int whence);

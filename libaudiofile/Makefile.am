@@ -7,9 +7,9 @@ lib_LTLIBRARIES = libaudiofile.la
 EXTRA_DIST = audiofile.exports
 
 libaudiofile_la_SOURCES = \
-	openclose.c setup.c format.c data.c pcm.c \
-	error.c byteorder.c af_vfs.c \
-	util.c debug.c aupv.c units.c compression.c \
+	openclose.cpp setup.c format.c data.c pcm.c \
+	error.c byteorder.h af_vfs.cpp \
+	util.cpp util.h debug.c aupv.c units.c compression.c \
 	aes.c instrument.c loop.c marker.c misc.c track.c query.c \
 	raw.c raw.h \
 	aiff.c aiffwrite.c extended.c aiff.h \
@@ -24,7 +24,8 @@ libaudiofile_la_SOURCES = \
 	compression.h error.h extended.h instrument.h marker.h \
 	pcm.h setup.h track.h units.h \
 	print.h util.h debug.h \
-	modules.c modules.h
+	modules.c modules.h \
+	File.cpp File.h Shared.h
 
 libaudiofile_la_LIBADD = modules/libmodules.la $(COVERAGE_LIBS)
 
@@ -38,4 +39,4 @@ include_HEADERS = audiofile.h aupvlist.h af_vfs.h
 # SGI MIPSpro cc
 # AM_CFLAGS = -fullwarn -g
 # No debugging.
-AM_CFLAGS = -DNDEBUG $(COVERAGE_CFLAGS)
+AM_CFLAGS = -DNDEBUG -Wall $(COVERAGE_CFLAGS)

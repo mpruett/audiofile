@@ -62,10 +62,6 @@ status _af_ircam_write_init (AFfilesetup setup, AFfilehandle handle)
 	uint32_t	dataOffset;
 	uint8_t		zeros[SIZEOF_BSD_HEADER];
 
-	float		maxAmp = 1.0;
-
-	bool		isSwapped, isLittleEndian;
-
 	assert(handle->fileFormat == AF_FILE_IRCAM);
 
 	if (_af_filesetup_make_handle(setup, handle) == AF_FAIL)
@@ -105,14 +101,14 @@ status _af_ircam_write_init (AFfilesetup setup, AFfilehandle handle)
 	}
 
 	af_fseek(handle->fh, 0, SEEK_SET);
-	af_fwrite(magic, 4, 1, handle->fh);
-	af_fwrite(&rate, 4, 1, handle->fh);
-	af_fwrite(&channels, 4, 1, handle->fh);
-	af_fwrite(&packMode, 4, 1, handle->fh);
+	af_write(magic, 4, handle->fh);
+	af_write(&rate, 4, handle->fh);
+	af_write(&channels, 4, handle->fh);
+	af_write(&packMode, 4, handle->fh);
 
 	/* Zero the entire description block. */
 	memset(zeros, 0, SIZEOF_BSD_HEADER);
-	af_fwrite(zeros, SIZEOF_BSD_HEADER - 4*4, 1, handle->fh);
+	af_write(zeros, SIZEOF_BSD_HEADER - 4*4, handle->fh);
 
 	return AF_SUCCEED;
 }

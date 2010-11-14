@@ -85,7 +85,7 @@ status _af_next_read_init (AFfilesetup setup, AFfilehandle file)
 
 	af_fseek(file->fh, 0, SEEK_SET);
 
-	af_fread(&id, 4, 1, file->fh);
+	af_read(&id, 4, file->fh);
 	assert(!memcmp(&id, ".snd", 4));
 
 	af_read_uint32_be(&offset, file->fh);
@@ -180,7 +180,7 @@ bool _af_next_recognize (AFvirtualfile *fh)
 
 	af_fseek(fh, 0, SEEK_SET);
 
-	if (af_fread(buffer, 1, 4, fh) != 4 || memcmp(buffer, ".snd", 4) != 0)
+	if (af_read(buffer, 4, fh) != 4 || memcmp(buffer, ".snd", 4) != 0)
 		return false;
 
 	return true;

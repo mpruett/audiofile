@@ -90,9 +90,69 @@
 
 #endif
 
-uint16_t _af_byteswap_int16 (uint16_t x);
-uint32_t _af_byteswap_int32 (uint32_t x);
-float _af_byteswap_float32 (float x);
-double _af_byteswap_double64 (double x);
+static inline uint16_t _af_byteswap_int16 (uint16_t x)
+{
+	return (x >> 8) | (x << 8);
+}
+
+static inline uint32_t _af_byteswap_int32 (uint32_t x)
+{
+	return ((x & 0x000000ffU) << 24) |
+		((x & 0x0000ff00U) << 8) |
+		((x & 0x00ff0000U) >> 8) |
+		((x & 0xff000000U) >> 24);
+}
+
+static inline float _af_byteswap_float32 (float x)
+{
+	union
+	{
+		uint32_t i;
+		float f;
+	} u;
+	u.f = x;
+	u.i = _af_byteswap_int32(u.i);
+	return u.f;
+}
+
+#ifdef __cplusplus
+
+template <typename T>
+T byteswap(T value);
+
+template <>
+uint32_t byteswap(uint32_t value) { return _af_byteswap_int32(value); }
+template <>
+int32_t byteswap(int32_t value) { return _af_byteswap_int32(value); }
+template <>
+uint16_t byteswap(uint16_t value) { return _af_byteswap_int16(value); }
+template <>
+int16_t byteswap(int16_t value) { return _af_byteswap_int16(value); }
+
+template <typename T>
+T bigToHost(T value)
+{
+	return _AF_BYTEORDER_NATIVE == AF_BYTEORDER_BIGENDIAN ? value : byteswap(value);
+}
+
+template <typename T>
+T littleToHost(T value)
+{
+	return _AF_BYTEORDER_NATIVE == AF_BYTEORDER_LITTLEENDIAN ? value : byteswap(value);
+}
+
+template <typename T>
+T hostToBig(T value)
+{
+	return _AF_BYTEORDER_NATIVE == AF_BYTEORDER_BIGENDIAN ? value : byteswap(value);
+}
+
+template <typename T>
+T hostToLittle(T value)
+{
+	return _AF_BYTEORDER_NATIVE == AF_BYTEORDER_LITTLEENDIAN ? value : byteswap(value);
+}
+
+#endif // __cplusplus
 
 #endif

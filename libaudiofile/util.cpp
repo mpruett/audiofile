@@ -45,6 +45,7 @@
 #include "modules.h"
 #include "byteorder.h"
 #include "aupvinternal.h"
+#include "File.h"
 
 extern const _PCMInfo _af_default_signed_integer_pcm_mappings[];
 extern const _PCMInfo _af_default_unsigned_integer_pcm_mappings[];
@@ -135,9 +136,9 @@ void *_af_malloc (size_t size)
 	return p;
 }
 
-char *_af_strdup (char *s)
+char *_af_strdup (const char *s)
 {
-	char	*p = malloc(strlen(s) + 1);
+	char *p = (char *) malloc(strlen(s) + 1);
 
 	if (p)
 		strcpy(p, s);
@@ -451,92 +452,89 @@ bool _af_unique_ids (int *ids, int nids, char *idname, int iderr)
 	return true;
 }
 
-status af_read_uint32_be (uint32_t *value, AFvirtualfile *vf)
+template <typename T>
+bool read(AFvirtualfile *vf, T *value)
 {
-	uint32_t	v;
-
-	if (af_fread(&v, sizeof (v), 1, vf) != 1)
-		return AF_FAIL;
-	*value = BENDIAN_TO_HOST_INT32(v);
-	return AF_SUCCEED;
+	return vf->read(value, sizeof (*value)) == sizeof (*value);
 }
 
-status af_read_uint32_le (uint32_t *value, AFvirtualfile *vf)
+template <typename T>
+bool write(AFvirtualfile *vf, const T *value)
 {
-	uint32_t	v;
-
-	if (af_fread(&v, sizeof (v), 1, vf) != 1)
-		return AF_FAIL;
-	*value = LENDIAN_TO_HOST_INT32(v);
-	return AF_SUCCEED;
+	return vf->write(value, sizeof (*value)) == sizeof (*value);
 }
 
-status af_read_uint16_be (uint16_t *value, AFvirtualfile *vf)
-{
-	uint16_t	v;
-
-	if (af_fread(&v, sizeof (v), 1, vf) != 1)
-		return AF_FAIL;
-	*value = BENDIAN_TO_HOST_INT16(v);
-	return AF_SUCCEED;
+#define READ(TYPE) \
+status af_read_##TYPE##_be (TYPE##_t *value, AFvirtualfile *vf) \
+{ \
+	if (!read(vf, value)) \
+		return AF_FAIL; \
+	*value = bigToHost(*value); \
+	return AF_SUCCEED; \
+} \
+\
+status af_read_##TYPE##_le (TYPE##_t *value, AFvirtualfile *vf) \
+{ \
+	if (!read(vf, value)) \
+		return AF_FAIL; \
+	*value = littleToHost(*value); \
+	return AF_SUCCEED; \
 }
 
-status af_read_uint16_le (uint16_t *value, AFvirtualfile *vf)
-{
-	uint16_t	v;
+READ(uint32)
+READ(int32)
+READ(uint16)
+READ(int16)
 
-	if (af_fread(&v, sizeof (v), 1, vf) != 1)
-		return AF_FAIL;
-	*value = LENDIAN_TO_HOST_INT16(v);
-	return AF_SUCCEED;
-}
+#undef READ
 
 status af_read_uint8 (uint8_t *value, AFvirtualfile *vf)
 {
-	if (af_fread(value, 1, 1, vf) != 1)
+	if (!read(vf, value))
 		return AF_FAIL;
 	return AF_SUCCEED;
 }
 
-status af_write_uint32_be (const uint32_t *value, AFvirtualfile *vf)
+status af_read_int8 (int8_t *value, AFvirtualfile *vf)
 {
-	uint32_t	v;
-	v = HOST_TO_BENDIAN_INT32(*value);
-	if (af_fwrite(&v, sizeof (v), 1, vf) != 1)
+	if (!read(vf, value))
 		return AF_FAIL;
 	return AF_SUCCEED;
 }
 
-status af_write_uint32_le (const uint32_t *value, AFvirtualfile *vf)
-{
-	uint32_t	v;
-	v = HOST_TO_LENDIAN_INT32(*value);
-	if (af_fwrite(&v, sizeof (v), 1, vf) != 1)
-		return AF_FAIL;
-	return AF_SUCCEED;
+#define WRITE(TYPE) \
+status af_write_##TYPE##_be (const TYPE##_t *value, AFvirtualfile *vf) \
+{ \
+	TYPE##_t v = hostToBig(*value); \
+	if (!write(vf, &v)) \
+		return AF_FAIL; \
+	return AF_SUCCEED; \
+} \
+status af_write_##TYPE##_le (const TYPE##_t *value, AFvirtualfile *vf) \
+{ \
+	TYPE##_t v = hostToLittle(*value); \
+	if (!write(vf, &v)) \
+		return AF_FAIL; \
+	return AF_SUCCEED; \
 }
 
-status af_write_uint16_be (const uint16_t *value, AFvirtualfile *vf)
-{
-	uint16_t	v;
-	v = HOST_TO_BENDIAN_INT16(*value);
-	if (af_fwrite(&v, sizeof (v), 1, vf) != 1)
-		return AF_FAIL;
-	return AF_SUCCEED;
-}
+WRITE(uint32)
+WRITE(int32)
+WRITE(uint16)
+WRITE(int16)
 
-status af_write_uint16_le (const uint16_t *value, AFvirtualfile *vf)
-{
-	uint16_t	v;
-	v = HOST_TO_LENDIAN_INT16(*value);
-	if (af_fwrite(&v, sizeof (v), 1, vf) != 1)
-		return AF_FAIL;
-	return AF_SUCCEED;
-}
+#undef WRITE
 
 status af_write_uint8 (const uint8_t *value, AFvirtualfile *vf)
 {
-	if (af_fwrite(value, 1, 1, vf) != 1)
+	if (!write(vf, value))
+		return AF_FAIL;
+	return AF_SUCCEED;
+}
+
+status af_write_int8 (const int8_t *value, AFvirtualfile *vf)
+{
+	if (!write(vf, value))
 		return AF_FAIL;
 	return AF_SUCCEED;
 }
@@ -545,8 +543,10 @@ status af_read_pstring (char s[256], AFvirtualfile *vf)
 {
 	uint8_t length;
 	/* Read the Pascal-style string containing the name. */
-	af_read_uint8(&length, vf);
-	af_fread(s, length, 1, vf);
+	if (vf->read(&length, 1) != 1)
+		return AF_FAIL;
+	if (vf->read(s, length) != (ssize_t) length)
+		return AF_FAIL;
 	s[length] = '\0';
 	return AF_SUCCEED;
 }
@@ -557,8 +557,10 @@ status af_write_pstring (const char *s, AFvirtualfile *vf)
 	if (length > 255)
 		return AF_FAIL;
 	uint8_t sizeByte = (uint8_t) length;
-	af_write_uint8(&sizeByte, vf);
-	af_fwrite(s, sizeByte, 1, vf);
+	if (vf->write(&sizeByte, 1) != 1)
+		return AF_FAIL;
+	if (vf->write(s, length) != (ssize_t) length)
+		return AF_FAIL;
 	/*
 		Add a pad byte if the length of the Pascal-style string
 		(including the size byte) is odd.
@@ -566,7 +568,8 @@ status af_write_pstring (const char *s, AFvirtualfile *vf)
 	if ((length % 2) == 0)
 	{
 		uint8_t zero = 0;
-		af_write_uint8(&zero, vf);
+		if (vf->write(&zero, 1) != 1)
+			return AF_FAIL;
 	}
 	return AF_SUCCEED;
 }

@@ -71,7 +71,7 @@ static status next_write_header (AFfilehandle file)
 	if (af_fseek(file->fh, 0, SEEK_SET) != 0)
 		_af_error(AF_BAD_LSEEK, "bad seek");
 
-	af_fwrite(".snd", 4, 1, file->fh);
+	af_write(".snd", 4, file->fh);
 	af_write_uint32_be(&offset, file->fh);
 	af_write_uint32_be(&length, file->fh);
 	af_write_uint32_be(&encoding, file->fh);

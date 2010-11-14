@@ -107,7 +107,7 @@ status WriteNISTHeader (AFfilehandle file)
 	if (printed < NIST_SPHERE_HEADER_LENGTH)
 		memset(header + printed, ' ', NIST_SPHERE_HEADER_LENGTH - printed);
 
-	return af_fwrite(header, NIST_SPHERE_HEADER_LENGTH, 1, fp);
+	return af_write(header, NIST_SPHERE_HEADER_LENGTH, fp) == NIST_SPHERE_HEADER_LENGTH ? AF_SUCCEED : AF_FAIL;
 }
 
 status _af_nist_write_init (AFfilesetup setup, AFfilehandle handle)

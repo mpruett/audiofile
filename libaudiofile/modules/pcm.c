@@ -108,7 +108,8 @@ static void pcmrun_push (_AFmoduleinst *i)
 		Fortunately, the pcm module has no need for such a buffer.
 	*/
 
-	n = af_fwrite(i->inc->buf, d->bytes_per_frame, frames2write, d->fh);
+	ssize_t bytesWritten = af_write(i->inc->buf, d->bytes_per_frame * frames2write, d->fh);
+	n = bytesWritten >= 0 ? bytesWritten / d->bytes_per_frame : 0;
 
 	CHNK(printf("writing %" AF_FRAMECOUNT_PRINT_FMT " frames to pcm file\n",
 		frames2write));
@@ -211,7 +212,8 @@ static void pcmrun_pull (_AFmoduleinst *i)
 		frames2read = d->trk->totalfframes - d->trk->nextfframe;
 	}
 
-	n = af_fread(i->outc->buf, d->bytes_per_frame, frames2read, d->fh);
+	ssize_t bytesRead = af_read(i->outc->buf, d->bytes_per_frame * frames2read, d->fh);
+	n = bytesRead >= 0 ? bytesRead / d->bytes_per_frame : 0;
 
 	CHNK(printf("reading %" AF_FRAMECOUNT_PRINT_FMT " frames from pcm file "
 		"(got %" AF_FRAMECOUNT_PRINT_FMT ")\n",

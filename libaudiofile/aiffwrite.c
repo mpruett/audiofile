@@ -81,13 +81,13 @@ status _af_aiff_write_init (AFfilesetup setup, AFfilehandle file)
 
 	file->formatSpecific = aiffinfo_new();
 
-	af_fwrite("FORM", 4, 1, file->fh);
+	af_write("FORM", 4, file->fh);
 	af_write_uint32_be(&fileSize, file->fh);
 
 	if (file->fileFormat == AF_FILE_AIFF)
-		af_fwrite("AIFF", 4, 1, file->fh);
+		af_write("AIFF", 4, file->fh);
 	else if (file->fileFormat == AF_FILE_AIFFC)
-		af_fwrite("AIFC", 4, 1, file->fh);
+		af_write("AIFC", 4, file->fh);
 
 	if (file->fileFormat == AF_FILE_AIFFC)
 		WriteFVER(file);
@@ -211,7 +211,7 @@ static status WriteCOMM (const AFfilehandle file)
 		}
 	}
 
-	af_fwrite("COMM", 4, 1, file->fh);
+	af_write("COMM", 4, file->fh);
 
 	/*
 		For AIFF-C files, the length of the COMM chunk is 22
@@ -240,11 +240,11 @@ static status WriteCOMM (const AFfilehandle file)
 
 	/* sample rate, 10 bytes */
 	_af_convert_to_ieee_extended(track->f.sampleRate, eb);
-	af_fwrite(eb, 10, 1, file->fh);
+	af_write(eb, 10, file->fh);
 
 	if (file->fileFormat == AF_FILE_AIFFC)
 	{
-		af_fwrite(compressionTag, 4, 1, file->fh);
+		af_write(compressionTag, 4, file->fh);
 
 		af_write_pstring(compressionName, file->fh);
 	}
@@ -276,13 +276,13 @@ static status WriteAESD (const AFfilehandle file)
 	else
 		af_fseek(file->fh, aiff->AESD_offset, SEEK_SET);
 
-	if (af_fwrite("AESD", 4, 1, file->fh) < 1)
+	if (af_write("AESD", 4, file->fh) < 4)
 		return AF_FAIL;
 
 	if (af_write_uint32_be(&size, file->fh) == AF_FAIL)
 		return AF_FAIL;
 
-	if (af_fwrite(track->aesData, 24, 1, file->fh) < 1)
+	if (af_write(track->aesData, 24, file->fh) < 24)
 		return AF_FAIL;
 
 	return AF_SUCCEED;
@@ -309,7 +309,7 @@ static status WriteSSND (AFfilehandle file)
 	chunkSize = (int) _af_format_frame_size(&track->f, false) *
 		track->totalfframes + 8;
 
-	af_fwrite("SSND", 4, 1, file->fh);
+	af_write("SSND", 4, file->fh);
 	af_write_uint32_be(&chunkSize, file->fh);
 
 	/* data offset */
@@ -344,7 +344,7 @@ static status WriteINST (AFfilehandle file)
 	instrumentdata.releaseLoopEnd =
 		afGetLoopEnd(file, AF_DEFAULT_INST, 2);
 
-	af_fwrite("INST", 4, 1, file->fh);
+	af_write("INST", 4, file->fh);
 	af_write_uint32_be(&length, file->fh);
 
 	instrumentdata.baseNote =
@@ -352,7 +352,7 @@ static status WriteINST (AFfilehandle file)
 	af_write_uint8(&instrumentdata.baseNote, file->fh);
 	instrumentdata.detune =
 		afGetInstParamLong(file, AF_DEFAULT_INST, AF_INST_NUMCENTS_DETUNE);
-	af_write_uint8(&instrumentdata.detune, file->fh);
+	af_write_int8(&instrumentdata.detune, file->fh);
 	instrumentdata.lowNote =
 		afGetInstParamLong(file, AF_DEFAULT_INST, AF_INST_MIDI_LONOTE);
 	af_write_uint8(&instrumentdata.lowNote, file->fh);
@@ -368,7 +368,7 @@ static status WriteINST (AFfilehandle file)
 
 	instrumentdata.gain =
 		afGetInstParamLong(file, AF_DEFAULT_INST, AF_INST_NUMDBS_GAIN);
-	af_write_uint16_be(&instrumentdata.gain, file->fh);
+	af_write_int16_be(&instrumentdata.gain, file->fh);
 
 	af_write_uint16_be(&instrumentdata.sustainLoopPlayMode, file->fh);
 	af_write_uint16_be(&instrumentdata.sustainLoopBegin, file->fh);
@@ -402,7 +402,7 @@ static status WriteMARK (AFfilehandle file)
 	else
 		af_fseek(file->fh, aiff->MARK_offset, SEEK_SET);
 
-	af_fwrite("MARK", 4, 1, file->fh);
+	af_write("MARK", 4, file->fh);
 	af_write_uint32_be(&length, file->fh);
 
 	chunkStartPosition = af_ftell(file->fh);
@@ -415,7 +415,6 @@ static status WriteMARK (AFfilehandle file)
 
 	for (i=0; i<numMarkers; i++)
 	{
-		uint8_t		namelength, zero = 0;
 		uint16_t	id;
 		uint32_t	position;
 		char		*name;
@@ -468,7 +467,7 @@ static status WriteFVER (AFfilehandle file)
 	else
 		af_fseek(file->fh, aiff->FVER_offset, SEEK_SET);
 
-	af_fwrite("FVER", 4, 1, file->fh);
+	af_write("FVER", 4, file->fh);
 
 	chunkSize = 4;
 	af_write_uint32_be(&chunkSize, file->fh);
@@ -522,7 +521,7 @@ static status WriteMiscellaneous (AFfilehandle file)
 		}
 
 
-		af_fwrite(&chunkType, 4, 1, file->fh);
+		af_write(&chunkType, 4, file->fh);
 
 		chunkSize = misc->size;
 		af_write_uint32_be(&chunkSize, file->fh);
@@ -532,7 +531,7 @@ static status WriteMiscellaneous (AFfilehandle file)
 			for now.
 		*/
 		if (misc->buffer != NULL)
-			af_fwrite(misc->buffer, misc->size, 1, file->fh);
+			af_write(misc->buffer, misc->size, file->fh);
 		else
 			af_fseek(file->fh, misc->size, SEEK_CUR);
 

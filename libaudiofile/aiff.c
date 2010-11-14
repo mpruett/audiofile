@@ -129,7 +129,7 @@ static status ParseAESD (AFfilehandle file, AFvirtualfile *fh, uint32_t type, si
 		Try to read 24 bytes of AES nonaudio data from the file.
 		Fail if the file disappoints.
 	*/
-	if (af_fread(aesChannelStatusData, 1, 24, fh) != 24)
+	if (af_read(aesChannelStatusData, 24, fh) != 24)
 		return AF_FAIL;
 
 	memcpy(track->aesData, aesChannelStatusData, 24);
@@ -176,8 +176,8 @@ static status ParseMiscellaneous (AFfilehandle file, AFvirtualfile *fh,
 	file->miscellaneous[file->miscellaneousCount - 1].size = size;
 	file->miscellaneous[file->miscellaneousCount - 1].position = 0;
 	file->miscellaneous[file->miscellaneousCount - 1].buffer = _af_malloc(size);
-	af_fread(file->miscellaneous[file->miscellaneousCount - 1].buffer,
-		size, 1, file->fh);
+	af_read(file->miscellaneous[file->miscellaneousCount - 1].buffer,
+		size, file->fh);
 
 	return AF_SUCCEED;
 }
@@ -210,12 +210,12 @@ static status ParseINST (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	file->instruments = instrument;
 
 	af_read_uint8(&baseNote, fh);
-	af_read_uint8(&detune, fh);
+	af_read_int8(&detune, fh);
 	af_read_uint8(&lowNote, fh);
 	af_read_uint8(&highNote, fh);
 	af_read_uint8(&lowVelocity, fh);
 	af_read_uint8(&highVelocity, fh);
-	af_read_uint16_be(&gain, fh);
+	af_read_int16_be(&gain, fh);
 
 #ifdef DEBUG
 	printf("baseNote/detune/lowNote/highNote/lowVelocity/highVelocity/gain:"
@@ -293,9 +293,9 @@ static status ParseMARK (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 
 		af_read_uint16_be(&markerID, fh);
 		af_read_uint32_be(&markerPosition, fh);
-		af_fread(&sizeByte, sizeof (unsigned char), 1, fh);
+		af_read(&sizeByte, 1, fh);
 		markerName = _af_malloc(sizeByte + 1);
-		af_fread(markerName, sizeof (unsigned char), sizeByte, fh);
+		af_read(markerName, sizeByte, fh);
 
 		markerName[sizeByte] = '\0';
 
@@ -351,7 +351,7 @@ static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 	af_read_uint16_be(&sampleSize, fh);
 	track->f.sampleWidth = sampleSize;
 
-	af_fread(sampleRate, 10, 1, fh);
+	af_read(sampleRate, 10, fh);
 	track->f.sampleRate = _af_convert_from_ieee_extended(sampleRate);
 
 	track->f.compressionType = AF_COMPRESSION_NONE;
@@ -364,7 +364,7 @@ static status ParseCOMM (AFfilehandle file, AFvirtualfile *fh, uint32_t type,
 		/* Pascal strings are at most 255 bytes long. */
 		char		compressionName[256];
 
-		af_fread(compressionID, 4, 1, fh);
+		af_read(compressionID, 4, fh);
 
 		/* Read the Pascal-style string containing the name. */
 		af_read_pstring(compressionName, fh);
@@ -499,9 +499,9 @@ status _af_aiff_read_init (AFfilesetup setup, AFfilehandle file)
 
 	af_fseek(file->fh, 0, SEEK_SET);
 
-	af_fread(&type, 4, 1, file->fh);
+	af_read(&type, 4, file->fh);
 	af_read_uint32_be(&size, file->fh);
-	af_fread(&formtype, 4, 1, file->fh);
+	af_read(&formtype, 4, file->fh);
 
 	if (memcmp(&type, "FORM", 4) != 0 ||
 		(memcmp(&formtype, "AIFF", 4) && memcmp(&formtype, "AIFC", 4)))
@@ -532,7 +532,7 @@ status _af_aiff_read_init (AFfilesetup setup, AFfilehandle file)
 #ifdef DEBUG
 		printf("index: %d\n", index);
 #endif
-		af_fread(&chunkid, 4, 1, file->fh);
+		af_read(&chunkid, 4, file->fh);
 		af_read_uint32_be(&chunksize, file->fh);
 
 #ifdef DEBUG
@@ -616,9 +616,9 @@ bool _af_aiff_recognize (AFvirtualfile *fh)
 
 	af_fseek(fh, 0, SEEK_SET);
 
-	if (af_fread(buffer, 1, 8, fh) != 8 || memcmp(buffer, "FORM", 4) != 0)
+	if (af_read(buffer, 8, fh) != 8 || memcmp(buffer, "FORM", 4) != 0)
 		return false;
-	if (af_fread(buffer, 1, 4, fh) != 4 || memcmp(buffer, "AIFF", 4) != 0)
+	if (af_read(buffer, 4, fh) != 4 || memcmp(buffer, "AIFF", 4) != 0)
 		return false;
 
 	return true;
@@ -630,9 +630,9 @@ bool _af_aifc_recognize (AFvirtualfile *fh)
 
 	af_fseek(fh, 0, SEEK_SET);
 
-	if (af_fread(buffer, 1, 8, fh) != 8 || memcmp(buffer, "FORM", 4) != 0)
+	if (af_read(buffer, 8, fh) != 8 || memcmp(buffer, "FORM", 4) != 0)
 		return false;
-	if (af_fread(buffer, 1, 4, fh) != 4 || memcmp(buffer, "AIFC", 4) != 0)
+	if (af_read(buffer, 4, fh) != 4 || memcmp(buffer, "AIFC", 4) != 0)
 		return false;
 
 	return true;

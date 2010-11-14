@@ -98,11 +98,11 @@ status _af_avr_write_init (AFfilesetup setup, AFfilehandle filehandle)
 		return AF_FAIL;
 	}
 
-	af_fwrite("2BIT", 4, 1, filehandle->fh);
+	af_write("2BIT", 4, filehandle->fh);
 	memset(name, 0, 8);
 	if (filehandle->fileName != NULL)
 		strncpy(name, af_basename(filehandle->fileName), 8);
-	af_fwrite(name, 8, 1, filehandle->fh);
+	af_write(name, 8, filehandle->fh);
 
 	if (track->f.channelCount == 1)
 		mono = 0x0;
@@ -138,10 +138,10 @@ status _af_avr_write_init (AFfilesetup setup, AFfilehandle filehandle)
 	af_write_uint32_be(&loopEnd, filehandle->fh);
 
 	memset(reserved, 0, 26);
-	af_fwrite(reserved, 26, 1, filehandle->fh);
+	af_write(reserved, 26, filehandle->fh);
 
 	memset(user, 0, 64);
-	af_fwrite(user, 64, 1, filehandle->fh);
+	af_write(user, 64, filehandle->fh);
 
 	if (track->fpos_first_frame == 0)
 		track->fpos_first_frame = af_ftell(filehandle->fh);

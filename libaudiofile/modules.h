@@ -34,6 +34,10 @@
 #include "audiofile.h"
 #include "afinternal.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef uint8_t uchar1;
 typedef uint16_t uchar2;
 typedef uint32_t uchar3;
@@ -104,5 +108,9 @@ status _AFinitmodules (AFfilehandle h, _Track *trk);
 status _AFsetupmodules (AFfilehandle h, _Track *trk);
 status _AFsyncmodules (AFfilehandle h, _Track *trk);
 void _AFfreemodules (_Track *trk);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* MODULES_H */

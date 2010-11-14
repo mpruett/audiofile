@@ -74,7 +74,7 @@ static status WriteFormat (AFfilehandle file)
 
 	track = _af_filehandle_get_track(file, AF_DEFAULT_TRACK);
 
-	af_fwrite("fmt ", 4, 1, file->fh);
+	af_write("fmt ", 4, file->fh);
 
 	switch (track->f.compressionType)
 	{
@@ -177,7 +177,7 @@ static status WriteFrameCount (AFfilehandle file)
 	else
 		af_fseek(file->fh, waveinfo->factOffset, SEEK_SET);
 
-	af_fwrite("fact", 4, 1, file->fh);
+	af_write("fact", 4, file->fh);
 	af_write_uint32_le(&factSize, file->fh);
 
 	totalFrameCount = track->totalfframes;
@@ -197,7 +197,7 @@ static status WriteData (AFfilehandle file)
 	waveinfo = file->formatSpecific;
 	track = _af_filehandle_get_track(file, AF_DEFAULT_TRACK);
 
-	af_fwrite("data", 4, 1, file->fh);
+	af_write("data", 4, file->fh);
 	waveinfo->dataSizeOffset = af_ftell(file->fh);
 
 	chunkSize = (int) _af_format_frame_size(&track->f, false) *
@@ -327,14 +327,14 @@ status WriteMiscellaneous (AFfilehandle filehandle)
 		*/
 
 		/* Write 'LIST'. */
-		af_fwrite("LIST", 4, 1, filehandle->fh);
+		af_write("LIST", 4, filehandle->fh);
 
 		/* Write the size of the following chunk. */
 		chunkSize = miscellaneousBytes-8;
 		af_write_uint32_le(&chunkSize, filehandle->fh);
 
 		/* Write 'INFO'. */
-		af_fwrite("INFO", 4, 1, filehandle->fh);
+		af_write("INFO", 4, filehandle->fh);
 
 		/* Write each miscellaneous chunk. */
 		for (i=0; i<filehandle->miscellaneousCount; i++)
@@ -347,13 +347,13 @@ status WriteMiscellaneous (AFfilehandle filehandle)
 				&miscid) == AF_FAIL)
 				continue;
 
-			af_fwrite(&miscid, 4, 1, filehandle->fh);
+			af_write(&miscid, 4, filehandle->fh);
 			af_write_uint32_le(&miscsize, filehandle->fh);
 			if (filehandle->miscellaneous[i].buffer != NULL)
 			{
 				uint8_t	zero = 0;
 
-				af_fwrite(filehandle->miscellaneous[i].buffer, filehandle->miscellaneous[i].size, 1, filehandle->fh);
+				af_write(filehandle->miscellaneous[i].buffer, filehandle->miscellaneous[i].size, filehandle->fh);
 
 				/* Pad if necessary. */
 				if ((filehandle->miscellaneous[i].size%2) != 0)
@@ -394,7 +394,7 @@ static status WriteCues (AFfilehandle file)
 	else
 		af_fseek(file->fh, wave->markOffset, SEEK_SET);
 
-	af_fwrite("cue ", 4, 1, file->fh);
+	af_write("cue ", 4, file->fh);
 
 	/*
 		The cue chunk consists of 4 bytes for the number of cue points
@@ -423,7 +423,7 @@ static status WriteCues (AFfilehandle file)
 		af_write_uint32_le(&position, file->fh);
 
 		/* For now the RIFF id is always the first data chunk. */
-		af_fwrite("data", 4, 1, file->fh);
+		af_write("data", 4, file->fh);
 
 		/*
 			For an uncompressed WAVE file which contains
@@ -431,10 +431,10 @@ static status WriteCues (AFfilehandle file)
 			are zero.
 		*/
 		chunkStart = 0;
-		af_fwrite(&chunkStart, sizeof (uint32_t), 1, file->fh);
+		af_write(&chunkStart, sizeof (uint32_t), file->fh);
 
 		blockStart = 0;
-		af_fwrite(&blockStart, sizeof (uint32_t), 1, file->fh);
+		af_write(&blockStart, sizeof (uint32_t), file->fh);
 
 		markposition = afGetMarkPosition(file, AF_DEFAULT_TRACK, markids[i]);
 
@@ -469,9 +469,9 @@ static status WriteCues (AFfilehandle file)
 			((strlen(name) + 1) % 2);
 	}
 
-	af_fwrite("LIST", 4, 1, file->fh);
+	af_write("LIST", 4, file->fh);
 	af_write_uint32_le(&listChunkSize, file->fh);
-	af_fwrite("adtl", 4, 1, file->fh);
+	af_write("adtl", 4, file->fh);
 
 	for (i=0; i<markCount; i++)
 	{
@@ -484,10 +484,10 @@ static status WriteCues (AFfilehandle file)
 		labelSize = 4+(strlen(name)+1) + ((strlen(name) + 1) % 2);
 		cuePointID = markids[i];
 
-		af_fwrite("labl", 4, 1, file->fh);
+		af_write("labl", 4, file->fh);
 		af_write_uint32_le(&labelSize, file->fh);
 		af_write_uint32_le(&cuePointID, file->fh);
-		af_fwrite(name, strlen(name) + 1, 1, file->fh);
+		af_write(name, strlen(name) + 1, file->fh);
 		/*
 			If the name plus the size byte comprises an odd
 			length, add another byte to make the string an
@@ -515,9 +515,9 @@ status _af_wave_write_init (AFfilesetup setup, AFfilehandle filehandle)
 	filehandle->formatSpecific = waveinfo_new();
 
 	af_fseek(filehandle->fh, 0, SEEK_SET);
-	af_fwrite("RIFF", 4, 1, filehandle->fh);
-	af_fwrite(&zero, 4, 1, filehandle->fh);
-	af_fwrite("WAVE", 4, 1, filehandle->fh);
+	af_write("RIFF", 4, filehandle->fh);
+	af_write(&zero, 4, filehandle->fh);
+	af_write("WAVE", 4, filehandle->fh);
 
 	WriteMiscellaneous(filehandle);
 	WriteCues(filehandle);

@@ -102,12 +102,3 @@ afSyncFile
 afTellFrame
 afWriteFrames
 afWriteMisc
-af_fclose
-af_flength
-af_fread
-af_fseek
-af_ftell
-af_fwrite
-af_virtual_file_destroy
-af_virtual_file_new
-af_virtual_file_new_for_file

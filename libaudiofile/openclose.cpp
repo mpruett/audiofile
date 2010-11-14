@@ -36,14 +36,8 @@
 #include "units.h"
 #include "util.h"
 #include "modules.h"
-
-#if defined(WIN32) || defined(__CYGWIN__)
-#include <io.h>
-#include <fcntl.h>
-#define SETBINARYMODE(fp) 	_setmode(_fileno(fp), _O_BINARY)
-#else
-#define SETBINARYMODE(x)
-#endif /* WIN32 || __CYGWIN__ */
+#include "af_vfs.h"
+#include "File.h"
 
 extern const _Unit _af_units[];
 
@@ -91,22 +85,7 @@ int afIdentifyFD (int fd)
 		the virtual file below.
 	*/
 	fd = dup(fd);
-
-	fp = fdopen(fd, "r");
-	if (fp == NULL)
-	{
-		_af_error(AF_BAD_OPEN, "could not open file");
-		return AF_FILE_UNKNOWN;
-	}
-
-	SETBINARYMODE(fp);
-
-	vf = af_virtual_file_new_for_file(fp);
-	if (vf == NULL)
-	{
-		_af_error(AF_BAD_OPEN, "could not open file");
-		return AF_FILE_UNKNOWN;
-	}
+	vf = new File(fd, File::ReadAccess);
 
 	result = _af_identify(vf, NULL);
 
@@ -128,16 +107,7 @@ int afIdentifyNamedFD (int fd, const char *filename, int *implemented)
 	*/
 	fd = dup(fd);
 
-	fp = fdopen(fd, "r");
-	if (fp == NULL)
-	{
-		_af_error(AF_BAD_OPEN, "could not open file '%s'", filename);
-		return AF_FILE_UNKNOWN;
-	}
-
-	SETBINARYMODE(fp);
-
-	vf = af_virtual_file_new_for_file(fp);
+	vf = new File(fd, File::ReadAccess);
 	if (vf == NULL)
 	{
 		_af_error(AF_BAD_OPEN, "could not open file '%s'", filename);
@@ -174,15 +144,8 @@ AFfilehandle afOpenFD (int fd, const char *mode, AFfilesetup setup)
 		return AF_NULL_FILEHANDLE;
 	}
 
-	if ((fp = fdopen(fd, mode)) == NULL)
-	{
-		_af_error(AF_BAD_OPEN, "could not open file");
-		return AF_NULL_FILEHANDLE;
-	}
-
-	SETBINARYMODE(fp);
-
-	vf = af_virtual_file_new_for_file(fp);
+	vf = new File(fd, access == _AF_READ_ACCESS ?
+		File::ReadAccess : File::WriteAccess);
 
 	if (_afOpenFile(access, vf, NULL, &filehandle, setup) != AF_SUCCEED)
 		af_fclose(vf);
@@ -214,15 +177,8 @@ AFfilehandle afOpenNamedFD (int fd, const char *mode, AFfilesetup setup,
 		return AF_NULL_FILEHANDLE;
 	}
 
-	if ((fp = fdopen(fd, mode)) == NULL)
-	{
-		_af_error(AF_BAD_OPEN, "could not open file '%s'", filename);
-		return AF_NULL_FILEHANDLE;
-	}
-
-	SETBINARYMODE(fp);
-
-	vf = af_virtual_file_new_for_file(fp);
+	vf = new File(fd, access == _AF_READ_ACCESS ?
+		File::ReadAccess : File::WriteAccess);
 
 	if (_afOpenFile(access, vf, filename, &filehandle, setup) != AF_SUCCEED)
 		af_fclose(vf);
@@ -253,15 +209,13 @@ AFfilehandle afOpenFile (const char *filename, const char *mode, AFfilesetup set
 		return AF_NULL_FILEHANDLE;
 	}
 
-	if ((fp = fopen(filename, mode)) == NULL)
+	vf = File::open(filename,
+		access == _AF_READ_ACCESS ? File::ReadAccess : File::WriteAccess);
+	if (vf == NULL)
 	{
 		_af_error(AF_BAD_OPEN, "could not open file '%s'", filename);
 		return AF_NULL_FILEHANDLE;
 	}
-
-	SETBINARYMODE(fp);
-
-	vf = af_virtual_file_new_for_file(fp);
 
 	if (_afOpenFile(access, vf, filename, &filehandle, setup) != AF_SUCCEED)
 		af_fclose(vf);
@@ -384,7 +338,7 @@ static status _afOpenFile (int access, AFvirtualfile *vf, const char *filename,
 			return AF_FAIL;
 	}
 
-	filehandle = _af_malloc(sizeof (_AFfilehandle));
+	filehandle = (AFfilehandle) _af_malloc(sizeof (_AFfilehandle));
 	if (filehandle == NULL)
 	{
 		if (completesetup)
@@ -550,13 +504,13 @@ static void freeFileHandle (AFfilehandle filehandle)
 			/* Free the compression parameters. */
 			if (filehandle->tracks[i].f.compressionParams)
 			{
-				AUpvfree(filehandle->tracks[i].f.compressionParams);
+				AUpvfree((AUpvlist) filehandle->tracks[i].f.compressionParams);
 				filehandle->tracks[i].f.compressionParams = AU_NULL_PVLIST;
 			}
 
 			if (filehandle->tracks[i].v.compressionParams)
 			{
-				AUpvfree(filehandle->tracks[i].v.compressionParams);
+				AUpvfree((AUpvlist) filehandle->tracks[i].v.compressionParams);
 				filehandle->tracks[i].v.compressionParams = AU_NULL_PVLIST;
 			}
 

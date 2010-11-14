@@ -168,7 +168,8 @@ static void ima_adpcm_run_pull (_AFmoduleinst *module)
 	int blockCount = module->outc->nframes / framesPerBlock;
 
 	/* Read the compressed frames. */
-	ssize_t blocksRead = af_fread(module->inc->buf, d->blockAlign, blockCount, d->fh);
+	ssize_t bytesRead = af_read(module->inc->buf, d->blockAlign * blockCount, d->fh);
+	ssize_t blocksRead = bytesRead >= 0 ? bytesRead / d->blockAlign : 0;
 
 	/* This condition would indicate that the file is bad. */
 	if (blocksRead < 0)

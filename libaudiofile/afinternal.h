@@ -38,6 +38,10 @@
 #include "af_vfs.h"
 #include "error.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef int status;
 #define AF_SUCCEED (0)
 #define AF_FAIL (-1)
@@ -347,5 +351,9 @@ enum
 
 /* NeXT/Sun sampling rate */
 #define _AF_SRATE_CODEC (8012.8210513)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

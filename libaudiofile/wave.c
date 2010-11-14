@@ -209,8 +209,8 @@ static status ParseFormat (AFfilehandle filehandle, AFvirtualfile *fp,
 			{
 				int16_t	a0, a1;
 
-				af_read_uint16_le(&a0, fp);
-				af_read_uint16_le(&a1, fp);
+				af_read_int16_le(&a0, fp);
+				af_read_int16_le(&a1, fp);
 
 				wave->msadpcmCoefficients[i][0] = a0;
 				wave->msadpcmCoefficients[i][1] = a1;
@@ -342,7 +342,6 @@ static status ParseData (AFfilehandle filehandle, AFvirtualfile *fp,
 static status ParsePlayList (AFfilehandle filehandle, AFvirtualfile *fp,
 	uint32_t id, size_t size)
 {
-	_Instrument	*instrument;
 	uint32_t	segmentCount;
 	int		segment;
 
@@ -430,7 +429,7 @@ static status ParseADTLSubChunk (AFfilehandle filehandle, AFvirtualfile *fp,
 		char		chunkID[4];
 		uint32_t	chunkSize;
 
-		af_fread(chunkID, 4, 1, fp);
+		af_read(chunkID, 4, fp);
 		af_read_uint32_le(&chunkSize, fp);
 
 		if (memcmp(chunkID, "labl", 4)==0 || memcmp(chunkID, "note", 4)==0)
@@ -441,7 +440,7 @@ static status ParseADTLSubChunk (AFfilehandle filehandle, AFvirtualfile *fp,
 			char *p=_af_malloc(length);
 
 			af_read_uint32_le(&id, fp);
-			af_fread(p, length, 1, fp);
+			af_read(p, length, fp);
 
 			marker = _af_marker_find_by_id(track, id);
 
@@ -490,7 +489,7 @@ static status ParseINFOSubChunk (AFfilehandle filehandle, AFvirtualfile *fp,
 		int		misctype = AF_MISC_UNRECOGNIZED;
 		uint32_t	miscid, miscsize;
 
-		af_fread(&miscid, 4, 1, fp);
+		af_read(&miscid, 4, fp);
 		af_read_uint32_le(&miscsize, fp);
 
 		if (memcmp(&miscid, "IART", 4) == 0)
@@ -510,7 +509,7 @@ static status ParseINFOSubChunk (AFfilehandle filehandle, AFvirtualfile *fp,
 		{
 			char	*string = _af_malloc(miscsize);
 
-			af_fread(string, miscsize, 1, fp);
+			af_read(string, miscsize, fp);
 
 			filehandle->miscellaneousCount++;
 			filehandle->miscellaneous = _af_realloc(filehandle->miscellaneous, sizeof (_Miscellaneous) * filehandle->miscellaneousCount);
@@ -538,7 +537,7 @@ static status ParseList (AFfilehandle filehandle, AFvirtualfile *fp,
 {
 	uint32_t	typeID;
 
-	af_fread(&typeID, 4, 1, fp);
+	af_read(&typeID, 4, fp);
 	size-=4;
 
 	if (memcmp(&typeID, "adtl", 4) == 0)
@@ -569,8 +568,8 @@ static status ParseInstrument (AFfilehandle filehandle, AFvirtualfile *fp,
 	uint8_t	padByte;
 
 	af_read_uint8(&baseNote, fp);
-	af_read_uint8(&detune, fp);
-	af_read_uint8(&gain, fp);
+	af_read_int8(&detune, fp);
+	af_read_int8(&gain, fp);
 	af_read_uint8(&lowNote, fp);
 	af_read_uint8(&highNote, fp);
 	af_read_uint8(&lowVelocity, fp);
@@ -586,9 +585,9 @@ bool _af_wave_recognize (AFvirtualfile *fh)
 
 	af_fseek(fh, 0, SEEK_SET);
 
-	if (af_fread(buffer, 1, 8, fh) != 8 || memcmp(buffer, "RIFF", 4) != 0)
+	if (af_read(buffer, 8, fh) != 8 || memcmp(buffer, "RIFF", 4) != 0)
 		return false;
-	if (af_fread(buffer, 1, 4, fh) != 4 || memcmp(buffer, "WAVE", 4) != 0)
+	if (af_read(buffer, 4, fh) != 4 || memcmp(buffer, "WAVE", 4) != 0)
 		return false;
 
 	return true;
@@ -627,9 +626,9 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 
 	af_fseek(filehandle->fh, 0, SEEK_SET);
 
-	af_fread(&type, 4, 1, filehandle->fh);
+	af_read(&type, 4, filehandle->fh);
 	af_read_uint32_le(&size, filehandle->fh);
-	af_fread(&formtype, 4, 1, filehandle->fh);
+	af_read(&formtype, 4, filehandle->fh);
 
 	assert(!memcmp(&type, "RIFF", 4));
 	assert(!memcmp(&formtype, "WAVE", 4));
@@ -649,7 +648,7 @@ status _af_wave_read_init (AFfilesetup setup, AFfilehandle filehandle)
 #ifdef DEBUG
 		printf("index: %d\n", index);
 #endif
-		af_fread(&chunkid, 4, 1, filehandle->fh);
+		af_read(&chunkid, 4, filehandle->fh);
 		af_read_uint32_le(&chunksize, filehandle->fh);
 
 #ifdef DEBUG

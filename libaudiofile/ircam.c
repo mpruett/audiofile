@@ -74,7 +74,7 @@ bool _af_ircam_recognize (AFvirtualfile *fh)
 
 	af_fseek(fh, 0, SEEK_SET);
 
-	if (af_fread(buffer, 4, 1, fh) != 1)
+	if (af_read(buffer, 4, fh) != 4)
 		return false;
 
 	/* Check to see if the file's magic number matches. */
@@ -204,7 +204,7 @@ status _af_ircam_read_init (AFfilesetup setup, AFfilehandle handle)
 
 	af_fseek(handle->fh, 0, SEEK_SET);
 
-	if (af_fread(magic, 4, 1, handle->fh) != 1)
+	if (af_read(magic, 4, handle->fh) != 4)
 	{
 		_af_error(AF_BAD_READ, "Could not read BICSF file header");
 		return AF_FAIL;
@@ -233,9 +233,9 @@ status _af_ircam_read_init (AFfilesetup setup, AFfilehandle handle)
 	isSwapped = !isLittleEndian;
 #endif
 
-	af_fread(&rate, 4, 1, handle->fh);
-	af_fread(&channels, 4, 1, handle->fh);
-	af_fread(&packMode, 4, 1, handle->fh);
+	af_read(&rate, 4, handle->fh);
+	af_read(&channels, 4, handle->fh);
+	af_read(&packMode, 4, handle->fh);
 
 	if (isSwapped)
 	{

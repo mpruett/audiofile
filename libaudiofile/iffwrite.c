@@ -68,10 +68,10 @@ status _af_iff_write_init (AFfilesetup setup, AFfilehandle file)
 
 	file->formatSpecific = iff_info_new();
 
-	af_fwrite("FORM", 4, 1, file->fh);
+	af_write("FORM", 4, file->fh);
 	af_write_uint32_be(&fileSize, file->fh);
 
-	af_fwrite("8SVX", 4, 1, file->fh);
+	af_write("8SVX", 4, file->fh);
 
 	WriteVHDR(file);
 	WriteMiscellaneous(file);
@@ -122,7 +122,7 @@ static status WriteVHDR (const AFfilehandle file)
 
 	track = _af_filehandle_get_track(file, AF_DEFAULT_TRACK);
 
-	af_fwrite("VHDR", 4, 1, file->fh);
+	af_write("VHDR", 4, file->fh);
 
 	chunkSize = 20;
 	af_write_uint32_be(&chunkSize, file->fh);
@@ -166,7 +166,7 @@ static status WriteBODY (AFfilehandle file)
 	else
 		af_fseek(file->fh, iff->BODY_offset, SEEK_SET);
 
-	af_fwrite("BODY", 4, 1, file->fh);
+	af_write("BODY", 4, file->fh);
 
 	/*
 		IFF/8SVX supports only one channel, so the number of
@@ -224,7 +224,7 @@ static status WriteMiscellaneous (AFfilehandle file)
 				memcpy(&chunkType, "ANNO", 4); break;
 		}
 
-		af_fwrite(&chunkType, 4, 1, file->fh);
+		af_write(&chunkType, 4, file->fh);
 
 		chunkSize = misc->size;
 		af_write_uint32_be(&chunkSize, file->fh);
@@ -235,7 +235,7 @@ static status WriteMiscellaneous (AFfilehandle file)
 			for now.
 		*/
 		if (misc->buffer != NULL)
-			af_fwrite(misc->buffer, misc->size, 1, file->fh);
+			af_write(misc->buffer, misc->size, file->fh);
 		else
 			af_fseek(file->fh, misc->size, SEEK_CUR);
 

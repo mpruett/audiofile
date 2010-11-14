@@ -1,3 +1,10 @@
+2010-11-14  Michael Pruett <michael@68k.org>
+
+	Refactor file I/O.
+
+	Eliminate VFS interface since it cannot support large files or provide
+	context for handling error conditions.
+
 2010-10-30  Michael Pruett <michael@68k.org>
 
 	* examples/Makefile.am, examples/alsaplay.cpp: Add example

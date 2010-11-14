@@ -64,7 +64,7 @@ bool _af_nist_recognize (AFvirtualfile *fh)
 
 	af_fseek(fh, 0, SEEK_SET);
 
-	if (af_fread(buffer, 16, 1, fh) != 1)
+	if (af_read(buffer, 16, fh) != 16)
 		return false;
 
 	/* Check to see if the file's magic number matches. */
@@ -216,7 +216,7 @@ status _af_nist_read_init (AFfilesetup setup, AFfilehandle handle)
 
 	af_fseek(handle->fh, 0, SEEK_SET);
 
-	if (af_fread(header, NIST_SPHERE_HEADER_LENGTH, 1, handle->fh) != 1)
+	if (af_read(header, NIST_SPHERE_HEADER_LENGTH, handle->fh) != NIST_SPHERE_HEADER_LENGTH)
 	{
 		_af_error(AF_BAD_READ, "Could not read NIST SPHERE file header");
 		return AF_FAIL;

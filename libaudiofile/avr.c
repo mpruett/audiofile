@@ -64,7 +64,7 @@ bool _af_avr_recognize (AFvirtualfile *fh)
 
 	af_fseek(fh, 0, SEEK_SET);
 
-	if (af_fread(&magic, 4, 1, fh) != 1 || memcmp(&magic, "2BIT", 4) != 0)
+	if (af_read(&magic, 4, fh) != 4 || memcmp(&magic, "2BIT", 4) != 0)
 		return false;
 
 	return true;
@@ -86,7 +86,7 @@ status _af_avr_read_init (AFfilesetup setup, AFfilehandle file)
 
 	af_fseek(file->fh, 0, SEEK_SET);
 
-	if (af_fread(&magic, 4, 1, file->fh) != 1)
+	if (af_read(&magic, 4, file->fh) != 4)
 	{
 		_af_error(AF_BAD_READ, "could not read AVR file header");
 		return AF_FAIL;
@@ -99,7 +99,7 @@ status _af_avr_read_init (AFfilesetup setup, AFfilehandle file)
 	}
 
 	/* Read name. */
-	af_fread(name, 8, 1, file->fh);
+	af_read(name, 8, file->fh);
 
 	af_read_uint16_be(&mono, file->fh);
 	af_read_uint16_be(&resolution, file->fh);
@@ -112,8 +112,8 @@ status _af_avr_read_init (AFfilesetup setup, AFfilehandle file)
 	af_read_uint32_be(&loopStart, file->fh);
 	af_read_uint32_be(&loopEnd, file->fh);
 
-	af_fread(reserved, 26, 1, file->fh);
-	af_fread(user, 64, 1, file->fh);
+	af_read(reserved, 26, file->fh);
+	af_read(user, 64, file->fh);
 
 	if ((track = _af_track_new()) == NULL)
 		return AF_FAIL;

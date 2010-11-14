@@ -34,6 +34,10 @@
 #include "audiofile.h"
 #include "afinternal.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 bool _af_filesetup_ok (AFfilesetup setup);
 bool _af_filehandle_ok (AFfilehandle file);
 
@@ -42,7 +46,7 @@ bool _af_filehandle_can_read (AFfilehandle file);
 void *_af_malloc (size_t size);
 void *_af_realloc (void *ptr, size_t size);
 void *_af_calloc (size_t nmemb, size_t size);
-char *_af_strdup (char *s);
+char *_af_strdup (const char *s);
 
 AUpvlist _af_pv_long (long val);
 AUpvlist _af_pv_double (double val);
@@ -73,13 +77,29 @@ status af_read_uint16_be (uint16_t *value, AFvirtualfile *vf);
 status af_read_uint16_le (uint16_t *value, AFvirtualfile *vf);
 status af_read_uint8 (uint8_t *value, AFvirtualfile *vf);
 
+status af_read_int32_be (int32_t *value, AFvirtualfile *vf);
+status af_read_int32_le (int32_t *value, AFvirtualfile *vf);
+status af_read_int16_be (int16_t *value, AFvirtualfile *vf);
+status af_read_int16_le (int16_t *value, AFvirtualfile *vf);
+status af_read_int8 (int8_t *value, AFvirtualfile *vf);
+
 status af_write_uint32_be (const uint32_t *value, AFvirtualfile *vf);
 status af_write_uint32_le (const uint32_t *value, AFvirtualfile *vf);
 status af_write_uint16_be (const uint16_t *value, AFvirtualfile *vf);
 status af_write_uint16_le (const uint16_t *value, AFvirtualfile *vf);
 status af_write_uint8 (const uint8_t *value, AFvirtualfile *vf);
 
+status af_write_int32_be (const int32_t *value, AFvirtualfile *vf);
+status af_write_int32_le (const int32_t *value, AFvirtualfile *vf);
+status af_write_int16_be (const int16_t *value, AFvirtualfile *vf);
+status af_write_int16_le (const int16_t *value, AFvirtualfile *vf);
+status af_write_int8 (const int8_t *value, AFvirtualfile *vf);
+
 status af_read_pstring (char value[256], AFvirtualfile *vf);
 status af_write_pstring (const char *value, AFvirtualfile *vf);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

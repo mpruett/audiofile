@@ -165,7 +165,8 @@ static void g711run_push (_AFmoduleinst *i)
 
 	/* Write the compressed data. */
 
-	nfr = af_fwrite(i->outc->buf, framesize, frames2write, d->fh);
+	ssize_t bytesWritten = af_write(i->outc->buf, framesize * frames2write, d->fh);
+	nfr = bytesWritten >= 0 ? bytesWritten / framesize : 0;
 
 	CHNK(printf("writing %d frames to g711 file\n", frames2write));
 
@@ -266,7 +267,8 @@ static void g711run_pull (_AFmoduleinst *i)
 
 	/* Read the compressed frames. */
 
-	nfr = af_fread(i->inc->buf, framesize, frames2read, d->fh);
+	ssize_t bytesRead = af_read(i->inc->buf, framesize * frames2read, d->fh);
+	nfr = bytesRead >= 0 ? bytesRead / framesize : 0;
 
 	/* Decompress into i->outc. */
 

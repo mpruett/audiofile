@@ -39,8 +39,6 @@ extern "C"
 {
 #endif /* __cplusplus */
 
-typedef struct _AFvirtualfile AFvirtualfile;
-
 typedef struct _AFfilesetup *AFfilesetup;
 typedef struct _AFfilehandle *AFfilehandle;
 typedef void (*AFerrfunc)(long, const char *);
@@ -409,8 +407,6 @@ int afIdentifyFD (int);
 int afIdentifyNamedFD (int, const char *filename, int *implemented);
 
 AFfilehandle afOpenFile (const char *filename, const char *mode,
-	AFfilesetup setup);
-AFfilehandle afOpenVirtualFile (AFvirtualfile *vfile, const char *mode,
 	AFfilesetup setup);
 AFfilehandle afOpenFD (int fd, const char *mode, AFfilesetup setup);
 AFfilehandle afOpenNamedFD (int fd, const char *mode, AFfilesetup setup,
