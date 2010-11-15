@@ -71,7 +71,6 @@ afNewFileSetup
 afOpenFD
 afOpenFile
 afOpenNamedFD
-afOpenVirtualFile
 afQuery
 afQueryDouble
 afQueryLong

@@ -61,10 +61,10 @@ _Track *_af_filehandle_get_track (AFfilehandle file, int trackid);
 
 bool _af_unique_ids (int *ids, int nids, char *idname, int iderr);
 
-float _af_format_frame_size (_AudioFormat *format, bool stretch3to4);
-int _af_format_frame_size_uncompressed (_AudioFormat *format, bool stretch3to4);
-float _af_format_sample_size (_AudioFormat *format, bool stretch3to4);
-int _af_format_sample_size_uncompressed (_AudioFormat *format, bool stretch3to4);
+float _af_format_frame_size (const _AudioFormat *format, bool stretch3to4);
+int _af_format_frame_size_uncompressed (const _AudioFormat *format, bool stretch3to4);
+float _af_format_sample_size (const _AudioFormat *format, bool stretch3to4);
+int _af_format_sample_size_uncompressed (const _AudioFormat *format, bool stretch3to4);
 
 status _af_set_sample_format (_AudioFormat *f, int sampleFormat, int sampleWidth);
 

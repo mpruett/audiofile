@@ -90,12 +90,12 @@
 
 #endif
 
-static inline uint16_t _af_byteswap_int16 (uint16_t x)
+inline uint16_t _af_byteswap_int16 (uint16_t x)
 {
 	return (x >> 8) | (x << 8);
 }
 
-static inline uint32_t _af_byteswap_int32 (uint32_t x)
+inline uint32_t _af_byteswap_int32 (uint32_t x)
 {
 	return ((x & 0x000000ffU) << 24) |
 		((x & 0x0000ff00U) << 8) |
@@ -103,7 +103,19 @@ static inline uint32_t _af_byteswap_int32 (uint32_t x)
 		((x & 0xff000000U) >> 24);
 }
 
-static inline float _af_byteswap_float32 (float x)
+inline uint64_t _af_byteswap_int64 (uint64_t x)
+{
+	return ((x & 0x00000000000000ffULL) << 56) |
+		((x & 0x000000000000ff00ULL) << 40) |
+		((x & 0x0000000000ff0000ULL) << 24) |
+		((x & 0x00000000ff000000ULL) << 8) |
+		((x & 0x000000ff00000000ULL) >> 8) |
+		((x & 0x0000ff0000000000ULL) >> 24) |
+		((x & 0x00ff000000000000ULL) >> 40) |
+		((x & 0xff00000000000000ULL) >> 56);
+}
+
+inline float _af_byteswap_float32 (float x)
 {
 	union
 	{
@@ -115,19 +127,26 @@ static inline float _af_byteswap_float32 (float x)
 	return u.f;
 }
 
+inline double _af_byteswap_float64 (double x)
+{
+	union
+	{
+		uint64_t i;
+		double f;
+	} u;
+	u.f = x;
+	u.i = _af_byteswap_int64(u.i);
+	return u.f;
+}
+
 #ifdef __cplusplus
 
-template <typename T>
-T byteswap(T value);
-
-template <>
-uint32_t byteswap(uint32_t value) { return _af_byteswap_int32(value); }
-template <>
-int32_t byteswap(int32_t value) { return _af_byteswap_int32(value); }
-template <>
-uint16_t byteswap(uint16_t value) { return _af_byteswap_int16(value); }
-template <>
-int16_t byteswap(int16_t value) { return _af_byteswap_int16(value); }
+inline uint64_t byteswap(uint64_t value) { return _af_byteswap_int64(value); }
+inline int64_t byteswap(int64_t value) { return _af_byteswap_int64(value); }
+inline uint32_t byteswap(uint32_t value) { return _af_byteswap_int32(value); }
+inline int32_t byteswap(int32_t value) { return _af_byteswap_int32(value); }
+inline uint16_t byteswap(uint16_t value) { return _af_byteswap_int16(value); }
+inline int16_t byteswap(int16_t value) { return _af_byteswap_int16(value); }
 
 template <typename T>
 T bigToHost(T value)

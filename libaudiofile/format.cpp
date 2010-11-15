@@ -41,7 +41,8 @@
 #include "afinternal.h"
 #include "afinternal.h"
 #include "units.h"
-#include "modules.h"
+#include "modules/Module.h"
+#include "modules/ModuleState.h"
 
 extern const _Unit _af_units[];
 
@@ -116,9 +117,8 @@ AFframecount afSeekFrame (AFfilehandle file, int trackid, AFframecount frame)
 	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
 		return -1;
 
-	if (track->ms.modulesdirty)
-		if (_AFsetupmodules(file, track) != AF_SUCCEED)
-			return -1;
+	if (track->ms->isDirty() && track->ms->setup(file, track) == AF_FAIL)
+		return -1;
 
 	if (frame < 0)
 		return track->nextvframe;
@@ -143,7 +143,7 @@ AFframecount afSeekFrame (AFfilehandle file, int trackid, AFframecount frame)
 	*/
 	track->nextvframe = frame;
 
-	if (_AFsetupmodules(file, track) != AF_SUCCEED)
+	if (track->ms->setup(file, track) == AF_FAIL)
 		return -1;
 
 	return track->nextvframe;
@@ -172,7 +172,7 @@ int afSetVirtualByteOrder (AFfilehandle handle, int track, int byteorder)
 	}
 
 	currentTrack->v.byteOrder = byteorder;
-	currentTrack->ms.modulesdirty = true;
+	currentTrack->ms->setDirty();
 
 	return AF_SUCCEED;
 }
@@ -213,11 +213,8 @@ AFframecount afGetFrameCount (AFfilehandle file, int trackid)
 	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
 		return -1;
 
-	if (track->ms.modulesdirty)
-	{
-		if (_AFsetupmodules(file, track) != AF_SUCCEED)
-			return -1;
-	}
+	if (track->ms->isDirty() && track->ms->setup(file, track) == AF_FAIL)
+		return -1;
 
 	return track->totalvframes;
 }
@@ -284,7 +281,7 @@ int afSetVirtualSampleFormat (AFfilehandle file, int trackid,
 	if (_af_set_sample_format(&track->v, sampleFormat, sampleWidth) == AF_FAIL)
 		return -1;
 
-	track->ms.modulesdirty = true;
+	track->ms->setDirty();
 
 	return 0;
 }
@@ -317,7 +314,7 @@ int afSetVirtualChannels (AFfilehandle file, int trackid, int channelCount)
 		return -1;
 
 	track->v.channelCount = channelCount;
-	track->ms.modulesdirty = true;
+	track->ms->setDirty();
 
 	if (track->channelMatrix)
 		free(track->channelMatrix);
@@ -353,7 +350,7 @@ int afSetVirtualRate (AFfilehandle file, int trackid, double rate)
 	}
 
 	track->v.sampleRate = rate;
-	track->ms.modulesdirty = true;
+	track->ms->setDirty();
 
 	return 0;
 }

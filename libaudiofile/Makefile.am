@@ -7,10 +7,10 @@ lib_LTLIBRARIES = libaudiofile.la
 EXTRA_DIST = audiofile.exports
 
 libaudiofile_la_SOURCES = \
-	openclose.cpp setup.c format.c data.c pcm.c \
+	openclose.cpp setup.c format.cpp data.cpp pcm.cpp \
 	error.c byteorder.h af_vfs.cpp \
 	util.cpp util.h debug.c aupv.c units.c compression.c \
-	aes.c instrument.c loop.c marker.c misc.c track.c query.c \
+	aes.c instrument.c loop.c marker.c misc.c track.cpp query.c \
 	raw.c raw.h \
 	aiff.c aiffwrite.c extended.c aiff.h \
 	next.c nextwrite.c next.h \
@@ -24,8 +24,8 @@ libaudiofile_la_SOURCES = \
 	compression.h error.h extended.h instrument.h marker.h \
 	pcm.h setup.h track.h units.h \
 	print.h util.h debug.h \
-	modules.c modules.h \
-	File.cpp File.h Shared.h
+	File.cpp File.h Shared.h \
+	AudioFormat.cpp
 
 libaudiofile_la_LIBADD = modules/libmodules.la $(COVERAGE_LIBS)
 
@@ -40,3 +40,4 @@ include_HEADERS = audiofile.h aupvlist.h af_vfs.h
 # AM_CFLAGS = -fullwarn -g
 # No debugging.
 AM_CFLAGS = -DNDEBUG -Wall $(COVERAGE_CFLAGS)
+AM_CXXFLAGS = $(AM_CFLAGS) -fno-rtti -fno-exceptions

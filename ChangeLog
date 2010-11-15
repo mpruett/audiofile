@@ -1,5 +1,9 @@
 2010-11-14  Michael Pruett <michael@68k.org>
 
+	Refactor audio conversion.
+
+2010-11-14  Michael Pruett <michael@68k.org>
+
 	Refactor file I/O.
 
 	Eliminate VFS interface since it cannot support large files or provide

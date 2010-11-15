@@ -67,4 +67,38 @@
 #define MAX_U_INT24 16777215.0
 #define MAX_U_INT32 4294967295.0
 
+extern const _PCMInfo _af_default_signed_integer_pcm_mappings[];
+extern const _PCMInfo _af_default_unsigned_integer_pcm_mappings[];
+extern const _PCMInfo _af_default_float_pcm_mappings[];
+extern const _PCMInfo _af_default_double_pcm_mappings[];
+
+#ifdef __cplusplus
+template <int Bits, bool Signed>
+struct IntLimits
+{
+	static const double kSlope = 0;
+	static const double kIntercept = 0;
+	static const double kMinValue = 0;
+	static const double kMaxValue = 0;
+};
+
+template <int Bits>
+struct IntLimits<Bits, true>
+{
+	static const double kSlope = (1LL << (Bits - 1)) - 1;
+	static const double kIntercept = 0;
+	static const double kMinValue = -(1 << (Bits - 1));
+	static const double kMaxValue = (1LL << (Bits - 1)) - 1;
+};
+
+template <int Bits>
+struct IntLimits<Bits, false>
+{
+	static const double kSlope = (1LL << (Bits - 1)) - 1;
+	static const double kIntercept = 1LL << (Bits - 1);
+	static const double kMinValue = 0;
+	static const double kMaxValue = (1LL << Bits) - 1;
+};
+#endif
+
 #endif /* PCM_H */

@@ -39,6 +39,8 @@
 #include "error.h"
 
 #ifdef __cplusplus
+#include <string>
+
 extern "C" {
 #endif
 
@@ -107,92 +109,27 @@ typedef struct _AudioFormat
 
 	int	compressionType;	/* AF_COMPRESSION_... */
 	void	*compressionParams;	/* NULL if no compression */
+
+	bool packed : 1;
+
+#ifdef __cplusplus
+	size_t bytesPerSample(bool stretch3to4) const;
+	size_t bytesPerFrame(bool stretch3to4) const;
+	size_t bytesPerSample() const;
+	size_t bytesPerFrame() const;
+	bool isInteger() const;
+	bool isSigned() const;
+	bool isUnsigned() const;
+	bool isFloat() const;
+	bool isCompressed() const;
+	bool isUncompressed() const;
+	bool isPacked() const { return packed; }
+	std::string description() const;
+#endif
 } _AudioFormat;
 
-/* modules */
-struct _AFmoduleinst;
-struct _AFchunk;
-
-typedef void (*_AFfnpmod) (struct _AFmoduleinst *i);
-typedef void (*_AFfnpsimplemod) (struct _AFchunk *inc,
-	struct _AFchunk *outc, void *modspec);
-
-typedef struct _AFmodule
-{
-	char *name;
-	_AFfnpmod describe;
-	_AFfnpmod max_pull;
-	_AFfnpmod max_push;
-	_AFfnpmod run_pull;
-	_AFfnpmod reset1;
-	_AFfnpmod reset2;
-	_AFfnpmod run_push;
-	_AFfnpmod sync1;
-	_AFfnpmod sync2;
-	_AFfnpsimplemod run;
-	_AFfnpmod free;
-} _AFmodule;
-
-typedef struct _AFchunk
-{
-	void		*buf;		/* chunk data */
-	AFframecount	nframes;	/* # of frames in chunk */
-	_AudioFormat	f;		/* format of data in chunk */
-} _AFchunk;
-
-typedef struct _AFmoduleinst
-{
-	_AFchunk *inc, *outc;
-	void *modspec;
-	union
-	{
-		struct { struct _AFmoduleinst *source; } pull;
-		struct { struct _AFmoduleinst *sink; } push;
-	} u;
-	const _AFmodule *mod;
-	bool free_on_close;	/* true=don't free module until close */
-	bool valid;	/* internal use only */
-#ifdef AF_DEBUG		/* these are set in _AFsetupmodules */
-	int margin;	/* margin for printing of CHNK messages */
-	bool dump;	/* whether to dump chunks */
-#endif
-} _AFmoduleinst;
-
-/* information private to module routines */
-typedef struct _AFmodulestate
-{
-	bool modulesdirty;
-	int nmodules;
-
-	/* See comment at very end of arrangemodules(). */
-	bool mustuseatomicnvframes;
-
-	/* previous rates before user changed them */
-	double old_f_rate, old_v_rate;
-
-	_AFchunk *chunk;
-	_AFmoduleinst *module;
-
-	/* array of pointers to buffers, one for each module */
-	void **buffer;
-
-	/* These modules have extended lifetimes. */
-
-	/* file read / write */
-	_AFmoduleinst filemodinst;
-
-	/* file module's rebuffer */
-	_AFmoduleinst filemod_rebufferinst;
-
-	/* rate conversion */
-	_AFmoduleinst rateconvertinst;
-
-	/* old rates */
-	double rateconvert_inrate, rateconvert_outrate;
-
-	/* rate conversion's rebuffer */
-	_AFmoduleinst rateconvert_rebufferinst;
-} _AFmodulestate;
+typedef struct Module Module;
+typedef struct ModuleState ModuleState;
 
 typedef struct _Track
 {
@@ -218,12 +155,16 @@ typedef struct _Track
 	AFframecount	nextvframe;
 	AFfileoffset	data_size;		/* trackBytes */
 
-	_AFmodulestate ms;
+	ModuleState *ms;
 
 	double	taper, dynamic_range;
 	bool ratecvt_filter_params_set;
 
 	bool filemodhappy;
+
+#ifdef __cplusplus
+	void print();
+#endif
 } _Track;
 
 typedef struct _TrackSetup

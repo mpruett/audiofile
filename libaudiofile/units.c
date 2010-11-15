@@ -43,10 +43,10 @@
 
 #include "compression.h"
 
-#include "modules/pcm.h"
-#include "modules/g711.h"
-#include "modules/ima.h"
-#include "modules/msadpcm.h"
+#include "modules/PCM.h"
+#include "modules/G711.h"
+#include "modules/IMA.h"
+#include "modules/MSADPCM.h"
 
 extern _InstParamInfo _af_aiff_inst_params[];
 extern _InstParamInfo _af_wave_inst_params[];

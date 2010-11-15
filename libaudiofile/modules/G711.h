@@ -1,6 +1,7 @@
 /*
 	Audio File Library
 	Copyright (C) 2000, Silicon Graphics, Inc.
+	Copyright (C) 2010, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -28,12 +29,20 @@
 #include <audiofile.h>
 #include "afinternal.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 bool _af_g711_format_ok (_AudioFormat *f);
 
-_AFmoduleinst _AFg711initcompress (_Track *trk, AFvirtualfile *fh, bool seekok,
+Module *_AFg711initcompress (_Track *, AFvirtualfile *, bool canSeek,
 	bool headerless, AFframecount *chunkframes);
 
-_AFmoduleinst _AFg711initdecompress (_Track *trk, AFvirtualfile *fh,
-	bool seekok, bool headerless, AFframecount *chunkframes);
+Module *_AFg711initdecompress (_Track *, AFvirtualfile *, bool canSeek,
+	bool headerless, AFframecount *chunkframes);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* MODULES_G711_H */

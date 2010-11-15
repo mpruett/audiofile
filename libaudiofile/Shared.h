@@ -72,6 +72,16 @@ public:
 		if (T *p = m_ptr) p->release();
 	}
 
+	SharedPtr &operator =(T *ptr)
+	{
+		if (m_ptr != ptr)
+		{
+			if (ptr) ptr->retain();
+			if (m_ptr) m_ptr->release();
+			m_ptr = ptr;
+		}
+		return *this;
+	}
 	SharedPtr &operator =(const SharedPtr &p)
 	{
 		if (m_ptr != p.m_ptr)

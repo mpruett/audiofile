@@ -25,6 +25,14 @@
 #ifndef TRACK_H
 #define TRACK_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 _Track *_af_track_new (void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* TRACK_H */

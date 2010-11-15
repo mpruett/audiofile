@@ -34,16 +34,17 @@
 #include "audiofile.h"
 #include "afinternal.h"
 #include "util.h"
-#include "modules.h"
+#include "modules/Module.h"
+#include "modules/ModuleState.h"
 
 int afWriteFrames (AFfilehandle file, int trackid, const void *samples,
 	int nvframes2write)
 {
-	_AFmoduleinst	*firstmod;
-	_AFchunk	*userc;
-	_Track		*track;
-	int		bytes_per_vframe;
-	AFframecount	vframe;
+	SharedPtr<Module> firstmod;
+	SharedPtr<Chunk> userc;
+	_Track *track;
+	int bytes_per_vframe;
+	AFframecount vframe;
 
 	if (!_af_filehandle_ok(file))
 		return -1;
@@ -54,11 +55,8 @@ int afWriteFrames (AFfilehandle file, int trackid, const void *samples,
 	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
 		return -1;
 
-	if (track->ms.modulesdirty)
-	{
-		if (_AFsetupmodules(file, track) != AF_SUCCEED)
-			return -1;
-	}
+	if (track->ms->isDirty() && track->ms->setup(file, track) == AF_FAIL)
+		return -1;
 
 	/*if (file->seekok) {*/
 
@@ -72,8 +70,8 @@ int afWriteFrames (AFfilehandle file, int trackid, const void *samples,
 
 	bytes_per_vframe = _af_format_frame_size(&track->v, true);
 
-	firstmod = &track->ms.module[0];
-	userc = &track->ms.chunk[0];
+	firstmod = track->ms->modules().front();
+	userc = track->ms->chunks().front();
 
 	track->filemodhappy = true;
 
@@ -83,37 +81,37 @@ int afWriteFrames (AFfilehandle file, int trackid, const void *samples,
 		OPTIMIZATION: see the comment at the very end of
 		arrangemodules() in modules.c for an explanation of this:
 	*/
-	if (!trk->ms.mustuseatomicnvframes)
+	if (!trk->ms->mustUseAtomicNVFrames())
 	{
-		userc->buf = (char *)buf;
-		userc->nframes = nvframes2write;
+		userc->buffer = (char *) samples;
+		userc->frameCount = nvframes2write;
 
-		(*firstmod->mod->run_push)(firstmod);
+		firstmod->runPush();
 
 		/* Count this chunk if there was no i/o error. */
 		if (trk->filemodhappy)
-			vframe += userc->nframes;
+			vframe += userc->frameCount;
 	}
 	else
 #else
 	/* Optimization must be off. */
-	assert(track->ms.mustuseatomicnvframes);
+	assert(track->ms->mustUseAtomicNVFrames());
 #endif
 	{
 		while (vframe < nvframes2write)
 		{
-			userc->buf = (char *) samples + bytes_per_vframe * vframe;
+			userc->buffer = (char *) samples + bytes_per_vframe * vframe;
 			if (vframe <= nvframes2write - _AF_ATOMIC_NVFRAMES)
-				userc->nframes = _AF_ATOMIC_NVFRAMES;
+				userc->frameCount = _AF_ATOMIC_NVFRAMES;
 			else
-				userc->nframes = nvframes2write - vframe;
+				userc->frameCount = nvframes2write - vframe;
 
-			(*firstmod->mod->run_push)(firstmod);
+			firstmod->runPush();
 
 			if (!track->filemodhappy)
 				break;
 
-			vframe += userc->nframes;
+			vframe += userc->frameCount;
 		}
 	}
 
@@ -127,8 +125,8 @@ int afReadFrames (AFfilehandle file, int trackid, void *samples,
 	int nvframeswanted)
 {
 	_Track	*track;
-	_AFmoduleinst	*firstmod;
-	_AFchunk	*userc;
+	SharedPtr<Module> firstmod;
+	SharedPtr<Chunk> userc;
 	AFframecount	nvframesleft, nvframes2read;
 	int		bytes_per_vframe;
 	AFframecount	vframe;
@@ -142,11 +140,8 @@ int afReadFrames (AFfilehandle file, int trackid, void *samples,
 	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
 		return -1;
 
-	if (track->ms.modulesdirty)
-	{
-		if (_AFsetupmodules(file, track) != AF_SUCCEED)
-			return -1;
-	}
+	if (track->ms->isDirty() && track->ms->setup(file, track) == AF_FAIL)
+		return -1;
 
 	/*if (file->seekok) {*/
 
@@ -168,22 +163,22 @@ int afReadFrames (AFfilehandle file, int trackid, void *samples,
 	}
 	bytes_per_vframe = _af_format_frame_size(&track->v, true);
 
-	firstmod = &track->ms.module[track->ms.nmodules-1];
-	userc = &track->ms.chunk[track->ms.nmodules];
+	firstmod = track->ms->modules().back();
+	userc = track->ms->chunks().back();
 
 	track->filemodhappy = true;
 
 	vframe = 0;
 
-	if (!track->ms.mustuseatomicnvframes)
+	if (!track->ms->mustUseAtomicNVFrames())
 	{
 		assert(track->frames2ignore == 0);
-		userc->buf = samples;
-		userc->nframes = nvframes2read;
+		userc->buffer = samples;
+		userc->frameCount = nvframes2read;
 
-		(*firstmod->mod->run_pull)(firstmod);
+		firstmod->runPull();
 		if (track->filemodhappy)
-			vframe += userc->nframes;
+			vframe += userc->frameCount;
 	}
 	else
 	{
@@ -191,21 +186,21 @@ int afReadFrames (AFfilehandle file, int trackid, void *samples,
 
 		if (track->frames2ignore != 0)
 		{
-			userc->nframes = track->frames2ignore;
-			userc->buf = _af_malloc(track->frames2ignore * bytes_per_vframe);
-			if (userc->buf == AF_NULL)
+			userc->frameCount = track->frames2ignore;
+			userc->allocate(track->frames2ignore * bytes_per_vframe);
+			if (userc->buffer == NULL)
 				return 0;
 
-			(*firstmod->mod->run_pull)(firstmod);
+			firstmod->runPull();
 
 			/* Have we hit EOF? */
-			if (userc->nframes < track->frames2ignore)
+			if (userc->frameCount < track->frames2ignore)
 				eof = true;
 
 			track->frames2ignore = 0;
 
-			free(userc->buf);
-			userc->buf = NULL;
+			free(userc->buffer);
+			userc->buffer = NULL;
 		}
 
 		/*
@@ -216,21 +211,21 @@ int afReadFrames (AFfilehandle file, int trackid, void *samples,
 		while (track->filemodhappy && !eof && vframe < nvframes2read)
 		{
 			AFframecount	nvframes2pull;
-			userc->buf = (char *) samples + bytes_per_vframe * vframe;
+			userc->buffer = (char *) samples + bytes_per_vframe * vframe;
 
 			if (vframe <= nvframes2read - _AF_ATOMIC_NVFRAMES)
 				nvframes2pull = _AF_ATOMIC_NVFRAMES;
 			else
 				nvframes2pull = nvframes2read - vframe;
 
-			userc->nframes = nvframes2pull;
+			userc->frameCount = nvframes2pull;
 
-			(*firstmod->mod->run_pull)(firstmod);
+			firstmod->runPull();
 
 			if (track->filemodhappy)
 			{
-				vframe += userc->nframes;
-				if (userc->nframes < nvframes2pull)
+				vframe += userc->frameCount;
+				if (userc->frameCount < nvframes2pull)
 					eof = true;
 			}
 		}

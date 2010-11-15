@@ -32,8 +32,10 @@
 #include "afinternal.h"
 #include "pcm.h"
 #include "util.h"
+#include "modules/Module.h"
+#include "modules/ModuleState.h"
 
-const _PCMInfo _af_default_signed_integer_pcm_mappings[] =
+extern const _PCMInfo _af_default_signed_integer_pcm_mappings[] =
 {
 	{0, 0, 0, 0},
 	{SLOPE_INT8, 0, MIN_INT8, MAX_INT8},
@@ -42,7 +44,7 @@ const _PCMInfo _af_default_signed_integer_pcm_mappings[] =
 	{SLOPE_INT32, 0, MIN_INT32, MAX_INT32}
 };
 
-const _PCMInfo _af_default_unsigned_integer_pcm_mappings[] =
+extern const _PCMInfo _af_default_unsigned_integer_pcm_mappings[] =
 {
 	{0, 0, 0, 0},
 	{SLOPE_INT8, INTERCEPT_U_INT8, 0, MAX_U_INT8},
@@ -51,10 +53,10 @@ const _PCMInfo _af_default_unsigned_integer_pcm_mappings[] =
 	{SLOPE_INT32, INTERCEPT_U_INT32, 0, MAX_U_INT32}
 };
 
-const _PCMInfo _af_default_float_pcm_mapping =
+extern const _PCMInfo _af_default_float_pcm_mapping =
 {1, 0, 0, 0};
 
-const _PCMInfo _af_default_double_pcm_mapping =
+extern const _PCMInfo _af_default_double_pcm_mapping =
 {1, 0, 0, 0};
 
 /*
@@ -93,7 +95,7 @@ int afSetVirtualPCMMapping (AFfilehandle file, int trackid,
 	track->v.pcm.minClip = minClip;
 	track->v.pcm.maxClip = maxClip;
 
-	track->ms.modulesdirty = true;
+	track->ms->setDirty();
 
 	return 0;
 }
@@ -125,7 +127,7 @@ int afSetTrackPCMMapping (AFfilehandle file, int trackid,
 	track->f.pcm.minClip = minClip;
 	track->f.pcm.maxClip = maxClip;
 
-	track->ms.modulesdirty = true;
+	track->ms->setDirty();
 
 	return 0;
 }

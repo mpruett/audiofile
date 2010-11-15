@@ -35,9 +35,10 @@
 #include "afinternal.h"
 #include "units.h"
 #include "util.h"
-#include "modules.h"
 #include "af_vfs.h"
 #include "File.h"
+#include "modules/Module.h"
+#include "modules/ModuleState.h"
 
 extern const _Unit _af_units[];
 
@@ -400,7 +401,8 @@ static status _afOpenFile (int access, AFvirtualfile *vf, const char *filename,
 		track->v.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
 #endif
 
-		if (_AFinitmodules(filehandle, track) == AF_FAIL)
+		track->ms = new ModuleState();
+		if (track->ms->init(filehandle, track) == AF_FAIL)
 		{
 			freeFileHandle(filehandle);
 			return AF_FAIL;
@@ -427,13 +429,10 @@ int afSyncFile (AFfilehandle handle)
 		{
 			_Track	*track = &handle->tracks[trackno];
 
-			if (track->ms.modulesdirty)
-			{
-				if (_AFsetupmodules(handle, track) == AF_FAIL)
-					return -1;
-			}
+			if (track->ms->isDirty() && track->ms->setup(handle, track) == AF_FAIL)
+				return -1;
 
-			if (_AFsyncmodules(handle, track) != AF_SUCCEED)
+			if (track->ms->sync(handle, track) != AF_SUCCEED)
 				return -1;
 		}
 
@@ -516,7 +515,8 @@ static void freeFileHandle (AFfilehandle filehandle)
 
 			/* Free the track's modules. */
 
-			_AFfreemodules(&filehandle->tracks[i]);
+			delete filehandle->tracks[i].ms;
+			filehandle->tracks[i].ms = NULL;
 
 			if (filehandle->tracks[i].channelMatrix)
 			{

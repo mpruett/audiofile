@@ -42,7 +42,6 @@
 #include "util.h"
 #include "units.h"
 #include "compression.h"
-#include "modules.h"
 #include "byteorder.h"
 #include "aupvinternal.h"
 #include "File.h"
@@ -321,7 +320,7 @@ _Track *_af_filehandle_get_track (AFfilehandle file, int trackid)
 	return NULL;
 }
 
-int _af_format_sample_size_uncompressed (_AudioFormat *format, bool stretch3to4)
+int _af_format_sample_size_uncompressed (const _AudioFormat *format, bool stretch3to4)
 {
 	int	size = 0;
 
@@ -344,7 +343,7 @@ int _af_format_sample_size_uncompressed (_AudioFormat *format, bool stretch3to4)
 	return size;
 }
 
-float _af_format_sample_size (_AudioFormat *fmt, bool stretch3to4)
+float _af_format_sample_size (const _AudioFormat *fmt, bool stretch3to4)
 {
 	int	compressionIndex;
 	float	squishFactor;
@@ -356,13 +355,13 @@ float _af_format_sample_size (_AudioFormat *fmt, bool stretch3to4)
 		squishFactor;
 }
 
-int _af_format_frame_size_uncompressed (_AudioFormat *fmt, bool stretch3to4)
+int _af_format_frame_size_uncompressed (const _AudioFormat *fmt, bool stretch3to4)
 {
 	return _af_format_sample_size_uncompressed(fmt, stretch3to4) *
 		fmt->channelCount;
 }
 
-float _af_format_frame_size (_AudioFormat *fmt, bool stretch3to4)
+float _af_format_frame_size (const _AudioFormat *fmt, bool stretch3to4)
 {
 	int	compressionIndex;
 	float	squishFactor;

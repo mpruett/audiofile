@@ -1,6 +1,7 @@
 /*
 	Audio File Library
-	Copyright (C) 2000, Silicon Graphics, Inc.
+	Copyright (C) 2001, Silicon Graphics, Inc.
+	Copyright (C) 2010, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -19,23 +20,30 @@
 */
 
 /*
-	pcm.h
+	afima.h
+
+	This module declares the interface for the IMA ADPCM
+	compression module.
 */
 
-#ifndef MODULES_PCM_H
-#define MODULES_PCM_H
+#ifndef IMA_H
+#define IMA_H
 
 #include <audiofile.h>
+
 #include "afinternal.h"
-#include "compression.h"
-#include "modules.h"
 
-bool _af_pcm_format_ok (_AudioFormat *f);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-_AFmoduleinst _AFpcminitcompress (_Track *trk, AFvirtualfile *fh, bool seekok,
-	bool headerless, AFframecount *chunkframes);
+bool _af_ima_adpcm_format_ok (_AudioFormat *f);
 
-_AFmoduleinst _AFpcminitdecompress (_Track *trk, AFvirtualfile *fh, bool seekok,
-	bool headerless, AFframecount *chunkframes);
+Module *_af_ima_adpcm_init_decompress (_Track *track, AFvirtualfile *fh,
+	bool canSeek, bool headerless, AFframecount *chunkframes);
 
-#endif /* MODULES_PCM_H */
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* IMA_H */

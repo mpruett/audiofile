@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 2001, Silicon Graphics, Inc.
+	Copyright (C) 2010, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -18,23 +18,33 @@
 	Boston, MA  02111-1307  USA.
 */
 
-/*
-	msadpcm.h
+#ifndef FILE_MODULE_H
+#define FILE_MODULE_H
 
-	This module declares the interface for the Microsoft ADPCM
-	compression module.
-*/
+#include "Module.h"
 
-#ifndef MSADPCM_H
-#define MSADPCM_H
+class FileModule : public Module
+{
+protected:
+	enum Mode { Compress, Decompress };
+	FileModule(Mode, _Track *, File *fh, bool canSeek);
 
-#include <audiofile.h>
+	Mode mode() const { return m_mode; }
+	bool canSeek() const { return m_canSeek; }
 
-#include "afinternal.h"
+	ssize_t read(void *data, size_t nbytes);
+	ssize_t write(const void *data, size_t nbytes);
+	off_t tell();
 
-bool _af_ms_adpcm_format_ok (_AudioFormat *f);
+private:
+	Mode m_mode;
 
-_AFmoduleinst _af_ms_adpcm_init_decompress (_Track *track, AFvirtualfile *fh,
-	bool seekok, bool headerless, AFframecount *chunkframes);
+protected:
+	_Track *m_track;
 
-#endif /* MSADPCM_H */
+private:
+	File *m_fh;
+	bool m_canSeek;
+};
+
+#endif // FILE_MODULE_H

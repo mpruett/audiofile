@@ -88,13 +88,16 @@ typedef struct _CompressionUnit
 	bool	multiple_of;	/* can accept any multiple of chunksize */
 	bool	(*fmtok) (_AudioFormat *format);
 
-	_AFmoduleinst (*initcompress) (_Track *track, AFvirtualfile *fh,
+	Module *(*initcompress) (_Track *track, AFvirtualfile *fh,
 		bool seekok, bool headerless, AFframecount *chunkframes);
-	_AFmoduleinst (*initdecompress) (_Track *track, AFvirtualfile *fh,
+	Module *(*initdecompress) (_Track *track, AFvirtualfile *fh,
 		bool seekok, bool headerless, AFframecount *chunkframes);
 } _CompressionUnit;
 
 #define _AF_NUM_UNITS 15
 #define _AF_NUM_COMPRESSION 5
+
+extern const _Unit _af_units[_AF_NUM_UNITS];
+extern const _CompressionUnit _af_compression[_AF_NUM_COMPRESSION];
 
 #endif /* UNIT_H */

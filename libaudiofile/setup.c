@@ -37,8 +37,6 @@
 #include "units.h"
 #include "marker.h"
 
-extern _Unit _af_units[];
-
 const _AFfilesetup _af_default_file_setup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
@@ -648,16 +646,7 @@ status _af_filesetup_make_handle (AFfilesetup setup, AFfilehandle handle)
 
 			track->hasAESData = tracksetup->aesDataSet;
 
-			track->ms.modulesdirty = true;
-			track->ms.nmodules = 0;
-			track->ms.chunk = NULL;
-			track->ms.module = NULL;
-			track->ms.buffer = NULL;
-
-			track->ms.filemodinst.valid = false;
-			track->ms.filemod_rebufferinst.valid = false;
-			track->ms.rateconvertinst.valid = false;
-			track->ms.rateconvert_rebufferinst.valid = false;
+			track->ms = NULL;
 		}
 	}
 

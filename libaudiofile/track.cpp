@@ -36,6 +36,8 @@
 #include "audiofile.h"
 #include "afinternal.h"
 #include "util.h"
+#include "track.h"
+#include "modules/Module.h"
 
 void afInitTrackIDs (AFfilesetup file, int *trackids, int trackCount)
 {
@@ -57,7 +59,7 @@ int afGetTrackIDs (AFfilehandle file, int *trackids)
 
 _Track *_af_track_new (void)
 {
-	_Track	*t = _af_malloc(sizeof (_Track));
+	_Track *t = (_Track *) _af_malloc(sizeof (_Track));
 
 	t->id = AF_DEFAULT_TRACK;
 
@@ -82,16 +84,20 @@ _Track *_af_track_new (void)
 	t->nextvframe = 0;
 	t->data_size = 0;
 
-	t->ms.modulesdirty = true;
-	t->ms.nmodules = 0;
-	t->ms.chunk = NULL;
-	t->ms.module = NULL;
-	t->ms.buffer = NULL;
-
-	t->ms.filemodinst.valid = false;
-	t->ms.filemod_rebufferinst.valid = false;
-	t->ms.rateconvertinst.valid = false;
-	t->ms.rateconvert_rebufferinst.valid = false;
+	t->ms = NULL;
 
 	return t;
+}
+
+void _Track::print()
+{
+	fprintf(stderr, "totalfframes %ld\n", totalfframes);
+	fprintf(stderr, "nextfframe %ld\n", nextfframe);
+	fprintf(stderr, "frames2ignore %ld\n", frames2ignore);
+	fprintf(stderr, "fpos_first_frame %ld\n", fpos_first_frame);
+	fprintf(stderr, "fpos_next_frame %ld\n", fpos_next_frame);
+	fprintf(stderr, "fpos_after_data %ld\n", fpos_after_data);
+	fprintf(stderr, "totalvframes %ld\n", totalvframes);
+	fprintf(stderr, "nextvframe %ld\n", nextvframe);
+	fprintf(stderr, "data_size %ld\n", data_size);
 }

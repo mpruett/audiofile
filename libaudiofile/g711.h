@@ -33,6 +33,10 @@
 #ifndef G711_H
 #define G711_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * linear2alaw() - Convert a 16-bit linear PCM value to 8-bit A-law
  *
@@ -107,5 +111,9 @@ unsigned char _af_linear2ulaw (int pcm_val);
  */
 
 int _af_ulaw2linear (unsigned char u_val);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* G711_H */

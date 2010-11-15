@@ -1,6 +1,7 @@
 /*
 	Audio File Library
-	Copyright (C) 1998-2000, Michael Pruett <michael@68k.org>
+	Copyright (C) 2001, Silicon Graphics, Inc.
+	Copyright (C) 2010, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -19,28 +20,30 @@
 */
 
 /*
-	debug.h
+	msadpcm.h
 
-	This header file declares debugging functions for the Audio
-	File Library.
+	This module declares the interface for the Microsoft ADPCM
+	compression module.
 */
 
-#ifndef DEBUG_H
-#define DEBUG_H
+#ifndef MSADPCM_H
+#define MSADPCM_H
 
-#include <stdint.h>
-#include "audiofile.h"
+#include <audiofile.h>
+
 #include "afinternal.h"
 
-void _af_printid (uint32_t id);
-void _af_print_filehandle (AFfilehandle filehandle);
-void _af_print_tracks (AFfilehandle filehandle);
-void _af_print_channel_matrix (double *matrix, int fchans, int vchans);
-void _af_print_pvlist (AUpvlist list);
-
-void _af_print_audioformat (_AudioFormat *format);
-void _af_print_frame (AFframecount frameno, double *frame, int nchannels,
-	char *formatstring, int numberwidth,
-	double slope, double intercept, double minclip, double maxclip);
-
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+bool _af_ms_adpcm_format_ok (_AudioFormat *f);
+
+Module *_af_ms_adpcm_init_decompress (_Track *track, AFvirtualfile *fh,
+	bool canSeek, bool headerless, AFframecount *chunkframes);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* MSADPCM_H */
