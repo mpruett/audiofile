@@ -55,6 +55,7 @@ private:
 	bool m_isDirty;
 
 	SharedPtr<Module> m_fileModule;
+	SharedPtr<Module> m_fileRebufferModule;
 
 	status initFileModule(AFfilehandle file, _Track *track);
 

@@ -23,10 +23,11 @@
 
 #include "Module.h"
 #include "ModuleState.h"
-#include "units.h"
-#include "compression.h"
-#include "byteorder.h"
+#include "RebufferModule.h"
 #include "SimpleModule.h"
+#include "byteorder.h"
+#include "compression.h"
+#include "units.h"
 #include "../pcm.h"
 
 #include <algorithm>
@@ -61,6 +62,18 @@ status ModuleState::initFileModule(AFfilehandle file, _Track *track)
 	else
 		m_fileModule = unit->initcompress(track, file->fh, file->seekok,
 			file->fileFormat == AF_FILE_RAWDATA, &chunkFrames);
+
+	if (unit->needsRebuffer)
+	{
+		assert(unit->nativeSampleFormat == AF_SAMPFMT_TWOSCOMP);
+		assert(unit->nativeSampleWidth == 16);
+
+		RebufferModule::Direction direction =
+			file->access == _AF_WRITE_ACCESS ?
+				RebufferModule::VariableToFixed : RebufferModule::FixedToVariable;
+		m_fileRebufferModule = new RebufferModule(direction,
+			track->f.channelCount, chunkFrames, unit->multiple_of);
+	}
 
 	track->filemodhappy = true;
 
@@ -287,7 +300,10 @@ status ModuleState::arrange(AFfilehandle file, _Track *track)
 	m_modules.clear();
 
 	if (isReading)
+	{
 		addModule(m_fileModule.get());
+		addModule(m_fileRebufferModule.get());
+	}
 
 	// Convert to native byte order.
 	if (in.byteOrder != _AF_BYTEORDER_NATIVE)
@@ -402,7 +418,10 @@ status ModuleState::arrange(AFfilehandle file, _Track *track)
 	}
 
 	if (!isReading)
+	{
+		addModule(m_fileRebufferModule.get());
 		addModule(m_fileModule.get());
+	}
 
 	return AF_SUCCEED;
 }

@@ -10,6 +10,7 @@ libmodules_la_SOURCES = \
 	ModuleState.cpp ModuleState.h \
 	Module.cpp Module.h \
 	SimpleModule.cpp SimpleModule.h \
+	RebufferModule.cpp RebufferModule.h \
 	FileModule.cpp FileModule.h
 
 # GNU gcc
