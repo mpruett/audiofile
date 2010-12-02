@@ -1,3 +1,5 @@
+SUBDIRS = gtest
+
 INCLUDES = -I$(top_srcdir)/libaudiofile
 
 check_PROGRAMS = \
@@ -53,7 +55,7 @@ LDADD = $(LIBAUDIOFILE)
 
 DEPENDENCIES = $(LIBAUDIOFILE)
 
-LIBGTEST = -lgtest
+LIBGTEST = gtest/libgtest.la
 
 sign_SOURCES = sign.cpp
 sign_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)

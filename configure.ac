@@ -115,6 +115,7 @@ AC_CONFIG_FILES([
 	audiofile-uninstalled.pc
 	sfcommands/Makefile 
 	test/Makefile 
+	test/gtest/Makefile
 	examples/Makefile 
 	libaudiofile/Makefile 
 	libaudiofile/modules/Makefile 

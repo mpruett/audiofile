@@ -1,3 +1,7 @@
+2010-12-02  Michael Pruett <michael@68k.org>
+
+	Use local copy of Google Test framework.
+
 2010-11-29  Michael Pruett <michael@68k.org>
 
 	Refactor rebuffering module.
