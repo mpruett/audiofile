@@ -36,7 +36,7 @@ public:
 
 	RebufferModule(Direction, int channelCount, int numFrames, bool multipleOf);
 
-	virtual const char *name() { return "rebuffer"; }
+	virtual const char *name() const { return "rebuffer"; }
 
 	virtual void maxPull();
 	virtual void maxPush();
