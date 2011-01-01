@@ -27,7 +27,7 @@
 #ifndef PRINT_H
 #define PRINT_H
 
-#include <config.h>
+#include "config.h"
 
 #if (SIZEOF_OFF_T == SIZEOF_LONG)
 #define AF_OFF_T_PRINT_FMT "ld"

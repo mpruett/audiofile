@@ -18,9 +18,7 @@
 	Boston, MA  02111-1307  USA.
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "config.h"
 
 #include <stdlib.h>
 #include <assert.h>
@@ -32,22 +30,24 @@
 
 #include <audiofile.h>
 
-#include "afinternal.h"
-#include "units.h"
-#include "util.h"
-#include "af_vfs.h"
 #include "File.h"
+#include "Marker.h"
+#include "Track.h"
+#include "af_vfs.h"
+#include "afinternal.h"
 #include "modules/Module.h"
 #include "modules/ModuleState.h"
+#include "units.h"
+#include "util.h"
 
 extern const _Unit _af_units[];
 
 static void freeFileHandle (AFfilehandle filehandle);
 static void freeInstParams (AFPVu *values, int fileFormat);
-static status _afOpenFile (int access, AFvirtualfile *vf, const char *filename,
+static status _afOpenFile (int access, File *vf, const char *filename,
 	AFfilehandle *file, AFfilesetup filesetup);
 
-int _af_identify (AFvirtualfile *vf, int *implemented)
+int _af_identify (File *vf, int *implemented)
 {
 	AFfileoffset	curpos;
 	int		i;
@@ -56,8 +56,8 @@ int _af_identify (AFvirtualfile *vf, int *implemented)
 
 	for (i=0; i<_AF_NUM_UNITS; i++)
 	{
-		if (_af_units[i].read.recognize &&
-			_af_units[i].read.recognize(vf))
+		if (_af_units[i].recognize &&
+			_af_units[i].recognize(vf))
 		{
 			if (implemented != NULL)
 				*implemented = _af_units[i].implemented;
@@ -76,8 +76,7 @@ int _af_identify (AFvirtualfile *vf, int *implemented)
 
 int afIdentifyFD (int fd)
 {
-	FILE		*fp;
-	AFvirtualfile	*vf;
+	File	*vf;
 	int		result;
 
 	/*
@@ -97,10 +96,6 @@ int afIdentifyFD (int fd)
 
 int afIdentifyNamedFD (int fd, const char *filename, int *implemented)
 {
-	FILE		*fp;
-	AFvirtualfile	*vf;
-	int		result;
-
 	/*
 		Duplicate the file descriptor since otherwise the
 		original file descriptor would get closed when we close
@@ -108,14 +103,14 @@ int afIdentifyNamedFD (int fd, const char *filename, int *implemented)
 	*/
 	fd = dup(fd);
 
-	vf = new File(fd, File::ReadAccess);
+	File *vf = new File(fd, File::ReadAccess);
 	if (vf == NULL)
 	{
 		_af_error(AF_BAD_OPEN, "could not open file '%s'", filename);
 		return AF_FILE_UNKNOWN;
 	}
 
-	result = _af_identify(vf, implemented);
+	int result = _af_identify(vf, implemented);
 
 	af_fclose(vf);
 
@@ -124,17 +119,13 @@ int afIdentifyNamedFD (int fd, const char *filename, int *implemented)
 
 AFfilehandle afOpenFD (int fd, const char *mode, AFfilesetup setup)
 {
-	FILE		*fp;
-	AFvirtualfile	*vf;
-	AFfilehandle	filehandle;
-	int		access;
-
 	if (mode == NULL)
 	{
 		_af_error(AF_BAD_ACCMODE, "null access mode");
 		return AF_NULL_FILEHANDLE;
 	}
 
+	int access;
 	if (mode[0] == 'r')
 		access = _AF_READ_ACCESS;
 	else if (mode[0] == 'w')
@@ -145,9 +136,10 @@ AFfilehandle afOpenFD (int fd, const char *mode, AFfilesetup setup)
 		return AF_NULL_FILEHANDLE;
 	}
 
-	vf = new File(fd, access == _AF_READ_ACCESS ?
+	File *vf = new File(fd, access == _AF_READ_ACCESS ?
 		File::ReadAccess : File::WriteAccess);
 
+	AFfilehandle filehandle = NULL;
 	if (_afOpenFile(access, vf, NULL, &filehandle, setup) != AF_SUCCEED)
 		af_fclose(vf);
 
@@ -157,17 +149,13 @@ AFfilehandle afOpenFD (int fd, const char *mode, AFfilesetup setup)
 AFfilehandle afOpenNamedFD (int fd, const char *mode, AFfilesetup setup,
 	const char *filename)
 {
-	FILE		*fp;
-	AFvirtualfile	*vf;
-	AFfilehandle	filehandle;
-	int		access;
-
 	if (mode == NULL)
 	{
 		_af_error(AF_BAD_ACCMODE, "null access mode");
 		return AF_NULL_FILEHANDLE;
 	}
 
+	int access;
 	if (mode[0] == 'r')
 		access = _AF_READ_ACCESS;
 	else if (mode[0] == 'w')
@@ -178,9 +166,10 @@ AFfilehandle afOpenNamedFD (int fd, const char *mode, AFfilesetup setup,
 		return AF_NULL_FILEHANDLE;
 	}
 
-	vf = new File(fd, access == _AF_READ_ACCESS ?
+	File *vf = new File(fd, access == _AF_READ_ACCESS ?
 		File::ReadAccess : File::WriteAccess);
 
+	AFfilehandle filehandle;
 	if (_afOpenFile(access, vf, filename, &filehandle, setup) != AF_SUCCEED)
 		af_fclose(vf);
 
@@ -189,17 +178,13 @@ AFfilehandle afOpenNamedFD (int fd, const char *mode, AFfilesetup setup,
 
 AFfilehandle afOpenFile (const char *filename, const char *mode, AFfilesetup setup)
 {
-	FILE		*fp;
-	AFvirtualfile	*vf;
-	AFfilehandle	filehandle;
-	int		access;
-
 	if (mode == NULL)
 	{
 		_af_error(AF_BAD_ACCMODE, "null access mode");
 		return AF_NULL_FILEHANDLE;
 	}
 
+	int access;
 	if (mode[0] == 'r')
 		access = _AF_READ_ACCESS;
 	else if (mode[0] == 'w')
@@ -210,65 +195,31 @@ AFfilehandle afOpenFile (const char *filename, const char *mode, AFfilesetup set
 		return AF_NULL_FILEHANDLE;
 	}
 
-	vf = File::open(filename,
+	File *vf = File::open(filename,
 		access == _AF_READ_ACCESS ? File::ReadAccess : File::WriteAccess);
-	if (vf == NULL)
+	if (!vf)
 	{
 		_af_error(AF_BAD_OPEN, "could not open file '%s'", filename);
 		return AF_NULL_FILEHANDLE;
 	}
 
+	AFfilehandle filehandle;
 	if (_afOpenFile(access, vf, filename, &filehandle, setup) != AF_SUCCEED)
 		af_fclose(vf);
 
 	return filehandle;
 }
 
-AFfilehandle afOpenVirtualFile (AFvirtualfile *vfile, const char *mode,
-	AFfilesetup setup)
-{
-	AFfilehandle	filehandle;
-	int		access; 
-
-	if (vfile == NULL)
-	{
-		_af_error(AF_BAD_FILEHANDLE, "null virtual filehandle");
-		return AF_NULL_FILEHANDLE;
-	}
-
-	if (mode == NULL)
-	{
-		_af_error(AF_BAD_ACCMODE, "null access mode");
-		return AF_NULL_FILEHANDLE;
-	}
-
-	if (mode[0] == 'r')
-		access = _AF_READ_ACCESS;
-	else if (mode[0] == 'w')
-		access = _AF_WRITE_ACCESS;
-	else
-	{
-		_af_error(AF_BAD_ACCMODE, "unrecognized access mode '%s'", mode);
-		return AF_NULL_FILEHANDLE;
-	}
-
-	if (_afOpenFile(access, vfile, NULL, &filehandle, setup) != AF_SUCCEED)
-		af_fclose(vfile);
-
-	return filehandle;
-}
-
-static status _afOpenFile (int access, AFvirtualfile *vf, const char *filename,
+static status _afOpenFile (int access, File *vf, const char *filename,
 	AFfilehandle *file, AFfilesetup filesetup)
 {
 	int	fileFormat = AF_FILE_UNKNOWN;
 	int	implemented = true;
-	char	*formatName;
 	status	(*initfunc) (AFfilesetup, AFfilehandle);
 
 	int		userSampleFormat = 0;
 	double		userSampleRate = 0.0;
-	_PCMInfo	userPCM;
+	PCMInfo	userPCM;
 	bool		userFormatSet = false;
 
 	int	t;
@@ -308,24 +259,12 @@ static status _afOpenFile (int access, AFvirtualfile *vf, const char *filename,
 		return AF_FAIL;
 	}
 
-	formatName = _af_units[fileFormat].name;
+	const char *formatName = _af_units[fileFormat].name;
 
 	if (!implemented)
 	{
 		_af_error(AF_BAD_NOT_IMPLEMENTED,
 			"%s format not currently supported", formatName);
-	}
-
-	assert(_af_units[fileFormat].completesetup != NULL);
-	assert(_af_units[fileFormat].read.init != NULL);
-
-	if (access == _AF_WRITE_ACCESS &&
-		_af_units[fileFormat].write.init == NULL)
-	{
-		_af_error(AF_BAD_NOT_IMPLEMENTED,
-			"%s format is currently supported for reading only",
-			formatName);
-		return AF_FAIL;
 	}
 
 	completesetup = NULL;
@@ -339,14 +278,13 @@ static status _afOpenFile (int access, AFvirtualfile *vf, const char *filename,
 			return AF_FAIL;
 	}
 
-	filehandle = (AFfilehandle) _af_malloc(sizeof (_AFfilehandle));
+	filehandle = _AFfilehandle::create(fileFormat);
 	if (filehandle == NULL)
 	{
 		if (completesetup)
 			afFreeFileSetup(completesetup);
 		return AF_FAIL;
 	}
-	memset(filehandle, 0, sizeof (_AFfilehandle));
 
 	filehandle->valid = _AF_VALID_FILEHANDLE;
 	filehandle->fh = vf;
@@ -356,12 +294,12 @@ static status _afOpenFile (int access, AFvirtualfile *vf, const char *filename,
 	else
 		filehandle->fileName = NULL;
 	filehandle->fileFormat = fileFormat;
-	filehandle->formatSpecific = NULL;
 
-	initfunc = (access == _AF_READ_ACCESS) ?
-		_af_units[fileFormat].read.init : _af_units[fileFormat].write.init;
+	status result = access == _AF_READ_ACCESS ?
+		filehandle->readInit(completesetup) :
+		filehandle->writeInit(completesetup);
 
-	if (initfunc(completesetup, filehandle) != AF_SUCCEED)
+	if (result != AF_SUCCEED)
 	{
 		freeFileHandle(filehandle);
 		filehandle = AF_NULL_FILEHANDLE;
@@ -381,7 +319,7 @@ static status _afOpenFile (int access, AFvirtualfile *vf, const char *filename,
 	*/
 	for (t=0; t<filehandle->trackCount; t++)
 	{
-		_Track	*track = &filehandle->tracks[t];
+		Track	*track = &filehandle->tracks[t];
 
 		track->v = track->f;
 
@@ -427,7 +365,7 @@ int afSyncFile (AFfilehandle handle)
 		/* Finish writes on all tracks. */
 		for (trackno = 0; trackno < handle->trackCount; trackno++)
 		{
-			_Track	*track = &handle->tracks[trackno];
+			Track	*track = &handle->tracks[trackno];
 
 			if (track->ms->isDirty() && track->ms->setup(handle, track) == AF_FAIL)
 				return -1;
@@ -437,8 +375,7 @@ int afSyncFile (AFfilehandle handle)
 		}
 
 		/* Update file headers. */
-		if (_af_units[filefmt].write.update != NULL &&
-			_af_units[filefmt].write.update(handle) != AF_SUCCEED)
+		if (handle->update() != AF_SUCCEED)
 			return AF_FAIL;
 	}
 	else if (handle->access == _AF_READ_ACCESS)
@@ -488,12 +425,6 @@ static void freeFileHandle (AFfilehandle filehandle)
 		free(filehandle->fileName);
 
 	fileFormat = filehandle->fileFormat;
-
-	if (filehandle->formatSpecific != NULL)
-	{
-		free(filehandle->formatSpecific);
-		filehandle->formatSpecific = NULL;
-	}
 
 	if (filehandle->tracks)
 	{
@@ -582,8 +513,7 @@ static void freeFileHandle (AFfilehandle filehandle)
 	}
 	filehandle->miscellaneousCount = 0;
 
-	memset(filehandle, 0, sizeof (_AFfilehandle));
-	free(filehandle);
+	delete filehandle;
 }
 
 static void freeInstParams (AFPVu *values, int fileFormat)

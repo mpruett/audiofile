@@ -28,42 +28,28 @@
 #ifndef UNIT_H
 #define UNIT_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "audiofile.h"
 #include "afinternal.h"
 
-typedef struct _Unit
+class Module;
+struct AudioFormat;
+
+struct _Unit
 {
 	int	fileFormat;	/* AF_FILEFMT_... */
-	char	*name;		/* a 2-3 word name of the file format */
-	char	*description;	/* a more descriptive name for the format */
-	char	*label;		/* a 4-character label for the format */
-	bool	implemented;	/* if implemented */
+	const char *name;		/* a 2-3 word name of the file format */
+	const char *description;	/* a more descriptive name for the format */
+	const char *label;		/* a 4-character label for the format */
+	bool implemented;	/* if implemented */
 
-	int (*getversion) (AFfilehandle handle);
 	AFfilesetup (*completesetup) (AFfilesetup setup);
-
-	struct
-	{
-		bool (*recognize) (AFvirtualfile *fh);
-		status (*init) (AFfilesetup, AFfilehandle);
-	} read;
-
-	struct
-	{
-		status (*init) (AFfilesetup, AFfilehandle);
-		bool (*instparamvalid) (AFfilehandle, AUpvlist, int);
-		status (*update) (AFfilehandle);
-	} write;
+	bool (*recognize) (File *fh);
 
 	int defaultSampleFormat;
 	int defaultSampleWidth;
 
 	int compressionTypeCount;
-	int *compressionTypes;
+	const int *compressionTypes;
 
 	int markerCount;
 
@@ -71,28 +57,28 @@ typedef struct _Unit
 	int loopPerInstrumentCount;
 
 	int instrumentParameterCount;
-	_InstParamInfo *instrumentParameters;
-} _Unit;
+	const InstParamInfo *instrumentParameters;
+};
 
-typedef struct _CompressionUnit
+struct _CompressionUnit
 {
 	int	compressionID;	/* AF_COMPRESSION_... */
-	bool	implemented;
-	char	*label;		/* 4-character (approximately) label */
-	char	*shortname;	/* short name in English */
-	char	*name;		/* long name in English */
-	double	squishFactor;	/* compression ratio */
+	bool implemented;
+	const char *label;		/* 4-character (approximately) label */
+	const char *shortname;	/* short name in English */
+	const char *name;		/* long name in English */
+	double squishFactor;	/* compression ratio */
 	int	nativeSampleFormat;	/* AF_SAMPFMT_... */
 	int	nativeSampleWidth;	/* sample width in bits */
 	bool	needsRebuffer;	/* if there are chunk boundary requirements */
 	bool	multiple_of;	/* can accept any multiple of chunksize */
-	bool	(*fmtok) (_AudioFormat *format);
+	bool	(*fmtok) (AudioFormat *format);
 
-	Module *(*initcompress) (_Track *track, AFvirtualfile *fh,
+	Module *(*initcompress) (Track *track, File *fh,
 		bool seekok, bool headerless, AFframecount *chunkframes);
-	Module *(*initdecompress) (_Track *track, AFvirtualfile *fh,
+	Module *(*initdecompress) (Track *track, File *fh,
 		bool seekok, bool headerless, AFframecount *chunkframes);
-} _CompressionUnit;
+};
 
 #define _AF_NUM_UNITS 15
 #define _AF_NUM_COMPRESSION 5

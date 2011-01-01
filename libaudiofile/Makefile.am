@@ -7,25 +7,26 @@ lib_LTLIBRARIES = libaudiofile.la
 EXTRA_DIST = audiofile.exports
 
 libaudiofile_la_SOURCES = \
-	openclose.cpp setup.c format.cpp data.cpp pcm.cpp \
+	openclose.cpp Setup.cpp Setup.h format.cpp data.cpp pcm.cpp \
 	error.c byteorder.h af_vfs.cpp \
-	util.cpp util.h debug.c aupv.c units.c compression.c \
-	aes.c instrument.c loop.c marker.c misc.c track.cpp query.c \
-	raw.c raw.h \
-	aiff.c aiffwrite.c extended.c aiff.h \
-	next.c nextwrite.c next.h \
-	wave.c wavewrite.c wave.h \
-	ircam.c ircamwrite.c ircam.h \
-	avr.c avrwrite.c avr.h \
-	iff.c iffwrite.c iff.h \
-	nist.c nistwrite.c nist.h \
+	util.cpp util.h debug.cpp aupv.c units.cpp compression.cpp \
+	aes.cpp Instrument.cpp Instrument.h Loop.cpp Marker.cpp Marker.h \
+	Miscellaneous.cpp Track.cpp Track.h query.cpp \
+	Raw.cpp Raw.h \
+	AIFF.cpp AIFFWrite.cpp AIFF.h extended.c \
+	NeXT.cpp NeXTWrite.cpp NeXT.h \
+	WAVE.cpp WAVEWrite.cpp WAVE.h \
+	IRCAM.cpp IRCAMWrite.cpp IRCAM.h \
+	AVR.cpp AVRWrite.cpp AVR.h \
+	IFF.cpp IFFWrite.cpp IFF.h \
+	NIST.cpp NISTWrite.cpp NIST.h \
 	g711.c g711.h \
 	afinternal.h aupvinternal.h aupvlist.h byteorder.h \
-	compression.h error.h extended.h instrument.h marker.h \
-	pcm.h setup.h track.h units.h \
+	compression.h error.h extended.h \
+	pcm.h units.h \
 	print.h util.h debug.h \
 	File.cpp File.h Shared.h \
-	AudioFormat.cpp
+	AudioFormat.cpp AudioFormat.h FileHandle.cpp
 
 libaudiofile_la_LIBADD = modules/libmodules.la $(COVERAGE_LIBS)
 

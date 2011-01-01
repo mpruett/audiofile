@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT
-AC_CONFIG_SRCDIR([libaudiofile/aiff.c])
+AC_CONFIG_SRCDIR([libaudiofile/AIFF.cpp])
 
 PACKAGE=audiofile
 AUDIOFILE_MAJOR_VERSION=0

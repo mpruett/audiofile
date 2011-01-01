@@ -24,9 +24,7 @@
 	Virtual file operations for the Audio File Library.
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "config.h"
 
 #include "afinternal.h"
 #include "af_vfs.h"
@@ -36,30 +34,30 @@
 
 #include <stdlib.h>
 
-ssize_t af_read (void *data, size_t size, AFvirtualfile *vfile)
+ssize_t af_read (void *data, size_t size, File *vfile)
 {
 	return vfile->read(data, size);
 }
 
-ssize_t af_write (const void *data, size_t size, AFvirtualfile *vfile)
+ssize_t af_write (const void *data, size_t size, File *vfile)
 {
 	return vfile->write(data, size);
 }
 
-int af_fclose (AFvirtualfile *vfile)
+int af_fclose (File *vfile)
 {
 	vfile->close();
 	delete vfile;
 	return 0;
 }
 
-long af_flength (AFvirtualfile *vfile)
+long af_flength (File *vfile)
 {
 	off_t length = vfile->length();
 	return length;
 }
 
-int af_fseek (AFvirtualfile *vfile, long offset, int whence)
+int af_fseek (File *vfile, long offset, int whence)
 {
 	if (whence == SEEK_CUR)
 		vfile->seek(offset, File::SeekFromCurrent);
@@ -70,7 +68,7 @@ int af_fseek (AFvirtualfile *vfile, long offset, int whence)
 	return 0;
 }
 
-long af_ftell (AFvirtualfile *vfile)
+long af_ftell (File *vfile)
 {
 	return vfile->tell();
 }

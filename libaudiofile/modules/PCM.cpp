@@ -23,23 +23,21 @@
 	PCM.cpp - read and file write module for uncompressed data
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "config.h"
+#include "PCM.h"
 
 #include <errno.h>
 #include <assert.h>
 #include <string.h>
 #include <math.h>
 
-#include <audiofile.h>
-#include "afinternal.h"
-#include "compression.h"
-#include "util.h"
-#include "print.h"
-
-#include "PCM.h"
 #include "FileModule.h"
+#include "Track.h"
+#include "afinternal.h"
+#include "audiofile.h"
+#include "compression.h"
+#include "print.h"
+#include "util.h"
 
 #ifdef DEBUG
 #define CHNK(X) (X)
@@ -47,7 +45,7 @@
 #define CHNK(X)
 #endif
 
-bool _af_pcm_format_ok (_AudioFormat *f)
+bool _af_pcm_format_ok (AudioFormat *f)
 {
 	assert(!isnan(f->pcm.slope));
 	assert(!isnan(f->pcm.intercept));
@@ -60,9 +58,9 @@ bool _af_pcm_format_ok (_AudioFormat *f)
 class PCM : public FileModule
 {
 public:
-	static Module *createCompress(_Track *track, AFvirtualfile *fh, bool canSeek,
+	static Module *createCompress(Track *track, File *fh, bool canSeek,
 		bool headerless, AFframecount *chunkFrames);
-	static Module *createDecompress(_Track *track, AFvirtualfile *fh, bool canSeek,
+	static Module *createDecompress(Track *track, File *fh, bool canSeek,
 		bool headerless, AFframecount *chunkFrames);
 
 	virtual const char *name() const { return "pcm"; }
@@ -79,10 +77,10 @@ private:
 	int m_saved_fpos_next_frame;
 	int m_saved_nextfframe;
 
-	PCM(Mode, _Track *, AFvirtualfile *, bool canSeek);
+	PCM(Mode, Track *, File *, bool canSeek);
 };
 
-PCM::PCM(Mode mode, _Track *track, AFvirtualfile *fh, bool canSeek) :
+PCM::PCM(Mode mode, Track *track, File *fh, bool canSeek) :
 	FileModule(mode, track, fh, canSeek),
 	m_bytesPerFrame(track->f.bytesPerFrame(false)),
 	m_saved_fpos_next_frame(-1),
@@ -92,7 +90,7 @@ PCM::PCM(Mode mode, _Track *track, AFvirtualfile *fh, bool canSeek) :
 		track->f.compressionParams = AU_NULL_PVLIST;
 }
 
-Module *PCM::createCompress(_Track *track, AFvirtualfile *fh, bool canSeek,
+Module *PCM::createCompress(Track *track, File *fh, bool canSeek,
 	bool headerless, AFframecount *chunkframes)
 {
 	return new PCM(Compress, track, fh, canSeek);
@@ -167,7 +165,7 @@ void PCM::sync2()
 	m_track->nextfframe = m_saved_nextfframe;
 }
 
-Module *PCM::createDecompress(_Track *track, AFvirtualfile *fh, bool canSeek,
+Module *PCM::createDecompress(Track *track, File *fh, bool canSeek,
 	bool headerless, AFframecount *chunkframes)
 {
 	return new PCM(Decompress, track, fh, canSeek);
@@ -240,13 +238,13 @@ void PCM::reset2()
 	m_track->frames2ignore = 0;
 }
 
-Module *_AFpcminitcompress (_Track *track, AFvirtualfile *fh, bool canSeek,
+Module *_AFpcminitcompress (Track *track, File *fh, bool canSeek,
 	bool headerless, AFframecount *chunkFrames)
 {
 	return PCM::createCompress(track, fh, canSeek, headerless, chunkFrames);
 }
 
-Module *_AFpcminitdecompress (_Track *track, AFvirtualfile *fh, bool canSeek,
+Module *_AFpcminitdecompress (Track *track, File *fh, bool canSeek,
 	bool headerless, AFframecount *chunkFrames)
 {
 	return PCM::createDecompress(track, fh, canSeek, headerless, chunkFrames);

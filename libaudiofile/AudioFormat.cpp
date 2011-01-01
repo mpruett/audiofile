@@ -1,63 +1,101 @@
+/*
+	Audio File Library
+	Copyright (C) 2010, Michael Pruett <michael@68k.org>
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Library General Public
+	License as published by the Free Software Foundation; either
+	version 2 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Library General Public License for more details.
+
+	You should have received a copy of the GNU Library General Public
+	License along with this library; if not, write to the
+	Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+	Boston, MA  02111-1307  USA.
+*/
+
+#include "config.h"
+#include "AudioFormat.h"
+
 #include "afinternal.h"
 #include "byteorder.h"
 #include "compression.h"
 #include "units.h"
 #include "util.h"
 #include <assert.h>
+#include <stdio.h>
 
-size_t _AudioFormat::bytesPerSample(bool stretch3to4) const
+size_t AudioFormat::bytesPerSample(bool stretch3to4) const
 {
-	return _af_format_sample_size_uncompressed(this, stretch3to4);
+	switch (sampleFormat)
+	{
+		case AF_SAMPFMT_FLOAT:
+			return sizeof (float);
+		case AF_SAMPFMT_DOUBLE:
+			return sizeof (double);
+		default:
+		{
+			int size = (sampleWidth + 7) / 8;
+			if (compressionType == AF_COMPRESSION_NONE &&
+				size == 3 && stretch3to4)
+				size = 4;
+			return size;
+		}
+	}
 }
 
-size_t _AudioFormat::bytesPerFrame(bool stretch3to4) const
+size_t AudioFormat::bytesPerFrame(bool stretch3to4) const
 {
-	return _af_format_frame_size_uncompressed(this, stretch3to4);
+	return bytesPerSample(stretch3to4) * channelCount;
 }
 
-size_t _AudioFormat::bytesPerSample() const
+size_t AudioFormat::bytesPerSample() const
 {
 	return bytesPerSample(!isPacked());
 }
 
-size_t _AudioFormat::bytesPerFrame() const
+size_t AudioFormat::bytesPerFrame() const
 {
 	return bytesPerFrame(!isPacked());
 }
 
-bool _AudioFormat::isInteger() const
+bool AudioFormat::isInteger() const
 {
 	return sampleFormat == AF_SAMPFMT_TWOSCOMP ||
 		sampleFormat == AF_SAMPFMT_UNSIGNED;
 }
 
-bool _AudioFormat::isSigned() const
+bool AudioFormat::isSigned() const
 {
 	return sampleFormat == AF_SAMPFMT_TWOSCOMP;
 }
 
-bool _AudioFormat::isUnsigned() const
+bool AudioFormat::isUnsigned() const
 {
 	return sampleFormat == AF_SAMPFMT_UNSIGNED;
 }
 
-bool _AudioFormat::isFloat() const
+bool AudioFormat::isFloat() const
 {
 	return sampleFormat == AF_SAMPFMT_FLOAT ||
 		sampleFormat == AF_SAMPFMT_DOUBLE;
 }
 
-bool _AudioFormat::isCompressed() const
+bool AudioFormat::isCompressed() const
 {
 	return compressionType != AF_COMPRESSION_NONE;
 }
 
-bool _AudioFormat::isUncompressed() const
+bool AudioFormat::isUncompressed() const
 {
 	return compressionType == AF_COMPRESSION_NONE;
 }
 
-std::string _AudioFormat::description() const
+std::string AudioFormat::description() const
 {
 	std::string d;
 	char s[1024];

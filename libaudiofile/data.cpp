@@ -20,29 +20,29 @@
 */
 
 /*
-	data.c
+	data.cpp
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "config.h"
 
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "audiofile.h"
+#include "Track.h"
+#include "af_vfs.h"
 #include "afinternal.h"
-#include "util.h"
+#include "audiofile.h"
 #include "modules/Module.h"
 #include "modules/ModuleState.h"
+#include "util.h"
 
 int afWriteFrames (AFfilehandle file, int trackid, const void *samples,
 	int nvframes2write)
 {
 	SharedPtr<Module> firstmod;
 	SharedPtr<Chunk> userc;
-	_Track *track;
+	Track *track;
 	int bytes_per_vframe;
 	AFframecount vframe;
 
@@ -124,7 +124,7 @@ int afWriteFrames (AFfilehandle file, int trackid, const void *samples,
 int afReadFrames (AFfilehandle file, int trackid, void *samples,
 	int nvframeswanted)
 {
-	_Track	*track;
+	Track	*track;
 	SharedPtr<Module> firstmod;
 	SharedPtr<Chunk> userc;
 	AFframecount	nvframesleft, nvframes2read;

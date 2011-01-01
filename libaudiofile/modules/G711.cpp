@@ -19,24 +19,21 @@
 	Boston, MA  02111-1307  USA.
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "config.h"
+#include "G711.h"
 
 #include <errno.h>
 #include <string.h>
 #include <assert.h>
 
-#include <audiofile.h>
-
-#include "afinternal.h"
-#include "units.h"
-#include "compression.h"
-#include "byteorder.h"
-#include "util.h"
-
-#include "G711.h"
 #include "FileModule.h"
+#include "Track.h"
+#include "afinternal.h"
+#include "audiofile.h"
+#include "byteorder.h"
+#include "compression.h"
+#include "units.h"
+#include "util.h"
 
 #include "../g711.h"
 
@@ -66,7 +63,7 @@ static void linear2alaw_buf (const int16_t *linear, uint8_t *alaw, int nsamples)
 		alaw[i] = _af_linear2alaw(linear[i]);
 }
 
-bool _af_g711_format_ok (_AudioFormat *f)
+bool _af_g711_format_ok (AudioFormat *f)
 {
 	if (f->sampleFormat != AF_SAMPFMT_TWOSCOMP || f->sampleWidth != 16)
 	{
@@ -91,9 +88,9 @@ bool _af_g711_format_ok (_AudioFormat *f)
 class G711 : public FileModule
 {
 public:
-	static Module *createCompress(_Track *trk, AFvirtualfile *fh, bool canSeek,
+	static Module *createCompress(Track *trk, File *fh, bool canSeek,
 		bool headerless, AFframecount *chunkframes);
-	static Module *createDecompress(_Track *trk, AFvirtualfile *fh, bool canSeek,
+	static Module *createDecompress(Track *trk, File *fh, bool canSeek,
 		bool headerless, AFframecount *chunkframes);
 
 	virtual const char *name() const
@@ -108,13 +105,13 @@ public:
 	virtual void sync2();
 
 private:
-	G711(Mode mode, _Track *track, AFvirtualfile *fh, bool canSeek);
+	G711(Mode mode, Track *track, File *fh, bool canSeek);
 
 	AFfileoffset m_savedPositionNextFrame;
 	AFframecount m_savedNextFrame;
 };
 
-G711::G711(Mode mode, _Track *track, AFvirtualfile *fh, bool canSeek) :
+G711::G711(Mode mode, Track *track, File *fh, bool canSeek) :
 	FileModule(mode, track, fh, canSeek),
 	m_savedPositionNextFrame(-1),
 	m_savedNextFrame(-1)
@@ -123,7 +120,7 @@ G711::G711(Mode mode, _Track *track, AFvirtualfile *fh, bool canSeek) :
 		track->f.compressionParams = AU_NULL_PVLIST;
 }
 
-Module *G711::createCompress(_Track *track, AFvirtualfile *fh,
+Module *G711::createCompress(Track *track, File *fh,
 	bool canSeek, bool headerless, AFframecount *chunkframes)
 {
 	return new G711(Compress, track, fh, canSeek);
@@ -218,7 +215,7 @@ void G711::describe()
 	}
 }
 
-Module *G711::createDecompress(_Track *track, AFvirtualfile *fh,
+Module *G711::createDecompress(Track *track, File *fh,
 	bool canSeek, bool headerless, AFframecount *chunkframes)
 {
 	return new G711(Decompress, track, fh, canSeek);
@@ -283,13 +280,13 @@ void G711::reset2()
 	m_track->frames2ignore = 0;
 }
 
-Module *_AFg711initcompress(_Track *track, AFvirtualfile *fh, bool canSeek,
+Module *_AFg711initcompress(Track *track, File *fh, bool canSeek,
 	bool headerless, AFframecount *chunkFrames)
 {
 	return G711::createCompress(track, fh, canSeek, headerless, chunkFrames);
 }
 
-Module *_AFg711initdecompress(_Track *track, AFvirtualfile *fh, bool canSeek,
+Module *_AFg711initdecompress(Track *track, File *fh, bool canSeek,
 	bool headerless, AFframecount *chunkFrames)
 {
 	return G711::createDecompress(track, fh, canSeek, headerless, chunkFrames);

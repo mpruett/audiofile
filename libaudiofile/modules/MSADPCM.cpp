@@ -23,25 +23,22 @@
 	This module implements Microsoft ADPCM compression.
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "config.h"
+#include "MSADPCM.h"
 
 #include <errno.h>
 #include <string.h>
 #include <assert.h>
 
-#include <audiofile.h>
-
-#include "afinternal.h"
-#include "units.h"
-#include "compression.h"
-#include "byteorder.h"
-#include "util.h"
 #include "File.h"
-
-#include "MSADPCM.h"
 #include "FileModule.h"
+#include "Track.h"
+#include "afinternal.h"
+#include "audiofile.h"
+#include "byteorder.h"
+#include "compression.h"
+#include "units.h"
+#include "util.h"
 
 struct ms_adpcm_state
 {
@@ -53,7 +50,7 @@ struct ms_adpcm_state
 class MSADPCM : public FileModule
 {
 public:
-	static Module *createDecompress(_Track *, AFvirtualfile *, bool canSeek,
+	static Module *createDecompress(Track *, File *, bool canSeek,
 		bool headerless, AFframecount *chunkFrames);
 	virtual const char *name() const { return "ms_adpcm_decompress"; }
 	virtual void describe();
@@ -74,7 +71,7 @@ private:
 	int	m_numCoefficients;
 	int16_t	m_coefficients[256][2];
 
-	MSADPCM(_Track *track, AFvirtualfile *fh, bool canSeek);
+	MSADPCM(Track *track, File *fh, bool canSeek);
 	int decodeBlock(const uint8_t *encoded, int16_t *decoded);
 };
 
@@ -211,12 +208,12 @@ void MSADPCM::describe()
 	m_outChunk->f.compressionParams = AU_NULL_PVLIST;
 }
 
-MSADPCM::MSADPCM(_Track *track, AFvirtualfile *fh, bool canSeek) :
+MSADPCM::MSADPCM(Track *track, File *fh, bool canSeek) :
 	FileModule(Decompress, track, fh, canSeek)
 {
 }
 
-Module *MSADPCM::createDecompress(_Track *track, AFvirtualfile *fh,
+Module *MSADPCM::createDecompress(Track *track, File *fh,
 	bool canSeek, bool headerless, AFframecount *chunkFrames)
 {
 	assert(fh->tell() == track->fpos_first_frame);
@@ -320,7 +317,7 @@ void MSADPCM::reset2()
 	assert(m_track->nextfframe % m_framesPerBlock == 0);
 }
 
-bool _af_ms_adpcm_format_ok (_AudioFormat *f)
+bool _af_ms_adpcm_format_ok (AudioFormat *f)
 {
 	if (f->channelCount != 1 && f->channelCount != 2)
 	{
@@ -349,7 +346,7 @@ bool _af_ms_adpcm_format_ok (_AudioFormat *f)
 	return true;
 }
 
-Module *_af_ms_adpcm_init_decompress (_Track *track, AFvirtualfile *fh,
+Module *_af_ms_adpcm_init_decompress (Track *track, File *fh,
 	bool canSeek, bool headerless, AFframecount *chunkFrames)
 {
 	return MSADPCM::createDecompress(track, fh, canSeek, headerless, chunkFrames);

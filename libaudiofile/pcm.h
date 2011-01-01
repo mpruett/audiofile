@@ -67,10 +67,10 @@
 #define MAX_U_INT24 16777215.0
 #define MAX_U_INT32 4294967295.0
 
-extern const _PCMInfo _af_default_signed_integer_pcm_mappings[];
-extern const _PCMInfo _af_default_unsigned_integer_pcm_mappings[];
-extern const _PCMInfo _af_default_float_pcm_mappings[];
-extern const _PCMInfo _af_default_double_pcm_mappings[];
+extern const PCMInfo _af_default_signed_integer_pcm_mappings[];
+extern const PCMInfo _af_default_unsigned_integer_pcm_mappings[];
+extern const PCMInfo _af_default_float_pcm_mapping;
+extern const PCMInfo _af_default_double_pcm_mapping;
 
 #ifdef __cplusplus
 template <int Bits, bool Signed>

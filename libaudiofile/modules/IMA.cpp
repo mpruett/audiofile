@@ -20,15 +20,14 @@
 */
 
 /*
-	ima.c
+	IMA.cpp
 
 	This module implements IMA ADPCM compression for the Audio File
 	Library.
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "config.h"
+#include "IMA.h"
 
 #include <errno.h>
 #include <string.h>
@@ -36,16 +35,14 @@
 
 #include <audiofile.h>
 
-#include "afinternal.h"
-#include "units.h"
-#include "compression.h"
-#include "byteorder.h"
-#include "util.h"
-#include "File.h"
-
-#include "adpcm.h"
-#include "IMA.h"
 #include "FileModule.h"
+#include "Track.h"
+#include "adpcm.h"
+#include "afinternal.h"
+#include "byteorder.h"
+#include "compression.h"
+#include "units.h"
+#include "util.h"
 
 #define CHNK(X)
 
@@ -56,7 +53,7 @@ typedef struct
 class IMA : public FileModule
 {
 public:
-	static Module *createDecompress(_Track *track, AFvirtualfile *fh, bool canSeek,
+	static Module *createDecompress(Track *track, File *fh, bool canSeek,
 		bool headerless, AFframecount *chunkFrames);
 	virtual const char *name() const { return "ima_adpcm_decompress"; }
 	virtual void describe();
@@ -68,11 +65,11 @@ private:
 	int m_blockAlign, m_framesPerBlock;
 	AFframecount m_framesToIgnore;
 
-	IMA(_Track *, AFvirtualfile *fh, bool canSeek);
+	IMA(Track *, File *fh, bool canSeek);
 	int decodeBlock(const uint8_t *encoded, int16_t *decoded);
 };
 
-IMA::IMA(_Track *track, AFvirtualfile *fh, bool canSeek) :
+IMA::IMA(Track *track, File *fh, bool canSeek) :
 	FileModule(Decompress, track, fh, canSeek),
 	m_blockAlign(-1),
 	m_framesPerBlock(-1),
@@ -103,7 +100,7 @@ int IMA::decodeBlock (const uint8_t *encoded, int16_t *decoded)
 	return m_framesPerBlock * channelCount * sizeof (int16_t);
 }
 
-bool _af_ima_adpcm_format_ok (_AudioFormat *f)
+bool _af_ima_adpcm_format_ok (AudioFormat *f)
 {
 	if (f->channelCount != 1)
 	{
@@ -139,7 +136,7 @@ void IMA::describe()
 	m_outChunk->f.compressionParams = AU_NULL_PVLIST;
 }
 
-Module *IMA::createDecompress(_Track *track, AFvirtualfile *fh, bool canSeek,
+Module *IMA::createDecompress(Track *track, File *fh, bool canSeek,
 	bool headerless, AFframecount *chunkFrames)
 {
 	assert(fh->tell() == track->fpos_first_frame);
@@ -246,7 +243,7 @@ void IMA::reset2()
 	assert(m_track->nextfframe % m_framesPerBlock == 0);
 }
 
-Module *_af_ima_adpcm_init_decompress(_Track *track, AFvirtualfile *fh,
+Module *_af_ima_adpcm_init_decompress(Track *track, File *fh,
 	bool canSeek, bool headerless, AFframecount *chunkFrames)
 {
 	return IMA::createDecompress(track, fh, canSeek, headerless, chunkFrames);

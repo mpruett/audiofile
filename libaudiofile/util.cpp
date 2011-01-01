@@ -26,9 +26,7 @@
 	Library.
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,20 +36,16 @@
 #include "audiofile.h"
 #include "aupvlist.h"
 
-#include "afinternal.h"
-#include "util.h"
-#include "units.h"
-#include "compression.h"
-#include "byteorder.h"
-#include "aupvinternal.h"
+#include "AudioFormat.h"
 #include "File.h"
-
-extern const _PCMInfo _af_default_signed_integer_pcm_mappings[];
-extern const _PCMInfo _af_default_unsigned_integer_pcm_mappings[];
-extern const _PCMInfo _af_default_float_pcm_mapping;
-extern const _PCMInfo _af_default_double_pcm_mapping;
-
-extern const _CompressionUnit _af_compression[];
+#include "Track.h"
+#include "afinternal.h"
+#include "aupvinternal.h"
+#include "byteorder.h"
+#include "compression.h"
+#include "pcm.h"
+#include "units.h"
+#include "util.h"
 
 /*
 	_af_filesetup_ok and _af_filehandle_ok are sanity check routines
@@ -292,7 +286,7 @@ bool _af_pv_getptr (AUpvlist pvlist, int param, void **v)
 	return false;
 }
 
-_TrackSetup *_af_filesetup_get_tracksetup (AFfilesetup setup, int trackid)
+TrackSetup *_af_filesetup_get_tracksetup (AFfilesetup setup, int trackid)
 {
 	int	i;
 	for (i=0; i<setup->trackCount; i++)
@@ -306,7 +300,7 @@ _TrackSetup *_af_filesetup_get_tracksetup (AFfilesetup setup, int trackid)
 	return NULL;
 }
 
-_Track *_af_filehandle_get_track (AFfilehandle file, int trackid)
+Track *_af_filehandle_get_track (AFfilehandle file, int trackid)
 {
 	int	i;
 	for (i=0; i<file->trackCount; i++)
@@ -320,7 +314,7 @@ _Track *_af_filehandle_get_track (AFfilehandle file, int trackid)
 	return NULL;
 }
 
-int _af_format_sample_size_uncompressed (const _AudioFormat *format, bool stretch3to4)
+int _af_format_sample_size_uncompressed (const AudioFormat *format, bool stretch3to4)
 {
 	int	size = 0;
 
@@ -343,7 +337,7 @@ int _af_format_sample_size_uncompressed (const _AudioFormat *format, bool stretc
 	return size;
 }
 
-float _af_format_sample_size (const _AudioFormat *fmt, bool stretch3to4)
+float _af_format_sample_size (const AudioFormat *fmt, bool stretch3to4)
 {
 	int	compressionIndex;
 	float	squishFactor;
@@ -355,13 +349,13 @@ float _af_format_sample_size (const _AudioFormat *fmt, bool stretch3to4)
 		squishFactor;
 }
 
-int _af_format_frame_size_uncompressed (const _AudioFormat *fmt, bool stretch3to4)
+int _af_format_frame_size_uncompressed (const AudioFormat *fmt, bool stretch3to4)
 {
 	return _af_format_sample_size_uncompressed(fmt, stretch3to4) *
 		fmt->channelCount;
 }
 
-float _af_format_frame_size (const _AudioFormat *fmt, bool stretch3to4)
+float _af_format_frame_size (const AudioFormat *fmt, bool stretch3to4)
 {
 	int	compressionIndex;
 	float	squishFactor;
@@ -378,7 +372,7 @@ float _af_format_frame_size (const _AudioFormat *fmt, bool stretch3to4)
 	PCM info to the appropriate default values for the given sample
 	format and sample width.
 */
-status _af_set_sample_format (_AudioFormat *f, int sampleFormat, int sampleWidth)
+status _af_set_sample_format (AudioFormat *f, int sampleFormat, int sampleWidth)
 {
 	switch (sampleFormat)
 	{
@@ -452,19 +446,19 @@ bool _af_unique_ids (int *ids, int nids, char *idname, int iderr)
 }
 
 template <typename T>
-bool read(AFvirtualfile *vf, T *value)
+bool read(File *vf, T *value)
 {
 	return vf->read(value, sizeof (*value)) == sizeof (*value);
 }
 
 template <typename T>
-bool write(AFvirtualfile *vf, const T *value)
+bool write(File *vf, const T *value)
 {
 	return vf->write(value, sizeof (*value)) == sizeof (*value);
 }
 
 #define READ(TYPE) \
-status af_read_##TYPE##_be (TYPE##_t *value, AFvirtualfile *vf) \
+status af_read_##TYPE##_be (TYPE##_t *value, File *vf) \
 { \
 	if (!read(vf, value)) \
 		return AF_FAIL; \
@@ -472,7 +466,7 @@ status af_read_##TYPE##_be (TYPE##_t *value, AFvirtualfile *vf) \
 	return AF_SUCCEED; \
 } \
 \
-status af_read_##TYPE##_le (TYPE##_t *value, AFvirtualfile *vf) \
+status af_read_##TYPE##_le (TYPE##_t *value, File *vf) \
 { \
 	if (!read(vf, value)) \
 		return AF_FAIL; \
@@ -487,14 +481,14 @@ READ(int16)
 
 #undef READ
 
-status af_read_uint8 (uint8_t *value, AFvirtualfile *vf)
+status af_read_uint8 (uint8_t *value, File *vf)
 {
 	if (!read(vf, value))
 		return AF_FAIL;
 	return AF_SUCCEED;
 }
 
-status af_read_int8 (int8_t *value, AFvirtualfile *vf)
+status af_read_int8 (int8_t *value, File *vf)
 {
 	if (!read(vf, value))
 		return AF_FAIL;
@@ -502,14 +496,14 @@ status af_read_int8 (int8_t *value, AFvirtualfile *vf)
 }
 
 #define WRITE(TYPE) \
-status af_write_##TYPE##_be (const TYPE##_t *value, AFvirtualfile *vf) \
+status af_write_##TYPE##_be (const TYPE##_t *value, File *vf) \
 { \
 	TYPE##_t v = hostToBig(*value); \
 	if (!write(vf, &v)) \
 		return AF_FAIL; \
 	return AF_SUCCEED; \
 } \
-status af_write_##TYPE##_le (const TYPE##_t *value, AFvirtualfile *vf) \
+status af_write_##TYPE##_le (const TYPE##_t *value, File *vf) \
 { \
 	TYPE##_t v = hostToLittle(*value); \
 	if (!write(vf, &v)) \
@@ -524,21 +518,21 @@ WRITE(int16)
 
 #undef WRITE
 
-status af_write_uint8 (const uint8_t *value, AFvirtualfile *vf)
+status af_write_uint8 (const uint8_t *value, File *vf)
 {
 	if (!write(vf, value))
 		return AF_FAIL;
 	return AF_SUCCEED;
 }
 
-status af_write_int8 (const int8_t *value, AFvirtualfile *vf)
+status af_write_int8 (const int8_t *value, File *vf)
 {
 	if (!write(vf, value))
 		return AF_FAIL;
 	return AF_SUCCEED;
 }
 
-status af_read_pstring (char s[256], AFvirtualfile *vf)
+status af_read_pstring (char s[256], File *vf)
 {
 	uint8_t length;
 	/* Read the Pascal-style string containing the name. */
@@ -550,7 +544,7 @@ status af_read_pstring (char s[256], AFvirtualfile *vf)
 	return AF_SUCCEED;
 }
 
-status af_write_pstring (const char *s, AFvirtualfile *vf)
+status af_write_pstring (const char *s, File *vf)
 {
 	size_t length = strlen(s);
 	if (length > 255)

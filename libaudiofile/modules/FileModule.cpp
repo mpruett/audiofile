@@ -22,8 +22,9 @@
 #include "FileModule.h"
 
 #include "File.h"
+#include "Track.h"
 
-FileModule::FileModule(Mode mode, _Track *track, AFvirtualfile *fh, bool canSeek) :
+FileModule::FileModule(Mode mode, Track *track, File *fh, bool canSeek) :
 	m_mode(mode),
 	m_track(track),
 	m_fh(fh),

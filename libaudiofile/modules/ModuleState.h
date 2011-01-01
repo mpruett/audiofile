@@ -22,6 +22,7 @@
 #ifndef MODULESTATE_H
 #define MODULESTATE_H
 
+#include "Module.h"
 #include "Shared.h"
 #include "afinternal.h"
 #include <vector>
@@ -36,10 +37,10 @@ public:
 
 	bool isDirty() const { return m_isDirty; }
 	void setDirty() { m_isDirty = true; }
-	status init(AFfilehandle file, _Track *track);
-	status setup(AFfilehandle file, _Track *track);
-	status reset(AFfilehandle file, _Track *track);
-	status sync(AFfilehandle file, _Track *track);
+	status init(AFfilehandle file, Track *track);
+	status setup(AFfilehandle file, Track *track);
+	status reset(AFfilehandle file, Track *track);
+	status sync(AFfilehandle file, Track *track);
 
 	int numModules() const { return m_modules.size(); }
 	const std::vector<SharedPtr<Module> > &modules() const;
@@ -57,16 +58,16 @@ private:
 	SharedPtr<Module> m_fileModule;
 	SharedPtr<Module> m_fileRebufferModule;
 
-	status initFileModule(AFfilehandle file, _Track *track);
+	status initFileModule(AFfilehandle file, Track *track);
 
-	status arrange(AFfilehandle file, _Track *track);
+	status arrange(AFfilehandle file, Track *track);
 
 	void addModule(Module *module);
 
 	void addConvertIntToInt(FormatCode input, FormatCode output);
 	void addConvertIntToFloat(FormatCode input, FormatCode output);
 	void addConvertFloatToInt(FormatCode input, FormatCode output,
-		const _PCMInfo &inputMapping, const _PCMInfo &outputMapping);
+		const PCMInfo &inputMapping, const PCMInfo &outputMapping);
 	void addConvertFloatToFloat(FormatCode input, FormatCode output);
 };
 

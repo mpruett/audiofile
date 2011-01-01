@@ -28,7 +28,15 @@
 #ifndef EXTENDED_H
 #define EXTENDED_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void _af_convert_to_ieee_extended (double num, unsigned char *bytes);
 double _af_convert_from_ieee_extended (const unsigned char *bytes);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -38,7 +38,7 @@ void _af_print_tracks (AFfilehandle filehandle);
 void _af_print_channel_matrix (double *matrix, int fchans, int vchans);
 void _af_print_pvlist (AUpvlist list);
 
-void _af_print_audioformat (_AudioFormat *format);
+void _af_print_audioformat (AudioFormat *format);
 void _af_print_frame (AFframecount frameno, double *frame, int nchannels,
 	char *formatstring, int numberwidth,
 	double slope, double intercept, double minclip, double maxclip);

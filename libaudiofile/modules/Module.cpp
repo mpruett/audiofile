@@ -20,14 +20,14 @@
 */
 
 #include "config.h"
-
 #include "Module.h"
-#include "units.h"
-#include "compression.h"
-#include "byteorder.h"
+
+#include "File.h"
 #include "SimpleModule.h"
+#include "byteorder.h"
+#include "compression.h"
+#include "units.h"
 #include "../pcm.h"
-#include "../File.h"
 
 Module::Module() :
 	m_sink(NULL)

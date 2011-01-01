@@ -20,22 +20,21 @@
 */
 
 /*
-	pcm.c
+	pcm.cpp
 
 	This file declares default PCM mappings.
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "config.h"
 
+#include "Track.h"
 #include "afinternal.h"
-#include "pcm.h"
-#include "util.h"
 #include "modules/Module.h"
 #include "modules/ModuleState.h"
+#include "pcm.h"
+#include "util.h"
 
-extern const _PCMInfo _af_default_signed_integer_pcm_mappings[] =
+extern const PCMInfo _af_default_signed_integer_pcm_mappings[] =
 {
 	{0, 0, 0, 0},
 	{SLOPE_INT8, 0, MIN_INT8, MAX_INT8},
@@ -44,7 +43,7 @@ extern const _PCMInfo _af_default_signed_integer_pcm_mappings[] =
 	{SLOPE_INT32, 0, MIN_INT32, MAX_INT32}
 };
 
-extern const _PCMInfo _af_default_unsigned_integer_pcm_mappings[] =
+extern const PCMInfo _af_default_unsigned_integer_pcm_mappings[] =
 {
 	{0, 0, 0, 0},
 	{SLOPE_INT8, INTERCEPT_U_INT8, 0, MAX_U_INT8},
@@ -53,10 +52,10 @@ extern const _PCMInfo _af_default_unsigned_integer_pcm_mappings[] =
 	{SLOPE_INT32, INTERCEPT_U_INT32, 0, MAX_U_INT32}
 };
 
-extern const _PCMInfo _af_default_float_pcm_mapping =
+extern const PCMInfo _af_default_float_pcm_mapping =
 {1, 0, 0, 0};
 
-extern const _PCMInfo _af_default_double_pcm_mapping =
+extern const PCMInfo _af_default_double_pcm_mapping =
 {1, 0, 0, 0};
 
 /*
@@ -65,7 +64,7 @@ extern const _PCMInfo _af_default_double_pcm_mapping =
 void afInitPCMMapping (AFfilesetup setup, int trackid,
 	double slope, double intercept, double minClip, double maxClip)
 {
-	_TrackSetup	*track;
+	TrackSetup	*track;
 
 	if (!_af_filesetup_ok(setup))
 		return;
@@ -82,7 +81,7 @@ void afInitPCMMapping (AFfilesetup setup, int trackid,
 int afSetVirtualPCMMapping (AFfilehandle file, int trackid,
 	double slope, double intercept, double minClip, double maxClip)
 {
-	_Track	*track;
+	Track	*track;
 
 	if (!_af_filehandle_ok(file))
 		return -1;
@@ -103,7 +102,7 @@ int afSetVirtualPCMMapping (AFfilehandle file, int trackid,
 int afSetTrackPCMMapping (AFfilehandle file, int trackid,
 	double slope, double intercept, double minClip, double maxClip)
 {
-	_Track	*track;
+	Track	*track;
 
 	if (!_af_filehandle_ok(file))
 		return -1;
@@ -135,7 +134,7 @@ int afSetTrackPCMMapping (AFfilehandle file, int trackid,
 void afGetPCMMapping (AFfilehandle file, int trackid,
 	double *slope, double *intercept, double *minClip, double *maxClip)
 {
-	_Track	*track;
+	Track	*track;
 
 	if (!_af_filehandle_ok(file))
 		return;
@@ -156,7 +155,7 @@ void afGetPCMMapping (AFfilehandle file, int trackid,
 void afGetVirtualPCMMapping (AFfilehandle file, int trackid,
 	double *slope, double *intercept, double *minClip, double *maxClip)
 {
-	_Track	*track;
+	Track	*track;
 
 	if (!_af_filehandle_ok(file))
 		return;

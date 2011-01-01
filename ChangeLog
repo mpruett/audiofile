@@ -1,3 +1,7 @@
+2011-01-01  Michael Pruett <michael@68k.org>
+
+	Convert library implementation to C++; refactor file parsing and writing.
+
 2010-12-02  Michael Pruett <michael@68k.org>
 
 	Use local copy of Google Test framework.

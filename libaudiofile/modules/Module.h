@@ -22,6 +22,7 @@
 #ifndef MODULE_H
 #define MODULE_H
 
+#include "AudioFormat.h"
 #include "Shared.h"
 #include "afinternal.h"
 
@@ -43,7 +44,7 @@ class Chunk : public Shared<Chunk>
 public:
 	void *buffer;
 	size_t frameCount;
-	_AudioFormat f;
+	AudioFormat f;
 	bool ownsMemory;
 
 	Chunk() : buffer(NULL), frameCount(0), ownsMemory(false) { }

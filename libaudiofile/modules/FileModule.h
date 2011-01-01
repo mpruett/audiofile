@@ -27,7 +27,7 @@ class FileModule : public Module
 {
 protected:
 	enum Mode { Compress, Decompress };
-	FileModule(Mode, _Track *, File *fh, bool canSeek);
+	FileModule(Mode, Track *, File *fh, bool canSeek);
 
 	Mode mode() const { return m_mode; }
 	bool canSeek() const { return m_canSeek; }
@@ -40,7 +40,7 @@ private:
 	Mode m_mode;
 
 protected:
-	_Track *m_track;
+	Track *m_track;
 
 private:
 	File *m_fh;

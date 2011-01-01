@@ -28,187 +28,63 @@
 #ifndef AFINTERNAL_H
 #define AFINTERNAL_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <sys/types.h>
-#include <stdbool.h>
 #include "audiofile.h"
-#include "af_vfs.h"
 #include "error.h"
-
-#ifdef __cplusplus
-#include <string>
-
-extern "C" {
-#endif
 
 typedef int status;
 #define AF_SUCCEED (0)
 #define AF_FAIL (-1)
 
-typedef union AFPVu
+union AFPVu
 {
 	long	l;
 	double	d;
 	void	*v;
-} AFPVu;
+};
 
-typedef struct _SuppMiscInfo
+struct InstParamInfo
 {
-	int	type;	/* AF_MISC_... */
-	int	count;	/* 0 = unlimited */
-} _SuppMiscInfo;
+	int id;
+	int type;
+	const char *name;
+	AFPVu defaultValue;
+};
 
-typedef struct _InstParamInfo
-{
-	int	id;
-	int	type;
-	char	*name;
-	AFPVu	defaultValue;
-} _InstParamInfo;
-
-typedef struct _MarkerSetup
-{
-	int	id;
-	char	*name, *comment;
-} _MarkerSetup;
-
-typedef struct _Marker
-{
-	short		id;
-	unsigned long	position;
-	char		*name, *comment;
-} _Marker;
-
-typedef struct _Loop
+struct Loop
 {
 	int	id;
 	int	mode;	/* AF_LOOP_MODE_... */
 	int	count;	/* how many times the loop is played */
 	int	beginMarker, endMarker;
 	int	trackid;
-} _Loop;
+};
 
-typedef struct _PCMInfo
-{
-	double	slope, intercept, minClip, maxClip;
-} _PCMInfo;
-
-typedef struct _AudioFormat
-{
-	double	sampleRate;		/* sampling rate in Hz */
-	int	sampleFormat;		/* AF_SAMPFMT_... */
-	int	sampleWidth;		/* sample width in bits */
-	int	byteOrder;		/* AF_BYTEORDER_... */
-
-	_PCMInfo	pcm;		/* parameters of PCM data */
-
-	int	channelCount;		/* number of channels */
-
-	int	compressionType;	/* AF_COMPRESSION_... */
-	void	*compressionParams;	/* NULL if no compression */
-
-	bool packed : 1;
-
-#ifdef __cplusplus
-	size_t bytesPerSample(bool stretch3to4) const;
-	size_t bytesPerFrame(bool stretch3to4) const;
-	size_t bytesPerSample() const;
-	size_t bytesPerFrame() const;
-	bool isInteger() const;
-	bool isSigned() const;
-	bool isUnsigned() const;
-	bool isFloat() const;
-	bool isCompressed() const;
-	bool isUncompressed() const;
-	bool isPacked() const { return packed; }
-	std::string description() const;
-#endif
-} _AudioFormat;
-
-typedef struct Module Module;
-typedef struct ModuleState ModuleState;
-
-typedef struct _Track
-{
-	int	id;	/* usually AF_DEFAULT_TRACKID */
-
-	_AudioFormat	f, v;	/* file and virtual audio formats */
-
-	double	*channelMatrix;
-
-	int	markerCount;
-	_Marker	*markers;
-
-	bool		hasAESData;	/* Is AES nonaudio data present? */
-	unsigned char	aesData[24];	/* AES nonaudio data */
-
-	AFframecount	totalfframes;		/* frameCount */
-	AFframecount	nextfframe;		/* currentFrame */
-	AFframecount	frames2ignore;
-	AFfileoffset	fpos_first_frame;	/* dataStart */
-	AFfileoffset	fpos_next_frame;
-	AFfileoffset	fpos_after_data;
-	AFframecount	totalvframes;
-	AFframecount	nextvframe;
-	AFfileoffset	data_size;		/* trackBytes */
-
-	ModuleState *ms;
-
-	double	taper, dynamic_range;
-	bool ratecvt_filter_params_set;
-
-	bool filemodhappy;
-
-#ifdef __cplusplus
-	void print();
-#endif
-} _Track;
-
-typedef struct _TrackSetup
+struct LoopSetup
 {
 	int	id;
+};
 
-	_AudioFormat	f;
-
-	bool	rateSet, sampleFormatSet, sampleWidthSet, byteOrderSet,
-		channelCountSet, compressionSet, aesDataSet, markersSet,
-		dataOffsetSet, frameCountSet;
-
-	int		markerCount;
-	_MarkerSetup	*markers;
-
-	AFfileoffset	dataOffset;
-	AFframecount	frameCount;
-} _TrackSetup;
-
-typedef struct _LoopSetup
-{
-	int	id;
-} _LoopSetup;
-
-typedef struct _InstrumentSetup
+struct InstrumentSetup
 {
 	int	id;
 
 	int		loopCount;
-	_LoopSetup	*loops;
+	LoopSetup	*loops;
 	bool		loopSet;
-} _InstrumentSetup;
+};
 
-typedef struct _Instrument
+struct Instrument
 {
 	int	id;
 
 	int	loopCount;
-	_Loop	*loops;
+	Loop	*loops;
 
 	AFPVu	*values;
-} _Instrument;
+};
 
-typedef struct _Miscellaneous
+struct Miscellaneous
 {
 	int		id;
 	int		type;
@@ -217,16 +93,18 @@ typedef struct _Miscellaneous
 	void		*buffer;
 
 	AFfileoffset	position;	/* offset within the miscellaneous chunk */
-} _Miscellaneous;
+};
 
-typedef struct _MiscellaneousSetup
+struct MiscellaneousSetup
 {
 	int	id;
 	int	type;
 	int	size;
-} _MiscellaneousSetup;
+};
 
-typedef struct _AFfilesetup
+struct TrackSetup;
+
+struct _AFfilesetup
 {
 	int	valid;
 
@@ -235,39 +113,51 @@ typedef struct _AFfilesetup
 	bool	trackSet, instrumentSet, miscellaneousSet;
 
 	int			trackCount;
-	_TrackSetup		*tracks;
+	TrackSetup		*tracks;
 
 	int			instrumentCount;
-	_InstrumentSetup	*instruments;
+	InstrumentSetup	*instruments;
 
 	int			miscellaneousCount;
-	_MiscellaneousSetup	*miscellaneous;
-} _AFfilesetup;
+	MiscellaneousSetup	*miscellaneous;
+};
 
-typedef struct _AFfilehandle
+class File;
+struct Track;
+
+struct _AFfilehandle
 {
+	static _AFfilehandle *create(int fileFormat);
+
 	int	valid;	/* _AF_VALID_FILEHANDLE */
 	int	access;	/* _AF_READ_ACCESS or _AF_WRITE_ACCESS */
 
 	bool	seekok;
 
-	AFvirtualfile	*fh;
+	File	*fh;
 
 	char	*fileName;
 
 	int	fileFormat;
 
 	int	trackCount;
-	_Track	*tracks;
+	Track	*tracks;
 
 	int		instrumentCount;
-	_Instrument	*instruments;
+	Instrument	*instruments;
 
 	int		miscellaneousCount;
-	_Miscellaneous	*miscellaneous;
+	Miscellaneous	*miscellaneous;
 
-	void	*formatSpecific;	/* format-specific data */
-} _AFfilehandle;
+	_AFfilehandle();
+	virtual ~_AFfilehandle();
+
+	virtual int getVersion() { return 0; }
+	virtual status readInit(AFfilesetup) = 0;
+	virtual status writeInit(AFfilesetup) = 0;
+	virtual status update() = 0;
+	virtual bool isInstrumentParameterValid(AUpvlist, int) { return false; }
+};
 
 enum
 {
@@ -292,9 +182,5 @@ enum
 
 /* NeXT/Sun sampling rate */
 #define _AF_SRATE_CODEC (8012.8210513)
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

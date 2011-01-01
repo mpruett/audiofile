@@ -26,15 +26,7 @@
 #ifndef COMPRESSION_H
 #define COMPRESSION_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Provide an index into _af_compression given a compression id. */
 int _af_compression_index_from_id (int compressionid);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

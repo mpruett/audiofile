@@ -29,21 +29,13 @@
 #ifndef MSADPCM_H
 #define MSADPCM_H
 
-#include <audiofile.h>
-
+#include "Module.h"
 #include "afinternal.h"
+#include "audiofile.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+bool _af_ms_adpcm_format_ok (AudioFormat *f);
 
-bool _af_ms_adpcm_format_ok (_AudioFormat *f);
-
-Module *_af_ms_adpcm_init_decompress (_Track *track, AFvirtualfile *fh,
+Module *_af_ms_adpcm_init_decompress (Track *track, File *fh,
 	bool canSeek, bool headerless, AFframecount *chunkframes);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* MSADPCM_H */

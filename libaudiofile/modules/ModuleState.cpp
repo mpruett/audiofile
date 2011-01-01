@@ -20,11 +20,13 @@
 */
 
 #include "config.h"
-
-#include "Module.h"
 #include "ModuleState.h"
+
+#include "File.h"
 #include "RebufferModule.h"
 #include "SimpleModule.h"
+#include "Track.h"
+#include "af_vfs.h"
 #include "byteorder.h"
 #include "compression.h"
 #include "units.h"
@@ -34,6 +36,7 @@
 #include <cassert>
 #include <cmath>
 #include <functional>
+#include <stdio.h>
 
 ModuleState::ModuleState() :
 	m_isDirty(true)
@@ -44,7 +47,7 @@ ModuleState::~ModuleState()
 {
 }
 
-status ModuleState::initFileModule(AFfilehandle file, _Track *track)
+status ModuleState::initFileModule(AFfilehandle file, Track *track)
 {
 	int compressionIndex = _af_compression_index_from_id(track->f.compressionType);
 	const _CompressionUnit *unit = &_af_compression[compressionIndex];
@@ -80,7 +83,7 @@ status ModuleState::initFileModule(AFfilehandle file, _Track *track)
 	return AF_SUCCEED;
 }
 
-status ModuleState::init(AFfilehandle file, _Track *track)
+status ModuleState::init(AFfilehandle file, Track *track)
 {
 	if (initFileModule(file, track) == AF_FAIL)
 		return AF_FAIL;
@@ -88,7 +91,7 @@ status ModuleState::init(AFfilehandle file, _Track *track)
 	return AF_SUCCEED;
 }
 
-status ModuleState::setup(AFfilehandle file, _Track *track)
+status ModuleState::setup(AFfilehandle file, Track *track)
 {
 	AFframecount fframepos = llrint(track->nextvframe * track->f.sampleRate / track->v.sampleRate);
 	bool isReading = file->access == _AF_READ_ACCESS;
@@ -194,7 +197,7 @@ const std::vector<SharedPtr<Chunk> > &ModuleState::chunks() const
 	return m_chunks;
 }
 
-status ModuleState::reset(AFfilehandle file, _Track *track)
+status ModuleState::reset(AFfilehandle file, Track *track)
 {
 	track->filemodhappy = true;
 	for (std::vector<SharedPtr<Module> >::reverse_iterator i=m_modules.rbegin();
@@ -211,7 +214,7 @@ status ModuleState::reset(AFfilehandle file, _Track *track)
 	return AF_SUCCEED;
 }
 
-status ModuleState::sync(AFfilehandle file, _Track *track)
+status ModuleState::sync(AFfilehandle file, Track *track)
 {
 	track->filemodhappy = true;
 	for (std::vector<SharedPtr<Module> >::reverse_iterator i=m_modules.rbegin();
@@ -225,7 +228,7 @@ status ModuleState::sync(AFfilehandle file, _Track *track)
 	return AF_SUCCEED;
 }
 
-static const _PCMInfo * const intmappings[6] =
+static const PCMInfo * const intmappings[6] =
 {
 	&_af_default_signed_integer_pcm_mappings[1],
 	&_af_default_signed_integer_pcm_mappings[2],
@@ -235,7 +238,7 @@ static const _PCMInfo * const intmappings[6] =
 	NULL
 };
 
-static FormatCode getFormatCode(const _AudioFormat &format)
+static FormatCode getFormatCode(const AudioFormat &format)
 {
 	if (format.sampleFormat == AF_SAMPFMT_FLOAT)
 		return kFloat;
@@ -260,24 +263,24 @@ static FormatCode getFormatCode(const _AudioFormat &format)
 static bool isInteger(FormatCode code) { return code >= kInt8 && code <= kInt32; }
 static bool isFloat(FormatCode code) { return code >= kFloat && code <= kDouble; }
 
-static bool isTrivialIntMapping(const _AudioFormat &format, FormatCode code)
+static bool isTrivialIntMapping(const AudioFormat &format, FormatCode code)
 {
 	return intmappings[code] != NULL &&
 		format.pcm.slope == intmappings[code]->slope &&
 		format.pcm.intercept == intmappings[code]->intercept;
 }
 
-static bool isTrivialIntClip(const _AudioFormat &format, FormatCode code)
+static bool isTrivialIntClip(const AudioFormat &format, FormatCode code)
 {
 	return intmappings[code] != NULL &&
 		format.pcm.minClip == intmappings[code]->minClip &&
 		format.pcm.maxClip == intmappings[code]->maxClip;
 }
 
-status ModuleState::arrange(AFfilehandle file, _Track *track)
+status ModuleState::arrange(AFfilehandle file, Track *track)
 {
 	bool isReading = file->access == _AF_READ_ACCESS;
-	_AudioFormat in, out;
+	AudioFormat in, out;
 	FormatCode infc, outfc;
 	if (isReading)
 	{
@@ -456,7 +459,7 @@ void ModuleState::addConvertIntToFloat(FormatCode input, FormatCode output)
 }
 
 void ModuleState::addConvertFloatToInt(FormatCode input, FormatCode output,
-	const _PCMInfo &inputMapping, const _PCMInfo &outputMapping)
+	const PCMInfo &inputMapping, const PCMInfo &outputMapping)
 {
 	addModule(new ConvertFloatToIntClip(input, output, inputMapping, outputMapping));
 }

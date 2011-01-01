@@ -555,7 +555,7 @@ private:
 
 struct Clip : public SimpleModule
 {
-	Clip(FormatCode format, const _PCMInfo &outputMapping) :
+	Clip(FormatCode format, const PCMInfo &outputMapping) :
 		m_format(format),
 		m_outputMapping(outputMapping)
 	{
@@ -591,7 +591,7 @@ struct Clip : public SimpleModule
 
 private:
 	FormatCode m_format;
-	_PCMInfo m_inputMapping, m_outputMapping;
+	PCMInfo m_inputMapping, m_outputMapping;
 
 	template <typename T>
 	void run(const void *srcData, void *dstData, int count)
@@ -615,7 +615,7 @@ private:
 struct ConvertFloatToIntClip : public SimpleModule
 {
 	ConvertFloatToIntClip(FormatCode inputFormat, FormatCode outputFormat,
-		const _PCMInfo &inputMapping, const _PCMInfo &outputMapping) :
+		const PCMInfo &inputMapping, const PCMInfo &outputMapping) :
 		m_inputFormat(inputFormat),
 		m_outputFormat(outputFormat),
 		m_inputMapping(inputMapping),
@@ -674,7 +674,7 @@ struct ConvertFloatToIntClip : public SimpleModule
 
 private:
 	FormatCode m_inputFormat, m_outputFormat;
-	_PCMInfo m_inputMapping, m_outputMapping;
+	PCMInfo m_inputMapping, m_outputMapping;
 
 	template <typename Input, typename Output>
 	void run(const void *srcData, void *dstData, int count)
@@ -723,8 +723,8 @@ struct Transform : public SimpleModule
 {
 public:
 	Transform(FormatCode format,
-		const _PCMInfo &inputMapping,
-		const _PCMInfo &outputMapping) :
+		const PCMInfo &inputMapping,
+		const PCMInfo &outputMapping) :
 		m_format(format),
 		m_inputMapping(inputMapping),
 		m_outputMapping(outputMapping)
@@ -749,7 +749,7 @@ public:
 
 private:
 	FormatCode m_format;
-	_PCMInfo m_inputMapping, m_outputMapping;
+	PCMInfo m_inputMapping, m_outputMapping;
 
 	template <typename T>
 	void run(const void *srcData, void *dstData, int count)
