@@ -1,3 +1,7 @@
+2011-01-09  Michael Pruett <michael@68k.org>
+
+	* configure.ac, test/Makefile.am: Support running tests under Valgrind.
+
 2011-01-01  Michael Pruett <michael@68k.org>
 
 	Convert library implementation to C++; refactor file parsing and writing.

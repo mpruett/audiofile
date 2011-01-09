@@ -109,6 +109,20 @@ AS_IF([test "$enable_coverage" == "yes"],
 	)]
 )
 
+AC_ARG_ENABLE(valgrind,
+	AS_HELP_STRING([--enable-valgrind], [Enable testing with Valgrind]),
+	[enable_valgrind=$enableval],
+	[enable_valgrind=no])
+AM_CONDITIONAL(ENABLE_VALGRIND, [test "$enable_valgrind" == "yes"])
+
+AS_IF([test "$enable_valgrind" == "yes"],
+	[AC_PATH_PROG(VALGRIND, valgrind, :)
+	AC_SUBST(VALGRIND)
+	AS_IF([test "$VALGRIND" = :],
+		[AC_MSG_ERROR([Could not find Valgrind.])]
+	)]
+)
+
 AC_CONFIG_FILES([
 	audiofile.spec
 	audiofile.pc

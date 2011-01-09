@@ -41,6 +41,11 @@ check_PROGRAMS = \
 
 EXTRA_DIST = transparency.sh misc.sh pipe.sh
 
+if ENABLE_VALGRIND
+VALGRIND_FLAGS = --quiet --leak-check=full --show-reachable=yes --error-exitcode=1
+TESTS_ENVIRONMENT = $(top_builddir)/libtool --mode=execute $(VALGRIND) $(VALGRIND_FLAGS)
+endif
+
 TESTS = error writeaiff writeircam writenext writewave writeraw \
 	writeavr writeiff writenist \
 	writeulaw writealaw \
