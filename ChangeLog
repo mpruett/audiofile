@@ -1,3 +1,7 @@
+2011-01-12  Stefano Magni <stefano.magni@akerue.it>
+
+	* libaudiofile/openclose.cpp: Fix leak of miscellaneous data buffers.
+
 2011-01-12  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/IFF.cpp: Allow writing miscellaneous data in IFF/8SVX files.

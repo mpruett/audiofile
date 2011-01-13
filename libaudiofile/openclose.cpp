@@ -508,6 +508,9 @@ static void freeFileHandle (AFfilehandle filehandle)
 
 	if (filehandle->miscellaneous)
 	{
+		for (int i=0; i<filehandle->miscellaneousCount; i++)
+			if (filehandle->miscellaneous[i].buffer)
+				free(filehandle->miscellaneous[i].buffer);
 		free(filehandle->miscellaneous);
 		filehandle->miscellaneous = NULL;
 	}
