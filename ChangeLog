@@ -1,5 +1,9 @@
 2011-01-12  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/IFF.cpp: Allow writing miscellaneous data in IFF/8SVX files.
+
+2011-01-12  Michael Pruett <michael@68k.org>
+
 	* test/Makefile.am, test/miscellaneous.cpp: Add test for reading and
 	writing miscellaneous data.
 

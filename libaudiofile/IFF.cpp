@@ -307,12 +307,5 @@ AFfilesetup IFFFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	if (setup->miscellaneousSet && setup->miscellaneousCount != 0)
-	{
-		_af_error(AF_BAD_NOT_IMPLEMENTED, "IFF/8SVX format does not "
-			"currently support miscellaneous chunks");
-		return AF_NULL_FILESETUP;
-	}
-
 	return _af_filesetup_copy(setup, &_af_iff_default_filesetup, true);
 }
