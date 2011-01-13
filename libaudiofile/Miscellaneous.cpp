@@ -190,7 +190,7 @@ int afGetMiscSize (AFfilehandle file, int miscellaneousid)
 	}
 }
 
-int afWriteMisc (AFfilehandle file, int miscellaneousid, void *buf, int bytes)
+int afWriteMisc (AFfilehandle file, int miscellaneousid, const void *buf, int bytes)
 {
 	Miscellaneous	*miscellaneous;
 	int		localsize;

@@ -586,7 +586,7 @@ void afInitMiscType (AFfilesetup, int miscellaneousid, int type);
 int afGetMiscType (AFfilehandle, int miscellaneousid);
 void afInitMiscSize (AFfilesetup, int miscellaneousid, int size);
 int afGetMiscSize (AFfilehandle, int miscellaneousid);
-int afWriteMisc (AFfilehandle, int miscellaneousid, void *buf, int bytes);
+int afWriteMisc (AFfilehandle, int miscellaneousid, const void *buf, int bytes);
 int afReadMisc (AFfilehandle, int miscellaneousid, void *buf, int bytes);
 int afSeekMisc (AFfilehandle, int miscellaneousid, int offset);
 
