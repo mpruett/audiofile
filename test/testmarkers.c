@@ -58,11 +58,10 @@ int testmarkers (int fileformat)
 	int		markids[] = {1, 2, 3, 4};
 	AFframecount	markpositions[] = {14, 54, 23, 101};
 	const char	*marknames[] = {"one", "two", "three", "four"};
-	short		frames[FRAME_COUNT * 2];
+	short		frames[FRAME_COUNT * 2] = {0};
 	int		readmarkcount;
 	int		readmarkids[4];
 	AFframecount	frameswritten;
-	int		i;
 
 	setup = afNewFileSetup();
 	ensure(setup != AF_NULL_FILESETUP, "Could not create file setup");
@@ -100,11 +99,11 @@ int testmarkers (int fileformat)
 
 	afGetMarkIDs(file, AF_DEFAULT_TRACK, readmarkids);
 
-	for (i=0; i<readmarkcount; i++)
+	for (int i=0; i<readmarkcount; i++)
 		ensure(readmarkids[i] = markids[i],
 			"Marker identification numbers do not match");
 
-	for (i=0; i<readmarkcount; i++)
+	for (int i=0; i<readmarkcount; i++)
 	{
 		AFframecount	readmarkposition;
 		const char	*readmarkname;

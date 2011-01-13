@@ -145,6 +145,8 @@ void printinstparams (int format)
 			AUpvgetval(defaultValue, 0, &vdefault);
 			DEBG("\tdefault value: %p\n", vdefault);
 		}
+
+		AUpvfree(defaultValue);
 	}
 
 	free(iarray);

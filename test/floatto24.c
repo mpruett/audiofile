@@ -92,6 +92,8 @@ int main (int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
+	afFreeFileSetup(setup);
+
 	AFframecount framesWritten = afWriteFrames(file, AF_DEFAULT_TRACK, samples,
 		frameCount);
 

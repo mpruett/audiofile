@@ -78,6 +78,8 @@ int main (void)
 	file = afOpenFile(TEST_FILE, "w", setup);
 	ensure(file != NULL, "could not open test file for writing");
 
+	afFreeFileSetup(setup);
+
 	buffer = malloc(sizeof (int32_t) * FRAME_COUNT);
 	ensure(buffer != NULL, "could not allocate buffer for audio data");
 
@@ -120,6 +122,11 @@ int main (void)
 
 	ensure(!memcmp(buffer, readbuffer, sizeof (int32_t) * FRAME_COUNT),
 		"data read does not match data written");
+
+	afCloseFile(file);
+
+	free(buffer);
+	free(readbuffer);
 
 	cleanup();
 	return 0;
