@@ -93,6 +93,7 @@ int main (int argc, char **argv)
 
 	file = afOpenFile(TEST_FILE, "r", setup);
 	ensure(file != AF_NULL_FILEHANDLE, "unable to open file for reading");
+	afFreeFileSetup(setup);
 
 	ensure(afGetFileFormat(file, NULL) == AF_FILE_RAWDATA,
 		"test file not created as raw audio data file");
