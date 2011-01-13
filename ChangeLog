@@ -1,5 +1,10 @@
 2011-01-12  Michael Pruett <michael@68k.org>
 
+	* test/Makefile.am, test/miscellaneous.cpp: Add test for reading and
+	writing miscellaneous data.
+
+2011-01-12  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/audiofile.h, libaudiofile/Miscellaneous.cpp: Change
 	type of buffer parameter of afWriteMisc() from void * to const void *.
 

@@ -6,8 +6,6 @@ check_PROGRAMS = \
 	error \
 	floatto24 \
 	transparency \
-	miscread \
-	miscwrite \
 	query2 \
 	testaupv \
 	writeaiff \
@@ -37,9 +35,10 @@ check_PROGRAMS = \
 	sign \
 	inttofloat \
 	floattoint \
-	pcmmapping
+	pcmmapping \
+	miscellaneous
 
-EXTRA_DIST = transparency.sh misc.sh pipe.sh
+EXTRA_DIST = transparency.sh pipe.sh
 
 if ENABLE_VALGRIND
 VALGRIND_FLAGS = --quiet --leak-check=full --show-reachable=yes --error-exitcode=1
@@ -49,10 +48,10 @@ endif
 TESTS = error writeaiff writeircam writenext writewave writeraw \
 	writeavr writeiff writenist \
 	writeulaw writealaw \
-	misc.sh transparency.sh pipe.sh \
+	transparency.sh pipe.sh \
 	query2 sixteen-to-eight twentyfour twentyfour2 floatto24 \
 	testfloat testdouble testmarkers testchannelmatrix seek large \
-	sign inttofloat floattoint pcmmapping
+	sign inttofloat floattoint pcmmapping miscellaneous
 
 LIBAUDIOFILE = $(top_builddir)/libaudiofile/libaudiofile.la
 
@@ -73,6 +72,9 @@ floattoint_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 pcmmapping_SOURCES = pcmmapping.cpp
 pcmmapping_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+miscellaneous_SOURCES = miscellaneous.cpp
+miscellaneous_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 coverage-reset:
 	$(LCOV) --base-directory=@top_srcdir@ --directory @top_srcdir@/libaudiofile --zerocounters

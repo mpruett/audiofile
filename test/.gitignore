@@ -9,8 +9,7 @@ instparamwrite
 inttofloat
 large
 loop
-miscread
-miscwrite
+miscellaneous
 pcmmapping
 pipe
 printmarkers
