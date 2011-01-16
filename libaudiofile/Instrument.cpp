@@ -59,7 +59,7 @@ extern const _Unit _af_units[];
 /*
 	Initialize instrument id list for audio file.
 */
-void afInitInstIDs (AFfilesetup setup, int *instids, int ninsts)
+void afInitInstIDs (AFfilesetup setup, const int *instids, int ninsts)
 {
 	if (!_af_filesetup_ok(setup))
 		return;

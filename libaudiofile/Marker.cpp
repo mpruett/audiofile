@@ -39,7 +39,7 @@
 #include "audiofile.h"
 #include "util.h"
 
-void afInitMarkIDs(AFfilesetup setup, int trackid, int markids[], int nmarks)
+void afInitMarkIDs(AFfilesetup setup, int trackid, const int *markids, int nmarks)
 {
 	if (!_af_filesetup_ok(setup))
 		return;

@@ -39,7 +39,7 @@
 #include "Marker.h"
 #include "modules/Module.h"
 
-void afInitTrackIDs (AFfilesetup file, int *trackids, int trackCount)
+void afInitTrackIDs (AFfilesetup file, const int *trackids, int trackCount)
 {
 	assert(file);
 	assert(trackids);

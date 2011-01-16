@@ -421,7 +421,7 @@ void afInitFileFormat (AFfilesetup, int format);
 int afGetFileFormat (AFfilehandle, int *version);
 
 /* track */
-void afInitTrackIDs (AFfilesetup, int *trackids, int trackCount);
+void afInitTrackIDs (AFfilesetup, const int *trackids, int trackCount);
 int afGetTrackIDs (AFfilehandle, int *trackids);
 
 /* track data: reading, writng, seeking, sizing frames */
@@ -534,7 +534,7 @@ void afInitFrameCount (AFfilesetup, int track, AFframecount frameCount);
 AFframecount afGetFrameCount (AFfilehandle file, int track);
 
 /* loop operations */
-void afInitLoopIDs (AFfilesetup, int instid, int ids[], int nids);
+void afInitLoopIDs (AFfilesetup, int instid, const int *ids, int nids);
 int afGetLoopIDs (AFfilehandle, int instid, int loopids[]);
 void afSetLoopMode (AFfilehandle, int instid, int loop, int mode);
 int afGetLoopMode (AFfilehandle, int instid, int loopid);
@@ -556,7 +556,7 @@ void afSetLoopTrack (AFfilehandle, int instid, int loopid, int trackid);
 int afGetLoopTrack (AFfilehandle, int instid, int loopid);
 
 /* marker operations */
-void afInitMarkIDs (AFfilesetup, int trackid, int *ids, int nids);
+void afInitMarkIDs (AFfilesetup, int trackid, const int *ids, int nids);
 int afGetMarkIDs (AFfilehandle file, int trackid, int markids[]);
 void afSetMarkPosition (AFfilehandle file, int trackid, int markid,
 	AFframecount markpos);
@@ -568,7 +568,7 @@ char *afGetMarkName (AFfilehandle file, int trackid, int markid);
 char *afGetMarkComment (AFfilehandle file, int trackid, int markid);
 
 /* instrument operations */
-void afInitInstIDs (AFfilesetup, int *ids, int nids);
+void afInitInstIDs (AFfilesetup, const int *ids, int nids);
 int afGetInstIDs (AFfilehandle file, int *instids);
 void afGetInstParams (AFfilehandle file, int instid, AUpvlist pvlist,
 	int nparams);
@@ -578,7 +578,7 @@ long afGetInstParamLong (AFfilehandle file, int instid, int param);
 void afSetInstParamLong (AFfilehandle file, int instid, int param, long value);
 
 /* miscellaneous data operations */
-void afInitMiscIDs (AFfilesetup, int *ids, int nids);
+void afInitMiscIDs (AFfilesetup, const int *ids, int nids);
 int afGetMiscIDs (AFfilehandle, int *ids);
 void afInitMiscType (AFfilesetup, int miscellaneousid, int type);
 int afGetMiscType (AFfilehandle, int miscellaneousid);

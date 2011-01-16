@@ -1,5 +1,13 @@
 2011-01-16  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/audiofile.h, libaudiofile/Loop.cpp,
+	libaudiofile/Marker.cpp, libaudiofile/Miscellaneous.cpp,
+	libaudiofile/Track.cpp, libaudiofile/util.cpp, libaudiofile/util.h:
+	Change type of id arrays in initialization functions from int *
+	to const int *.
+
+2011-01-16  Michael Pruett <michael@68k.org>
+
 	* Refactor file parsing and writing.
 
 2011-01-12  Stefano Magni <stefano.magni@akerue.it>

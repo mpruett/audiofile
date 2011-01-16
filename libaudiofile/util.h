@@ -52,7 +52,7 @@ bool _af_pv_getlong (AUpvlist pvlist, int param, long *l);
 bool _af_pv_getdouble (AUpvlist pvlist, int param, double *d);
 bool _af_pv_getptr (AUpvlist pvlist, int param, void **v);
 
-bool _af_unique_ids (int *ids, int nids, const char *idname, int iderr);
+bool _af_unique_ids (const int *ids, int nids, const char *idname, int iderr);
 
 float _af_format_frame_size (const AudioFormat *format, bool stretch3to4);
 int _af_format_frame_size_uncompressed (const AudioFormat *format, bool stretch3to4);

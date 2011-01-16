@@ -34,7 +34,7 @@
 #include "audiofile.h"
 #include "util.h"
 
-void afInitLoopIDs (AFfilesetup setup, int instid, int *loopids, int nloops)
+void afInitLoopIDs (AFfilesetup setup, int instid, const int *loopids, int nloops)
 {
 	int instno;
 

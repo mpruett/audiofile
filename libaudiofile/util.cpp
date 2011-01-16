@@ -372,7 +372,7 @@ status _af_set_sample_format (AudioFormat *f, int sampleFormat, int sampleWidth)
 	idname is the name of what the ids identify, as in "loop"
 	iderr is an error as in AF_BAD_LOOPID
 */
-bool _af_unique_ids (int *ids, int nids, const char *idname, int iderr)
+bool _af_unique_ids (const int *ids, int nids, const char *idname, int iderr)
 {
 	for (int i = 0; i < nids; i++)
 	{

@@ -38,7 +38,7 @@
 #include "audiofile.h"
 #include "util.h"
 
-void afInitMiscIDs (AFfilesetup setup, int *ids, int nids)
+void afInitMiscIDs (AFfilesetup setup, const int *ids, int nids)
 {
 	if (!_af_filesetup_ok(setup))
 		return;
