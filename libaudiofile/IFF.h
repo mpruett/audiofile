@@ -28,9 +28,7 @@
 #ifndef IFF_H
 #define IFF_H
 
-#include "File.h"
-#include "afinternal.h"
-#include "audiofile.h"
+#include "FileHandle.h"
 #include <stdint.h>
 
 class IFFFile : public _AFfilehandle

@@ -37,6 +37,8 @@
 #include "audiofile.h"
 #include "aupvlist.h"
 
+#include "FileHandle.h"
+#include "Setup.h"
 #include "Track.h"
 #include "afinternal.h"
 #include "aupvinternal.h"
@@ -58,14 +60,12 @@ void _af_printid (uint32_t id)
 
 void _af_print_pvlist (AUpvlist list)
 {
-	int i;
-
 	assert(list);
 
 	printf("list.valid: %d\n", list->valid);
 	printf("list.count: %d\n", list->count);
 
-	for (i=0; i<list->count; i++)
+	for (int i=0; i<list->count; i++)
 	{
 		printf("item %d valid %d, should be %d\n",
 			i, list->items[i].valid, _AU_VALID_PVITEM);
@@ -158,10 +158,9 @@ void _af_print_audioformat (AudioFormat *fmt)
 
 void _af_print_tracks (AFfilehandle filehandle)
 {
-	int	i;
-	for (i=0; i<filehandle->trackCount; i++)
+	for (int i=0; i<filehandle->trackCount; i++)
 	{
-		Track	*track = &filehandle->tracks[i];
+		Track *track = &filehandle->tracks[i];
 		printf("track %d\n", i);
 		printf(" id %d\n", track->id);
 		printf(" sample format\n");

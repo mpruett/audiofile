@@ -44,10 +44,9 @@
 
 status AVRFile::update()
 {
-	Track		*track;
 	uint32_t	size, loopStart, loopEnd;
 
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
 	/* Seek to the position of the size field. */
 	af_fseek(fh, 26, SEEK_SET);
@@ -58,9 +57,9 @@ status AVRFile::update()
 	loopStart = 0;
 	loopEnd = size;
 
-	af_write_uint32_be(&size, fh);
-	af_write_uint32_be(&loopStart, fh);
-	af_write_uint32_be(&loopEnd, fh);
+	writeU32(&size);
+	writeU32(&loopStart);
+	writeU32(&loopEnd);
 
 	return AF_SUCCEED;
 }
@@ -77,7 +76,6 @@ static char *af_basename (char *filename)
 
 status AVRFile::writeInit(AFfilesetup setup)
 {
-	Track		*track;
 	char		name[8];
 	uint16_t	mono, resolution, sign, loop, midi;
 	uint32_t	rate, size, loopStart, loopEnd;
@@ -87,7 +85,7 @@ status AVRFile::writeInit(AFfilesetup setup)
 	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
 		return AF_FAIL;
 
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
 	if (af_fseek(fh, 0, SEEK_SET) != 0)
 	{
@@ -105,22 +103,22 @@ status AVRFile::writeInit(AFfilesetup setup)
 		mono = 0x0;
 	else
 		mono = 0xffff;
-	af_write_uint16_be(&mono, fh);
+	writeU16(&mono);
 
 	resolution = track->f.sampleWidth;
-	af_write_uint16_be(&resolution, fh);
+	writeU16(&resolution);
 
 	if (track->f.sampleFormat == AF_SAMPFMT_UNSIGNED)
 		sign = 0x0;
 	else
 		sign = 0xffff;
-	af_write_uint16_be(&sign, fh);
+	writeU16(&sign);
 
 	/* We do not currently support loops. */
 	loop = 0;
-	af_write_uint16_be(&loop, fh);
+	writeU16(&loop);
 	midi = 0xffff;
-	af_write_uint16_be(&midi, fh);
+	writeU16(&midi);
 
 	rate = track->f.sampleRate;
 	/* Set the high-order byte of rate to 0xff. */
@@ -129,10 +127,10 @@ status AVRFile::writeInit(AFfilesetup setup)
 	loopStart = 0;
 	loopEnd = size;
 
-	af_write_uint32_be(&rate, fh);
-	af_write_uint32_be(&size, fh);
-	af_write_uint32_be(&loopStart, fh);
-	af_write_uint32_be(&loopEnd, fh);
+	writeU32(&rate);
+	writeU32(&size);
+	writeU32(&loopStart);
+	writeU32(&loopEnd);
 
 	memset(reserved, 0, 26);
 	af_write(reserved, 26, fh);

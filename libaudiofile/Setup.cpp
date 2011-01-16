@@ -23,12 +23,14 @@
 */
 
 #include "config.h"
+#include "Setup.h"
 
 #include <stdlib.h>
 #include <string.h>
 
+#include "FileHandle.h"
+#include "Instrument.h"
 #include "Marker.h"
-#include "Setup.h"
 #include "Track.h"
 #include "afinternal.h"
 #include "audiofile.h"
@@ -99,7 +101,6 @@ const TrackSetup _af_default_tracksetup =
 
 TrackSetup *_af_tracksetup_new (int trackCount)
 {
-	int		i;
 	TrackSetup	*tracks;
 
 	if (trackCount == 0)
@@ -109,7 +110,7 @@ TrackSetup *_af_tracksetup_new (int trackCount)
 	if (tracks == NULL)
 		return NULL;
 
-	for (i=0; i<trackCount; i++)
+	for (int i=0; i<trackCount; i++)
 	{
 		tracks[i] = _af_default_tracksetup;
 
@@ -151,8 +152,6 @@ TrackSetup *_af_tracksetup_new (int trackCount)
 
 InstrumentSetup *_af_instsetup_new (int instrumentCount)
 {
-	int	i;
-
 	InstrumentSetup	*instruments;
 
 	if (instrumentCount == 0)
@@ -161,7 +160,7 @@ InstrumentSetup *_af_instsetup_new (int instrumentCount)
 	if (instruments == NULL)
 		return NULL;
 
-	for (i=0; i<instrumentCount; i++)
+	for (int i=0; i<instrumentCount; i++)
 	{
 		instruments[i] = _af_default_instrumentsetup;
 		instruments[i].id = AF_DEFAULT_INST + i;
@@ -199,11 +198,9 @@ AFfilesetup afNewFileSetup (void)
 		setup->miscellaneous = NULL;
 	else
 	{
-		int	i;
-
 		setup->miscellaneous = (MiscellaneousSetup *) _af_calloc(setup->miscellaneousCount,
 			sizeof (MiscellaneousSetup));
-		for (i=0; i<setup->miscellaneousCount; i++)
+		for (int i=0; i<setup->miscellaneousCount; i++)
 		{
 			setup->miscellaneous[i].id = i+1;
 			setup->miscellaneous[i].type = 0;
@@ -221,8 +218,7 @@ void _af_setup_free_markers (AFfilesetup setup, int trackno)
 {
 	if (setup->tracks[trackno].markerCount != 0)
 	{
-		int	i;
-		for (i=0; i<setup->tracks[trackno].markerCount; i++)
+		for (int i=0; i<setup->tracks[trackno].markerCount; i++)
 		{
 			free(setup->tracks[trackno].markers[i].name);
 			free(setup->tracks[trackno].markers[i].comment);
@@ -240,11 +236,9 @@ void _af_setup_free_markers (AFfilesetup setup, int trackno)
 */
 void _af_setup_free_tracks (AFfilesetup setup)
 {
-	int	i;
-
 	if (setup->tracks)
 	{
-		for (i=0; i<setup->trackCount; i++)
+		for (int i=0; i<setup->trackCount; i++)
 		{
 			_af_setup_free_markers(setup, i);
 		}
@@ -334,12 +328,11 @@ void afInitFileFormat (AFfilesetup setup, int filefmt)
 
 void afInitChannels (AFfilesetup setup, int trackid, int channels)
 {
-	TrackSetup	*track;
-
 	if (!_af_filesetup_ok(setup))
 		return;
 
-	if ((track = _af_filesetup_get_tracksetup(setup, trackid)) == NULL)
+	TrackSetup *track = setup->getTrack(trackid);
+	if (!track)
 		return;
 
 	if (channels < 1)
@@ -355,12 +348,11 @@ void afInitChannels (AFfilesetup setup, int trackid, int channels)
 
 void afInitSampleFormat (AFfilesetup setup, int trackid, int sampfmt, int sampwidth)
 {
-	TrackSetup	*track;
-
 	if (!_af_filesetup_ok(setup))
 		return;
 
-	if ((track = _af_filesetup_get_tracksetup(setup, trackid)) == NULL)
+	TrackSetup *track = setup->getTrack(trackid);
+	if (!track)
 		return;
 
 	_af_set_sample_format(&track->f, sampfmt, sampwidth);
@@ -371,12 +363,11 @@ void afInitSampleFormat (AFfilesetup setup, int trackid, int sampfmt, int sampwi
 
 void afInitByteOrder (AFfilesetup setup, int trackid, int byteorder)
 {
-	TrackSetup	*track;
-
 	if (!_af_filesetup_ok(setup))
 		return;
 
-	if ((track = _af_filesetup_get_tracksetup(setup, trackid)) == NULL)
+	TrackSetup *track = setup->getTrack(trackid);
+	if (!track)
 		return;
 
 	if (byteorder != AF_BYTEORDER_BIGENDIAN &&
@@ -392,12 +383,11 @@ void afInitByteOrder (AFfilesetup setup, int trackid, int byteorder)
 
 void afInitRate (AFfilesetup setup, int trackid, double rate)
 {
-	TrackSetup	*track;
-
 	if (!_af_filesetup_ok(setup))
 		return;
 
-	if ((track = _af_filesetup_get_tracksetup(setup, trackid)) == NULL)
+	TrackSetup *track = setup->getTrack(trackid);
+	if (!track)
 		return;
 
 	if (rate <= 0.0)
@@ -415,12 +405,11 @@ void afInitRate (AFfilesetup setup, int trackid, double rate)
 */
 void afInitDataOffset (AFfilesetup setup, int trackid, AFfileoffset offset)
 {
-	TrackSetup	*track;
-
 	if (!_af_filesetup_ok(setup))
 		return;
 
-	if ((track = _af_filesetup_get_tracksetup(setup, trackid)) == NULL)
+	TrackSetup *track = setup->getTrack(trackid);
+	if (!track)
 		return;
 
 	if (offset < 0)
@@ -438,12 +427,11 @@ void afInitDataOffset (AFfilesetup setup, int trackid, AFfileoffset offset)
 */
 void afInitFrameCount (AFfilesetup setup, int trackid, AFfileoffset count)
 {
-	TrackSetup	*track;
-
 	if (!_af_filesetup_ok(setup))
 		return;
 
-	if ((track = _af_filesetup_get_tracksetup(setup, trackid)) == NULL)
+	TrackSetup *track = setup->getTrack(trackid);
+	if (!track)
 		return;
 
 	if (count < 0)
@@ -471,9 +459,8 @@ void afInitFrameCount (AFfilesetup setup, int trackid, AFfileoffset count)
 AFfilesetup _af_filesetup_copy (AFfilesetup setup, AFfilesetup defaultSetup,
 	bool copyMarks)
 {
-	AFfilesetup	newsetup;
-	int		i;
-	int		instrumentCount, miscellaneousCount, trackCount;
+	AFfilesetup newsetup;
+	int instrumentCount, miscellaneousCount, trackCount;
 
 	newsetup = (_AFfilesetup *) _af_malloc(sizeof (_AFfilesetup));
 	if (newsetup == AF_NULL_FILESETUP)
@@ -511,9 +498,8 @@ AFfilesetup _af_filesetup_copy (AFfilesetup setup, AFfilesetup defaultSetup,
 	alloccopy(MiscellaneousSetup, miscellaneousCount, newsetup->miscellaneous, setup->miscellaneous);
 	newsetup->miscellaneousCount = miscellaneousCount;
 
-	for (i=0; i<setup->trackCount; i++)
+	for (int i=0; i<setup->trackCount; i++)
 	{
-		int	j;
 		TrackSetup	*track = &newsetup->tracks[i];
 
 		/* XXXmpruett set compression information */
@@ -529,7 +515,7 @@ AFfilesetup _af_filesetup_copy (AFfilesetup setup, AFfilesetup defaultSetup,
 			track->markers, setup->tracks[i].markers);
 		track->markerCount = setup->tracks[i].markerCount;
 
-		for (j=0; j<setup->tracks[i].markerCount; j++)
+		for (int j=0; j<setup->tracks[i].markerCount; j++)
 		{
 			track->markers[j].name =
 				_af_strdup(setup->tracks[i].markers[j].name);
@@ -543,7 +529,7 @@ AFfilesetup _af_filesetup_copy (AFfilesetup setup, AFfilesetup defaultSetup,
 		}
 	}
 
-	for (i=0; i<newsetup->instrumentCount; i++)
+	for (int i=0; i<newsetup->instrumentCount; i++)
 	{
 		InstrumentSetup	*instrument = &newsetup->instruments[i];
 		alloccopy(LoopSetup, setup->instruments[i].loopCount,
@@ -594,8 +580,6 @@ AFfilesetup _af_filesetup_copy (AFfilesetup setup, AFfilesetup defaultSetup,
 
 status _af_filesetup_make_handle (AFfilesetup setup, AFfilehandle handle)
 {
-	int	i;
-
 	handle->valid = _AF_VALID_FILEHANDLE;
 
 	if ((handle->trackCount = setup->trackCount) == 0)
@@ -606,7 +590,7 @@ status _af_filesetup_make_handle (AFfilesetup setup, AFfilehandle handle)
 		if (handle->tracks == NULL)
 			return AF_FAIL;
 
-		for (i=0; i<handle->trackCount; i++)
+		for (int i=0; i<handle->trackCount; i++)
 		{
 			Track		*track = &handle->tracks[i];
 			TrackSetup	*tracksetup = &setup->tracks[i];
@@ -659,7 +643,7 @@ status _af_filesetup_make_handle (AFfilesetup setup, AFfilehandle handle)
 		if (handle->instruments == NULL)
 			return AF_FAIL;
 
-		for (i=0; i<handle->instrumentCount; i++)
+		for (int i=0; i<handle->instrumentCount; i++)
 		{
 			int	instParamCount;
 
@@ -717,7 +701,7 @@ status _af_filesetup_make_handle (AFfilesetup setup, AFfilehandle handle)
 			sizeof (Miscellaneous));
 		if (handle->miscellaneous == NULL)
 			return AF_FAIL;
-		for (i=0; i<handle->miscellaneousCount; i++)
+		for (int i=0; i<handle->miscellaneousCount; i++)
 		{
 			handle->miscellaneous[i].id = setup->miscellaneous[i].id;
 			handle->miscellaneous[i].type = setup->miscellaneous[i].type;
@@ -728,4 +712,39 @@ status _af_filesetup_make_handle (AFfilesetup setup, AFfilehandle handle)
 	}
 
 	return AF_SUCCEED;
+}
+
+TrackSetup *_AFfilesetup::getTrack(int trackID)
+{
+	for (int i=0; i<trackCount; i++)
+	{
+		if (tracks[i].id == trackID)
+			return &tracks[i];
+	}
+
+	_af_error(AF_BAD_TRACKID, "bad track id %d", trackID);
+	return NULL;
+}
+
+InstrumentSetup *_AFfilesetup::getInstrument(int instrumentID)
+{
+	for (int i = 0; i < instrumentCount; i++)
+		if (instruments[i].id == instrumentID)
+			return &instruments[i];
+
+	_af_error(AF_BAD_INSTID, "invalid instrument id %d", instrumentID);
+	return NULL;
+}
+
+MiscellaneousSetup *_AFfilesetup::getMiscellaneous(int miscellaneousID)
+{
+	for (int i=0; i<miscellaneousCount; i++)
+	{
+		if (miscellaneous[i].id == miscellaneousID)
+			return &miscellaneous[i];
+	}
+
+	_af_error(AF_BAD_MISCID, "bad miscellaneous id %d", miscellaneousID);
+
+	return NULL;
 }

@@ -27,48 +27,19 @@
 
 #include "config.h"
 
+#include <algorithm>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "audiofile.h"
+#include "FileHandle.h"
+#include "Setup.h"
 #include "afinternal.h"
+#include "audiofile.h"
 #include "util.h"
-
-static Miscellaneous *find_misc_by_id (AFfilehandle file, int id)
-{
-	int	i;
-
-	for (i=0; i<file->miscellaneousCount; i++)
-	{
-		if (file->miscellaneous[i].id == id)
-			return &file->miscellaneous[i];
-	}
-
-	_af_error(AF_BAD_MISCID, "bad miscellaneous id %d", id);
-
-	return NULL;
-}
-
-static MiscellaneousSetup *find_miscsetup_by_id (AFfilesetup setup, int id)
-{
-	int	i;
-
-	for (i=0; i<setup->miscellaneousCount; i++)
-	{
-		if (setup->miscellaneous[i].id == id)
-			return &setup->miscellaneous[i];
-	}
-
-	_af_error(AF_BAD_MISCID, "bad miscellaneous id %d", id);
-
-	return NULL;
-}
 
 void afInitMiscIDs (AFfilesetup setup, int *ids, int nids)
 {
-	int	i;
-
 	if (!_af_filesetup_ok(setup))
 		return;
 
@@ -89,7 +60,7 @@ void afInitMiscIDs (AFfilesetup setup, int *ids, int nids)
 		if (setup->miscellaneous == NULL)
 			return;
 
-		for (i=0; i<nids; i++)
+		for (int i=0; i<nids; i++)
 		{
 			setup->miscellaneous[i].id = ids[i];
 			setup->miscellaneous[i].type = 0;
@@ -102,14 +73,12 @@ void afInitMiscIDs (AFfilesetup setup, int *ids, int nids)
 
 int afGetMiscIDs (AFfilehandle file, int *ids)
 {
-	int	i;
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
 	if (ids != NULL)
 	{
-		for (i=0; i<file->miscellaneousCount; i++)
+		for (int i=0; i<file->miscellaneousCount; i++)
 		{
 			ids[i] = file->miscellaneous[i].id;
 		}
@@ -120,108 +89,74 @@ int afGetMiscIDs (AFfilehandle file, int *ids)
 
 void afInitMiscType (AFfilesetup setup, int miscellaneousid, int type)
 {
-	MiscellaneousSetup	*miscellaneous;
-
 	if (!_af_filesetup_ok(setup))
 		return;
 
-	miscellaneous = find_miscsetup_by_id(setup, miscellaneousid);
-
+	MiscellaneousSetup *miscellaneous = setup->getMiscellaneous(miscellaneousid);
 	if (miscellaneous)
 		miscellaneous->type = type;
-	else
-		_af_error(AF_BAD_MISCID, "bad miscellaneous id");
 }
 
 int afGetMiscType (AFfilehandle file, int miscellaneousid)
 {
-	Miscellaneous	*miscellaneous;
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	miscellaneous = find_misc_by_id(file, miscellaneousid);
-
+	Miscellaneous *miscellaneous = file->getMiscellaneous(miscellaneousid);
 	if (miscellaneous)
-	{
 		return miscellaneous->type;
-	}
-	else
-	{
-		_af_error(AF_BAD_MISCID, "bad miscellaneous id");
-		return -1;
-	}
+	return -1;
 }
 
 void afInitMiscSize (AFfilesetup setup, int miscellaneousid, int size)
 {
-	MiscellaneousSetup	*miscellaneous;
-
 	if (!_af_filesetup_ok(setup))
 		return;
 
-	miscellaneous = find_miscsetup_by_id(setup, miscellaneousid);
-
+	MiscellaneousSetup *miscellaneous = setup->getMiscellaneous(miscellaneousid);
 	if (miscellaneous)
-	{
 		miscellaneous->size = size;
-	}
-	else
-		_af_error(AF_BAD_MISCID, "bad miscellaneous id");
 }
 
 int afGetMiscSize (AFfilehandle file, int miscellaneousid)
 {
-	Miscellaneous	*miscellaneous;
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	miscellaneous = find_misc_by_id(file, miscellaneousid);
-
+	Miscellaneous *miscellaneous = file->getMiscellaneous(miscellaneousid);
 	if (miscellaneous)
-	{
 		return miscellaneous->size;
-	}
-	else
-	{
-		_af_error(AF_BAD_MISCID, "bad miscellaneous id");
-		return -1;
-	}
+	return -1;
 }
 
 int afWriteMisc (AFfilehandle file, int miscellaneousid, const void *buf, int bytes)
 {
-	Miscellaneous	*miscellaneous;
-	int		localsize;
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	if (!_af_filehandle_can_write(file))
+	if (!file->checkCanWrite())
 		return -1;
 
-	if ((miscellaneous = find_misc_by_id(file, miscellaneousid)) == NULL)
+	Miscellaneous *miscellaneous = file->getMiscellaneous(miscellaneousid);
+	if (!miscellaneous)
 		return -1;
 
 	if (bytes <= 0)
 	{
 		_af_error(AF_BAD_MISCSIZE, "invalid size (%d) for miscellaneous chunk", bytes);
+		return -1;
 	}
 
 	if (miscellaneous->buffer == NULL && miscellaneous->size != 0)
 	{
 		miscellaneous->buffer = _af_malloc(miscellaneous->size);
-		memset(miscellaneous->buffer, 0, miscellaneous->size);
 		if (miscellaneous->buffer == NULL)
 			return -1;
+		memset(miscellaneous->buffer, 0, miscellaneous->size);
 	}
 
-	if (bytes + miscellaneous->position > miscellaneous->size)
-		localsize = miscellaneous->size - miscellaneous->position;
-	else
-		localsize = bytes;
-
+	int localsize = std::min(bytes,
+		miscellaneous->size - miscellaneous->position);
 	memcpy((char *) miscellaneous->buffer + miscellaneous->position,
 		buf, localsize);
 	miscellaneous->position += localsize;
@@ -230,16 +165,14 @@ int afWriteMisc (AFfilehandle file, int miscellaneousid, const void *buf, int by
 
 int afReadMisc (AFfilehandle file, int miscellaneousid, void *buf, int bytes)
 {
-	int		localsize;
-	Miscellaneous	*miscellaneous;
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	if (!_af_filehandle_can_read(file))
+	if (!file->checkCanRead())
 		return -1;
 
-	if ((miscellaneous = find_misc_by_id(file, miscellaneousid)) == NULL)
+	Miscellaneous *miscellaneous = file->getMiscellaneous(miscellaneousid);
+	if (!miscellaneous)
 		return -1;
 
 	if (bytes <= 0)
@@ -248,11 +181,8 @@ int afReadMisc (AFfilehandle file, int miscellaneousid, void *buf, int bytes)
 		return -1;
 	}
 
-	if (bytes + miscellaneous->position > miscellaneous->size)
-		localsize = miscellaneous->size - miscellaneous->position;
-	else
-		localsize = bytes;
-
+	int localsize = std::min(bytes,
+		miscellaneous->size - miscellaneous->position);
 	memcpy(buf, (char *) miscellaneous->buffer + miscellaneous->position,
 		localsize);
 	miscellaneous->position += localsize;
@@ -261,12 +191,11 @@ int afReadMisc (AFfilehandle file, int miscellaneousid, void *buf, int bytes)
 
 int afSeekMisc (AFfilehandle file, int miscellaneousid, int offset)
 {
-	Miscellaneous	*miscellaneous;
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	if ((miscellaneous = find_misc_by_id(file, miscellaneousid)) == NULL)
+	Miscellaneous *miscellaneous = file->getMiscellaneous(miscellaneousid);
+	if (!miscellaneous)
 		return -1;
 
 	if (offset >= miscellaneous->size)

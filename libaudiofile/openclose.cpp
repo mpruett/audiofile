@@ -31,7 +31,10 @@
 #include <audiofile.h>
 
 #include "File.h"
+#include "FileHandle.h"
+#include "Instrument.h"
 #include "Marker.h"
+#include "Setup.h"
 #include "Track.h"
 #include "af_vfs.h"
 #include "afinternal.h"
@@ -49,12 +52,9 @@ static status _afOpenFile (int access, File *vf, const char *filename,
 
 int _af_identify (File *vf, int *implemented)
 {
-	AFfileoffset	curpos;
-	int		i;
+	AFfileoffset curpos = af_ftell(vf);
 
-	curpos = af_ftell(vf);
-
-	for (i=0; i<_AF_NUM_UNITS; i++)
+	for (int i=0; i<_AF_NUM_UNITS; i++)
 	{
 		if (_af_units[i].recognize &&
 			_af_units[i].recognize(vf))
@@ -104,7 +104,7 @@ int afIdentifyNamedFD (int fd, const char *filename, int *implemented)
 	fd = dup(fd);
 
 	File *vf = new File(fd, File::ReadAccess);
-	if (vf == NULL)
+	if (!vf)
 	{
 		_af_error(AF_BAD_OPEN, "could not open file '%s'", filename);
 		return AF_FILE_UNKNOWN;
@@ -119,7 +119,7 @@ int afIdentifyNamedFD (int fd, const char *filename, int *implemented)
 
 AFfilehandle afOpenFD (int fd, const char *mode, AFfilesetup setup)
 {
-	if (mode == NULL)
+	if (!mode)
 	{
 		_af_error(AF_BAD_ACCMODE, "null access mode");
 		return AF_NULL_FILEHANDLE;
@@ -127,9 +127,13 @@ AFfilehandle afOpenFD (int fd, const char *mode, AFfilesetup setup)
 
 	int access;
 	if (mode[0] == 'r')
+	{
 		access = _AF_READ_ACCESS;
+	}
 	else if (mode[0] == 'w')
+	{
 		access = _AF_WRITE_ACCESS;
+	}
 	else
 	{
 		_af_error(AF_BAD_ACCMODE, "unrecognized access mode '%s'", mode);
@@ -149,7 +153,7 @@ AFfilehandle afOpenFD (int fd, const char *mode, AFfilesetup setup)
 AFfilehandle afOpenNamedFD (int fd, const char *mode, AFfilesetup setup,
 	const char *filename)
 {
-	if (mode == NULL)
+	if (!mode)
 	{
 		_af_error(AF_BAD_ACCMODE, "null access mode");
 		return AF_NULL_FILEHANDLE;
@@ -178,7 +182,7 @@ AFfilehandle afOpenNamedFD (int fd, const char *mode, AFfilesetup setup,
 
 AFfilehandle afOpenFile (const char *filename, const char *mode, AFfilesetup setup)
 {
-	if (mode == NULL)
+	if (!mode)
 	{
 		_af_error(AF_BAD_ACCMODE, "null access mode");
 		return AF_NULL_FILEHANDLE;
@@ -186,9 +190,13 @@ AFfilehandle afOpenFile (const char *filename, const char *mode, AFfilesetup set
 
 	int access;
 	if (mode[0] == 'r')
+	{
 		access = _AF_READ_ACCESS;
+	}
 	else if (mode[0] == 'w')
+	{
 		access = _AF_WRITE_ACCESS;
+	}
 	else
 	{
 		_af_error(AF_BAD_ACCMODE, "unrecognized access mode '%s'", mode);
@@ -215,14 +223,11 @@ static status _afOpenFile (int access, File *vf, const char *filename,
 {
 	int	fileFormat = AF_FILE_UNKNOWN;
 	int	implemented = true;
-	status	(*initfunc) (AFfilesetup, AFfilehandle);
 
 	int		userSampleFormat = 0;
 	double		userSampleRate = 0.0;
 	PCMInfo	userPCM;
 	bool		userFormatSet = false;
-
-	int	t;
 
 	AFfilehandle	filehandle = AF_NULL_FILEHANDLE;
 	AFfilesetup	completesetup = AF_NULL_FILESETUP;
@@ -279,7 +284,7 @@ static status _afOpenFile (int access, File *vf, const char *filename,
 	}
 
 	filehandle = _AFfilehandle::create(fileFormat);
-	if (filehandle == NULL)
+	if (!filehandle)
 	{
 		if (completesetup)
 			afFreeFileSetup(completesetup);
@@ -317,9 +322,9 @@ static status _afOpenFile (int access, File *vf, const char *filename,
 	/*
 		Initialize virtual format.
 	*/
-	for (t=0; t<filehandle->trackCount; t++)
+	for (int t=0; t<filehandle->trackCount; t++)
 	{
-		Track	*track = &filehandle->tracks[t];
+		Track *track = &filehandle->tracks[t];
 
 		track->v = track->f;
 
@@ -359,13 +364,10 @@ int afSyncFile (AFfilehandle handle)
 
 	if (handle->access == _AF_WRITE_ACCESS)
 	{
-		int	filefmt = handle->fileFormat;
-		int	trackno;
-
 		/* Finish writes on all tracks. */
-		for (trackno = 0; trackno < handle->trackCount; trackno++)
+		for (int trackno = 0; trackno < handle->trackCount; trackno++)
 		{
-			Track	*track = &handle->tracks[trackno];
+			Track *track = &handle->tracks[trackno];
 
 			if (track->ms->isDirty() && track->ms->setup(handle, track) == AF_FAIL)
 				return -1;
@@ -413,7 +415,7 @@ int afCloseFile (AFfilehandle file)
 static void freeFileHandle (AFfilehandle filehandle)
 {
 	int	fileFormat;
-	if (filehandle == NULL || filehandle->valid != _AF_VALID_FILEHANDLE)
+	if (!filehandle || filehandle->valid != _AF_VALID_FILEHANDLE)
 	{
 		_af_error(AF_BAD_FILEHANDLE, "bad filehandle");
 		return;
@@ -428,8 +430,7 @@ static void freeFileHandle (AFfilehandle filehandle)
 
 	if (filehandle->tracks)
 	{
-		int	i;
-		for (i=0; i<filehandle->trackCount; i++)
+		for (int i=0; i<filehandle->trackCount; i++)
 		{
 			/* Free the compression parameters. */
 			if (filehandle->tracks[i].f.compressionParams)
@@ -485,8 +486,7 @@ static void freeFileHandle (AFfilehandle filehandle)
 
 	if (filehandle->instruments)
 	{
-		int	i;
-		for (i=0; i<filehandle->instrumentCount; i++)
+		for (int i=0; i<filehandle->instrumentCount; i++)
 		{
 			if (filehandle->instruments[i].loops)
 			{
@@ -521,10 +521,9 @@ static void freeFileHandle (AFfilehandle filehandle)
 
 static void freeInstParams (AFPVu *values, int fileFormat)
 {
-	int	i;
 	int	parameterCount = _af_units[fileFormat].instrumentParameterCount;
 
-	for (i=0; i<parameterCount; i++)
+	for (int i=0; i<parameterCount; i++)
 	{
 		if (_af_units[fileFormat].instrumentParameters[i].type == AU_PVTYPE_PTR)
 			if (values[i].v != NULL)

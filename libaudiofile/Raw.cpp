@@ -134,7 +134,6 @@ status RawFile::update()
 AFfilesetup RawFile::completeSetup(AFfilesetup setup)
 {
 	AFfilesetup	newSetup;
-	TrackSetup	*track;
 
 	if (setup->trackSet && setup->trackCount != 1)
 	{
@@ -142,7 +141,8 @@ AFfilesetup RawFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	if ((track = _af_filesetup_get_tracksetup(setup, AF_DEFAULT_TRACK)) == NULL)
+	TrackSetup *track = setup->getTrack();
+	if (!track)
 	{
 		_af_error(AF_BAD_FILESETUP, "could not access track in file setup");
 		return AF_NULL_FILESETUP;

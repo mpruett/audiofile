@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "Instrument.h"
 #include "Marker.h"
 #include "Setup.h"
 #include "Track.h"
@@ -75,6 +76,8 @@ _AFfilesetup _af_wave_default_filesetup =
 
 WAVEFile::WAVEFile()
 {
+	setFormatByteOrder(AF_BYTEORDER_LITTLEENDIAN);
+
 	factOffset = 0;
 	miscellaneousStartOffset = 0;
 	totalMiscellaneousSize = 0;
@@ -82,36 +85,34 @@ WAVEFile::WAVEFile()
 	dataSizeOffset = 0;
 }
 
-status WAVEFile::parseFrameCount(uint32_t id, size_t size)
+status WAVEFile::parseFrameCount(uint32_t id, uint32_t size)
 {
-	uint32_t	totalFrames;
-	Track		*track;
+	Track *track = getTrack();
 
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
-
-	af_read_uint32_le(&totalFrames, fh);
+	uint32_t totalFrames;
+	readU32(&totalFrames);
 
 	track->totalfframes = totalFrames;
 
 	return AF_SUCCEED;
 }
 
-status WAVEFile::parseFormat(uint32_t id, size_t size)
+status WAVEFile::parseFormat(uint32_t id, uint32_t size)
 {
-	Track		*track;
-	uint16_t	formatTag, channelCount;
-	uint32_t	sampleRate, averageBytesPerSecond;
-	uint16_t	blockAlign;
-
 	assert(!memcmp(&id, "fmt ", 4));
 
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
-	af_read_uint16_le(&formatTag, fh);
-	af_read_uint16_le(&channelCount, fh);
-	af_read_uint32_le(&sampleRate, fh);
-	af_read_uint32_le(&averageBytesPerSecond, fh);
-	af_read_uint16_le(&blockAlign, fh);
+	uint16_t formatTag;
+	readU16(&formatTag);
+	uint16_t channelCount;
+	readU16(&channelCount);
+	uint32_t sampleRate;
+	readU32(&sampleRate);
+	uint32_t averageBytesPerSecond;
+	readU32(&averageBytesPerSecond);
+	uint16_t blockAlign;
+	readU16(&blockAlign);
 
 	track->f.channelCount = channelCount;
 	track->f.sampleRate = sampleRate;
@@ -124,9 +125,8 @@ status WAVEFile::parseFormat(uint32_t id, size_t size)
 	{
 		case WAVE_FORMAT_PCM:
 		{
-			uint16_t	bitsPerSample;
-
-			af_read_uint16_le(&bitsPerSample, fh);
+			uint16_t bitsPerSample;
+			readU16(&bitsPerSample);
 
 			track->f.sampleWidth = bitsPerSample;
 
@@ -161,9 +161,8 @@ status WAVEFile::parseFormat(uint32_t id, size_t size)
 
 		case WAVE_FORMAT_IEEE_FLOAT:
 		{
-			uint16_t	bitsPerSample;
-
-			af_read_uint16_le(&bitsPerSample, fh);
+			uint16_t bitsPerSample;
+			readU16(&bitsPerSample);
 
 			if (bitsPerSample == 64)
 			{
@@ -180,12 +179,8 @@ status WAVEFile::parseFormat(uint32_t id, size_t size)
 
 		case WAVE_FORMAT_ADPCM:
 		{
-			uint16_t	bitsPerSample, extraByteCount,
+			uint16_t bitsPerSample, extraByteCount,
 					samplesPerBlock, numCoefficients;
-			int		i;
-			AUpvlist	pv;
-			long		l;
-			void		*v;
 
 			if (track->f.channelCount != 1 &&
 				track->f.channelCount != 2)
@@ -195,20 +190,20 @@ status WAVEFile::parseFormat(uint32_t id, size_t size)
 					"must have 1 or 2 channels");
 			}
 
-			af_read_uint16_le(&bitsPerSample, fh);
-			af_read_uint16_le(&extraByteCount, fh);
-			af_read_uint16_le(&samplesPerBlock, fh);
-			af_read_uint16_le(&numCoefficients, fh);
+			readU16(&bitsPerSample);
+			readU16(&extraByteCount);
+			readU16(&samplesPerBlock);
+			readU16(&numCoefficients);
 
 			/* numCoefficients should be at least 7. */
 			assert(numCoefficients >= 7 && numCoefficients <= 255);
 
-			for (i=0; i<numCoefficients; i++)
+			for (int i=0; i<numCoefficients; i++)
 			{
-				int16_t	a0, a1;
+				int16_t a0, a1;
 
-				af_read_int16_le(&a0, fh);
-				af_read_int16_le(&a1, fh);
+				readS16(&a0);
+				readS16(&a1);
 
 				msadpcmCoefficients[i][0] = a0;
 				msadpcmCoefficients[i][1] = a1;
@@ -220,7 +215,9 @@ status WAVEFile::parseFormat(uint32_t id, size_t size)
 			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 
 			/* Create the parameter list. */
-			pv = AUpvnew(4);
+			long l;
+			void *v;
+			AUpvlist pv = AUpvnew(4);
 			AUpvsetparam(pv, 0, _AF_MS_ADPCM_NUM_COEFFICIENTS);
 			AUpvsetvaltype(pv, 0, AU_PVTYPE_LONG);
 			l = numCoefficients;
@@ -247,15 +244,11 @@ status WAVEFile::parseFormat(uint32_t id, size_t size)
 
 		case WAVE_FORMAT_DVI_ADPCM:
 		{
-			AUpvlist	pv;
-			long		l;
+			uint16_t bitsPerSample, extraByteCount, samplesPerBlock;
 
-			uint16_t	bitsPerSample, extraByteCount,
-					samplesPerBlock;
-
-			af_read_uint16_le(&bitsPerSample, fh);
-			af_read_uint16_le(&extraByteCount, fh);
-			af_read_uint16_le(&samplesPerBlock, fh);
+			readU16(&bitsPerSample);
+			readU16(&extraByteCount);
+			readU16(&samplesPerBlock);
 
 			if (bitsPerSample != 4)
 			{
@@ -276,7 +269,8 @@ status WAVEFile::parseFormat(uint32_t id, size_t size)
 			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 
 			/* Create the parameter list. */
-			pv = AUpvnew(2);
+			long l;
+			AUpvlist pv = AUpvnew(2);
 			AUpvsetparam(pv, 0, _AF_FRAMES_PER_BLOCK);
 			AUpvsetvaltype(pv, 0, AU_PVTYPE_LONG);
 			l = samplesPerBlock;
@@ -320,13 +314,11 @@ status WAVEFile::parseFormat(uint32_t id, size_t size)
 	return AF_SUCCEED;
 }
 
-status WAVEFile::parseData(uint32_t id, size_t size)
+status WAVEFile::parseData(uint32_t id, uint32_t size)
 {
-	Track	*track;
-
 	assert(!memcmp(&id, "data", 4));
 
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
 	track->fpos_first_frame = af_ftell(fh);
 	track->data_size = size;
@@ -334,10 +326,10 @@ status WAVEFile::parseData(uint32_t id, size_t size)
 	return AF_SUCCEED;
 }
 
-status WAVEFile::parsePlayList(uint32_t id, size_t size)
+status WAVEFile::parsePlayList(uint32_t id, uint32_t size)
 {
 	uint32_t segmentCount;
-	af_read_uint32_le(&segmentCount, fh);
+	readU32(&segmentCount);
 
 	if (segmentCount == 0)
 	{
@@ -348,22 +340,22 @@ status WAVEFile::parsePlayList(uint32_t id, size_t size)
 
 	for (unsigned segment=0; segment<segmentCount; segment++)
 	{
-		uint32_t	startMarkID, loopLength, loopCount;
+		uint32_t startMarkID, loopLength, loopCount;
 
-		af_read_uint32_le(&startMarkID, fh);
-		af_read_uint32_le(&loopLength, fh);
-		af_read_uint32_le(&loopCount, fh);
+		readU32(&startMarkID);
+		readU32(&loopLength);
+		readU32(&loopCount);
 	}
 
 	return AF_SUCCEED;
 }
 
-status WAVEFile::parseCues(uint32_t id, size_t size)
+status WAVEFile::parseCues(uint32_t id, uint32_t size)
 {
-	Track *track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
 	uint32_t markerCount;
-	af_read_uint32_le(&markerCount, fh);
+	readU32(&markerCount);
 	track->markerCount = markerCount;
 
 	if (markerCount == 0)
@@ -377,22 +369,22 @@ status WAVEFile::parseCues(uint32_t id, size_t size)
 
 	for (unsigned i=0; i<markerCount; i++)
 	{
-		uint32_t	id, position, chunkid;
-		uint32_t	chunkByteOffset, blockByteOffset;
-		uint32_t	sampleFrameOffset;
-		Marker		*marker = &track->markers[i];
+		uint32_t id, position, chunkid;
+		uint32_t chunkByteOffset, blockByteOffset;
+		uint32_t sampleFrameOffset;
+		Marker *marker = &track->markers[i];
 
-		af_read_uint32_le(&id, fh);
-		af_read_uint32_le(&position, fh);
-		af_read_uint32_le(&chunkid, fh);
-		af_read_uint32_le(&chunkByteOffset, fh);
-		af_read_uint32_le(&blockByteOffset, fh);
+		readU32(&id);
+		readU32(&position);
+		readU32(&chunkid);
+		readU32(&chunkByteOffset);
+		readU32(&blockByteOffset);
 
 		/*
 			sampleFrameOffset represents the position of
 			the mark in units of frames.
 		*/
-		af_read_uint32_le(&sampleFrameOffset, fh);
+		readU32(&sampleFrameOffset);
 
 		marker->id = id;
 		marker->position = sampleFrameOffset;
@@ -404,34 +396,32 @@ status WAVEFile::parseCues(uint32_t id, size_t size)
 }
 
 /* Parse an adtl sub-chunk within a LIST chunk. */
-status WAVEFile::parseADTLSubChunk(uint32_t id, size_t size)
+status WAVEFile::parseADTLSubChunk(uint32_t id, uint32_t size)
 {
-	Track		*track;
-	AFfileoffset	endPos=af_ftell(fh)+size;
+	Track *track = getTrack();
 
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	AFfileoffset endPos = af_ftell(fh) + size;
 
 	while (af_ftell(fh) < endPos)
 	{
-		char		chunkID[4];
-		uint32_t	chunkSize;
+		char chunkID[4];
+		uint32_t chunkSize;
 
 		af_read(chunkID, 4, fh);
-		af_read_uint32_le(&chunkSize, fh);
+		readU32(&chunkSize);
 
 		if (memcmp(chunkID, "labl", 4)==0 || memcmp(chunkID, "note", 4)==0)
 		{
-			Marker *marker=NULL;
 			uint32_t id;
 			long length=chunkSize-4;
 			char *p = (char *) _af_malloc(length);
 
-			af_read_uint32_le(&id, fh);
+			readU32(&id);
 			af_read(p, length, fh);
 
-			marker = _af_marker_find_by_id(track, id);
+			Marker *marker = track->getMarker(id);
 
-			if (marker != NULL)
+			if (marker)
 			{
 				if (memcmp(chunkID, "labl", 4)==0)
 				{
@@ -466,17 +456,17 @@ status WAVEFile::parseADTLSubChunk(uint32_t id, size_t size)
 }
 
 /* Parse an INFO sub-chunk within a LIST chunk. */
-status WAVEFile::parseINFOSubChunk(uint32_t id, size_t size)
+status WAVEFile::parseINFOSubChunk(uint32_t id, uint32_t size)
 {
-	AFfileoffset	endPos=af_ftell(fh)+size;
+	AFfileoffset endPos=af_ftell(fh)+size;
 
 	while (af_ftell(fh) < endPos)
 	{
-		int		misctype = AF_MISC_UNRECOGNIZED;
-		uint32_t	miscid, miscsize;
+		int misctype = AF_MISC_UNRECOGNIZED;
+		uint32_t miscid, miscsize;
 
 		af_read(&miscid, 4, fh);
-		af_read_uint32_le(&miscsize, fh);
+		readU32(&miscsize);
 
 		if (memcmp(&miscid, "IART", 4) == 0)
 			misctype = AF_MISC_AUTH;
@@ -493,7 +483,7 @@ status WAVEFile::parseINFOSubChunk(uint32_t id, size_t size)
 
 		if (misctype != AF_MISC_UNRECOGNIZED)
 		{
-			char	*string = (char *) _af_malloc(miscsize);
+			char *string = (char *) _af_malloc(miscsize);
 
 			af_read(string, miscsize, fh);
 
@@ -518,9 +508,9 @@ status WAVEFile::parseINFOSubChunk(uint32_t id, size_t size)
 	return AF_SUCCEED;
 }
 
-status WAVEFile::parseList(uint32_t id, size_t size)
+status WAVEFile::parseList(uint32_t id, uint32_t size)
 {
-	uint32_t	typeID;
+	uint32_t typeID;
 
 	af_read(&typeID, 4, fh);
 	size-=4;
@@ -544,28 +534,28 @@ status WAVEFile::parseList(uint32_t id, size_t size)
 	return AF_SUCCEED;
 }
 
-status WAVEFile::parseInstrument(uint32_t id, size_t size)
+status WAVEFile::parseInstrument(uint32_t id, uint32_t size)
 {
-	uint8_t	baseNote;
-	int8_t	detune, gain;
-	uint8_t	lowNote, highNote, lowVelocity, highVelocity;
-	uint8_t	padByte;
+	uint8_t baseNote;
+	int8_t detune, gain;
+	uint8_t lowNote, highNote, lowVelocity, highVelocity;
+	uint8_t padByte;
 
-	af_read_uint8(&baseNote, fh);
-	af_read_int8(&detune, fh);
-	af_read_int8(&gain, fh);
-	af_read_uint8(&lowNote, fh);
-	af_read_uint8(&highNote, fh);
-	af_read_uint8(&lowVelocity, fh);
-	af_read_uint8(&highVelocity, fh);
-	af_read_uint8(&padByte, fh);
+	readU8(&baseNote);
+	readS8(&detune);
+	readS8(&gain);
+	readU8(&lowNote);
+	readU8(&highNote);
+	readU8(&lowVelocity);
+	readU8(&highVelocity);
+	readU8(&padByte);
 
 	return AF_SUCCEED;
 }
 
 bool WAVEFile::recognize(File *fh)
 {
-	uint8_t	buffer[8];
+	uint8_t buffer[8];
 
 	af_fseek(fh, 0, SEEK_SET);
 
@@ -579,34 +569,31 @@ bool WAVEFile::recognize(File *fh)
 
 status WAVEFile::readInit(AFfilesetup setup)
 {
-	Track		*track;
-	uint32_t	type, size, formtype;
-	uint32_t	index = 0;
-	bool		hasFormat, hasData, hasCue, hasList, hasPlayList, hasFrameCount,
-			hasINST, hasINFO;
+	uint32_t type, size, formtype;
+	uint32_t index = 0;
 
-	hasFormat = false;
-	hasData = false;
-	hasCue = false;
-	hasList = false;
-	hasPlayList = false;
-	hasFrameCount = false;
-	hasINST = false;
-	hasINFO = false;
+	bool hasFormat = false;
+	bool hasData = false;
+	bool hasCue = false;
+	bool hasList = false;
+	bool hasPlayList = false;
+	bool hasFrameCount = false;
+	bool hasINST = false;
+	bool hasINFO = false;
 
 	instruments = NULL;
 	instrumentCount = 0;
 	miscellaneous = NULL;
 	miscellaneousCount = 0;
 
-	track = _af_track_new();
+	Track *track = _af_track_new();
 	tracks = track;
 	trackCount = 1;
 
 	af_fseek(fh, 0, SEEK_SET);
 
 	af_read(&type, 4, fh);
-	af_read_uint32_le(&size, fh);
+	readU32(&size);
 	af_read(&formtype, 4, fh);
 
 	assert(!memcmp(&type, "RIFF", 4));
@@ -621,14 +608,14 @@ status WAVEFile::readInit(AFfilesetup setup)
 
 	while (index < size)
 	{
-		uint32_t	chunkid = 0, chunksize = 0;
-		status		result;
+		uint32_t chunkid = 0, chunksize = 0;
+		status result;
 
 #ifdef DEBUG
 		printf("index: %d\n", index);
 #endif
 		af_read(&chunkid, 4, fh);
-		af_read_uint32_le(&chunksize, fh);
+		readU32(&chunksize);
 
 #ifdef DEBUG
 		_af_printid(BENDIAN_TO_HOST_INT32(chunkid));
@@ -741,16 +728,13 @@ status WAVEFile::readInit(AFfilesetup setup)
 
 AFfilesetup WAVEFile::completeSetup(AFfilesetup setup)
 {
-	AFfilesetup	newsetup;
-	TrackSetup	*track;
-
 	if (setup->trackSet && setup->trackCount != 1)
 	{
 		_af_error(AF_BAD_NUMTRACKS, "WAVE file must have 1 track");
 		return AF_NULL_FILESETUP;
 	}
 
-	track = _af_filesetup_get_tracksetup(setup, AF_DEFAULT_TRACK);
+	TrackSetup *track = setup->getTrack();
 
 	if (track->sampleFormatSet)
 	{
@@ -899,8 +883,7 @@ AFfilesetup WAVEFile::completeSetup(AFfilesetup setup)
 	/* Make sure the miscellaneous data is of an acceptable type. */
 	if (setup->miscellaneousSet)
 	{
-		int	i;
-		for (i=0; i<setup->miscellaneousCount; i++)
+		for (int i=0; i<setup->miscellaneousCount; i++)
 		{
 			switch (setup->miscellaneous[i].type)
 			{
@@ -921,7 +904,7 @@ AFfilesetup WAVEFile::completeSetup(AFfilesetup setup)
 	/*
 		Allocate an AFfilesetup and make all the unset fields correct.
 	*/
-	newsetup = _af_filesetup_copy(setup, &_af_wave_default_filesetup, false);
+	AFfilesetup	newsetup = _af_filesetup_copy(setup, &_af_wave_default_filesetup, false);
 
 	/* Make sure we do not copy loops if they are not specified in setup. */
 	if (setup->instrumentSet && setup->instrumentCount > 0 &&
@@ -936,7 +919,7 @@ AFfilesetup WAVEFile::completeSetup(AFfilesetup setup)
 
 bool WAVEFile::isInstrumentParameterValid(AUpvlist list, int i)
 {
-	int	param, type, lval;
+	int param, type, lval;
 
 	AUpvgetparam(list, i, &param);
 	AUpvgetvaltype(list, i, &type);

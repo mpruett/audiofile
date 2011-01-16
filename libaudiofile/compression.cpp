@@ -20,7 +20,7 @@
 */
 
 /*
-	compression.c
+	compression.cpp
 
 	This file contains routines for configuring compressed audio.
 */
@@ -29,8 +29,9 @@
 
 #include <assert.h>
 
+#include "FileHandle.h"
+#include "Setup.h"
 #include "Track.h"
-#include "afinternal.h"
 #include "audiofile.h"
 #include "aupvlist.h"
 #include "units.h"
@@ -40,9 +41,7 @@ extern const _CompressionUnit _af_compression[];
 
 int _af_compression_index_from_id (int compressionid)
 {
-	int	i;
-
-	for (i=0; i<_AF_NUM_COMPRESSION; i++)
+	for (int i=0; i<_AF_NUM_COMPRESSION; i++)
 	{
 		if (_af_compression[i].compressionID == compressionid)
 			return i;
@@ -66,12 +65,11 @@ static const _CompressionUnit *findCompression (int compressionid)
 
 int afGetCompression (AFfilehandle file, int trackid)
 {
-	Track	*track;
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
 	return track->f.compressionType;
@@ -79,15 +77,14 @@ int afGetCompression (AFfilehandle file, int trackid)
 
 void afInitCompression (AFfilesetup setup, int trackid, int compression)
 {
-	TrackSetup	*track;
-
 	if (!_af_filesetup_ok(setup))
 		return;
 
-	if ((track = _af_filesetup_get_tracksetup(setup, trackid)) == NULL)
+	TrackSetup *track = setup->getTrack(trackid);
+	if (!track)
 		return;
 
-	if (findCompression(compression) == NULL)
+	if (!findCompression(compression))
 		return;
 
 	track->f.compressionType = compression;

@@ -66,7 +66,7 @@ _AFfilesetup _af_ircam_default_filesetup =
 
 bool IRCAMFile::recognize(File *fh)
 {
-	uint8_t	buffer[4];
+	uint8_t buffer[4];
 
 	af_fseek(fh, 0, SEEK_SET);
 
@@ -180,15 +180,11 @@ AFfilesetup IRCAMFile::completeSetup(AFfilesetup setup)
 
 status IRCAMFile::readInit(AFfilesetup setup)
 {
-	Track		*track;
-	uint8_t		magic[4];
-	float		rate;
-	uint32_t	channels;
-	uint32_t	packMode;
+	uint8_t magic[4];
 
-	float		maxAmp = 1.0;
+	float maxAmp = 1.0;
 
-	bool		isSwapped, isLittleEndian;
+	bool isSwapped, isLittleEndian;
 
 	instruments = NULL;
 	instrumentCount = 0 ;
@@ -223,27 +219,21 @@ status IRCAMFile::readInit(AFfilesetup setup)
 	isLittleEndian = (memcmp(magic, _af_ircam_vax_magic, 4) == 0 ||
 		memcmp(magic, _af_ircam_mips_magic, 4) == 0);
 
-#ifdef WORDS_BIGENDIAN
-	isSwapped = isLittleEndian;
-#else
-	isSwapped = !isLittleEndian;
-#endif
+	setFormatByteOrder(isLittleEndian ? AF_BYTEORDER_LITTLEENDIAN :
+		AF_BYTEORDER_BIGENDIAN);
 
-	af_read(&rate, 4, fh);
-	af_read(&channels, 4, fh);
-	af_read(&packMode, 4, fh);
+	float rate;
+	readF32(&rate);
+	uint32_t channels;
+	readU32(&channels);
+	uint32_t packMode;
+	readU32(&packMode);
 
-	if (isSwapped)
-	{
-		rate = _af_byteswap_float32(rate);
-		channels = _af_byteswap_int32(channels);
-		packMode = _af_byteswap_int32(packMode);
-	}
-
-	if ((tracks = _af_track_new()) == NULL)
+	Track *track = _af_track_new();
+	if (!track)
 		return AF_FAIL;
 
-	track = &tracks[0];
+	tracks = track;
 
 	track->f.sampleRate = rate;
 	track->f.compressionType = AF_COMPRESSION_NONE;

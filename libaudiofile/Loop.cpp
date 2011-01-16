@@ -27,11 +27,12 @@
 
 #include "config.h"
 
-#include "audiofile.h"
-#include "afinternal.h"
-#include "util.h"
-#include "Setup.h"
+#include "FileHandle.h"
 #include "Instrument.h"
+#include "Setup.h"
+#include "afinternal.h"
+#include "audiofile.h"
+#include "util.h"
 
 void afInitLoopIDs (AFfilesetup setup, int instid, int *loopids, int nloops)
 {
@@ -43,7 +44,8 @@ void afInitLoopIDs (AFfilesetup setup, int instid, int *loopids, int nloops)
 	if (!_af_unique_ids(loopids, nloops, "loop", AF_BAD_LOOPID))
 		return;
 
-	if ((instno = _af_setup_instrument_index_from_id(setup, instid)) == -1)
+	InstrumentSetup *instrument = setup->getInstrument(instid);
+	if (!instrument)
 		return;
 
 	_af_setup_free_loops(setup, instno);
@@ -55,45 +57,28 @@ void afInitLoopIDs (AFfilesetup setup, int instid, int *loopids, int nloops)
 		setup->instruments[instno].loops = NULL;
 	else
 	{
-		int i;
-
 		if ((setup->instruments[instno].loops = (LoopSetup *) _af_calloc(nloops, sizeof (LoopSetup))) == NULL)
 			return;
 
-		for (i=0; i < nloops; i++)
+		for (int i=0; i < nloops; i++)
 			setup->instruments[instno].loops[i].id = loopids[i];
 	}
 }
 
 int afGetLoopIDs (AFfilehandle file, int instid, int *loopids)
 {
-	int instno;
-	int i;
-
 	if (!_af_filehandle_ok(file))
 		return AF_FAIL;
 
-	if ((instno = _af_handle_instrument_index_from_id(file, instid)) == -1)
+	Instrument *instrument = file->getInstrument(instid);
+	if (!instrument)
 		return AF_FAIL;
 
 	if (loopids)
-		for (i=0; i < file->instruments[instno].loopCount; i++)
-			loopids[i] = file->instruments[instno].loops[i].id;
+		for (int i=0; i < instrument->loopCount; i++)
+			loopids[i] = instrument->loops[i].id;
 
-	return file->instruments[instno].loopCount;
-}
-
-int _af_handle_loop_index_from_id (AFfilehandle file, int instno, int loopid)
-{
-	int	i;
-	for (i=0; i<file->instruments[instno].loopCount; i++)
-		if (file->instruments[instno].loops[i].id == loopid)
-			return i;
-
-	_af_error(AF_BAD_LOOPID, "no loop with id %d for instrument %d",
-		loopid, file->instruments[instno].id);
-
-	return -1;
+	return instrument->loopCount;
 }
 
 /*
@@ -104,21 +89,17 @@ int _af_handle_loop_index_from_id (AFfilehandle file, int instno, int loopid)
 static Loop *getLoop (AFfilehandle handle, int instid, int loopid,
 	bool mustWrite)
 {
-	int	loopno, instno;
-
 	if (!_af_filehandle_ok(handle))
 		return NULL;
 
-	if (mustWrite && !_af_filehandle_can_write(handle))
+	if (mustWrite && !handle->checkCanWrite())
 		return NULL;
 
-	if ((instno = _af_handle_instrument_index_from_id(handle, instid)) == -1)
+	Instrument *instrument = handle->getInstrument(instid);
+	if (!instrument)
 		return NULL;
 
-	if ((loopno = _af_handle_loop_index_from_id(handle, instno, loopid)) == -1)
-		return NULL;
-
-	return &handle->instruments[instno].loops[loopno];
+	return instrument->getLoop(loopid);
 }
 
 /*
@@ -126,7 +107,7 @@ static Loop *getLoop (AFfilehandle handle, int instid, int loopid,
 */
 void afSetLoopMode (AFfilehandle file, int instid, int loopid, int mode)
 {
-	Loop	*loop = getLoop(file, instid, loopid, true);
+	Loop *loop = getLoop(file, instid, loopid, true);
 
 	if (!loop)
 		return;
@@ -147,9 +128,9 @@ void afSetLoopMode (AFfilehandle file, int instid, int loopid, int mode)
 */
 int afGetLoopMode (AFfilehandle file, int instid, int loopid)
 {
-	Loop	*loop = getLoop(file, instid, loopid, false);
+	Loop *loop = getLoop(file, instid, loopid, false);
 
-	if (loop == NULL)
+	if (!loop)
 		return -1;
 
 	return loop->mode;
@@ -160,9 +141,9 @@ int afGetLoopMode (AFfilehandle file, int instid, int loopid)
 */
 int afSetLoopCount (AFfilehandle file, int instid, int loopid, int count)
 {
-	Loop	*loop = getLoop(file, instid, loopid, true);
+	Loop *loop = getLoop(file, instid, loopid, true);
 
-	if (loop == NULL)
+	if (!loop)
 		return AF_FAIL;
 
 	if (count < 1)
@@ -180,9 +161,9 @@ int afSetLoopCount (AFfilehandle file, int instid, int loopid, int count)
 */
 int afGetLoopCount(AFfilehandle file, int instid, int loopid)
 {
-	Loop	*loop = getLoop(file, instid, loopid, false);
+	Loop *loop = getLoop(file, instid, loopid, false);
 
-	if (loop == NULL)
+	if (!loop)
 		return -1;
 
 	return loop->count;
@@ -194,7 +175,7 @@ int afGetLoopCount(AFfilehandle file, int instid, int loopid)
 void
 afSetLoopStart(AFfilehandle file, int instid, int loopid, int markid)
 {
-	Loop	*loop = getLoop(file, instid, loopid, true);
+	Loop *loop = getLoop(file, instid, loopid, true);
 
 	if (!loop)
 		return;
@@ -207,9 +188,9 @@ afSetLoopStart(AFfilehandle file, int instid, int loopid, int markid)
 */
 int afGetLoopStart (AFfilehandle file, int instid, int loopid)
 {
-	Loop	*loop = getLoop(file, instid, loopid, false);
+	Loop *loop = getLoop(file, instid, loopid, false);
 
-	if (loop == NULL)
+	if (!loop)
 		return -1;
 
 	return loop->beginMarker;
@@ -220,10 +201,9 @@ int afGetLoopStart (AFfilehandle file, int instid, int loopid)
 */
 int afSetLoopStartFrame (AFfilehandle file, int instid, int loopid, AFframecount startFrame)
 {
-	int	trackid, beginMarker;
-	Loop	*loop = getLoop(file, instid, loopid, true);
+	Loop *loop = getLoop(file, instid, loopid, true);
 
-	if (loop == NULL)
+	if (!loop)
 		return -1;
 
 	if (startFrame < 0)
@@ -232,8 +212,8 @@ int afSetLoopStartFrame (AFfilehandle file, int instid, int loopid, AFframecount
 		return AF_FAIL;
 	}
 
-	trackid = loop->trackid;
-	beginMarker = loop->beginMarker;
+	int	trackid = loop->trackid;
+	int beginMarker = loop->beginMarker;
 
 	afSetMarkPosition(file, trackid, beginMarker, startFrame);
 	return AF_SUCCEED;
@@ -244,14 +224,12 @@ int afSetLoopStartFrame (AFfilehandle file, int instid, int loopid, AFframecount
 */
 AFframecount afGetLoopStartFrame (AFfilehandle file, int instid, int loopid)
 {
-	int	trackid, beginMarker;
-	Loop	*loop = getLoop(file, instid, loopid, false);
-
-	if (loop == NULL)
+	Loop *loop = getLoop(file, instid, loopid, false);
+	if (!loop)
 		return -1;
 
-	trackid = loop->trackid;
-	beginMarker = loop->beginMarker;
+	int trackid = loop->trackid;
+	int beginMarker = loop->beginMarker;
 
 	return afGetMarkPosition(file, trackid, beginMarker);
 }
@@ -273,9 +251,9 @@ void afSetLoopTrack (AFfilehandle file, int instid, int loopid, int track)
 */
 int afGetLoopTrack (AFfilehandle file, int instid, int loopid)
 {
-	Loop	*loop = getLoop(file, instid, loopid, false);
+	Loop *loop = getLoop(file, instid, loopid, false);
 
-	if (loop == NULL)
+	if (!loop)
 		return -1;
 
 	return loop->trackid;
@@ -286,7 +264,7 @@ int afGetLoopTrack (AFfilehandle file, int instid, int loopid)
 */
 void afSetLoopEnd (AFfilehandle file, int instid, int loopid, int markid)
 {
-	Loop	*loop = getLoop(file, instid, loopid, true);
+	Loop *loop = getLoop(file, instid, loopid, true);
 
 	if (!loop)
 		return;
@@ -299,9 +277,9 @@ void afSetLoopEnd (AFfilehandle file, int instid, int loopid, int markid)
 */
 int afGetLoopEnd (AFfilehandle file, int instid, int loopid)
 {
-	Loop	*loop = getLoop(file, instid, loopid, false);
+	Loop *loop = getLoop(file, instid, loopid, false);
 
-	if (loop == NULL)
+	if (!loop)
 		return -1;
 
 	return loop->endMarker;
@@ -312,10 +290,8 @@ int afGetLoopEnd (AFfilehandle file, int instid, int loopid)
 */
 int afSetLoopEndFrame (AFfilehandle file, int instid, int loopid, AFframecount endFrame)
 {
-	int	trackid, endMarker;
-	Loop	*loop = getLoop(file, instid, loopid, true);
-
-	if (loop == NULL)
+	Loop *loop = getLoop(file, instid, loopid, true);
+	if (!loop)
 		return -1;
 
 	if (endFrame < 0)
@@ -324,8 +300,8 @@ int afSetLoopEndFrame (AFfilehandle file, int instid, int loopid, AFframecount e
 		return AF_FAIL;
 	}
 
-	trackid = loop->trackid;
-	endMarker = loop->endMarker;
+	int trackid = loop->trackid;
+	int endMarker = loop->endMarker;
 
 	afSetMarkPosition(file, trackid, endMarker, endFrame);
 	return AF_SUCCEED;
@@ -337,14 +313,13 @@ int afSetLoopEndFrame (AFfilehandle file, int instid, int loopid, AFframecount e
 
 AFframecount afGetLoopEndFrame (AFfilehandle file, int instid, int loopid)
 {
-	int	trackid, endMarker;
-	Loop	*loop = getLoop(file, instid, loopid, false);
+	Loop *loop = getLoop(file, instid, loopid, false);
 
-	if (loop == NULL)
+	if (!loop)
 		return -1;
 
-	trackid = loop->trackid;
-	endMarker = loop->endMarker;
+	int trackid = loop->trackid;
+	int endMarker = loop->endMarker;
 
 	return afGetMarkPosition(file, trackid, endMarker);
 }

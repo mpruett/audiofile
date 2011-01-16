@@ -56,6 +56,11 @@ _AFfilesetup _af_avr_default_filesetup =
 	NULL			/* miscellaneous */
 };
 
+AVRFile::AVRFile()
+{
+	setFormatByteOrder(AF_BYTEORDER_BIGENDIAN);
+}
+
 bool AVRFile::recognize(File *fh)
 {
 	uint32_t	magic;
@@ -96,16 +101,16 @@ status AVRFile::readInit(AFfilesetup setup)
 	/* Read name. */
 	af_read(name, 8, fh);
 
-	af_read_uint16_be(&mono, fh);
-	af_read_uint16_be(&resolution, fh);
-	af_read_uint16_be(&sign, fh);
-	af_read_uint16_be(&loop, fh);
-	af_read_uint16_be(&midi, fh);
+	readU16(&mono);
+	readU16(&resolution);
+	readU16(&sign);
+	readU16(&loop);
+	readU16(&midi);
 
-	af_read_uint32_be(&rate, fh);
-	af_read_uint32_be(&size, fh);
-	af_read_uint32_be(&loopStart, fh);
-	af_read_uint32_be(&loopEnd, fh);
+	readU32(&rate);
+	readU32(&size);
+	readU32(&loopStart);
+	readU32(&loopEnd);
 
 	af_read(reserved, 26, fh);
 	af_read(user, 64, fh);
@@ -173,15 +178,15 @@ status AVRFile::readInit(AFfilesetup setup)
 
 AFfilesetup AVRFile::completeSetup(AFfilesetup setup)
 {
-	TrackSetup	*track;
-
 	if (setup->trackSet && setup->trackCount != 1)
 	{
 		_af_error(AF_BAD_NUMTRACKS, "AVR files must have exactly 1 track");
 		return AF_NULL_FILESETUP;
 	}
 
-	track = _af_filesetup_get_tracksetup(setup, AF_DEFAULT_TRACK);
+	TrackSetup *track = setup->getTrack();
+	if (!track)
+		return AF_NULL_FILESETUP;
 
 	/* AVR allows only unsigned and two's complement integer data. */
 	if (track->f.sampleFormat != AF_SAMPFMT_UNSIGNED &&

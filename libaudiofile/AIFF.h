@@ -28,9 +28,7 @@
 #ifndef AIFF_H
 #define AIFF_H
 
-#include "File.h"
-#include "afinternal.h"
-#include "audiofile.h"
+#include "FileHandle.h"
 #include <stdint.h>
 
 #define AIFC_VERSION_1 0xa2805140

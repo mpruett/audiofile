@@ -25,9 +25,7 @@
 #ifndef RAW_H
 #define RAW_H
 
-#include "File.h"
-#include "afinternal.h"
-#include "audiofile.h"
+#include "FileHandle.h"
 
 #define _AF_RAW_NUM_COMPTYPES 2
 extern const int _af_raw_compression_types[_AF_RAW_NUM_COMPTYPES];

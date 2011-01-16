@@ -58,7 +58,7 @@ _AFfilesetup _af_nist_default_filesetup =
 
 bool NISTFile::recognize(File *fh)
 {
-	uint8_t	buffer[16];
+	uint8_t buffer[16];
 
 	af_fseek(fh, 0, SEEK_SET);
 
@@ -198,11 +198,10 @@ static bool nist_header_read_string (const char *header, const char *key, int *l
 
 status NISTFile::readInit(AFfilesetup setup)
 {
-	Track		*track;
-	char		header[NIST_SPHERE_HEADER_LENGTH + 1];
-	int		intval;
-	char		strval[NIST_SPHERE_MAX_FIELD_LENGTH];
-	int		sample_n_bytes;
+	char header[NIST_SPHERE_HEADER_LENGTH + 1];
+	int intval;
+	char strval[NIST_SPHERE_MAX_FIELD_LENGTH];
+	int sample_n_bytes;
 
 	instruments = NULL;
 	instrumentCount = 0 ;
@@ -228,9 +227,10 @@ status NISTFile::readInit(AFfilesetup setup)
 		return AF_FAIL;
 	}
 
-	if ((tracks = _af_track_new()) == NULL)
+	Track *track = _af_track_new();
+	if (!track)
 		return AF_FAIL;
-	track = &tracks[0];
+	tracks = track;
 
 	/* Read number of bytes per sample. */
 	if (!nist_header_read_int(header, "sample_n_bytes", &sample_n_bytes))

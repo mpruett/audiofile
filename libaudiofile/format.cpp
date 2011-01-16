@@ -34,8 +34,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "FileHandle.h"
+#include "Setup.h"
 #include "Track.h"
-#include "afinternal.h"
 #include "afinternal.h"
 #include "audiofile.h"
 #include "modules/Module.h"
@@ -47,12 +48,11 @@ extern const _Unit _af_units[];
 
 AFfileoffset afGetDataOffset (AFfilehandle file, int trackid)
 {
-	Track	*track;
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
 	return track->fpos_first_frame;
@@ -60,12 +60,12 @@ AFfileoffset afGetDataOffset (AFfilehandle file, int trackid)
 
 AFfileoffset afGetTrackBytes (AFfilehandle file, int trackid)
 {
-	Track	*track;
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	track = _af_filehandle_get_track(file, trackid);
+	Track *track = file->getTrack(trackid);
+	if (!track)
+		return -1;
 
 	return track->data_size;
 }
@@ -79,12 +79,11 @@ AFfileoffset afGetTrackBytes (AFfilehandle file, int trackid)
 */
 float afGetFrameSize (AFfilehandle file, int trackid, int stretch3to4)
 {
-	Track	*track;
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
 	return _af_format_frame_size(&track->f, stretch3to4);
@@ -92,12 +91,11 @@ float afGetFrameSize (AFfilehandle file, int trackid, int stretch3to4)
 
 float afGetVirtualFrameSize (AFfilehandle file, int trackid, int stretch3to4)
 {
-	Track	*track;
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
 	return _af_format_frame_size(&track->v, stretch3to4);
@@ -105,15 +103,14 @@ float afGetVirtualFrameSize (AFfilehandle file, int trackid, int stretch3to4)
 
 AFframecount afSeekFrame (AFfilehandle file, int trackid, AFframecount frame)
 {
-	Track	*track;
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	if (!_af_filehandle_can_read(file))
+	if (!file->checkCanRead())
 		return -1;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
 	if (track->ms->isDirty() && track->ms->setup(file, track) == AF_FAIL)
@@ -153,14 +150,13 @@ AFfileoffset afTellFrame (AFfilehandle file, int trackid)
 	return afSeekFrame(file, trackid, -1);
 }
 
-int afSetVirtualByteOrder (AFfilehandle handle, int track, int byteorder)
+int afSetVirtualByteOrder (AFfilehandle file, int trackid, int byteorder)
 {
-	Track *currentTrack;
+	if (!_af_filehandle_ok(file))
+		return AF_FAIL;
 
-	if (!_af_filehandle_ok(handle))
-		return -1;
-
-	if (NULL == (currentTrack = _af_filehandle_get_track(handle, track)))
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return AF_FAIL;
 
 	if (byteorder != AF_BYTEORDER_BIGENDIAN &&
@@ -170,46 +166,43 @@ int afSetVirtualByteOrder (AFfilehandle handle, int track, int byteorder)
 		return AF_FAIL;
 	}
 
-	currentTrack->v.byteOrder = byteorder;
-	currentTrack->ms->setDirty();
+	track->v.byteOrder = byteorder;
+	track->ms->setDirty();
 
 	return AF_SUCCEED;
 }
 
-int afGetByteOrder (AFfilehandle handle, int track)
+int afGetByteOrder (AFfilehandle file, int trackid)
 {
-	Track *currentTrack;
-
-	if (!_af_filehandle_ok(handle))
+	if (!_af_filehandle_ok(file))
 		return -1;
 
-	if ((currentTrack = _af_filehandle_get_track(handle, track)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
-	return (currentTrack->f.byteOrder);
+	return track->f.byteOrder;
 }
 
-int afGetVirtualByteOrder (AFfilehandle handle, int track)
+int afGetVirtualByteOrder (AFfilehandle file, int trackid)
 {
-	Track *currentTrack;
-
-	if (!_af_filehandle_ok(handle))
+	if (!_af_filehandle_ok(file))
 		return -1;
 
-	if ((currentTrack = _af_filehandle_get_track(handle, track)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
-	return (currentTrack->v.byteOrder);
+	return track->v.byteOrder;
 }
 
 AFframecount afGetFrameCount (AFfilehandle file, int trackid)
 {
-	Track	*track;
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
 	if (track->ms->isDirty() && track->ms->setup(file, track) == AF_FAIL)
@@ -220,9 +213,11 @@ AFframecount afGetFrameCount (AFfilehandle file, int trackid)
 
 double afGetRate (AFfilehandle file, int trackid)
 {
-	Track	*track;
+	if (!_af_filehandle_ok(file))
+		return -1;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
 	return track->f.sampleRate;
@@ -230,9 +225,11 @@ double afGetRate (AFfilehandle file, int trackid)
 
 int afGetChannels (AFfilehandle file, int trackid)
 {
-	Track	*track;
+	if (!_af_filehandle_ok(file))
+		return -1;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
 	return track->f.channelCount;
@@ -240,9 +237,11 @@ int afGetChannels (AFfilehandle file, int trackid)
 
 void afGetSampleFormat (AFfilehandle file, int trackid, int *sampleFormat, int *sampleWidth)
 {
-	Track	*track;
+	if (!_af_filehandle_ok(file))
+		return;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return;
 
 	if (sampleFormat != NULL)
@@ -254,9 +253,11 @@ void afGetSampleFormat (AFfilehandle file, int trackid, int *sampleFormat, int *
 
 void afGetVirtualSampleFormat (AFfilehandle file, int trackid, int *sampleFormat, int *sampleWidth)
 {
-	Track	*track;
+	if (!_af_filehandle_ok(file))
+		return;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return;
 
 	if (sampleFormat != NULL)
@@ -269,12 +270,11 @@ void afGetVirtualSampleFormat (AFfilehandle file, int trackid, int *sampleFormat
 int afSetVirtualSampleFormat (AFfilehandle file, int trackid,
 	int sampleFormat, int sampleWidth)
 {
-	Track	*track;
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
 	if (_af_set_sample_format(&track->v, sampleFormat, sampleWidth) == AF_FAIL)
@@ -299,12 +299,11 @@ int afGetFileFormat (AFfilehandle file, int *version)
 
 int afSetVirtualChannels (AFfilehandle file, int trackid, int channelCount)
 {
-	Track	*track;
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
 	track->v.channelCount = channelCount;
@@ -319,9 +318,11 @@ int afSetVirtualChannels (AFfilehandle file, int trackid, int channelCount)
 
 double afGetVirtualRate (AFfilehandle file, int trackid)
 {
-	Track	*track;
+	if (!_af_filehandle_ok(file))
+		return -1;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
 	return track->v.sampleRate;
@@ -329,12 +330,11 @@ double afGetVirtualRate (AFfilehandle file, int trackid)
 
 int afSetVirtualRate (AFfilehandle file, int trackid, double rate)
 {
-	Track	*track;
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
 	if (rate < 0)
@@ -351,12 +351,11 @@ int afSetVirtualRate (AFfilehandle file, int trackid, double rate)
 
 void afSetChannelMatrix (AFfilehandle file, int trackid, double* matrix)
 {
-	Track	*track;
-
 	if (!_af_filehandle_ok(file))
 		return;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return;
 
 	if (track->channelMatrix != NULL)
@@ -378,9 +377,11 @@ void afSetChannelMatrix (AFfilehandle file, int trackid, double* matrix)
 
 int afGetVirtualChannels (AFfilehandle file, int trackid)
 {
-	Track	*track;
+	if (!_af_filehandle_ok(file))
+		return -1;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
 	return track->v.channelCount;

@@ -43,7 +43,7 @@
 
 status AIFFFile::writeInit(AFfilesetup setup)
 {
-	uint32_t	fileSize = 0;
+	uint32_t fileSize = 0;
 
 	assert(fileFormat == AF_FILE_AIFF ||
 		fileFormat == AF_FILE_AIFFC);
@@ -52,7 +52,7 @@ status AIFFFile::writeInit(AFfilesetup setup)
 		return AF_FAIL;
 
 	af_write("FORM", 4, fh);
-	af_write_uint32_be(&fileSize, fh);
+	writeU32(&fileSize);
 
 	if (fileFormat == AF_FILE_AIFF)
 		af_write("AIFF", 4, fh);
@@ -74,22 +74,17 @@ status AIFFFile::writeInit(AFfilesetup setup)
 
 status AIFFFile::update()
 {
-	Track		*track;
-	uint32_t	length;
-
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
-
 #ifdef DEBUG
 	printf("_af_aiff_update called.\n");
 #endif
 
 	/* Get the length of the file. */
-	length = af_flength(fh);
+	uint32_t length = af_flength(fh);
 	length -= 8;
 
 	/* Set the length of the FORM chunk. */
 	af_fseek(fh, 4, SEEK_SET);
-	af_write_uint32_be(&length, fh);
+	writeU32(&length);
 
 	if (fileFormat == AF_FILE_AIFFC)
 		writeFVER();
@@ -106,19 +101,7 @@ status AIFFFile::update()
 
 status AIFFFile::writeCOMM()
 {
-	Track		*track;
-	uint32_t	chunkSize;
-	bool		isAIFFC;
-
-	uint16_t	sb;
-	uint32_t	lb;
-	unsigned char	eb[10];
-
-	uint8_t		compressionTag[4];
-	/* Pascal strings can occupy only 255 bytes (+ a size byte). */
-	char		compressionName[256];
-
-	isAIFFC = fileFormat == AF_FILE_AIFFC;
+	bool isAIFFC = fileFormat == AF_FILE_AIFFC;
 
 	/*
 		If COMM_offset hasn't been set yet, set it to the
@@ -129,7 +112,11 @@ status AIFFFile::writeCOMM()
 	else
 		af_fseek(fh, COMM_offset, SEEK_SET);
 
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
+
+	uint8_t compressionTag[4];
+	/* Pascal strings can occupy only 255 bytes (+ a size byte). */
+	char compressionName[256];
 
 	if (isAIFFC)
 	{
@@ -185,32 +172,33 @@ status AIFFFile::writeCOMM()
 		bytes, add a zero pad byte at the end, but don't
 		include the pad byte in the chunk's size.
 	*/
+	uint32_t chunkSize;
 	if (isAIFFC)
 		chunkSize = 22 + strlen(compressionName) + 1;
 	else
 		chunkSize = 18;
-	af_write_uint32_be(&chunkSize, fh);
+	writeU32(&chunkSize);
 
 	/* number of channels, 2 bytes */
-	sb = track->f.channelCount;
-	af_write_uint16_be(&sb, fh);
+	uint16_t channelCount = track->f.channelCount;
+	writeU16(&channelCount);
 
 	/* number of sample frames, 4 bytes */
-	lb = track->totalfframes;
-	af_write_uint32_be(&lb, fh);
+	uint32_t frameCount = track->totalfframes;
+	writeU32(&frameCount);
 
 	/* sample size, 2 bytes */
-	sb = track->f.sampleWidth;
-	af_write_uint16_be(&sb, fh);
+	uint16_t sampleSize = track->f.sampleWidth;
+	writeU16(&sampleSize);
 
 	/* sample rate, 10 bytes */
-	_af_convert_to_ieee_extended(track->f.sampleRate, eb);
-	af_write(eb, 10, fh);
+	uint8_t sampleRate[10];
+	_af_convert_to_ieee_extended(track->f.sampleRate, sampleRate);
+	af_write(sampleRate, 10, fh);
 
-	if (fileFormat == AF_FILE_AIFFC)
+	if (isAIFFC)
 	{
 		af_write(compressionTag, 4, fh);
-
 		af_write_pstring(compressionName, fh);
 	}
 
@@ -223,10 +211,7 @@ status AIFFFile::writeCOMM()
 */
 status AIFFFile::writeAESD()
 {
-	Track		*track;
-	uint32_t	size = 24;
-
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
 	if (!track->hasAESData)
 		return AF_SUCCEED;
@@ -239,7 +224,8 @@ status AIFFFile::writeAESD()
 	if (af_write("AESD", 4, fh) < 4)
 		return AF_FAIL;
 
-	if (af_write_uint32_be(&size, fh) == AF_FAIL)
+	uint32_t size = 24;
+	if (!writeU32(&size))
 		return AF_FAIL;
 
 	if (af_write(track->aesData, 24, fh) < 24)
@@ -250,28 +236,26 @@ status AIFFFile::writeAESD()
 
 status AIFFFile::writeSSND()
 {
-	Track		*track;
-	uint32_t	chunkSize, zero = 0;
-
 	assert(fh);
 
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
 	if (SSND_offset == 0)
 		SSND_offset = af_ftell(fh);
 	else
 		af_fseek(fh, SSND_offset, SEEK_SET);
 
-	chunkSize = (int) _af_format_frame_size(&track->f, false) *
+	uint32_t chunkSize = (int) _af_format_frame_size(&track->f, false) *
 		track->totalfframes + 8;
 
 	af_write("SSND", 4, fh);
-	af_write_uint32_be(&chunkSize, fh);
+	writeU32(&chunkSize);
 
+	uint32_t zero = 0;
 	/* data offset */
-	af_write_uint32_be(&zero, fh);
+	writeU32(&zero);
 	/* block size */
-	af_write_uint32_be(&zero, fh);
+	writeU32(&zero);
 
 	if (track->fpos_first_frame == 0)
 		track->fpos_first_frame = af_ftell(fh);
@@ -281,10 +265,9 @@ status AIFFFile::writeSSND()
 
 status AIFFFile::writeINST()
 {
-	uint32_t	length;
-	struct _INST	instrumentdata;
+	uint32_t length = 20;
 
-	length = 20;
+	struct _INST instrumentdata;
 
 	instrumentdata.sustainLoopPlayMode =
 		afGetLoopMode(this, AF_DEFAULT_INST, 1);
@@ -301,50 +284,45 @@ status AIFFFile::writeINST()
 		afGetLoopEnd(this, AF_DEFAULT_INST, 2);
 
 	af_write("INST", 4, fh);
-	af_write_uint32_be(&length, fh);
+	writeU32(&length);
 
 	instrumentdata.baseNote =
 		afGetInstParamLong(this, AF_DEFAULT_INST, AF_INST_MIDI_BASENOTE);
-	af_write_uint8(&instrumentdata.baseNote, fh);
+	writeU8(&instrumentdata.baseNote);
 	instrumentdata.detune =
 		afGetInstParamLong(this, AF_DEFAULT_INST, AF_INST_NUMCENTS_DETUNE);
-	af_write_int8(&instrumentdata.detune, fh);
+	writeS8(&instrumentdata.detune);
 	instrumentdata.lowNote =
 		afGetInstParamLong(this, AF_DEFAULT_INST, AF_INST_MIDI_LONOTE);
-	af_write_uint8(&instrumentdata.lowNote, fh);
+	writeU8(&instrumentdata.lowNote);
 	instrumentdata.highNote =
 		afGetInstParamLong(this, AF_DEFAULT_INST, AF_INST_MIDI_HINOTE);
-	af_write_uint8(&instrumentdata.highNote, fh);
+	writeU8(&instrumentdata.highNote);
 	instrumentdata.lowVelocity =
 		afGetInstParamLong(this, AF_DEFAULT_INST, AF_INST_MIDI_LOVELOCITY);
-	af_write_uint8(&instrumentdata.lowVelocity, fh);
+	writeU8(&instrumentdata.lowVelocity);
 	instrumentdata.highVelocity =
 		afGetInstParamLong(this, AF_DEFAULT_INST, AF_INST_MIDI_HIVELOCITY);
-	af_write_uint8(&instrumentdata.highVelocity, fh);
+	writeU8(&instrumentdata.highVelocity);
 
 	instrumentdata.gain =
 		afGetInstParamLong(this, AF_DEFAULT_INST, AF_INST_NUMDBS_GAIN);
-	af_write_int16_be(&instrumentdata.gain, fh);
+	writeS16(&instrumentdata.gain);
 
-	af_write_uint16_be(&instrumentdata.sustainLoopPlayMode, fh);
-	af_write_uint16_be(&instrumentdata.sustainLoopBegin, fh);
-	af_write_uint16_be(&instrumentdata.sustainLoopEnd, fh);
+	writeU16(&instrumentdata.sustainLoopPlayMode);
+	writeU16(&instrumentdata.sustainLoopBegin);
+	writeU16(&instrumentdata.sustainLoopEnd);
 
-	af_write_uint16_be(&instrumentdata.releaseLoopPlayMode, fh);
-	af_write_uint16_be(&instrumentdata.releaseLoopBegin, fh);
-	af_write_uint16_be(&instrumentdata.releaseLoopEnd, fh);
+	writeU16(&instrumentdata.releaseLoopPlayMode);
+	writeU16(&instrumentdata.releaseLoopBegin);
+	writeU16(&instrumentdata.releaseLoopEnd);
 
 	return AF_SUCCEED;
 }
 
 status AIFFFile::writeMARK()
 {
-	AFfileoffset	chunkStartPosition, chunkEndPosition;
-	uint32_t	length = 0;
-	uint16_t	numMarkers;
-	int		i, *markids;
-
-	numMarkers = afGetMarkIDs(this, AF_DEFAULT_TRACK, NULL);
+	uint16_t numMarkers = afGetMarkIDs(this, AF_DEFAULT_TRACK, NULL);
 	if (numMarkers == 0)
 		return AF_SUCCEED;
 
@@ -353,30 +331,29 @@ status AIFFFile::writeMARK()
 	else
 		af_fseek(fh, MARK_offset, SEEK_SET);
 
+	AFfileoffset chunkStartPosition, chunkEndPosition;
+	uint32_t length = 0;
+
 	af_write("MARK", 4, fh);
-	af_write_uint32_be(&length, fh);
+	writeU32(&length);
 
 	chunkStartPosition = af_ftell(fh);
 
-	markids = (int *) _af_calloc(numMarkers, sizeof (int));
+	int *markids = (int *) _af_calloc(numMarkers, sizeof (int));
 	assert(markids);
 	afGetMarkIDs(this, AF_DEFAULT_TRACK, markids);
 
-	af_write_uint16_be(&numMarkers, fh);
+	writeU16(&numMarkers);
 
-	for (i=0; i<numMarkers; i++)
+	for (unsigned i=0; i<numMarkers; i++)
 	{
-		uint16_t	id;
-		uint32_t	position;
-		char		*name;
+		uint16_t id = markids[i];
+		writeU16(&id);
 
-		id = markids[i];
-		position = afGetMarkPosition(this, AF_DEFAULT_TRACK, markids[i]);
+		uint32_t position = afGetMarkPosition(this, AF_DEFAULT_TRACK, markids[i]);
+		writeU32(&position);
 
-		af_write_uint16_be(&id, fh);
-		af_write_uint32_be(&position, fh);
-
-		name = afGetMarkName(this, AF_DEFAULT_TRACK, markids[i]);
+		const char *name = afGetMarkName(this, AF_DEFAULT_TRACK, markids[i]);
 		assert(name);
 
 		/* Write the name as a Pascal-style string. */
@@ -395,7 +372,7 @@ status AIFFFile::writeMARK()
 
 	af_fseek(fh, chunkStartPosition - 4, SEEK_SET);
 
-	af_write_uint32_be(&length, fh);
+	writeU32(&length);
 	af_fseek(fh, chunkEndPosition, SEEK_SET);
 
 	return AF_SUCCEED;
@@ -406,7 +383,7 @@ status AIFFFile::writeMARK()
 */
 status AIFFFile::writeFVER()
 {
-	uint32_t	chunkSize, timeStamp;
+	uint32_t chunkSize, timeStamp;
 
 	assert(fileFormat == AF_FILE_AIFFC);
 
@@ -418,10 +395,10 @@ status AIFFFile::writeFVER()
 	af_write("FVER", 4, fh);
 
 	chunkSize = 4;
-	af_write_uint32_be(&chunkSize, fh);
+	writeU32(&chunkSize);
 
 	timeStamp = AIFC_VERSION_1;
-	af_write_uint32_be(&timeStamp, fh);
+	writeU32(&timeStamp);
 
 	return AF_SUCCEED;
 }
@@ -432,18 +409,16 @@ status AIFFFile::writeFVER()
 */
 status AIFFFile::writeMiscellaneous()
 {
-	int		i;
-
 	if (miscellaneousPosition == 0)
 		miscellaneousPosition = af_ftell(fh);
 	else
 		af_fseek(fh, miscellaneousPosition, SEEK_SET);
 
-	for (i=0; i<miscellaneousCount; i++)
+	for (int i=0; i<miscellaneousCount; i++)
 	{
-		Miscellaneous	*misc = &miscellaneous[i];
-		uint32_t	chunkType, chunkSize;
-		uint8_t		padByte = 0;
+		Miscellaneous *misc = &miscellaneous[i];
+		uint32_t chunkType, chunkSize;
+		uint8_t padByte = 0;
 
 #ifdef DEBUG
 		printf("WriteMiscellaneous: %d, type %d\n", i, misc->type);
@@ -469,7 +444,7 @@ status AIFFFile::writeMiscellaneous()
 		af_write(&chunkType, 4, fh);
 
 		chunkSize = misc->size;
-		af_write_uint32_be(&chunkSize, fh);
+		writeU32(&chunkSize);
 		/*
 			Write the miscellaneous buffer and then a pad byte
 			if necessary.  If the buffer is null, skip the space
@@ -481,7 +456,7 @@ status AIFFFile::writeMiscellaneous()
 			af_fseek(fh, misc->size, SEEK_CUR);
 
 		if (misc->size % 2 != 0)
-			af_write_uint8(&padByte, fh);
+			writeU8(&padByte);
 	}
 
 	return AF_SUCCEED;

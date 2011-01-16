@@ -59,7 +59,7 @@ _AFfilesetup _af_iff_default_filesetup =
 
 bool IFFFile::recognize(File *fh)
 {
-	uint8_t	buffer[8];
+	uint8_t buffer[8];
 
 	af_fseek(fh, 0, SEEK_SET);
 
@@ -73,6 +73,8 @@ bool IFFFile::recognize(File *fh)
 
 IFFFile::IFFFile()
 {
+	setFormatByteOrder(AF_BYTEORDER_BIGENDIAN);
+
 	miscellaneousPosition = 0;
 	VHDR_offset = 0;
 	BODY_offset = 0;
@@ -84,7 +86,7 @@ IFFFile::IFFFile()
 */
 status IFFFile::parseMiscellaneous(uint32_t type, size_t size)
 {
-	int	misctype = AF_MISC_UNRECOGNIZED;
+	int misctype = AF_MISC_UNRECOGNIZED;
 
 	assert(!memcmp(&type, "NAME", 4) || !memcmp(&type, "AUTH", 4) ||
 		!memcmp(&type, "(c) ", 4) || !memcmp(&type, "ANNO", 4));
@@ -122,23 +124,22 @@ status IFFFile::parseMiscellaneous(uint32_t type, size_t size)
 */
 status IFFFile::parseVHDR(uint32_t type, size_t size)
 {
-	Track		*track;
-	uint32_t	oneShotSamples, repeatSamples, samplesPerRepeat;
-	uint16_t	sampleRate;
-	uint8_t		octaves, compression;
-	uint32_t	volume;
-
 	assert(!memcmp(&type, "VHDR", 4));
 
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
-	af_read_uint32_be(&oneShotSamples, fh);
-	af_read_uint32_be(&repeatSamples, fh);
-	af_read_uint32_be(&samplesPerRepeat, fh);
-	af_read_uint16_be(&sampleRate, fh);
-	af_read_uint8(&octaves, fh);
-	af_read_uint8(&compression, fh);
-	af_read_uint32_be(&volume, fh);
+	uint32_t oneShotSamples, repeatSamples, samplesPerRepeat;
+	uint16_t sampleRate;
+	uint8_t octaves, compression;
+	uint32_t volume;
+
+	readU32(&oneShotSamples);
+	readU32(&repeatSamples);
+	readU32(&samplesPerRepeat);
+	readU16(&sampleRate);
+	readU8(&octaves);
+	readU8(&compression);
+	readU32(&volume);
 
 	track->f.sampleWidth = 8; 
 	track->f.sampleRate = sampleRate;
@@ -154,7 +155,7 @@ status IFFFile::parseVHDR(uint32_t type, size_t size)
 
 status IFFFile::parseBODY(uint32_t type, size_t size)
 {
-	Track *track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
 	/*
 		IFF/8SVX files have only one audio channel with one
@@ -172,14 +173,12 @@ status IFFFile::parseBODY(uint32_t type, size_t size)
 
 status IFFFile::readInit(AFfilesetup setup)
 {
-	uint32_t	type, size, formtype;
-	size_t		index;
-	Track		*track;
+	uint32_t type, size, formtype;
 
 	af_fseek(fh, 0, SEEK_SET);
 
 	af_read(&type, 4, fh);
-	af_read_uint32_be(&size, fh);
+	readU32(&size);
 	af_read(&formtype, 4, fh);
 
 	if (memcmp(&type, "FORM", 4) != 0 || memcmp(&formtype, "8SVX", 4) != 0)
@@ -191,20 +190,19 @@ status IFFFile::readInit(AFfilesetup setup)
 	miscellaneous = NULL;
 
 	/* IFF/8SVX files have only one track. */
-	track = _af_track_new();
+	Track *track = _af_track_new();
 	trackCount = 1;
 	tracks = track;
 
 	/* Set the index to include the form type ('8SVX' in this case). */
-	index = 4;
-
+	size_t index = 4;
 	while (index < size)
 	{
-		uint32_t	chunkid = 0, chunksize = 0;
-		status		result = AF_SUCCEED;
+		uint32_t chunkid = 0, chunksize = 0;
+		status result = AF_SUCCEED;
 
 		af_read(&chunkid, 4, fh);
-		af_read_uint32_be(&chunksize, fh);
+		readU32(&chunksize);
 
 		if (!memcmp("VHDR", &chunkid, 4))
 		{
@@ -245,15 +243,13 @@ status IFFFile::readInit(AFfilesetup setup)
 
 AFfilesetup IFFFile::completeSetup(AFfilesetup setup)
 {
-	TrackSetup	*track;
-
 	if (setup->trackSet && setup->trackCount != 1)
 	{
 		_af_error(AF_BAD_NUMTRACKS, "IFF/8SVX file must have 1 track");
 		return AF_NULL_FILESETUP;
 	}
 
-	track = &setup->tracks[0];
+	TrackSetup *track = &setup->tracks[0];
 
 	if (track->sampleFormatSet &&
 		track->f.sampleFormat != AF_SAMPFMT_TWOSCOMP)

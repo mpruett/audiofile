@@ -23,6 +23,32 @@
 
 #include "afinternal.h"
 
+struct InstrumentSetup;
+struct MiscellaneousSetup;
+struct TrackSetup;
+
+struct _AFfilesetup
+{
+	int	valid;
+
+	int fileFormat;
+
+	bool trackSet, instrumentSet, miscellaneousSet;
+
+	int trackCount;
+	TrackSetup *tracks;
+
+	int instrumentCount;
+	InstrumentSetup *instruments;
+
+	int miscellaneousCount;
+	MiscellaneousSetup *miscellaneous;
+
+	TrackSetup *getTrack(int trackID = AF_DEFAULT_TRACK);
+	InstrumentSetup *getInstrument(int instrumentID);
+	MiscellaneousSetup *getMiscellaneous(int miscellaneousID);
+};
+
 AFfilesetup _af_filesetup_copy (AFfilesetup setup, AFfilesetup defaultSetup,
         bool copyMarks);
 
@@ -36,4 +62,4 @@ status _af_filesetup_make_handle (AFfilesetup setup, AFfilehandle handle);
 
 InstrumentSetup *_af_instsetup_new (int count);
 
-#endif /* SETUP_H */
+#endif

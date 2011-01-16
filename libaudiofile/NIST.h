@@ -27,9 +27,7 @@
 #ifndef NIST_H
 #define NIST_H
 
-#include "File.h"
-#include "afinternal.h"
-#include "audiofile.h"
+#include "FileHandle.h"
 
 #define NIST_SPHERE_HEADER_LENGTH 1024
 #define NIST_SPHERE_MAX_FIELD_LENGTH 80

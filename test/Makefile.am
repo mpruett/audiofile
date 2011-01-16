@@ -76,6 +76,9 @@ pcmmapping_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 miscellaneous_SOURCES = miscellaneous.cpp
 miscellaneous_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
+error_SOURCES = error.cpp
+error_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
 coverage-reset:
 	$(LCOV) --base-directory=@top_srcdir@ --directory @top_srcdir@/libaudiofile --zerocounters
 

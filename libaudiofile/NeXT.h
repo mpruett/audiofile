@@ -28,9 +28,7 @@
 #ifndef NEXT_H
 #define NEXT_H
 
-#include "File.h"
-#include "afinternal.h"
-#include "audiofile.h"
+#include "FileHandle.h"
 
 enum
 {
@@ -71,6 +69,8 @@ extern const int _af_next_compression_types[_AF_NEXT_NUM_COMPTYPES];
 class NeXTFile : public _AFfilehandle
 {
 public:
+	NeXTFile();
+
 	static bool recognize(File *fh);
 	static AFfilesetup completeSetup(AFfilesetup);
 

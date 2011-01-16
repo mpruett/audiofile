@@ -29,6 +29,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "FileHandle.h"
+#include "Setup.h"
 #include "Track.h"
 #include "af_vfs.h"
 #include "afinternal.h"
@@ -42,17 +44,17 @@ int afWriteFrames (AFfilehandle file, int trackid, const void *samples,
 {
 	SharedPtr<Module> firstmod;
 	SharedPtr<Chunk> userc;
-	Track *track;
 	int bytes_per_vframe;
 	AFframecount vframe;
 
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	if (!_af_filehandle_can_write(file))
+	if (!file->checkCanWrite())
 		return -1;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
 	if (track->ms->isDirty() && track->ms->setup(file, track) == AF_FAIL)
@@ -124,7 +126,6 @@ int afWriteFrames (AFfilehandle file, int trackid, const void *samples,
 int afReadFrames (AFfilehandle file, int trackid, void *samples,
 	int nvframeswanted)
 {
-	Track	*track;
 	SharedPtr<Module> firstmod;
 	SharedPtr<Chunk> userc;
 	AFframecount	nvframesleft, nvframes2read;
@@ -134,10 +135,11 @@ int afReadFrames (AFfilehandle file, int trackid, void *samples,
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	if (!_af_filehandle_can_read(file))
+	if (!file->checkCanRead())
 		return -1;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
 	if (track->ms->isDirty() && track->ms->setup(file, track) == AF_FAIL)

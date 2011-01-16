@@ -43,7 +43,7 @@
 
 static const char *sample_byte_format (AudioFormat *fmt)
 {
-	int	nbytes = _af_format_sample_size(fmt, false);
+	int nbytes = _af_format_sample_size(fmt, false);
 
 	assert(nbytes == 1 || nbytes == 2);
 
@@ -76,10 +76,9 @@ static const char *sample_coding (AudioFormat *fmt)
 
 status NISTFile::writeHeader()
 {
-	char	header[NIST_SPHERE_HEADER_LENGTH];
+	Track *track = getTrack();
 
-	Track *track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
-
+	char header[NIST_SPHERE_HEADER_LENGTH];
 	int printed = snprintf(header, NIST_SPHERE_HEADER_LENGTH,
 		"NIST_1A\n   1024\n"
 		"channel_count -i %d\n"

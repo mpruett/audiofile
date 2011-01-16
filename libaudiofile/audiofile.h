@@ -471,10 +471,8 @@ void afSetChannelMatrix (AFfilehandle, int track, double *matrix);
 /* track data: sample format and sample width */
 void afInitSampleFormat (AFfilesetup, int track, int sampleFormat,
 	int sampleWidth);
-void afGetSampleFormat (AFfilehandle file, int track, int *sampfmt,
-	int *sampwidth);
-void afGetVirtualSampleFormat (AFfilehandle file, int track, int *sampfmt,
-	int *sampwidth);
+void afGetSampleFormat (AFfilehandle file, int track, int *sampleFormat,
+	int *sampleWidth);
 int afSetVirtualSampleFormat (AFfilehandle, int track,
 	int sampleFormat, int sampleWidth);
 void afGetVirtualSampleFormat (AFfilehandle, int track,

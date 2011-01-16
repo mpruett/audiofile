@@ -26,6 +26,7 @@
 */
 
 #include "config.h"
+#include "Track.h"
 
 #include <assert.h>
 #include <stddef.h>
@@ -35,7 +36,7 @@
 #include "audiofile.h"
 #include "afinternal.h"
 #include "util.h"
-#include "Track.h"
+#include "Marker.h"
 #include "modules/Module.h"
 
 void afInitTrackIDs (AFfilesetup file, int *trackids, int trackCount)
@@ -99,4 +100,16 @@ void Track::print()
 	fprintf(stderr, "totalvframes %ld\n", totalvframes);
 	fprintf(stderr, "nextvframe %ld\n", nextvframe);
 	fprintf(stderr, "data_size %ld\n", data_size);
+}
+
+Marker *Track::getMarker(int markerID)
+{
+	for (int i=0; i<markerCount; i++)
+		if (markers[i].id == markerID)
+			return &markers[i];
+
+	_af_error(AF_BAD_MARKID, "no marker with id %d found in track %d",
+		markerID, id);
+
+	return NULL;
 }

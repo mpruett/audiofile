@@ -29,9 +29,7 @@
 #ifndef IRCAM_H
 #define IRCAM_H
 
-#include "File.h"
-#include "afinternal.h"
-#include "audiofile.h"
+#include "FileHandle.h"
 #include <stdint.h>
 
 #define SF_SHORT 2

@@ -30,6 +30,8 @@
 #include <string.h>
 #include <assert.h>
 
+#include "FileHandle.h"
+#include "Setup.h"
 #include "Track.h"
 #include "afinternal.h"
 #include "audiofile.h"
@@ -37,12 +39,11 @@
 
 void afInitAESChannelData (AFfilesetup setup, int trackid)
 {
-	TrackSetup	*track;
-
 	if (!_af_filesetup_ok(setup))
 		return;
 
-	if ((track = _af_filesetup_get_tracksetup(setup, trackid)) == NULL)
+	TrackSetup *track = setup->getTrack(trackid);
+	if (!track)
 		return;
 
 	track->aesDataSet = true;
@@ -50,25 +51,23 @@ void afInitAESChannelData (AFfilesetup setup, int trackid)
 
 void afInitAESChannelDataTo (AFfilesetup setup, int trackid, int willBeData)
 {
-	TrackSetup	*track;
-
 	if (!_af_filesetup_ok(setup))
 		return;
 
-	if ((track = _af_filesetup_get_tracksetup(setup, trackid)) == NULL)
+	TrackSetup *track = setup->getTrack(trackid);
+	if (!track)
 		return;
 
 	track->aesDataSet = willBeData;
 }
 
-/*
-	What is with these return values?
-*/
 int afGetAESChannelData (AFfilehandle file, int trackid, unsigned char buf[24])
 {
-	Track *track;
+	if (!_af_filehandle_ok(file))
+		return -1;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
 	if (!track->hasAESData)
@@ -86,12 +85,14 @@ int afGetAESChannelData (AFfilehandle file, int trackid, unsigned char buf[24])
 
 void afSetAESChannelData (AFfilehandle file, int trackid, unsigned char buf[24])
 {
-	Track	*track;
-
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	if (!_af_filehandle_ok(file))
 		return;
 
-	if (!_af_filehandle_can_write(file))
+	Track *track = file->getTrack(trackid);
+	if (!track)
+		return;
+
+	if (!file->checkCanWrite())
 		return;
 
 	if (track->hasAESData)

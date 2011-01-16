@@ -1,3 +1,7 @@
+2011-01-16  Michael Pruett <michael@68k.org>
+
+	* Refactor file parsing and writing.
+
 2011-01-12  Stefano Magni <stefano.magni@akerue.it>
 
 	* libaudiofile/openclose.cpp: Fix leak of miscellaneous data buffers.

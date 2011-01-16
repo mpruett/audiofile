@@ -63,10 +63,14 @@ _AFfilesetup _af_next_default_filesetup =
 	NULL			/* miscellaneous */
 };
 
+NeXTFile::NeXTFile()
+{
+	setFormatByteOrder(AF_BYTEORDER_BIGENDIAN);
+}
+
 status NeXTFile::readInit(AFfilesetup setup)
 {
-	uint32_t	id, offset, length, encoding, sampleRate, channelCount;
-	Track		*track;
+	uint32_t id, offset, length, encoding, sampleRate, channelCount;
 
 	instruments = NULL;
 	instrumentCount = 0;
@@ -82,11 +86,11 @@ status NeXTFile::readInit(AFfilesetup setup)
 	af_read(&id, 4, fh);
 	assert(!memcmp(&id, ".snd", 4));
 
-	af_read_uint32_be(&offset, fh);
-	af_read_uint32_be(&length, fh);
-	af_read_uint32_be(&encoding, fh);
-	af_read_uint32_be(&sampleRate, fh);
-	af_read_uint32_be(&channelCount, fh);
+	readU32(&offset);
+	readU32(&length);
+	readU32(&encoding);
+	readU32(&sampleRate);
+	readU32(&channelCount);
 
 #ifdef DEBUG
 	printf("id, offset, length, encoding, sampleRate, channelCount:\n"
@@ -94,7 +98,8 @@ status NeXTFile::readInit(AFfilesetup setup)
 		id, offset, length, encoding, sampleRate, channelCount);
 #endif
 
-	if ((track = _af_track_new()) == NULL)
+	Track *track = _af_track_new();
+	if (!track)
 		return AF_FAIL;
 
 	tracks = track;
@@ -170,7 +175,7 @@ status NeXTFile::readInit(AFfilesetup setup)
 
 bool NeXTFile::recognize(File *fh)
 {
-	uint8_t	buffer[4];
+	uint8_t buffer[4];
 
 	af_fseek(fh, 0, SEEK_SET);
 
@@ -182,15 +187,16 @@ bool NeXTFile::recognize(File *fh)
 
 AFfilesetup NeXTFile::completeSetup(AFfilesetup setup)
 {
-	TrackSetup	*track;
-
 	if (setup->trackSet && setup->trackCount != 1)
 	{
 		_af_error(AF_BAD_NUMTRACKS, "NeXT files must have exactly 1 track");
 		return AF_NULL_FILESETUP;
 	}
 
-	track = _af_filesetup_get_tracksetup(setup, AF_DEFAULT_TRACK);
+	TrackSetup *track = setup->getTrack();
+	if (!track)
+		return AF_NULL_FILESETUP;
+
 	if (track->f.sampleFormat == AF_SAMPFMT_UNSIGNED)
 	{
 		_af_error(AF_BAD_FILEFMT, "NeXT format does not support unsigned data");

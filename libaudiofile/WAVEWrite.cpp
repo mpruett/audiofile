@@ -43,15 +43,13 @@
 
 status WAVEFile::writeFormat()
 {
-	Track		*track = NULL;
-
 	uint16_t	formatTag, channelCount;
 	uint32_t	sampleRate, averageBytesPerSecond;
 	uint16_t	blockAlign;
 	uint32_t	chunkSize;
 	uint16_t	bitsPerSample;
 
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
 	af_write("fmt ", 4, fh);
 
@@ -101,29 +99,29 @@ status WAVEFile::writeFormat()
 			return AF_FAIL;
 	}
 
-	af_write_uint32_le(&chunkSize, fh);
-	af_write_uint16_le(&formatTag, fh);
+	writeU32(&chunkSize);
+	writeU16(&formatTag);
 
 	channelCount = track->f.channelCount;
-	af_write_uint16_le(&channelCount, fh);
+	writeU16(&channelCount);
 
 	sampleRate = track->f.sampleRate;
-	af_write_uint32_le(&sampleRate, fh);
+	writeU32(&sampleRate);
 
 	averageBytesPerSecond =
 		track->f.sampleRate * _af_format_frame_size(&track->f, false);
-	af_write_uint32_le(&averageBytesPerSecond, fh);
+	writeU32(&averageBytesPerSecond);
 
 	blockAlign = _af_format_frame_size(&track->f, false);
-	af_write_uint16_le(&blockAlign, fh);
+	writeU16(&blockAlign);
 
-	af_write_uint16_le(&bitsPerSample, fh);
+	writeU16(&bitsPerSample);
 
 	if (track->f.compressionType == AF_COMPRESSION_G711_ULAW ||
 		track->f.compressionType == AF_COMPRESSION_G711_ALAW)
 	{
-		uint16_t	zero = 0;
-		af_write_uint16_le(&zero, fh);
+		uint16_t zero = 0;
+		writeU16(&zero);
 	}
 
 	return AF_SUCCEED;
@@ -131,10 +129,10 @@ status WAVEFile::writeFormat()
 
 status WAVEFile::writeFrameCount()
 {
-	uint32_t	factSize = 4;
-	uint32_t	totalFrameCount;
+	uint32_t factSize = 4;
+	uint32_t totalFrameCount;
 
-	Track *track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
 	/* Omit the fact chunk only for uncompressed integer audio formats. */
 	if (track->f.compressionType == AF_COMPRESSION_NONE &&
@@ -152,28 +150,25 @@ status WAVEFile::writeFrameCount()
 		af_fseek(fh, factOffset, SEEK_SET);
 
 	af_write("fact", 4, fh);
-	af_write_uint32_le(&factSize, fh);
+	writeU32(&factSize);
 
 	totalFrameCount = track->totalfframes;
-	af_write_uint32_le(&totalFrameCount, fh);
+	writeU32(&totalFrameCount);
 
 	return AF_SUCCEED;
 }
 
 status WAVEFile::writeData()
 {
-	Track		*track;
-	uint32_t	chunkSize;
-
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
 	af_write("data", 4, fh);
 	dataSizeOffset = af_ftell(fh);
 
-	chunkSize = (int) _af_format_frame_size(&track->f, false) *
+	uint32_t chunkSize = (int) _af_format_frame_size(&track->f, false) *
 		track->totalfframes;
 
-	af_write_uint32_le(&chunkSize, fh);
+	writeU32(&chunkSize);
 	track->fpos_first_frame = af_ftell(fh);
 
 	return AF_SUCCEED;
@@ -181,11 +176,11 @@ status WAVEFile::writeData()
 
 status WAVEFile::update()
 {
-	Track *track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
 	if (track->fpos_first_frame != 0)
 	{
-		uint32_t	dataLength, fileLength;
+		uint32_t dataLength, fileLength;
 
 		/* Update the frame count chunk if present. */
 		writeFrameCount();
@@ -199,14 +194,14 @@ status WAVEFile::update()
 		*/
 		dataLength = (uint32_t) track->totalfframes *
 			(int) _af_format_frame_size(&track->f, false);
-		af_write_uint32_le(&dataLength, fh);
+		writeU32(&dataLength);
 
 		/* Update the length of the RIFF chunk. */
 		fileLength = (uint32_t) af_flength(fh);
 		fileLength -= 8;
 
 		af_fseek(fh, 4, SEEK_SET);
-		af_write_uint32_le(&fileLength, fh);
+		writeU32(&fileLength);
 	}
 
 	/*
@@ -247,7 +242,6 @@ status WAVEFile::writeMiscellaneous()
 {
 	if (miscellaneousCount != 0)
 	{
-		int		i;
 		uint32_t	miscellaneousBytes;
 		uint32_t 	chunkSize;
 
@@ -255,7 +249,7 @@ status WAVEFile::writeMiscellaneous()
 		miscellaneousBytes = 12;
 
 		/* Then calculate the size of the whole INFO chunk. */
-		for (i=0; i<miscellaneousCount; i++)
+		for (int i=0; i<miscellaneousCount; i++)
 		{
 			uint32_t	miscid;
 
@@ -296,13 +290,13 @@ status WAVEFile::writeMiscellaneous()
 
 		/* Write the size of the following chunk. */
 		chunkSize = miscellaneousBytes-8;
-		af_write_uint32_le(&chunkSize, fh);
+		writeU32(&chunkSize);
 
 		/* Write 'INFO'. */
 		af_write("INFO", 4, fh);
 
 		/* Write each miscellaneous chunk. */
-		for (i=0; i<miscellaneousCount; i++)
+		for (int i=0; i<miscellaneousCount; i++)
 		{
 			uint32_t	miscsize = miscellaneous[i].size;
 			uint32_t 	miscid = 0;
@@ -313,7 +307,7 @@ status WAVEFile::writeMiscellaneous()
 				continue;
 
 			af_write(&miscid, 4, fh);
-			af_write_uint32_le(&miscsize, fh);
+			writeU32(&miscsize);
 			if (miscellaneous[i].buffer != NULL)
 			{
 				uint8_t	zero = 0;
@@ -322,7 +316,7 @@ status WAVEFile::writeMiscellaneous()
 
 				/* Pad if necessary. */
 				if ((miscellaneous[i].size%2) != 0)
-					af_write_uint8(&zero, fh);
+					writeU8(&zero);
 			}
 			else
 			{
@@ -342,7 +336,7 @@ status WAVEFile::writeMiscellaneous()
 
 status WAVEFile::writeCues()
 {
-	int i, *markids, markCount;
+	int *markids, markCount;
 	uint32_t numCues, cueChunkSize, listChunkSize;
 
 	markCount = afGetMarkIDs(this, AF_DEFAULT_TRACK, NULL);
@@ -361,26 +355,26 @@ status WAVEFile::writeCues()
 		followed by 24 bytes for each cue point record.
 	*/
 	cueChunkSize = 4 + markCount * 24;
-	af_write_uint32_le(&cueChunkSize, fh);
+	writeU32(&cueChunkSize);
 	numCues = markCount;
-	af_write_uint32_le(&numCues, fh);
+	writeU32(&numCues);
 
 	markids = (int *) _af_calloc(markCount, sizeof (int));
 	assert(markids != NULL);
 	afGetMarkIDs(this, AF_DEFAULT_TRACK, markids);
 
 	/* Write each marker to the file. */
-	for (i=0; i < markCount; i++)
+	for (int i=0; i < markCount; i++)
 	{
 		uint32_t	identifier, position, chunkStart, blockStart;
 		uint32_t	sampleOffset;
 		AFframecount	markposition;
 
 		identifier = markids[i];
-		af_write_uint32_le(&identifier, fh);
+		writeU32(&identifier);
 
 		position = i;
-		af_write_uint32_le(&position, fh);
+		writeU32(&position);
 
 		/* For now the RIFF id is always the first data chunk. */
 		af_write("data", 4, fh);
@@ -400,7 +394,7 @@ status WAVEFile::writeCues()
 
 		/* Sample offsets are stored in the WAVE file as frames. */
 		sampleOffset = markposition;
-		af_write_uint32_le(&sampleOffset, fh);
+		writeU32(&sampleOffset);
 	}
 
 	/*
@@ -409,7 +403,7 @@ status WAVEFile::writeCues()
 	*/
 
 	listChunkSize = 4;
-	for (i=0; i<markCount; i++)
+	for (int i=0; i<markCount; i++)
 	{
 		const char *name;
 
@@ -430,10 +424,10 @@ status WAVEFile::writeCues()
 	}
 
 	af_write("LIST", 4, fh);
-	af_write_uint32_le(&listChunkSize, fh);
+	writeU32(&listChunkSize);
 	af_write("adtl", 4, fh);
 
-	for (i=0; i<markCount; i++)
+	for (int i=0; i<markCount; i++)
 	{
 		const char	*name;
 		uint32_t	labelSize, cuePointID;
@@ -445,8 +439,8 @@ status WAVEFile::writeCues()
 		cuePointID = markids[i];
 
 		af_write("labl", 4, fh);
-		af_write_uint32_le(&labelSize, fh);
-		af_write_uint32_le(&cuePointID, fh);
+		writeU32(&labelSize);
+		writeU32(&cuePointID);
 		af_write(name, strlen(name) + 1, fh);
 		/*
 			If the name plus the size byte comprises an odd
@@ -456,7 +450,7 @@ status WAVEFile::writeCues()
 		if (((strlen(name) + 1) % 2) != 0)
 		{
 			uint8_t	zero=0;
-			af_write_uint8(&zero, fh);
+			writeU8(&zero);
 		}
 	}
 

@@ -27,8 +27,34 @@
 #ifndef INSTRUMENT_H
 #define INSTRUMENT_H
 
-#include <audiofile.h>
-#include <aupvlist.h>
+#include "afinternal.h"
+#include "audiofile.h"
+#include "aupvlist.h"
+
+struct LoopSetup;
+struct Loop;
+
+struct InstrumentSetup
+{
+	int	id;
+
+	int loopCount;
+	LoopSetup *loops;
+
+	bool loopSet;
+};
+
+struct Instrument
+{
+	int id;
+
+	int loopCount;
+	Loop *loops;
+
+	AFPVu *values;
+
+	Loop *getLoop(int loopID);
+};
 
 void _af_instparam_get (AFfilehandle file, int instid, AUpvlist pvlist,
 	int npv, bool forceLong);
@@ -37,7 +63,5 @@ void _af_instparam_set (AFfilehandle file, int instid, AUpvlist pvlist,
 	int npv);
 
 int _af_instparam_index_from_id (int fileFormat, int id);
-int _af_handle_instrument_index_from_id (AFfilehandle file, int id);
-int _af_setup_instrument_index_from_id (AFfilesetup setup, int id);
 
 #endif /* INSTRUMENT_H */

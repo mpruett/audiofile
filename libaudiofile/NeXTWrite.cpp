@@ -53,36 +53,31 @@ status NeXTFile::update()
 
 status NeXTFile::writeHeader()
 {
-	Track		*track;
-	int		frameSize;
-	uint32_t	offset, length, encoding, sampleRate, channelCount;
-
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
-
-	frameSize = _af_format_frame_size(&track->f, false);
-
-	offset = track->fpos_first_frame;
-	length = track->totalfframes * frameSize;
-	encoding = nextencodingtype(&track->f);
-	sampleRate = track->f.sampleRate;
-	channelCount = track->f.channelCount;
+	Track *track = getTrack();
 
 	if (af_fseek(fh, 0, SEEK_SET) != 0)
 		_af_error(AF_BAD_LSEEK, "bad seek");
 
+	uint32_t offset = track->fpos_first_frame;
+	int frameSize = _af_format_frame_size(&track->f, false);
+	uint32_t length = track->totalfframes * frameSize;
+	uint32_t encoding = nextencodingtype(&track->f);
+	uint32_t sampleRate = track->f.sampleRate;
+	uint32_t channelCount = track->f.channelCount;
+
 	af_write(".snd", 4, fh);
-	af_write_uint32_be(&offset, fh);
-	af_write_uint32_be(&length, fh);
-	af_write_uint32_be(&encoding, fh);
-	af_write_uint32_be(&sampleRate, fh);
-	af_write_uint32_be(&channelCount, fh);
+	writeU32(&offset);
+	writeU32(&length);
+	writeU32(&encoding);
+	writeU32(&sampleRate);
+	writeU32(&channelCount);
 
 	return AF_SUCCEED;
 }
 
 static uint32_t nextencodingtype (AudioFormat *format)
 {
-	uint32_t	encoding = 0;
+	uint32_t encoding = 0;
 
 	if (format->compressionType != AF_COMPRESSION_NONE)
 	{
@@ -112,8 +107,6 @@ static uint32_t nextencodingtype (AudioFormat *format)
 
 status NeXTFile::writeInit(AFfilesetup setup)
 {
-	Track	*track;
-
 	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
 		return AF_FAIL;
 
@@ -125,7 +118,7 @@ status NeXTFile::writeInit(AFfilesetup setup)
 
 	writeHeader();
 
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 	track->fpos_first_frame = 28;
 
 	track->f.byteOrder = AF_BYTEORDER_BIGENDIAN;

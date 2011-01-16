@@ -28,11 +28,13 @@
 #ifndef AVR_H
 #define AVR_H
 
-#include "afinternal.h"
+#include "FileHandle.h"
 
 class AVRFile : public _AFfilehandle
 {
 public:
+	AVRFile();
+
 	static bool recognize(File *fh);
 	static AFfilesetup completeSetup(AFfilesetup);
 

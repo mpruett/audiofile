@@ -39,8 +39,6 @@ struct AudioFormat;
 bool _af_filesetup_ok (AFfilesetup setup);
 bool _af_filehandle_ok (AFfilehandle file);
 
-bool _af_filehandle_can_read (AFfilehandle file);
-
 void *_af_malloc (size_t size);
 void *_af_realloc (void *ptr, size_t size);
 void *_af_calloc (size_t nmemb, size_t size);
@@ -54,10 +52,7 @@ bool _af_pv_getlong (AUpvlist pvlist, int param, long *l);
 bool _af_pv_getdouble (AUpvlist pvlist, int param, double *d);
 bool _af_pv_getptr (AUpvlist pvlist, int param, void **v);
 
-TrackSetup *_af_filesetup_get_tracksetup (AFfilesetup setup, int trackid);
-Track *_af_filehandle_get_track (AFfilehandle file, int trackid);
-
-bool _af_unique_ids (int *ids, int nids, char *idname, int iderr);
+bool _af_unique_ids (int *ids, int nids, const char *idname, int iderr);
 
 float _af_format_frame_size (const AudioFormat *format, bool stretch3to4);
 int _af_format_frame_size_uncompressed (const AudioFormat *format, bool stretch3to4);
@@ -65,33 +60,6 @@ float _af_format_sample_size (const AudioFormat *format, bool stretch3to4);
 int _af_format_sample_size_uncompressed (const AudioFormat *format, bool stretch3to4);
 
 status _af_set_sample_format (AudioFormat *f, int sampleFormat, int sampleWidth);
-
-bool _af_filehandle_can_read (AFfilehandle file);
-bool _af_filehandle_can_write (AFfilehandle file);
-
-status af_read_uint32_be (uint32_t *value, File *);
-status af_read_uint32_le (uint32_t *value, File *);
-status af_read_uint16_be (uint16_t *value, File *);
-status af_read_uint16_le (uint16_t *value, File *);
-status af_read_uint8 (uint8_t *value, File *);
-
-status af_read_int32_be (int32_t *value, File *);
-status af_read_int32_le (int32_t *value, File *);
-status af_read_int16_be (int16_t *value, File *);
-status af_read_int16_le (int16_t *value, File *);
-status af_read_int8 (int8_t *value, File *);
-
-status af_write_uint32_be (const uint32_t *value, File *);
-status af_write_uint32_le (const uint32_t *value, File *);
-status af_write_uint16_be (const uint16_t *value, File *);
-status af_write_uint16_le (const uint16_t *value, File *);
-status af_write_uint8 (const uint8_t *value, File *);
-
-status af_write_int32_be (const int32_t *value, File *);
-status af_write_int32_le (const int32_t *value, File *);
-status af_write_int16_be (const int16_t *value, File *);
-status af_write_int16_le (const int16_t *value, File *);
-status af_write_int8 (const int8_t *value, File *);
 
 status af_read_pstring (char value[256], File *);
 status af_write_pstring (const char *value, File *);

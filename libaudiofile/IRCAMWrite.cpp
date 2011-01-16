@@ -46,13 +46,11 @@
 /* We write IRCAM files using the native byte order. */
 status IRCAMFile::writeInit(AFfilesetup setup)
 {
-	Track		*track;
-	const uint8_t	*magic;
-	float		rate;
-	uint32_t	channels;
-	uint32_t	packMode;
-	uint32_t	dataOffset;
-	uint8_t		zeros[SIZEOF_BSD_HEADER];
+	float rate;
+	uint32_t channels;
+	uint32_t packMode;
+	uint32_t dataOffset;
+	uint8_t zeros[SIZEOF_BSD_HEADER];
 
 	assert(fileFormat == AF_FILE_IRCAM);
 
@@ -61,13 +59,14 @@ status IRCAMFile::writeInit(AFfilesetup setup)
 
 	dataOffset = SIZEOF_BSD_HEADER;
 
-	track = &tracks[0];
+	Track *track = &tracks[0];
 	track->totalfframes = 0;
 	track->fpos_first_frame = dataOffset;
 	track->nextfframe = 0;
 	track->fpos_next_frame = track->fpos_first_frame;
 
 	/* Choose the magic number appropriate for the byte order. */
+	const uint8_t *magic;
 #ifdef WORDS_BIGENDIAN
 	magic = _af_ircam_sun_magic;
 #else
@@ -92,9 +91,9 @@ status IRCAMFile::writeInit(AFfilesetup setup)
 
 	af_fseek(fh, 0, SEEK_SET);
 	af_write(magic, 4, fh);
-	af_write(&rate, 4, fh);
-	af_write(&channels, 4, fh);
-	af_write(&packMode, 4, fh);
+	writeF32(&rate);
+	writeU32(&channels);
+	writeU32(&packMode);
 
 	/* Zero the entire description block. */
 	memset(zeros, 0, SIZEOF_BSD_HEADER);

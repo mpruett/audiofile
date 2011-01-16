@@ -65,34 +65,15 @@ struct LoopSetup
 	int	id;
 };
 
-struct InstrumentSetup
-{
-	int	id;
-
-	int		loopCount;
-	LoopSetup	*loops;
-	bool		loopSet;
-};
-
-struct Instrument
-{
-	int	id;
-
-	int	loopCount;
-	Loop	*loops;
-
-	AFPVu	*values;
-};
-
 struct Miscellaneous
 {
-	int		id;
-	int		type;
-	int		size;
+	int id;
+	int type;
+	int size;
 
-	void		*buffer;
+	void *buffer;
 
-	AFfileoffset	position;	/* offset within the miscellaneous chunk */
+	int position;	// offset within the miscellaneous chunk
 };
 
 struct MiscellaneousSetup
@@ -104,60 +85,8 @@ struct MiscellaneousSetup
 
 struct TrackSetup;
 
-struct _AFfilesetup
-{
-	int	valid;
-
-	int	fileFormat;
-
-	bool	trackSet, instrumentSet, miscellaneousSet;
-
-	int			trackCount;
-	TrackSetup		*tracks;
-
-	int			instrumentCount;
-	InstrumentSetup	*instruments;
-
-	int			miscellaneousCount;
-	MiscellaneousSetup	*miscellaneous;
-};
-
 class File;
 struct Track;
-
-struct _AFfilehandle
-{
-	static _AFfilehandle *create(int fileFormat);
-
-	int	valid;	/* _AF_VALID_FILEHANDLE */
-	int	access;	/* _AF_READ_ACCESS or _AF_WRITE_ACCESS */
-
-	bool	seekok;
-
-	File	*fh;
-
-	char	*fileName;
-
-	int	fileFormat;
-
-	int	trackCount;
-	Track	*tracks;
-
-	int		instrumentCount;
-	Instrument	*instruments;
-
-	int		miscellaneousCount;
-	Miscellaneous	*miscellaneous;
-
-	_AFfilehandle();
-	virtual ~_AFfilehandle();
-
-	virtual int getVersion() { return 0; }
-	virtual status readInit(AFfilesetup) = 0;
-	virtual status writeInit(AFfilesetup) = 0;
-	virtual status update() = 0;
-	virtual bool isInstrumentParameterValid(AUpvlist, int) { return false; }
-};
 
 enum
 {

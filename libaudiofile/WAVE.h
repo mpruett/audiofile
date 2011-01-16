@@ -29,9 +29,7 @@
 #ifndef WAVE_H
 #define WAVE_H
 
-#include "File.h"
-#include "afinternal.h"
-#include "audiofile.h"
+#include "FileHandle.h"
 #include <stdint.h>
 
 /* These constants are from RFC 2361. */

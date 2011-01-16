@@ -38,6 +38,8 @@
 
 #include "AudioFormat.h"
 #include "File.h"
+#include "FileHandle.h"
+#include "Setup.h"
 #include "Track.h"
 #include "afinternal.h"
 #include "aupvinternal.h"
@@ -63,28 +65,6 @@ bool _af_filesetup_ok (AFfilesetup setup)
 		_af_error(AF_BAD_FILESETUP, "invalid file setup");
 		return false;
 	}
-	return true;
-}
-
-bool _af_filehandle_can_read (AFfilehandle file)
-{
-	if (file->access != _AF_READ_ACCESS)
-	{
-		_af_error(AF_BAD_NOREADACC, "file not opened for read access");
-		return false;
-	}
-
-	return true;
-}
-
-bool _af_filehandle_can_write (AFfilehandle file)
-{
-	if (file->access != _AF_WRITE_ACCESS)
-	{
-		_af_error(AF_BAD_NOWRITEACC, "file not opened for write access");
-		return false;
-	}
-
 	return true;
 }
 
@@ -210,9 +190,7 @@ AUpvlist _af_pv_pointer (void *val)
 
 bool _af_pv_getlong (AUpvlist pvlist, int param, long *l)
 {
-	int	i;
-
-	for (i=0; i<AUpvgetmaxitems(pvlist); i++)
+	for (int i=0; i<AUpvgetmaxitems(pvlist); i++)
 	{
 		int	p, t;
 
@@ -236,9 +214,7 @@ bool _af_pv_getlong (AUpvlist pvlist, int param, long *l)
 
 bool _af_pv_getdouble (AUpvlist pvlist, int param, double *d)
 {
-	int	i;
-
-	for (i=0; i<AUpvgetmaxitems(pvlist); i++)
+	for (int i=0; i<AUpvgetmaxitems(pvlist); i++)
 	{
 		int	p, t;
 
@@ -262,9 +238,7 @@ bool _af_pv_getdouble (AUpvlist pvlist, int param, double *d)
 
 bool _af_pv_getptr (AUpvlist pvlist, int param, void **v)
 {
-	int	i;
-
-	for (i=0; i<AUpvgetmaxitems(pvlist); i++)
+	for (int i=0; i<AUpvgetmaxitems(pvlist); i++)
 	{
 		int	p, t;
 
@@ -284,34 +258,6 @@ bool _af_pv_getptr (AUpvlist pvlist, int param, void **v)
 	}
 
 	return false;
-}
-
-TrackSetup *_af_filesetup_get_tracksetup (AFfilesetup setup, int trackid)
-{
-	int	i;
-	for (i=0; i<setup->trackCount; i++)
-	{
-		if (setup->tracks[i].id == trackid)
-			return &setup->tracks[i];
-	}
-
-	_af_error(AF_BAD_TRACKID, "bad track id %d", trackid);
-
-	return NULL;
-}
-
-Track *_af_filehandle_get_track (AFfilehandle file, int trackid)
-{
-	int	i;
-	for (i=0; i<file->trackCount; i++)
-	{
-		if (file->tracks[i].id == trackid)
-			return &file->tracks[i];
-	}
-
-	_af_error(AF_BAD_TRACKID, "bad track id %d", trackid);
-
-	return NULL;
 }
 
 int _af_format_sample_size_uncompressed (const AudioFormat *format, bool stretch3to4)
@@ -426,110 +372,21 @@ status _af_set_sample_format (AudioFormat *f, int sampleFormat, int sampleWidth)
 	idname is the name of what the ids identify, as in "loop"
 	iderr is an error as in AF_BAD_LOOPID
 */
-bool _af_unique_ids (int *ids, int nids, char *idname, int iderr)
+bool _af_unique_ids (int *ids, int nids, const char *idname, int iderr)
 {
-	int i;
-
-	for (i = 0; i < nids; i++)
+	for (int i = 0; i < nids; i++)
 	{
-		int j;
-		for (j = 0; j < i; j++)
+		for (int j = 0; j < i; j++)
+		{
 			if (ids[i] == ids[j])
 			{
-				_af_error(iderr, "nonunique %s id %d",
-					idname, ids[i]);
+				_af_error(iderr, "nonunique %s id %d", idname, ids[i]);
 				return false;
 			}
+		}
 	}
 
 	return true;
-}
-
-template <typename T>
-bool read(File *vf, T *value)
-{
-	return vf->read(value, sizeof (*value)) == sizeof (*value);
-}
-
-template <typename T>
-bool write(File *vf, const T *value)
-{
-	return vf->write(value, sizeof (*value)) == sizeof (*value);
-}
-
-#define READ(TYPE) \
-status af_read_##TYPE##_be (TYPE##_t *value, File *vf) \
-{ \
-	if (!read(vf, value)) \
-		return AF_FAIL; \
-	*value = bigToHost(*value); \
-	return AF_SUCCEED; \
-} \
-\
-status af_read_##TYPE##_le (TYPE##_t *value, File *vf) \
-{ \
-	if (!read(vf, value)) \
-		return AF_FAIL; \
-	*value = littleToHost(*value); \
-	return AF_SUCCEED; \
-}
-
-READ(uint32)
-READ(int32)
-READ(uint16)
-READ(int16)
-
-#undef READ
-
-status af_read_uint8 (uint8_t *value, File *vf)
-{
-	if (!read(vf, value))
-		return AF_FAIL;
-	return AF_SUCCEED;
-}
-
-status af_read_int8 (int8_t *value, File *vf)
-{
-	if (!read(vf, value))
-		return AF_FAIL;
-	return AF_SUCCEED;
-}
-
-#define WRITE(TYPE) \
-status af_write_##TYPE##_be (const TYPE##_t *value, File *vf) \
-{ \
-	TYPE##_t v = hostToBig(*value); \
-	if (!write(vf, &v)) \
-		return AF_FAIL; \
-	return AF_SUCCEED; \
-} \
-status af_write_##TYPE##_le (const TYPE##_t *value, File *vf) \
-{ \
-	TYPE##_t v = hostToLittle(*value); \
-	if (!write(vf, &v)) \
-		return AF_FAIL; \
-	return AF_SUCCEED; \
-}
-
-WRITE(uint32)
-WRITE(int32)
-WRITE(uint16)
-WRITE(int16)
-
-#undef WRITE
-
-status af_write_uint8 (const uint8_t *value, File *vf)
-{
-	if (!write(vf, value))
-		return AF_FAIL;
-	return AF_SUCCEED;
-}
-
-status af_write_int8 (const int8_t *value, File *vf)
-{
-	if (!write(vf, value))
-		return AF_FAIL;
-	return AF_SUCCEED;
 }
 
 status af_read_pstring (char s[256], File *vf)

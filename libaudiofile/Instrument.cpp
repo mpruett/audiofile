@@ -44,12 +44,13 @@
 
 #include "config.h"
 
-#include <audiofile.h>
-#include "afinternal.h"
-#include "units.h"
-#include "util.h"
+#include "FileHandle.h"
 #include "Instrument.h"
 #include "Setup.h"
+#include "afinternal.h"
+#include "audiofile.h"
+#include "units.h"
+#include "util.h"
 
 #include <stdlib.h>
 
@@ -60,8 +61,6 @@ extern const _Unit _af_units[];
 */
 void afInitInstIDs (AFfilesetup setup, int *instids, int ninsts)
 {
-	int i;
-
 	if (!_af_filesetup_ok(setup))
 		return;
 
@@ -75,19 +74,17 @@ void afInitInstIDs (AFfilesetup setup, int *instids, int ninsts)
 
 	setup->instruments = _af_instsetup_new(setup->instrumentCount);
 
-	for (i=0; i < setup->instrumentCount; i++)
+	for (int i=0; i < setup->instrumentCount; i++)
 		setup->instruments[i].id = instids[i];
 }
 
 int afGetInstIDs (AFfilehandle file, int *instids)
 {
-	int i;
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
 	if (instids)
-		for (i=0; i < file->instrumentCount; i++)
+		for (int i=0; i < file->instrumentCount; i++)
 			instids[i] = file->instruments[i].id;
 
 	return file->instrumentCount;
@@ -99,28 +96,27 @@ int afGetInstIDs (AFfilehandle file, int *instids)
 */
 void _af_instparam_set (AFfilehandle file, int instid, AUpvlist pvlist, int npv)
 {
-	int i, instno, j;
-
 	if (!_af_filehandle_ok(file))
 		return;
 
-	if (!_af_filehandle_can_write(file))
+	if (!file->checkCanWrite())
 		return;
 
-	if ((instno = _af_handle_instrument_index_from_id(file, instid)) == -1)
+	Instrument *instrument = file->getInstrument(instid);
+	if (!instrument)
 		return;
 
 	if (AUpvgetmaxitems(pvlist) < npv)
 	npv = AUpvgetmaxitems(pvlist);
 
-	for (i=0; i < npv; i++)
+	for (int i=0; i < npv; i++)
 	{
 		int	param;
-		int	type;
 
 		AUpvgetparam(pvlist, i, &param);
 
-		if  ((j = _af_instparam_index_from_id(file->fileFormat, param)) == -1)
+		int j;
+		if ((j = _af_instparam_index_from_id(file->fileFormat, param)) == -1)
 			/* no parameter with that id; ignore */
 			continue;
 
@@ -128,18 +124,18 @@ void _af_instparam_set (AFfilehandle file, int instid, AUpvlist pvlist, int npv)
 			/* bad parameter value; ignore */
 			continue;
 
-		type = _af_units[file->fileFormat].instrumentParameters[j].type;
+		int	type = _af_units[file->fileFormat].instrumentParameters[j].type;
 
 		switch (type)
 		{
 			case AU_PVTYPE_LONG:
-				AUpvgetval(pvlist, i, &file->instruments[instno].values[j].l);
+				AUpvgetval(pvlist, i, &instrument->values[j].l);
 				break;
 			case AU_PVTYPE_DOUBLE:
-				AUpvgetval(pvlist, i, &file->instruments[instno].values[j].d);
+				AUpvgetval(pvlist, i, &instrument->values[j].d);
 				break;
 			case AU_PVTYPE_PTR:
-				AUpvgetval(pvlist, i, &file->instruments[instno].values[j].v);
+				AUpvgetval(pvlist, i, &instrument->values[j].v);
 				break;
 			default:
 				return;
@@ -172,28 +168,27 @@ void afSetInstParamLong (AFfilehandle file, int instid, int param, long value)
 void _af_instparam_get (AFfilehandle file, int instid, AUpvlist pvlist, int npv,
 	bool forceLong)
 {
-	int	i, instno, j;
-
 	if (!_af_filehandle_ok(file))
 		return;
 
-	if ((instno = _af_handle_instrument_index_from_id(file, instid)) == -1)
+	Instrument *instrument = file->getInstrument(instid);
+	if (!instrument)
 		return;
 
 	if (AUpvgetmaxitems(pvlist) < npv)
 		npv = AUpvgetmaxitems(pvlist);
 
-	for (i=0; i < npv; i++)
+	for (int i=0; i < npv; i++)
 	{
 		int param;
-		int type;
 		AUpvgetparam(pvlist, i, &param);
 
-		if  ((j = _af_instparam_index_from_id(file->fileFormat, param)) == -1)
+		int j;
+		if ((j = _af_instparam_index_from_id(file->fileFormat, param)) == -1)
 			/* no parameter with that id; ignore */
 			continue;
 
-		type = _af_units[file->fileFormat].instrumentParameters[j].type;
+		int type = _af_units[file->fileFormat].instrumentParameters[j].type;
 
 		/*
 			forceLong is true when this routine called by
@@ -210,13 +205,13 @@ void _af_instparam_get (AFfilehandle file, int instid, AUpvlist pvlist, int npv,
 		switch (type)
 		{
 			case AU_PVTYPE_LONG:
-				AUpvsetval(pvlist, i, &file->instruments[instno].values[j].l);
+				AUpvsetval(pvlist, i, &instrument->values[j].l);
 				break;
 			case AU_PVTYPE_DOUBLE:
-				AUpvsetval(pvlist, i, &file->instruments[instno].values[j].d);
+				AUpvsetval(pvlist, i, &instrument->values[j].d);
 				break;
 			case AU_PVTYPE_PTR:
-				AUpvsetval(pvlist, i, &file->instruments[instno].values[j].v);
+				AUpvsetval(pvlist, i, &instrument->values[j].v);
 				break;
 
 			default:
@@ -277,18 +272,6 @@ int _af_instparam_index_from_id (int filefmt, int id)
 	return i;
 }
 
-int _af_handle_instrument_index_from_id (AFfilehandle file, int id)
-{
-	int i;
-
-	for (i = 0; i < file->instrumentCount; i++)
-		if (file->instruments[i].id == id)
-			return i;
-
-	_af_error(AF_BAD_INSTID, "invalid instrument id %d", id);
-	return -1;
-}
-
 int _af_setup_instrument_index_from_id (AFfilesetup setup, int id)
 {
 	int i;
@@ -299,4 +282,15 @@ int _af_setup_instrument_index_from_id (AFfilesetup setup, int id)
 
 	_af_error(AF_BAD_INSTID, "invalid instrument id %d", id);
 	return -1;
+}
+
+Loop *Instrument::getLoop(int loopID)
+{
+	for (int i=0; i<loopCount; i++)
+		if (loops[i].id == loopID)
+			return &loops[i];
+	
+	_af_error(AF_BAD_LOOPID, "no loop with id %d for instrument %d\n",
+		loopID, id);
+	return NULL;
 }

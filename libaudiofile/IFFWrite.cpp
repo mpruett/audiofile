@@ -45,13 +45,13 @@ status _af_iff_update (AFfilehandle file);
 
 status IFFFile::writeInit(AFfilesetup setup)
 {
-	uint32_t	fileSize = 0;
+	uint32_t fileSize = 0;
 
 	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
 		return AF_FAIL;
 
 	af_write("FORM", 4, fh);
-	af_write_uint32_be(&fileSize, fh);
+	writeU32(&fileSize);
 
 	af_write("8SVX", 4, fh);
 
@@ -64,7 +64,7 @@ status IFFFile::writeInit(AFfilesetup setup)
 
 status IFFFile::update()
 {
-	uint32_t	length;
+	uint32_t length;
 
 	writeVHDR();
 	writeMiscellaneous();
@@ -76,19 +76,18 @@ status IFFFile::update()
 
 	/* Set the length of the FORM chunk. */
 	af_fseek(fh, 4, SEEK_SET);
-	af_write_uint32_be(&length, fh);
+	writeU32(&length);
 
 	return AF_SUCCEED;
 }
 
 status IFFFile::writeVHDR()
 {
-	Track		*track;
-	uint32_t	chunkSize;
-	uint32_t	oneShotSamples, repeatSamples, samplesPerRepeat;
-	uint16_t	sampleRate;
-	uint8_t		octaves, compression;
-	uint32_t	volume;
+	uint32_t chunkSize;
+	uint32_t oneShotSamples, repeatSamples, samplesPerRepeat;
+	uint16_t sampleRate;
+	uint8_t octaves, compression;
+	uint32_t volume;
 
 	/*
 		If VHDR_offset hasn't been set yet, set it to the
@@ -99,45 +98,44 @@ status IFFFile::writeVHDR()
 	else
 		af_fseek(fh, VHDR_offset, SEEK_SET);
 
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
 	af_write("VHDR", 4, fh);
 
 	chunkSize = 20;
-	af_write_uint32_be(&chunkSize, fh);
+	writeU32(&chunkSize);
 
 	/*
 		IFF/8SVX files have only one audio channel, so the
 		number of samples is equal to the number of frames.
 	*/
 	oneShotSamples = track->totalfframes;
-	af_write_uint32_be(&oneShotSamples, fh);
+	writeU32(&oneShotSamples);
 	repeatSamples = 0;
-	af_write_uint32_be(&repeatSamples, fh);
+	writeU32(&repeatSamples);
 	samplesPerRepeat = 0;
-	af_write_uint32_be(&samplesPerRepeat, fh);
+	writeU32(&samplesPerRepeat);
 
 	sampleRate = track->f.sampleRate;
-	af_write_uint16_be(&sampleRate, fh);
+	writeU16(&sampleRate);
 
 	octaves = 0;
 	compression = 0;
-	af_write_uint8(&octaves, fh);
-	af_write_uint8(&compression, fh);
+	writeU8(&octaves);
+	writeU8(&compression);
 
 	/* Volume is in fixed-point notation; 65536 means gain of 1.0. */
 	volume = 65536;
-	af_write_uint32_be(&volume, fh);
+	writeU32(&volume);
 
 	return AF_SUCCEED;
 }
 
 status IFFFile::writeBODY()
 {
-	Track		*track;
-	uint32_t	chunkSize;
+	uint32_t chunkSize;
 
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
 	if (BODY_offset == 0)
 		BODY_offset = af_ftell(fh);
@@ -152,7 +150,7 @@ status IFFFile::writeBODY()
 		sample is one byte.
 	*/
 	chunkSize = track->totalfframes;
-	af_write_uint32_be(&chunkSize, fh);
+	writeU32(&chunkSize);
 
 	if (track->fpos_first_frame == 0)
 		track->fpos_first_frame = af_ftell(fh);
@@ -160,9 +158,9 @@ status IFFFile::writeBODY()
 	/* Add a pad byte to the end of the chunk if the chunk size is odd. */
 	if ((chunkSize % 2) == 1)
 	{
-		uint8_t	zero = 0;
+		uint8_t zero = 0;
 		af_fseek(fh, BODY_offset + 8 + chunkSize, SEEK_SET);
-		af_write_uint8(&zero, fh);
+		writeU8(&zero);
 	}
 
 	return AF_SUCCEED;
@@ -181,9 +179,9 @@ status IFFFile::writeMiscellaneous()
 
 	for (int i=0; i<miscellaneousCount; i++)
 	{
-		Miscellaneous	*misc = &miscellaneous[i];
-		uint32_t	chunkType, chunkSize;
-		uint8_t		padByte = 0;
+		Miscellaneous *misc = &miscellaneous[i];
+		uint32_t chunkType, chunkSize;
+		uint8_t padByte = 0;
 
 		switch (misc->type)
 		{
@@ -200,7 +198,7 @@ status IFFFile::writeMiscellaneous()
 		af_write(&chunkType, 4, fh);
 
 		chunkSize = misc->size;
-		af_write_uint32_be(&chunkSize, fh);
+		writeU32(&chunkSize);
 
 		/*
 			Write the miscellaneous buffer and then a pad byte
@@ -213,7 +211,7 @@ status IFFFile::writeMiscellaneous()
 			af_fseek(fh, misc->size, SEEK_CUR);
 
 		if (misc->size % 2 != 0)
-			af_write_uint8(&padByte, fh);
+			writeU8(&padByte);
 	}
 
 	return AF_SUCCEED;

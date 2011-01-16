@@ -32,41 +32,25 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "FileHandle.h"
+#include "Setup.h"
 #include "Track.h"
 #include "afinternal.h"
 #include "audiofile.h"
 #include "util.h"
 
-Marker *_af_marker_find_by_id (Track *track, int markerid)
-{
-	int	i;
-
-	assert(track);
-
-	for (i=0; i<track->markerCount; i++)
-		if (track->markers[i].id == markerid)
-			return &track->markers[i];
-
-	_af_error(AF_BAD_MARKID, "no mark with id %d found in track %d",
-		markerid, track->id);
-
-	return NULL;
-}
-
 void afInitMarkIDs(AFfilesetup setup, int trackid, int markids[], int nmarks)
 {
-	int		i;
-	TrackSetup	*track;
-
 	if (!_af_filesetup_ok(setup))
 		return;
 
-	if ((track = _af_filesetup_get_tracksetup(setup, trackid)) == NULL)
+	TrackSetup *track = setup->getTrack(trackid);
+	if (!track)
 		return;
 
 	if (track->markers != NULL)
 	{
-		for (i=0; i<track->markerCount; i++)
+		for (int i=0; i<track->markerCount; i++)
 		{
 			if (track->markers[i].name != NULL)
 				free(track->markers[i].name);
@@ -79,7 +63,7 @@ void afInitMarkIDs(AFfilesetup setup, int trackid, int markids[], int nmarks)
 	track->markers = (MarkerSetup *) _af_calloc(nmarks, sizeof (struct MarkerSetup));
 	track->markerCount = nmarks;
 
-	for (i=0; i<nmarks; i++)
+	for (int i=0; i<nmarks; i++)
 	{
 		track->markers[i].id = markids[i];
 		track->markers[i].name = _af_strdup("");
@@ -95,19 +79,12 @@ void afInitMarkName(AFfilesetup setup, int trackid, int markid,
 	int	markno;
 	int	length;
 
-	TrackSetup	*track = NULL;
-
-	assert(setup);
-	assert(markid > 0);
-
-	track = _af_filesetup_get_tracksetup(setup, trackid);
-	assert(track);
-
-	if (track == NULL)
-	{
-		_af_error(AF_BAD_TRACKID, "bad track id");
+	if (!_af_filesetup_ok(setup))
 		return;
-	}
+
+	TrackSetup *track = setup->getTrack(trackid);
+	if (!track)
+		return;
 
 	for (markno=0; markno<track->markerCount; markno++)
 	{
@@ -146,19 +123,13 @@ void afInitMarkComment(AFfilesetup setup, int trackid, int markid,
 {
 	int	markno;
 	int	length;
-	TrackSetup	*track = NULL;
 
-	assert(setup);
-	assert(markid > 0);
-
-	track = _af_filesetup_get_tracksetup(setup, trackid);
-	assert(track);
-
-	if (track == NULL)
-	{
-		_af_error(AF_BAD_TRACKID, "bad track id");
+	if (!_af_filesetup_ok(setup))
 		return;
-	}
+
+	TrackSetup *track = setup->getTrack(trackid);
+	if (!track)
+		return;
 
 	for (markno=0; markno<track->markerCount; markno++)
 	{
@@ -183,19 +154,15 @@ void afInitMarkComment(AFfilesetup setup, int trackid, int markid,
 
 char *afGetMarkName (AFfilehandle file, int trackid, int markid)
 {
-	Track	*track;
-	Marker	*marker;
-
-	assert(file != NULL);
-	assert(markid > 0);
-
 	if (!_af_filehandle_ok(file))
 		return NULL;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return NULL;
 
-	if ((marker = _af_marker_find_by_id(track, markid)) == NULL)
+	Marker *marker = track->getMarker(markid);
+	if (!marker)
 		return NULL;
 
 	return marker->name;
@@ -203,19 +170,15 @@ char *afGetMarkName (AFfilehandle file, int trackid, int markid)
 
 char *afGetMarkComment (AFfilehandle file, int trackid, int markid)
 {
-	Track	*track;
-	Marker	*marker;
-
-	assert(file != NULL);
-	assert(markid > 0);
-
 	if (!_af_filehandle_ok(file))
 		return NULL;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return NULL;
 
-	if ((marker = _af_marker_find_by_id(track, markid)) == NULL)
+	Marker *marker = track->getMarker(markid);
+	if (!marker)
 		return NULL;
 
 	return marker->comment;
@@ -224,22 +187,18 @@ char *afGetMarkComment (AFfilehandle file, int trackid, int markid)
 void afSetMarkPosition (AFfilehandle file, int trackid, int markid,
 	AFframecount pos)
 {
-	Track	*track;
-	Marker	*marker;
-
-	assert(file != NULL);
-	assert(markid > 0);
-
 	if (!_af_filehandle_ok(file))
 		return;
 
-	if (!_af_filehandle_can_write(file))
+	if (!file->checkCanWrite())
 		return;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return;
 
-	if ((marker = _af_marker_find_by_id(track, markid)) == NULL)
+	Marker *marker = track->getMarker(markid);
+	if (!marker)
 		return;
 
 	if (pos < 0)
@@ -253,21 +212,16 @@ void afSetMarkPosition (AFfilehandle file, int trackid, int markid,
 
 int afGetMarkIDs (AFfilehandle file, int trackid, int markids[])
 {
-	Track	*track;
-
-	assert(file);
-
 	if (!_af_filehandle_ok(file))
 		return -1;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return -1;
 
 	if (markids != NULL)
 	{
-		int	i;
-
-		for (i=0; i<track->markerCount; i++)
+		for (int i=0; i<track->markerCount; i++)
 		{
 			markids[i] = track->markers[i].id;
 		}
@@ -278,19 +232,15 @@ int afGetMarkIDs (AFfilehandle file, int trackid, int markids[])
 
 AFframecount afGetMarkPosition (AFfilehandle file, int trackid, int markid)
 {
-	Track	*track;
-	Marker	*marker;
-
-	assert(file);
-	assert(markid > 0);
-
 	if (!_af_filehandle_ok(file))
 		return 0L;
 
-	if ((track = _af_filehandle_get_track(file, trackid)) == NULL)
+	Track *track = file->getTrack(trackid);
+	if (!track)
 		return 0L;
 
-	if ((marker = _af_marker_find_by_id(track, markid)) == NULL)
+	Marker *marker = track->getMarker(markid);
+	if (!marker)
 		return 0L;
 
 	return marker->position;

@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "Instrument.h"
 #include "Marker.h"
 #include "Setup.h"
 #include "Track.h"
@@ -79,6 +80,8 @@ _AFfilesetup _af_aiff_default_filesetup =
 
 AIFFFile::AIFFFile()
 {
+	setFormatByteOrder(AF_BYTEORDER_BIGENDIAN);
+
 	miscellaneousPosition = 0;
 	FVER_offset = 0;
 	COMM_offset = 0;
@@ -93,11 +96,10 @@ AIFFFile::AIFFFile()
 */
 status AIFFFile::parseFVER(uint32_t type, size_t size)
 {
-	uint32_t	timestamp;
-
 	assert(!memcmp(&type, "FVER", 4));
 
-	af_read_uint32_be(&timestamp, fh);
+	uint32_t timestamp;
+	readU32(&timestamp);
 	/* timestamp holds the number of seconds since January 1, 1904. */
 
 	return AF_SUCCEED;
@@ -108,13 +110,12 @@ status AIFFFile::parseFVER(uint32_t type, size_t size)
 */
 status AIFFFile::parseAESD(uint32_t type, size_t size)
 {
-	Track		*track;
-	unsigned char	aesChannelStatusData[24];
+	unsigned char aesChannelStatusData[24];
 
 	assert(!memcmp(&type, "AESD", 4));
 	assert(size == 24);
 
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
 	track->hasAESData = true;
 
@@ -136,7 +137,7 @@ status AIFFFile::parseAESD(uint32_t type, size_t size)
 */
 status AIFFFile::parseMiscellaneous(uint32_t type, size_t size)
 {
-	int	misctype = AF_MISC_UNRECOGNIZED;
+	int misctype = AF_MISC_UNRECOGNIZED;
 
 	assert(!memcmp(&type, "NAME", 4) || !memcmp(&type, "AUTH", 4) ||
 		!memcmp(&type, "(c) ", 4) || !memcmp(&type, "ANNO", 4) ||
@@ -180,18 +181,17 @@ status AIFFFile::parseMiscellaneous(uint32_t type, size_t size)
 */
 status AIFFFile::parseINST(uint32_t type, size_t size)
 {
-	Instrument	*instrument;
-	uint8_t		baseNote;
-	int8_t		detune;
-	uint8_t		lowNote, highNote, lowVelocity, highVelocity;
-	int16_t		gain;
+	uint8_t baseNote;
+	int8_t detune;
+	uint8_t lowNote, highNote, lowVelocity, highVelocity;
+	int16_t gain;
 
-	uint16_t	sustainLoopPlayMode, sustainLoopBegin, sustainLoopEnd;
-	uint16_t	releaseLoopPlayMode, releaseLoopBegin, releaseLoopEnd;
+	uint16_t sustainLoopPlayMode, sustainLoopBegin, sustainLoopEnd;
+	uint16_t releaseLoopPlayMode, releaseLoopBegin, releaseLoopEnd;
 
 	assert(!memcmp(&type, "INST", 4));
 
-	instrument = (Instrument *) _af_calloc(1, sizeof (Instrument));
+	Instrument *instrument = (Instrument *) _af_calloc(1, sizeof (Instrument));
 	instrument->id = AF_DEFAULT_INST;
 	instrument->values = (AFPVu *) _af_calloc(_AF_AIFF_NUM_INSTPARAMS, sizeof (AFPVu));
 	instrument->loopCount = 2;
@@ -200,13 +200,13 @@ status AIFFFile::parseINST(uint32_t type, size_t size)
 	instrumentCount = 1;
 	instruments = instrument;
 
-	af_read_uint8(&baseNote, fh);
-	af_read_int8(&detune, fh);
-	af_read_uint8(&lowNote, fh);
-	af_read_uint8(&highNote, fh);
-	af_read_uint8(&lowVelocity, fh);
-	af_read_uint8(&highVelocity, fh);
-	af_read_int16_be(&gain, fh);
+	readU8(&baseNote);
+	readS8(&detune);
+	readU8(&lowNote);
+	readU8(&highNote);
+	readU8(&lowVelocity);
+	readU8(&highVelocity);
+	readS16(&gain);
 
 #ifdef DEBUG
 	printf("baseNote/detune/lowNote/highNote/lowVelocity/highVelocity/gain:"
@@ -226,13 +226,13 @@ status AIFFFile::parseINST(uint32_t type, size_t size)
 	instrument->values[7].l = 1;	/* sustain loop id */
 	instrument->values[8].l = 2;	/* release loop id */
 
-	af_read_uint16_be(&sustainLoopPlayMode, fh);
-	af_read_uint16_be(&sustainLoopBegin, fh);
-	af_read_uint16_be(&sustainLoopEnd, fh);
+	readU16(&sustainLoopPlayMode);
+	readU16(&sustainLoopBegin);
+	readU16(&sustainLoopEnd);
 
-	af_read_uint16_be(&releaseLoopPlayMode, fh);
-	af_read_uint16_be(&releaseLoopBegin, fh);
-	af_read_uint16_be(&releaseLoopEnd, fh);
+	readU16(&releaseLoopPlayMode);
+	readU16(&releaseLoopBegin);
+	readU16(&releaseLoopEnd);
 
 #ifdef DEBUG
 	printf("sustain loop: mode %d, begin %d, end %d\n",
@@ -260,29 +260,26 @@ status AIFFFile::parseINST(uint32_t type, size_t size)
 */
 status AIFFFile::parseMARK(uint32_t type, size_t size)
 {
-	Track		*track;
-	int		i;
-	uint16_t	numMarkers;
-
 	assert(!memcmp(&type, "MARK", 4));
 
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
-	af_read_uint16_be(&numMarkers, fh);
+	uint16_t numMarkers;
+	readU16(&numMarkers);
 
 	track->markerCount = numMarkers;
 	if (numMarkers)
 		track->markers = _af_marker_new(numMarkers);
 
-	for (i=0; i<numMarkers; i++)
+	for (unsigned i=0; i<numMarkers; i++)
 	{
-		uint16_t	markerID = 0;
-		uint32_t	markerPosition = 0;
-		uint8_t		sizeByte = 0;
-		char		*markerName = NULL;
+		uint16_t markerID = 0;
+		uint32_t markerPosition = 0;
+		uint8_t sizeByte = 0;
+		char *markerName = NULL;
 
-		af_read_uint16_be(&markerID, fh);
-		af_read_uint32_be(&markerPosition, fh);
+		readU16(&markerID);
+		readU32(&markerPosition);
 		af_read(&sizeByte, 1, fh);
 		markerName = (char *) _af_malloc(sizeByte + 1);
 		af_read(markerName, sizeByte, fh);
@@ -321,23 +318,22 @@ status AIFFFile::parseMARK(uint32_t type, size_t size)
 */
 status AIFFFile::parseCOMM(uint32_t type, size_t size)
 {
-	Track		*track;
-	uint16_t	numChannels;
-	uint32_t	numSampleFrames;
-	uint16_t	sampleSize;
-	unsigned char	sampleRate[10];
-
 	assert(!memcmp(&type, "COMM", 4));
 
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
-	af_read_uint16_be(&numChannels, fh);
+	uint16_t numChannels;
+	uint32_t numSampleFrames;
+	uint16_t sampleSize;
+	unsigned char sampleRate[10];
+
+	readU16(&numChannels);
 	track->f.channelCount = numChannels;
 
-	af_read_uint32_be(&numSampleFrames, fh);
+	readU32(&numSampleFrames);
 	track->totalfframes = numSampleFrames;
 
-	af_read_uint16_be(&sampleSize, fh);
+	readU16(&sampleSize);
 	track->f.sampleWidth = sampleSize;
 
 	af_read(sampleRate, 10, fh);
@@ -349,9 +345,9 @@ status AIFFFile::parseCOMM(uint32_t type, size_t size)
 
 	if (fileFormat == AF_FILE_AIFFC)
 	{
-		uint8_t		compressionID[4];
+		uint8_t compressionID[4];
 		/* Pascal strings are at most 255 bytes long. */
-		char		compressionName[256];
+		char compressionName[256];
 
 		af_read(compressionID, 4, fh);
 
@@ -432,15 +428,13 @@ status AIFFFile::parseCOMM(uint32_t type, size_t size)
 */
 status AIFFFile::parseSSND(uint32_t type, size_t size)
 {
-	Track		*track;
-	uint32_t	offset, blockSize;
-
 	assert(!memcmp(&type, "SSND", 4));
 
-	track = _af_filehandle_get_track(this, AF_DEFAULT_TRACK);
+	Track *track = getTrack();
 
-	af_read_uint32_be(&offset, fh);
-	af_read_uint32_be(&blockSize, fh);
+	uint32_t offset, blockSize;
+	readU32(&offset);
+	readU32(&blockSize);
 
 	/*
 		This seems like a reasonable way to calculate the number of
@@ -466,28 +460,24 @@ status AIFFFile::parseSSND(uint32_t type, size_t size)
 
 status AIFFFile::readInit(AFfilesetup setup)
 {
-	uint32_t	type, size, formtype;
-	size_t		index = 0;
-	bool		hasCOMM, hasFVER, hasSSND, hasMARK, hasINST;
-	bool		hasAESD, hasNAME, hasAUTH, hasCOPY;
-	Track		*track;
+	uint32_t type, size, formtype;
 
-	hasCOMM = false;
-	hasFVER = false;
-	hasSSND = false;
-	hasMARK = false;
-	hasINST = false;
-	hasAESD = false;
-	hasNAME = false;
-	hasAUTH = false;
-	hasCOPY = false;
+	bool hasCOMM = false;
+	bool hasFVER = false;
+	bool hasSSND = false;
+	bool hasMARK = false;
+	bool hasINST = false;
+	bool hasAESD = false;
+	bool hasNAME = false;
+	bool hasAUTH = false;
+	bool hasCOPY = false;
 
 	assert(fh != NULL);
 
 	af_fseek(fh, 0, SEEK_SET);
 
 	af_read(&type, 4, fh);
-	af_read_uint32_be(&size, fh);
+	readU32(&size);
 	af_read(&formtype, 4, fh);
 
 	if (memcmp(&type, "FORM", 4) != 0 ||
@@ -504,23 +494,22 @@ status AIFFFile::readInit(AFfilesetup setup)
 	miscellaneous = NULL;
 
 	/* AIFF files have only one track. */
-	track = _af_track_new();
+	Track *track = _af_track_new();
 	trackCount = 1;
 	tracks = track;
 
 	/* Include the offset of the form type. */
-	index += 4;
-
+	size_t index = 4;
 	while (index < size)
 	{
-		uint32_t	chunkid = 0, chunksize = 0;
-		status		result = AF_SUCCEED;
+		uint32_t chunkid = 0, chunksize = 0;
+		status result = AF_SUCCEED;
 
 #ifdef DEBUG
 		printf("index: %d\n", index);
 #endif
 		af_read(&chunkid, 4, fh);
-		af_read_uint32_be(&chunksize, fh);
+		readU32(&chunksize);
 
 #ifdef DEBUG
 		_af_printid(chunkid);
@@ -599,7 +588,7 @@ status AIFFFile::readInit(AFfilesetup setup)
 
 bool AIFFFile::recognizeAIFF(File *fh)
 {
-	uint8_t	buffer[8];
+	uint8_t buffer[8];
 
 	af_fseek(fh, 0, SEEK_SET);
 
@@ -613,7 +602,7 @@ bool AIFFFile::recognizeAIFF(File *fh)
 
 bool AIFFFile::recognizeAIFFC(File *fh)
 {
-	uint8_t	buffer[8];
+	uint8_t buffer[8];
 
 	af_fseek(fh, 0, SEEK_SET);
 
@@ -701,8 +690,7 @@ AFfilesetup AIFFFile::completeSetup(AFfilesetup setup)
 
 	if (setup->miscellaneousSet)
 	{
-		int	i;
-		for (i=0; i<setup->miscellaneousCount; i++)
+		for (int i=0; i<setup->miscellaneousCount; i++)
 		{
 			switch (setup->miscellaneous[i].type)
 			{
@@ -726,7 +714,7 @@ AFfilesetup AIFFFile::completeSetup(AFfilesetup setup)
 
 bool AIFFFile::isInstrumentParameterValid(AUpvlist list, int i)
 {
-	int	param, type, lval;
+	int param, type, lval;
 
 	AUpvgetparam(list, i, &param);
 	AUpvgetvaltype(list, i, &type);

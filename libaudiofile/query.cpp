@@ -75,12 +75,9 @@ AUpvlist afQuery (int querytype, int arg1, int arg2, int arg3, int arg4)
 			return AU_NULL_PVLIST;
 		case AF_QUERYTYPE_MARK:
 			return _afQueryMarker(arg1, arg2, arg3, arg4);
-		default:
-			_af_error(AF_BAD_QUERYTYPE, "bad query type");
-			return AU_NULL_PVLIST;
 	}
 
-	/* NOTREACHED */
+	_af_error(AF_BAD_QUERYTYPE, "bad query type");
 	return AU_NULL_PVLIST;
 }
 
@@ -155,7 +152,7 @@ AUpvlist _afQueryFileFormat (int arg1, int arg2, int arg3, int arg4)
 				case AF_QUERY_DEFAULT:
 					return _af_pv_long(_af_units[arg3].defaultSampleFormat);
 				default:
-					return AU_NULL_PVLIST;
+					break;
 			}
 			/* NOTREACHED */
 			break;
@@ -212,6 +209,7 @@ AUpvlist _afQueryFileFormat (int arg1, int arg2, int arg3, int arg4)
 		break;
 	}
 
+	_af_error(AF_BAD_QUERY, "bad query selector");
 	return AU_NULL_PVLIST;
 }
 
@@ -295,7 +293,7 @@ AUpvlist _afQueryInstrumentParameter (int arg1, int arg2, int arg3, int arg4)
 			buffer = (int *) _af_calloc(count, sizeof (int));
 			if (buffer == NULL)
 				return AU_NULL_PVLIST;
-			for (i=0; i<count; i++)
+			for (int i=0; i<count; i++)
 				buffer[i] = _af_units[arg2].instrumentParameters[i].id;
 			return _af_pv_pointer(buffer);
 		}
@@ -348,11 +346,9 @@ AUpvlist _afQueryInstrumentParameter (int arg1, int arg2, int arg3, int arg4)
 			}
 			return AU_NULL_PVLIST;
 		}
-
-		default:
-			break;
 	}
 
+	_af_error(AF_BAD_QUERY, "bad query selector");
 	return AU_NULL_PVLIST;
 }
 
@@ -368,10 +364,9 @@ AUpvlist _afQueryLoop (int arg1, int arg2, int arg3, int arg4)
 			return _af_pv_long(_af_units[arg2].loopPerInstrumentCount != 0);
 		case AF_QUERY_MAX_NUMBER:
 			return _af_pv_long(_af_units[arg2].loopPerInstrumentCount);
-		default:
-			break;
 	}
 
+	_af_error(AF_BAD_QUERY, "bad query selector");
 	return AU_NULL_PVLIST;
 }
 
@@ -389,11 +384,9 @@ AUpvlist _afQueryInstrument (int arg1, int arg2, int arg3, int arg4)
 			if (arg2 < 0 || arg2 >= _AF_NUM_UNITS)
 				return AU_NULL_PVLIST;
 			return _af_pv_long(_af_units[arg2].instrumentCount);
-
-		default:
-			break;
 	}
 
+	_af_error(AF_BAD_QUERY, "bad query selector");
 	return AU_NULL_PVLIST;
 }
 
@@ -413,12 +406,9 @@ AUpvlist _afQueryMarker (int arg1, int arg2, int arg3, int arg4)
 			return _af_pv_long(_af_units[arg2].markerCount != 0);
 		case AF_QUERY_MAX_NUMBER:
 			return _af_pv_long(_af_units[arg2].markerCount);
-		default:
-			_af_error(AF_BAD_QUERY, "bad query");
-			return AU_NULL_PVLIST;
 	}
 
-	/* NOTREACHED */
+	_af_error(AF_BAD_QUERY, "bad query selector");
 	return AU_NULL_PVLIST;
 }
 

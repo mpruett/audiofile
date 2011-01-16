@@ -23,6 +23,7 @@
 #include "ModuleState.h"
 
 #include "File.h"
+#include "FileHandle.h"
 #include "RebufferModule.h"
 #include "SimpleModule.h"
 #include "Track.h"

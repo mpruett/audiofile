@@ -81,6 +81,8 @@ struct Track
 	bool filemodhappy;
 
 	void print();
+
+	Marker *getMarker(int markerID);
 };
 
 Track *_af_track_new (void);

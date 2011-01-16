@@ -148,6 +148,9 @@ inline int32_t byteswap(int32_t value) { return _af_byteswap_int32(value); }
 inline uint16_t byteswap(uint16_t value) { return _af_byteswap_int16(value); }
 inline int16_t byteswap(int16_t value) { return _af_byteswap_int16(value); }
 
+inline double byteswap(double value) { return _af_byteswap_float64(value); }
+inline float byteswap(float value) { return _af_byteswap_float32(value); }
+
 template <typename T>
 T bigToHost(T value)
 {
