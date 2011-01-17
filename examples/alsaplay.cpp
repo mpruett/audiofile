@@ -46,6 +46,12 @@ int main(int argc, char **argv)
 	}
 
 	AFfilehandle file = afOpenFile(argv[1], "r", AF_NULL_FILESETUP);
+	if (!file)
+	{
+		fprintf(stderr, "Could not open '%s'.\n", argv[1]);
+		exit(EXIT_FAILURE);
+	}
+
 	int channels = afGetChannels(file, AF_DEFAULT_TRACK);
 	double rate = afGetRate(file, AF_DEFAULT_TRACK);
 	afSetVirtualSampleFormat(file, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, 16);
