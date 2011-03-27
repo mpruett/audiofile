@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 1998-2000, Michael Pruett <michael@68k.org>
+	Copyright (C) 1998-2000, 2011, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -63,6 +63,8 @@ _AFfilesetup _af_next_default_filesetup =
 	NULL			/* miscellaneous */
 };
 
+static const uint32_t _AU_LENGTH_UNSPECIFIED = 0xffffffff;
+
 NeXTFile::NeXTFile()
 {
 	setFormatByteOrder(AF_BYTEORDER_BIGENDIAN);
@@ -110,7 +112,12 @@ status NeXTFile::readInit(AFfilesetup setup)
 	track->f.compressionType = AF_COMPRESSION_NONE;
 
 	track->fpos_first_frame = offset;
-	track->data_size = af_flength(fh) - offset;
+
+	off_t lengthAvailable = fh->length() - offset;
+	if (length == _AU_LENGTH_UNSPECIFIED || length > lengthAvailable)
+		length = lengthAvailable;
+
+	track->data_size = length;
 
 	switch (encoding)
 	{
