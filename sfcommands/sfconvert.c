@@ -21,15 +21,11 @@
 */
 
 /*
-	sfconvert.c
-
 	sfconvert is a program which can convert various parameters of
 	sound files.
-
-	The real IRIX version has a lot of options.  Mine can only
-	convert the file format.  I'm working on expanding the
-	capabilities of this command.
 */
+
+#include "config.h"
 
 #ifdef __USE_SGI_HEADERS__
 #include <dmedia/audiofile.h>
@@ -41,20 +37,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef int bool;
-
-#ifndef FALSE
-#define FALSE 0
-#endif
-
-#ifndef TRUE
-#define TRUE 1
-#endif
+#include "printinfo.h"
 
 #define BUFFER_FRAME_COUNT 65536
 
+void printversion (void);
+void printusage (void);
 void usageerror (void);
-void printfileinfo (char *filename);
 int copyaudiodata (AFfilehandle infile, AFfilehandle outfile, int trackid,
 	AFframecount totalFrameCount);
 
@@ -73,6 +62,21 @@ int main (int argc, char **argv)
 	double		outMaxAmp = 1.0;
 
 	AFframecount	totalFrames;
+
+	if (argc == 2)
+	{
+		if (!strcmp(argv[1], "--version") || !strcmp(argv[1], "-v"))
+		{
+			printversion();
+			exit(EXIT_SUCCESS);
+		}
+
+		if (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-h"))
+		{
+			printusage();
+			exit(EXIT_SUCCESS);
+		}
+	}
 
 	if (argc < 3)
 		usageerror();
@@ -224,7 +228,7 @@ int main (int argc, char **argv)
 	return EXIT_SUCCESS;
 }
 
-void usageerror (void)
+void printusage (void)
 {
 	printf("usage: sfconvert infile outfile [ options ... ] [ output keywords ... ]\n");
 	printf("\n");
@@ -247,8 +251,17 @@ void usageerror (void)
 	printf("    wave    MS RIFF WAVE Format\n");
 	printf("    bics    Berkeley/IRCAM/CARL Sound File Format\n");
 	printf("\n");
+}
 
+void usageerror (void)
+{
+	printusage();
 	exit(EXIT_FAILURE);
+}
+
+void printversion (void)
+{
+	printf("sfconvert: Audio File Library version %s\n", VERSION);
 }
 
 /*
@@ -259,16 +272,16 @@ void usageerror (void)
 int copyaudiodata (AFfilehandle infile, AFfilehandle outfile, int trackid,
 	AFframecount totalFrameCount)
 {
-	AFframecount	totalFramesWritten = 0;
-	void		*buffer;
-	int		frameSize;
-	bool		ok = TRUE, done = FALSE;
+	AFframecount totalFramesWritten = 0;
+	void *buffer;
+	int frameSize;
+	bool ok = true, done = false;
 
 	frameSize = afGetVirtualFrameSize(infile, trackid, 1);
 
 	buffer = malloc(BUFFER_FRAME_COUNT * frameSize);
 
-	while (done == FALSE)
+	while (!done)
 	{
 		AFframecount	framesToRead = BUFFER_FRAME_COUNT;
 		AFframecount	framesRead, framesWritten;
@@ -279,8 +292,8 @@ int copyaudiodata (AFfilehandle infile, AFfilehandle outfile, int trackid,
 		if (framesRead < 0)
 		{
 			fprintf(stderr, "Bad read of audio track data.\n");
-			ok = FALSE;
-			done = TRUE;
+			ok = false;
+			done = true;
 		}
 
 		framesWritten = afWriteFrames(outfile, trackid, buffer,
@@ -289,8 +302,8 @@ int copyaudiodata (AFfilehandle infile, AFfilehandle outfile, int trackid,
 		if (framesWritten < 0)
 		{
 			fprintf(stderr, "Bad write of audio track data.\n");
-			ok = FALSE;
-			done = TRUE;
+			ok = false;
+			done = true;
 		}
 		else
 		{
@@ -298,7 +311,7 @@ int copyaudiodata (AFfilehandle infile, AFfilehandle outfile, int trackid,
 		}
 
 		if (totalFramesWritten == totalFrameCount)
-			done = TRUE;
+			done = true;
 	}
 
 	free(buffer);

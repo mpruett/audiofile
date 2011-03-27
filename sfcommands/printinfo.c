@@ -1,7 +1,7 @@
 /*
 	Audio File Library
 
-	Copyright 1998, Michael Pruett <michael@68k.org>
+	Copyright 1998, 2011, Michael Pruett <michael@68k.org>
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License as
@@ -26,9 +26,8 @@
 	information regarding a file.
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "config.h"
+#include "printinfo.h"
 
 #ifdef __USE_SGI_HEADERS__
 #include <dmedia/audiofile.h>
@@ -39,38 +38,42 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char *copyrightstring (AFfilehandle file);
+static char *copyrightstring (AFfilehandle file);
 
-void printfileinfo (char *filename)
+#if SIZEOF_OFF_T > SIZEOF_LONG
+#define FMT_off_t "%ll"
+#else
+#define FMT_off_t "%l"
+#endif
+
+bool printfileinfo (const char *filename)
 {
-	int		version;
-	AFfilehandle	file;
-	int		sampleFormat, sampleWidth, byteOrder, compressionType;
-	char		*copyright, *formatstring, *labelstring;
+	AFfilehandle file = afOpenFile(filename, "r", NULL);
+	if (!file)
+		return false;
 
-	file = afOpenFile(filename, "r", NULL);
+	int fileFormat = afGetFileFormat(file, NULL);
+	const char *formatstring =
+		(const char *) afQueryPointer(AF_QUERYTYPE_FILEFMT, AF_QUERY_DESC,
+			fileFormat, 0, 0);
+	const char *labelstring =
+		(const char *) afQueryPointer(AF_QUERYTYPE_FILEFMT, AF_QUERY_LABEL,
+			fileFormat, 0, 0);
 
-	if (file == NULL)
-		return;
-
-	formatstring = afQueryPointer(AF_QUERYTYPE_FILEFMT, AF_QUERY_DESC,
-		afGetFileFormat(file, &version), 0, 0);
-	labelstring = afQueryPointer(AF_QUERYTYPE_FILEFMT, AF_QUERY_LABEL,
-		afGetFileFormat(file, &version), 0, 0);
-
-	if (formatstring == NULL || labelstring == NULL)
-		return;
+	if (!formatstring || !labelstring)
+		return false;
 
 	printf("File Name      %s\n", filename);
 	printf("File Format    %s (%s)\n", formatstring, labelstring);
 
+	int sampleFormat, sampleWidth;
 	afGetSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
-	byteOrder = afGetByteOrder(file, AF_DEFAULT_TRACK);
+
+	int byteOrder = afGetByteOrder(file, AF_DEFAULT_TRACK);
 
 	printf("Data Format    ");
 
-	compressionType = afGetCompression(file, AF_DEFAULT_TRACK);
-
+	int compressionType = afGetCompression(file, AF_DEFAULT_TRACK);
 	if (compressionType == AF_COMPRESSION_NONE)
 	{
 		switch (sampleFormat)
@@ -104,32 +107,23 @@ void printfileinfo (char *filename)
 	}
 	else
 	{
-		char	*compressionName;
-		compressionName = afQueryPointer(AF_QUERYTYPE_COMPRESSION,
-			AF_QUERY_NAME, compressionType,
-			0, 0);
+		const char *compressionName =
+			(const char *) afQueryPointer(AF_QUERYTYPE_COMPRESSION,
+				AF_QUERY_NAME, compressionType, 0, 0);
 
-		if (compressionName == NULL)
+		if (!compressionName)
 			printf("unknown compression");
 		else
 			printf("%s compression", compressionName);
 	}
 	printf("\n");
 
-#if SIZEOF_OFF_T > SIZEOF_LONG
-	printf("Audio Data     %lld bytes begins at offset %lld (%llx hex)\n",
-#else
-	printf("Audio Data     %ld bytes begins at offset %ld (%lx hex)\n",
-#endif
+	printf("Audio Data     " FMT_off_t "d bytes begins at offset " FMT_off_t "d (" FMT_off_t "x hex)\n",
 		afGetTrackBytes(file, AF_DEFAULT_TRACK),
 		afGetDataOffset(file, AF_DEFAULT_TRACK),
 		afGetDataOffset(file, AF_DEFAULT_TRACK));
 
-#if SIZEOF_OFF_T > SIZEOF_LONG
-	printf("               %d channel%s, %lld frames\n",
-#else
-	printf("               %d channel%s, %ld frames\n",
-#endif
+	printf("               %d channel%s, " FMT_off_t "d frames\n",
 		afGetChannels(file, AF_DEFAULT_TRACK),
 		afGetChannels(file, AF_DEFAULT_TRACK) > 1 ? "s" : "",
 		afGetFrameCount(file, AF_DEFAULT_TRACK));
@@ -140,7 +134,7 @@ void printfileinfo (char *filename)
 		afGetFrameCount(file, AF_DEFAULT_TRACK) /
 		afGetRate(file, AF_DEFAULT_TRACK));
 
-	copyright = copyrightstring(file);
+	char *copyright = copyrightstring(file);
 	if (copyright)
 	{
 		printf("Copyright      %s\n", copyright);
@@ -148,23 +142,22 @@ void printfileinfo (char *filename)
 	}
 
 	afCloseFile(file);
+
+	return true;
 }
 
-char *copyrightstring (AFfilehandle file)
+static char *copyrightstring (AFfilehandle file)
 {
 	char	*copyright = NULL;
 	int		*miscids;
 	int		i, misccount;
 
 	misccount = afGetMiscIDs(file, NULL);
-	miscids = malloc(sizeof (int) * misccount);
+	miscids = (int *) malloc(sizeof (int) * misccount);
 	afGetMiscIDs(file, miscids);
 
 	for (i=0; i<misccount; i++)
 	{
-		char	*data;
-		int		datasize;
-
 		if (afGetMiscType(file, miscids[i]) != AF_MISC_COPY)
 			continue;
 
@@ -172,8 +165,8 @@ char *copyrightstring (AFfilehandle file)
 			If this code executes, the miscellaneous chunk is a
 			copyright chunk.
 		*/
-		datasize = afGetMiscSize(file, miscids[i]);
-		data = malloc(datasize);
+		int datasize = afGetMiscSize(file, miscids[i]);
+		char *data = (char *) malloc(datasize);
 		afReadMisc(file, miscids[i], data, datasize);
 		copyright = data;
 		break;
@@ -182,4 +175,48 @@ char *copyrightstring (AFfilehandle file)
 	free(miscids);
 
 	return copyright;
+}
+
+/*
+    0.73s 44100.00 aiff  1ch 16b -- flute.aif
+*/
+bool printshortinfo (const char *filename)
+{
+	AFfilehandle file = afOpenFile(filename, "r", NULL);;
+	if (!file)
+		return false;
+
+	int fileFormat = afGetFileFormat(file, NULL);
+	double sampleRate = afGetRate(file, AF_DEFAULT_TRACK);
+	double duration = afGetFrameCount(file, AF_DEFAULT_TRACK) / sampleRate;
+	const char *labelString =
+		(const char *) afQueryPointer(AF_QUERYTYPE_FILEFMT, AF_QUERY_LABEL,
+			fileFormat, 0, 0);
+	int channels = afGetChannels(file, AF_DEFAULT_TRACK);
+	int sampleFormat, sampleWidth;
+	afGetSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
+
+	int compressionType = afGetCompression(file, AF_DEFAULT_TRACK);
+	const char *compressionName = "--";
+	if (compressionType != AF_COMPRESSION_NONE)
+	{
+		compressionName =
+			(const char *) afQueryPointer(AF_QUERYTYPE_COMPRESSION,
+				AF_QUERY_NAME, compressionType, 0, 0);
+		if (!compressionName)
+			compressionName = "unk";
+	}
+
+	printf("%8.2fs %7.2f %4s %2dch %2db %s %s\n",
+		duration,
+		sampleRate,
+		labelString,
+		channels,
+		sampleWidth,
+		compressionName,
+		filename);
+
+	afCloseFile(file);
+
+	return true;
 }

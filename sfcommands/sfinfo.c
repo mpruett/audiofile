@@ -1,7 +1,7 @@
 /*
 	Audio File Library
 
-	Copyright 1998, Michael Pruett <michael@68k.org>
+	Copyright 1998, 2011, Michael Pruett <michael@68k.org>
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License as
@@ -25,35 +25,95 @@
 	This program displays information about audio files.
 */
 
+#include "config.h"
+
 #ifdef __USE_SGI_HEADERS__
 #include <dmedia/audiofile.h>
 #else
 #include <audiofile.h>
 #endif
 
+#include <getopt.h>
+#include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-/*
-File Name      satan.aiff
-File Format    Audio Interchange File Format (aiff)
-Data Format    16-bit integer (2's complement, big endian)
-Audio Data     512 KBytes begins at offset 124 (7C hex)
-               2 channels, 131072 frames
-Sampling Rate  44.1 KHz
-Duration       2.97 seconds
-*/
+#include "printinfo.h"
 
-void printfileinfo (char *filename);
+bool reportError = false;
 
-int main (int argc, char **argv)
+void errorHandler(long error, const char *message)
 {
-	int				i = 1;
+	if (reportError)
+		fprintf(stderr, "sfinfo: %s [error %ld]\n", message, error);
+}
 
+void printusage()
+{
+	printf("usage: sfinfo [options...] soundfiles...\n");
+	printf("options:\n");
+	printf("  -s, --short        Print information in short format\n");
+	printf("  -r, --reporterror  Report errors when reading sound files\n");
+	printf("  -h, --help         Print this help message\n");
+	printf("  -v, --version      Print version\n");
+}
+
+void printversion()
+{
+	printf("sfinfo: Audio File Library version %s\n", VERSION);
+}
+
+int main(int argc, char **argv)
+{
+	bool brief = false;
+
+	afSetErrorHandler(errorHandler);
+
+	if (argc == 1)
+	{
+		printusage();
+		return 0;
+	}
+
+	static struct option long_options[] =
+	{
+		{"short", 0, 0, 's'},
+		{"reporterror", 0, 0, 'r'},
+		{"help", 0, 0, 'h'},
+		{"version", 0, 0, 'v'},
+		{0, 0, 0, 0}
+	};
+
+	int result;
+	int option_index = 1;
+	while ((result = getopt_long(argc, argv, "srhv", long_options,
+		&option_index)) != -1)
+	{
+		switch (result)
+		{
+			case 's':
+				brief = true;
+				break;
+			case 'r':
+				reportError = true;
+				break;
+			case 'h':
+				printusage();
+				exit(EXIT_SUCCESS);
+			case 'v':
+				printversion();
+				exit(EXIT_SUCCESS);
+		}
+	}
+
+	int i = optind;
 	while (i < argc)
 	{
-		printfileinfo(argv[i]);
+		bool processed = brief ? printshortinfo(argv[i]) :
+			printfileinfo(argv[i]);
 		i++;
-		if (i < argc)
+		if (!brief && processed && i < argc)
 			putchar('\n');
 	}
 

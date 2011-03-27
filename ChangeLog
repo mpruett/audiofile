@@ -1,5 +1,12 @@
 2011-03-27  Michael Pruett <michael@68k.org>
 
+	* sfcommands/sfconvert.c, sfcommands/sfinfo.c,
+	sfcommands/printinfo.[ch]: Add --short and --reporterror options
+	to sfinfo. Add --help and --version options to sfconvert and
+	sfinfo.
+
+2011-03-27  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/NeXT.cpp, test/Makefile.am, test/next.cpp: Fix handling
 	of NeXT sound files with unspecified or inconsistent length.
 
