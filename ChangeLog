@@ -1,5 +1,10 @@
 2011-03-27  Michael Pruett <michael@68k.org>
 
+	* sfcommands/sfconvert.c: Update help message for sfconvert to
+	include NIST SPHERE format.
+
+2011-03-27  Michael Pruett <michael@68k.org>
+
 	* sfcommands/sfconvert.c, sfcommands/sfinfo.c,
 	sfcommands/printinfo.[ch]: Add --short and --reporterror options
 	to sfinfo. Add --help and --version options to sfconvert and

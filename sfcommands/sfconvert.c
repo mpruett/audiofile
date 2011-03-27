@@ -250,6 +250,7 @@ void printusage (void)
 	printf("    next    NeXT/Sun Format\n");
 	printf("    wave    MS RIFF WAVE Format\n");
 	printf("    bics    Berkeley/IRCAM/CARL Sound File Format\n");
+	printf("    nist    NIST SPHERE Format\n");
 	printf("\n");
 }
 
