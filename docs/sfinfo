@@ -1,9 +1,0 @@
-sfinfo [options] file1 file2...
-
-options can be any combination of -reporterror and -short.
-
-sfinfo prints information regarding the file in question.
-
--short prints one-line information.
-
--reporterror prints errors if files are not valid audio files.

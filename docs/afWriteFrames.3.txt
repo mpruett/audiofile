@@ -1,0 +1,51 @@
+afWriteFrames(3)
+================
+
+NAME
+----
+afWriteFrames - write audio frames to an audio file
+
+SYNOPSIS
+--------
+  #include <audiofile.h>
+
+  AFframecount afWriteFrames(AFfilehandle file, int track, const void *data,
+      AFframecount count);
+
+DESCRIPTION
+-----------
+`afWriteFrames` attempts to write up to 'count' frames of audio data
+from the buffer 'data' to the audio file handle 'file'.
+
+PARAMETERS
+----------
+'file' is a valid file handle returned by linkaf:afOpenFile[3].
+
+'track' is always `AF_DEFAULT_TRACK` for all currently supported file formats.
+
+'data' is a buffer of sample frames to be written to the file.
+
+'count' is the number of sample frames to be written.
+
+RETURN VALUE
+------------
+`afWriteFrames` returns the number of sample frames successfully written
+to 'file'.
+
+ERRORS
+------
+`afWriteFrames` can produce these errors:
+
+* AF_BAD_FILEHANDLE
+* AF_BAD_TRACKID
+* AF_BAD_WRITE
+* AF_BAD_LSEEK
+* AF_BAD_TRACKID
+
+SEE ALSO
+--------
+linkaf:afReadFrames[3]
+
+AUTHOR
+------
+Michael Pruett <michael@68k.org>

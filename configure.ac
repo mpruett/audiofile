@@ -123,6 +123,9 @@ AS_IF([test "$enable_valgrind" == "yes"],
 	)]
 )
 
+AC_PATH_PROG(A2X, a2x)
+AC_PATH_PROG(ASCIIDOC, asciidoc)
+
 AC_CONFIG_FILES([
 	audiofile.spec
 	audiofile.pc

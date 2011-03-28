@@ -1,5 +1,9 @@
 2011-03-27  Michael Pruett <michael@68k.org>
 
+	* docs/*: Update documentation and convert to AsciiDoc format.
+
+2011-03-27  Michael Pruett <michael@68k.org>
+
 	* sfcommands/sfconvert.c: Update help message for sfconvert to
 	include NIST SPHERE format.
 
