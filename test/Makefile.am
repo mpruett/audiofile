@@ -83,6 +83,10 @@ error_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 next_SOURCES = next.cpp
 next_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
+seek_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+large_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
 coverage-reset:
 	$(LCOV) --base-directory=@top_srcdir@ --directory @top_srcdir@/libaudiofile --zerocounters
 

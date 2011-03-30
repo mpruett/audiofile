@@ -1,3 +1,8 @@
+2011-03-29  Michael Pruett <michael@68k.org>
+
+	* test/large.cpp, test/seek.cpp, test/Makefile.am: Convert large
+	and seek test cases to use Google Test framework.
+
 2011-03-27  Michael Pruett <michael@68k.org>
 
 	* docs/*: Update documentation and convert to AsciiDoc format.
