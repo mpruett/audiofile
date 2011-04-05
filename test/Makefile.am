@@ -37,7 +37,8 @@ check_PROGRAMS = \
 	floattoint \
 	pcmmapping \
 	miscellaneous \
-	next
+	next \
+	pcmdata
 
 EXTRA_DIST = transparency.sh pipe.sh
 
@@ -52,7 +53,7 @@ TESTS = error writeaiff writeircam writenext writewave writeraw \
 	transparency.sh pipe.sh \
 	query2 sixteen-to-eight twentyfour twentyfour2 floatto24 \
 	testfloat testdouble testmarkers testchannelmatrix seek large \
-	sign inttofloat floattoint pcmmapping miscellaneous next
+	sign inttofloat floattoint pcmmapping miscellaneous next pcmdata
 
 LIBAUDIOFILE = $(top_builddir)/libaudiofile/libaudiofile.la
 
@@ -86,6 +87,8 @@ next_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 seek_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 large_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+pcmdata_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 coverage-reset:
 	$(LCOV) --base-directory=@top_srcdir@ --directory @top_srcdir@/libaudiofile --zerocounters

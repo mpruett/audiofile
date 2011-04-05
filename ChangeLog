@@ -1,3 +1,8 @@
+2011-04-04  Michael Pruett <michael@68k.org>
+
+	* test/pcmdata.cpp, test/Makefile.am: Test reading and writing
+	PCM data formats supported by each file format.
+
 2011-03-29  Michael Pruett <michael@68k.org>
 
 	* test/large.cpp, test/seek.cpp, test/Makefile.am: Convert large
