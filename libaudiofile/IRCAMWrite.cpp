@@ -91,7 +91,7 @@ status IRCAMFile::writeInit(AFfilesetup setup)
 
 	af_fseek(fh, 0, SEEK_SET);
 	af_write(magic, 4, fh);
-	writeF32(&rate);
+	writeFloat(&rate);
 	writeU32(&channels);
 	writeU32(&packMode);
 

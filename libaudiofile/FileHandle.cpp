@@ -28,6 +28,7 @@
 
 #include "AIFF.h"
 #include "AVR.h"
+#include "CAF.h"
 #include "IFF.h"
 #include "IRCAM.h"
 #include "NIST.h"
@@ -60,6 +61,8 @@ _AFfilehandle *_AFfilehandle::create(int fileFormat)
 			return new IFFFile();
 		case AF_FILE_NIST_SPHERE:
 			return new NISTFile();
+		case AF_FILE_CAF:
+			return new CAFFile();
 		default:
 			return NULL;
 	}
@@ -198,7 +201,22 @@ bool _AFfilehandle::readS32(int32_t *v)
 	return readSwap(fh, v, m_formatByteOrder);
 }
 
-bool _AFfilehandle::readF32(float *v)
+bool _AFfilehandle::readU64(uint64_t *v)
+{
+	return readSwap(fh, v, m_formatByteOrder);
+}
+
+bool _AFfilehandle::readS64(int64_t *v)
+{
+	return readSwap(fh, v, m_formatByteOrder);
+}
+
+bool _AFfilehandle::readFloat(float *v)
+{
+	return readSwap(fh, v, m_formatByteOrder);
+}
+
+bool _AFfilehandle::readDouble(double *v)
 {
 	return readSwap(fh, v, m_formatByteOrder);
 }
@@ -226,7 +244,22 @@ bool _AFfilehandle::writeS32(const int32_t *v)
 	return writeSwap(fh, v, m_formatByteOrder);
 }
 
-bool _AFfilehandle::writeF32(const float *v)
+bool _AFfilehandle::writeU64(const uint64_t *v)
+{
+	return writeSwap(fh, v, m_formatByteOrder);
+}
+
+bool _AFfilehandle::writeS64(const int64_t *v)
+{
+	return writeSwap(fh, v, m_formatByteOrder);
+}
+
+bool _AFfilehandle::writeFloat(const float *v)
+{
+	return writeSwap(fh, v, m_formatByteOrder);
+}
+
+bool _AFfilehandle::writeDouble(const double *v)
 {
 	return writeSwap(fh, v, m_formatByteOrder);
 }

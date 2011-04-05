@@ -30,14 +30,15 @@
 #include "afinternal.h"
 #include "units.h"
 
-#include "Raw.h"
 #include "AIFF.h"
-#include "NeXT.h"
-#include "WAVE.h"
-#include "IRCAM.h"
 #include "AVR.h"
+#include "CAF.h"
 #include "IFF.h"
+#include "IRCAM.h"
 #include "NIST.h"
+#include "NeXT.h"
+#include "Raw.h"
+#include "WAVE.h"
 
 #include "compression.h"
 
@@ -208,6 +209,21 @@ const _Unit _af_units[_AF_NUM_UNITS] =
 		AF_FILE_SOUNDFONT2,
 		"SoundFont 2", "SoundFont 2 File Format", "sf2",
 		false
+	},
+	{
+		AF_FILE_CAF,
+		"CAF", "Core Audio Format", "caf",
+		true,
+		CAFFile::completeSetup,
+		CAFFile::recognize,
+		AF_SAMPFMT_TWOSCOMP, 16,
+		0,		// number of compression types
+		NULL,	// compression types
+		0,		// maximum marker count
+		0,		// maximum instrument count
+		0,		// maximum number of loops per instrument
+		0,		// number of instrument parameters
+		NULL	// instrument parameters
 	}
 };
 

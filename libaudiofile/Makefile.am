@@ -20,13 +20,14 @@ libaudiofile_la_SOURCES = \
 	AVR.cpp AVRWrite.cpp AVR.h \
 	IFF.cpp IFFWrite.cpp IFF.h \
 	NIST.cpp NISTWrite.cpp NIST.h \
+	CAF.cpp CAF.h \
 	g711.c g711.h \
 	afinternal.h aupvinternal.h aupvlist.h byteorder.h \
 	compression.h error.h extended.h \
 	pcm.h units.h \
 	print.h util.h debug.h \
 	File.cpp File.h Shared.h \
-	AudioFormat.cpp AudioFormat.h FileHandle.cpp
+	AudioFormat.cpp AudioFormat.h FileHandle.cpp Tag.h
 
 libaudiofile_la_LIBADD = modules/libmodules.la $(COVERAGE_LIBS)
 

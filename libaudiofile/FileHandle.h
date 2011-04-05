@@ -82,7 +82,10 @@ protected:
 	bool readS16(int16_t *);
 	bool readU32(uint32_t *);
 	bool readS32(int32_t *);
-	bool readF32(float *);
+	bool readU64(uint64_t *);
+	bool readS64(int64_t *);
+	bool readFloat(float *);
+	bool readDouble(double *);
 
 	bool writeU8(const uint8_t *);
 	bool writeS8(const int8_t *);
@@ -90,7 +93,10 @@ protected:
 	bool writeS16(const int16_t *);
 	bool writeU32(const uint32_t *);
 	bool writeS32(const int32_t *);
-	bool writeF32(const float *);
+	bool writeU64(const uint64_t *);
+	bool writeS64(const int64_t *);
+	bool writeFloat(const float *);
+	bool writeDouble(const double *);
 };
 
 #endif

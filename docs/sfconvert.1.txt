@@ -30,6 +30,7 @@ The following keywords specify the format of the output sound file:
     `wave`::: MS RIFF WAVE
     `bicsf`::: Berkeley/IRCAM/CARL Sound File Format
     `nist`::: NIST SPHERE Format
+    `caf`::: Core Audio Format
 `integer` 'n' 's'::
   Convert to integer audio data. 'n' indicates the output sample width
   in bits. 's' specifies the sample format and may be either `2scomp`

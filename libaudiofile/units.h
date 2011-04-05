@@ -80,7 +80,7 @@ struct _CompressionUnit
 		bool seekok, bool headerless, AFframecount *chunkframes);
 };
 
-#define _AF_NUM_UNITS 15
+#define _AF_NUM_UNITS 16
 #define _AF_NUM_COMPRESSION 5
 
 extern const _Unit _af_units[_AF_NUM_UNITS];

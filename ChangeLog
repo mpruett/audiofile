@@ -1,5 +1,9 @@
 2011-04-04  Michael Pruett <michael@68k.org>
 
+	* Add support for Core Audio Format.
+
+2011-04-04  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/IRCAM.cpp, libaudiofile/IRCAM.h,
 	libaudiofile/IRCAMWrite.cpp: Handle byte-swapped IRCAM sound files.
 

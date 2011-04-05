@@ -223,7 +223,7 @@ status IRCAMFile::readInit(AFfilesetup setup)
 		AF_BYTEORDER_BIGENDIAN);
 
 	float rate;
-	readF32(&rate);
+	readFloat(&rate);
 	uint32_t channels;
 	readU32(&channels);
 	uint32_t packMode;

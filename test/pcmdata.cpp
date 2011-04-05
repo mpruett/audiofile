@@ -169,6 +169,13 @@ TEST(AVR, Int16) { testInt16(AF_FILE_AVR); }
 
 TEST(NIST, Int16) { testInt16(AF_FILE_NIST_SPHERE); }
 
+TEST(CAF, Int8) { testInt8(AF_FILE_CAF); }
+TEST(CAF, Int16) { testInt16(AF_FILE_CAF); }
+TEST(CAF, Int24) { testInt24(AF_FILE_CAF); }
+TEST(CAF, Int32) { testInt32(AF_FILE_CAF); }
+TEST(CAF, Float) { testFloat32(AF_FILE_CAF); }
+TEST(CAF, Double) { testFloat64(AF_FILE_CAF); }
+
 int main (int argc, char **argv)
 {
 	::testing::InitGoogleTest(&argc, argv);

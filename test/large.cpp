@@ -136,6 +136,11 @@ TEST(Large, AVR)
 	testLargeFile(AF_FILE_AVR);
 }
 
+TEST(Large, CAF)
+{
+	testLargeFile(AF_FILE_CAF);
+}
+
 int main (int argc, char **argv)
 {
 	::testing::InitGoogleTest(&argc, argv);
