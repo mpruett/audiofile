@@ -49,10 +49,13 @@ enum
 
 #define SIZEOF_BSD_HEADER 1024
 
-extern const uint8_t _af_ircam_vax_magic[];
-extern const uint8_t _af_ircam_sun_magic[];
-extern const uint8_t _af_ircam_mips_magic[];
-extern const uint8_t _af_ircam_next_magic[];
+extern const uint8_t _af_ircam_vax_le_magic[4],
+	_af_ircam_vax_be_magic[4],
+	_af_ircam_sun_be_magic[4],
+	_af_ircam_sun_le_magic[4],
+	_af_ircam_mips_le_magic[4],
+	_af_ircam_mips_be_magic[4],
+	_af_ircam_next_be_magic[4];
 
 class IRCAMFile : public _AFfilehandle
 {

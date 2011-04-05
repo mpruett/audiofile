@@ -40,14 +40,13 @@
 #include "byteorder.h"
 #include "util.h"
 
-/*
-	Here ircam_mips_magic refers to little-endian MIPS, not SGI IRIX,
-	which uses big-endian MIPS.
-*/
-const uint8_t _af_ircam_vax_magic[4] = {0x64, 0xa3, 0x01, 0x00},
-	_af_ircam_sun_magic[4] = {0x64, 0xa3, 0x02, 0x00},
-	_af_ircam_mips_magic[4] = {0x64, 0xa3, 0x03, 0x00},
-	_af_ircam_next_magic[4] = {0x64, 0xa3, 0x04, 0x00};
+const uint8_t _af_ircam_vax_le_magic[4] = {0x64, 0xa3, 0x01, 0x00},
+	_af_ircam_vax_be_magic[4] = {0x00, 0x01, 0xa3, 0x64},
+	_af_ircam_sun_be_magic[4] = {0x64, 0xa3, 0x02, 0x00},
+	_af_ircam_sun_le_magic[4] = {0x00, 0x02, 0xa3, 0x64},
+	_af_ircam_mips_le_magic[4] = {0x64, 0xa3, 0x03, 0x00},
+	_af_ircam_mips_be_magic[4] = {0x00, 0x03, 0xa3, 0x64},
+	_af_ircam_next_be_magic[4] = {0x64, 0xa3, 0x04, 0x00};
 
 _AFfilesetup _af_ircam_default_filesetup =
 {
@@ -74,10 +73,13 @@ bool IRCAMFile::recognize(File *fh)
 		return false;
 
 	/* Check to see if the file's magic number matches. */
-	if (memcmp(buffer, _af_ircam_vax_magic, 4) == 0 ||
-		memcmp(buffer, _af_ircam_sun_magic, 4) == 0 ||
-		memcmp(buffer, _af_ircam_mips_magic, 4) == 0 ||
-		memcmp(buffer, _af_ircam_next_magic, 4) == 0)
+	if (!memcmp(buffer, _af_ircam_vax_le_magic, 4) ||
+		!memcmp(buffer, _af_ircam_vax_be_magic, 4) ||
+		!memcmp(buffer, _af_ircam_sun_be_magic, 4) ||
+		!memcmp(buffer, _af_ircam_sun_le_magic, 4) ||
+		!memcmp(buffer, _af_ircam_mips_le_magic, 4) ||
+		!memcmp(buffer, _af_ircam_mips_be_magic, 4) ||
+		!memcmp(buffer, _af_ircam_next_be_magic, 4))
 	{
 		return true;
 	}
@@ -180,11 +182,7 @@ AFfilesetup IRCAMFile::completeSetup(AFfilesetup setup)
 
 status IRCAMFile::readInit(AFfilesetup setup)
 {
-	uint8_t magic[4];
-
 	float maxAmp = 1.0;
-
-	bool isSwapped, isLittleEndian;
 
 	instruments = NULL;
 	instrumentCount = 0 ;
@@ -196,28 +194,30 @@ status IRCAMFile::readInit(AFfilesetup setup)
 
 	af_fseek(fh, 0, SEEK_SET);
 
+	uint8_t magic[4];
 	if (af_read(magic, 4, fh) != 4)
 	{
 		_af_error(AF_BAD_READ, "Could not read BICSF file header");
 		return AF_FAIL;
 	}
 
-	if (memcmp(magic, _af_ircam_vax_magic, 4) != 0 &&
-		memcmp(magic, _af_ircam_sun_magic, 4) != 0 &&
-		memcmp(magic, _af_ircam_mips_magic, 4) != 0 &&
-		memcmp(magic, _af_ircam_next_magic, 4) != 0)
+	if (memcmp(magic, _af_ircam_vax_le_magic, 4) != 0 &&
+		memcmp(magic, _af_ircam_vax_be_magic, 4) != 0 &&
+		memcmp(magic, _af_ircam_sun_be_magic, 4) != 0 &&
+		memcmp(magic, _af_ircam_sun_le_magic, 4) != 0 &&
+		memcmp(magic, _af_ircam_mips_le_magic, 4) != 0 &&
+		memcmp(magic, _af_ircam_mips_be_magic, 4) != 0 &&
+		memcmp(magic, _af_ircam_next_be_magic, 4) != 0)
 	{
 		_af_error(AF_BAD_FILEFMT,
 			"file is not a BICSF file (bad magic number)");
 		return AF_FAIL;
 	}
 
-	/*
-		If the file's magic number is that for VAX or MIPS,
-		the file is little endian.
-	*/
-	isLittleEndian = (memcmp(magic, _af_ircam_vax_magic, 4) == 0 ||
-		memcmp(magic, _af_ircam_mips_magic, 4) == 0);
+	// Check whether the file's magic number indicates little-endian data.
+	bool isLittleEndian = !memcmp(magic, _af_ircam_vax_le_magic, 4) ||
+		!memcmp(magic, _af_ircam_sun_le_magic, 4) ||
+		!memcmp(magic, _af_ircam_mips_le_magic, 4);
 
 	setFormatByteOrder(isLittleEndian ? AF_BYTEORDER_LITTLEENDIAN :
 		AF_BYTEORDER_BIGENDIAN);

@@ -68,9 +68,9 @@ status IRCAMFile::writeInit(AFfilesetup setup)
 	/* Choose the magic number appropriate for the byte order. */
 	const uint8_t *magic;
 #ifdef WORDS_BIGENDIAN
-	magic = _af_ircam_sun_magic;
+	magic = _af_ircam_sun_be_magic;
 #else
-	magic = _af_ircam_vax_magic;
+	magic = _af_ircam_vax_le_magic;
 #endif
 
 	channels = track->f.channelCount;
