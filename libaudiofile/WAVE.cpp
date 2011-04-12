@@ -22,7 +22,8 @@
 /*
 	WAVE.cpp
 
-	This file contains code for parsing RIFF WAVE format sound files.
+	This file contains code for reading and writing RIFF WAVE format
+	sound files.
 */
 
 #include "config.h"
@@ -42,6 +43,51 @@
 #include "byteorder.h"
 #include "util.h"
 
+/* These constants are from RFC 2361. */
+enum
+{
+	WAVE_FORMAT_UNKNOWN = 0x0000,	/* Microsoft Unknown Wave Format */
+	WAVE_FORMAT_PCM = 0x0001,	/* Microsoft PCM Format */
+	WAVE_FORMAT_ADPCM = 0x0002,	/* Microsoft ADPCM Format */
+	WAVE_FORMAT_IEEE_FLOAT = 0x0003,	/* IEEE Float */
+	WAVE_FORMAT_VSELP = 0x0004,	/* Compaq Computer's VSELP */
+	WAVE_FORMAT_IBM_CVSD = 0x0005,	/* IBM CVSD */
+	WAVE_FORMAT_ALAW = 0x0006,	/* Microsoft ALAW */
+	WAVE_FORMAT_MULAW = 0x0007,	/* Microsoft MULAW */
+	WAVE_FORMAT_OKI_ADPCM = 0x0010,	/* OKI ADPCM */
+	WAVE_FORMAT_DVI_ADPCM = 0x0011,	/* Intel's DVI ADPCM */
+	WAVE_FORMAT_MEDIASPACE_ADPCM = 0x0012,	/* Videologic's MediaSpace ADPCM */
+	WAVE_FORMAT_SIERRA_ADPCM = 0x0013,	/* Sierra ADPCM */
+	WAVE_FORMAT_G723_ADPCM = 0x0014,	/* G.723 ADPCM */
+	WAVE_FORMAT_DIGISTD = 0x0015,	/* DSP Solutions' DIGISTD */
+	WAVE_FORMAT_DIGIFIX = 0x0016,	/* DSP Solutions' DIGIFIX */
+	WAVE_FORMAT_DIALOGIC_OKI_ADPCM = 0x0017,	/* Dialogic OKI ADPCM */
+	WAVE_FORMAT_MEDIAVISION_ADPCM = 0x0018,	/* MediaVision ADPCM */
+	WAVE_FORMAT_CU_CODEC = 0x0019,	/* HP CU */
+	WAVE_FORMAT_YAMAHA_ADPCM = 0x0020,	/* Yamaha ADPCM */
+	WAVE_FORMAT_SONARC = 0x0021,	/* Speech Compression's Sonarc */
+	WAVE_FORMAT_DSP_TRUESPEECH = 0x0022,	/* DSP Group's True Speech */
+	WAVE_FORMAT_ECHOSC1 = 0x0023,	/* Echo Speech's EchoSC1 */
+	WAVE_FORMAT_AUDIOFILE_AF36 = 0x0024,	/* Audiofile AF36 */
+	WAVE_FORMAT_APTX = 0x0025,	/* APTX */
+	WAVE_FORMAT_DOLBY_AC2 = 0x0030,	/* Dolby AC2 */
+	WAVE_FORMAT_GSM610 = 0x0031,	/* GSM610 */
+	WAVE_FORMAT_MSNAUDIO = 0x0032,	/* MSNAudio */
+	WAVE_FORMAT_ANTEX_ADPCME = 0x0033,	/* Antex ADPCME */
+
+	WAVE_FORMAT_MPEG = 0x0050,		/* MPEG */
+	WAVE_FORMAT_MPEGLAYER3 = 0x0055,	/* MPEG layer 3 */
+	WAVE_FORMAT_LUCENT_G723 = 0x0059,	/* Lucent G.723 */
+	WAVE_FORMAT_G726_ADPCM = 0x0064,	/* G.726 ADPCM */
+	WAVE_FORMAT_G722_ADPCM = 0x0065,	/* G.722 ADPCM */
+
+	IBM_FORMAT_MULAW = 0x0101,
+	IBM_FORMAT_ALAW = 0x0102,
+	IBM_FORMAT_ADPCM = 0x0103,
+
+	WAVE_FORMAT_CREATIVE_ADPCM = 0x0200
+};
+
 const int _af_wave_compression_types[_AF_WAVE_NUM_COMPTYPES] =
 {
 	AF_COMPRESSION_G711_ULAW,
@@ -59,7 +105,7 @@ const InstParamInfo _af_wave_inst_params[_AF_WAVE_NUM_INSTPARAMS] =
 	{ AF_INST_NUMDBS_GAIN, AU_PVTYPE_LONG, "Gain in dB", {0} }
 };
 
-_AFfilesetup _af_wave_default_filesetup =
+static _AFfilesetup wave_default_filesetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_WAVE,		/* fileFormat */
@@ -904,7 +950,7 @@ AFfilesetup WAVEFile::completeSetup(AFfilesetup setup)
 	/*
 		Allocate an AFfilesetup and make all the unset fields correct.
 	*/
-	AFfilesetup	newsetup = _af_filesetup_copy(setup, &_af_wave_default_filesetup, false);
+	AFfilesetup	newsetup = _af_filesetup_copy(setup, &wave_default_filesetup, false);
 
 	/* Make sure we do not copy loops if they are not specified in setup. */
 	if (setup->instrumentSet && setup->instrumentCount > 0 &&
@@ -956,4 +1002,443 @@ bool WAVEFile::isInstrumentParameterValid(AUpvlist list, int i)
 	}
 
 	return true;
+}
+
+status WAVEFile::writeFormat()
+{
+	uint16_t	formatTag, channelCount;
+	uint32_t	sampleRate, averageBytesPerSecond;
+	uint16_t	blockAlign;
+	uint32_t	chunkSize;
+	uint16_t	bitsPerSample;
+
+	Track *track = getTrack();
+
+	af_write("fmt ", 4, fh);
+
+	switch (track->f.compressionType)
+	{
+		case AF_COMPRESSION_NONE:
+			chunkSize = 16;
+			if (track->f.sampleFormat == AF_SAMPFMT_FLOAT ||
+				track->f.sampleFormat == AF_SAMPFMT_DOUBLE)
+			{
+				formatTag = WAVE_FORMAT_IEEE_FLOAT;
+			}
+			else if (track->f.sampleFormat == AF_SAMPFMT_TWOSCOMP ||
+				track->f.sampleFormat == AF_SAMPFMT_UNSIGNED)
+			{
+				formatTag = WAVE_FORMAT_PCM;
+			}
+			else
+			{
+				_af_error(AF_BAD_COMPTYPE, "bad sample format");
+				return AF_FAIL;
+			}
+
+			blockAlign = _af_format_frame_size(&track->f, false);
+			bitsPerSample = 8 * _af_format_sample_size(&track->f, false);
+			break;
+
+		/*
+			G.711 compression uses eight bits per sample.
+		*/
+		case AF_COMPRESSION_G711_ULAW:
+			chunkSize = 18;
+			formatTag = IBM_FORMAT_MULAW;
+			blockAlign = track->f.channelCount;
+			bitsPerSample = 8;
+			break;
+
+		case AF_COMPRESSION_G711_ALAW:
+			chunkSize = 18;
+			formatTag = IBM_FORMAT_ALAW;
+			blockAlign = track->f.channelCount;
+			bitsPerSample = 8;
+			break;
+
+		default:
+			_af_error(AF_BAD_COMPTYPE, "bad compression type");
+			return AF_FAIL;
+	}
+
+	writeU32(&chunkSize);
+	writeU16(&formatTag);
+
+	channelCount = track->f.channelCount;
+	writeU16(&channelCount);
+
+	sampleRate = track->f.sampleRate;
+	writeU32(&sampleRate);
+
+	averageBytesPerSecond =
+		track->f.sampleRate * _af_format_frame_size(&track->f, false);
+	writeU32(&averageBytesPerSecond);
+
+	blockAlign = _af_format_frame_size(&track->f, false);
+	writeU16(&blockAlign);
+
+	writeU16(&bitsPerSample);
+
+	if (track->f.compressionType == AF_COMPRESSION_G711_ULAW ||
+		track->f.compressionType == AF_COMPRESSION_G711_ALAW)
+	{
+		uint16_t zero = 0;
+		writeU16(&zero);
+	}
+
+	return AF_SUCCEED;
+}
+
+status WAVEFile::writeFrameCount()
+{
+	uint32_t factSize = 4;
+	uint32_t totalFrameCount;
+
+	Track *track = getTrack();
+
+	/* Omit the fact chunk only for uncompressed integer audio formats. */
+	if (track->f.compressionType == AF_COMPRESSION_NONE &&
+		(track->f.sampleFormat == AF_SAMPFMT_TWOSCOMP ||
+		track->f.sampleFormat == AF_SAMPFMT_UNSIGNED))
+		return AF_SUCCEED;
+
+	/*
+		If the offset for the fact chunk hasn't been set yet,
+		set it to the file's current position.
+	*/
+	if (factOffset == 0)
+		factOffset = af_ftell(fh);
+	else
+		af_fseek(fh, factOffset, SEEK_SET);
+
+	af_write("fact", 4, fh);
+	writeU32(&factSize);
+
+	totalFrameCount = track->totalfframes;
+	writeU32(&totalFrameCount);
+
+	return AF_SUCCEED;
+}
+
+status WAVEFile::writeData()
+{
+	Track *track = getTrack();
+
+	af_write("data", 4, fh);
+	dataSizeOffset = af_ftell(fh);
+
+	uint32_t chunkSize = (int) _af_format_frame_size(&track->f, false) *
+		track->totalfframes;
+
+	writeU32(&chunkSize);
+	track->fpos_first_frame = af_ftell(fh);
+
+	return AF_SUCCEED;
+}
+
+status WAVEFile::update()
+{
+	Track *track = getTrack();
+
+	if (track->fpos_first_frame != 0)
+	{
+		uint32_t dataLength, fileLength;
+
+		/* Update the frame count chunk if present. */
+		writeFrameCount();
+
+		/* Update the length of the data chunk. */
+		af_fseek(fh, dataSizeOffset, SEEK_SET);
+
+		/*
+			We call _af_format_frame_size to calculate the
+			frame size of normal PCM data or compressed data.
+		*/
+		dataLength = (uint32_t) track->totalfframes *
+			(int) _af_format_frame_size(&track->f, false);
+		writeU32(&dataLength);
+
+		/* Update the length of the RIFF chunk. */
+		fileLength = (uint32_t) af_flength(fh);
+		fileLength -= 8;
+
+		af_fseek(fh, 4, SEEK_SET);
+		writeU32(&fileLength);
+	}
+
+	/*
+		Write the actual data that was set after initializing
+		the miscellaneous IDs.	The size of the data will be
+		unchanged.
+	*/
+	writeMiscellaneous();
+
+	/* Write the new positions; the size of the data will be unchanged. */
+	writeCues();
+
+	return AF_SUCCEED;
+}
+
+/* Convert an Audio File Library miscellaneous type to a WAVE type. */
+static status misc_type_to_wave (int misctype, uint32_t *miscid)
+{
+	if (misctype == AF_MISC_AUTH)
+		memcpy(miscid, "IART", 4);
+	else if (misctype == AF_MISC_NAME)
+		memcpy(miscid, "INAM", 4);
+	else if (misctype == AF_MISC_COPY)
+		memcpy(miscid, "ICOP", 4);
+	else if (misctype == AF_MISC_ICMT)
+		memcpy(miscid, "ICMT", 4);
+	else if (misctype == AF_MISC_ICRD)
+		memcpy(miscid, "ICRD", 4);
+	else if (misctype == AF_MISC_ISFT)
+		memcpy(miscid, "ISFT", 4);
+	else
+		return AF_FAIL;
+
+	return AF_SUCCEED;
+}
+
+status WAVEFile::writeMiscellaneous()
+{
+	if (miscellaneousCount != 0)
+	{
+		uint32_t	miscellaneousBytes;
+		uint32_t 	chunkSize;
+
+		/* Start at 12 to account for 'LIST', size, and 'INFO'. */
+		miscellaneousBytes = 12;
+
+		/* Then calculate the size of the whole INFO chunk. */
+		for (int i=0; i<miscellaneousCount; i++)
+		{
+			uint32_t	miscid;
+
+			/* Skip miscellaneous data of an unsupported type. */
+			if (misc_type_to_wave(miscellaneous[i].type,
+				&miscid) == AF_FAIL)
+				continue;
+
+			/* Account for miscellaneous type and size. */
+			miscellaneousBytes += 8;
+			miscellaneousBytes += miscellaneous[i].size;
+
+			/* Add a pad byte if necessary. */
+			if (miscellaneous[i].size % 2 != 0)
+				miscellaneousBytes++;
+
+			assert(miscellaneousBytes % 2 == 0);
+		}
+
+		if (miscellaneousStartOffset == 0)
+			miscellaneousStartOffset = af_ftell(fh);
+		else
+			af_fseek(fh, miscellaneousStartOffset, SEEK_SET);
+
+		totalMiscellaneousSize = miscellaneousBytes;
+
+		/*
+			Write the data.  On the first call to this
+			function (from _af_wave_write_init), the
+			data won't be available, af_fseek is used to
+			reserve space until the data has been provided.
+			On subseuent calls to this function (from
+			_af_wave_update), the data will really be written.
+		*/
+
+		/* Write 'LIST'. */
+		af_write("LIST", 4, fh);
+
+		/* Write the size of the following chunk. */
+		chunkSize = miscellaneousBytes-8;
+		writeU32(&chunkSize);
+
+		/* Write 'INFO'. */
+		af_write("INFO", 4, fh);
+
+		/* Write each miscellaneous chunk. */
+		for (int i=0; i<miscellaneousCount; i++)
+		{
+			uint32_t	miscsize = miscellaneous[i].size;
+			uint32_t 	miscid = 0;
+
+			/* Skip miscellaneous data of an unsupported type. */
+			if (misc_type_to_wave(miscellaneous[i].type,
+				&miscid) == AF_FAIL)
+				continue;
+
+			af_write(&miscid, 4, fh);
+			writeU32(&miscsize);
+			if (miscellaneous[i].buffer != NULL)
+			{
+				uint8_t	zero = 0;
+
+				af_write(miscellaneous[i].buffer, miscellaneous[i].size, fh);
+
+				/* Pad if necessary. */
+				if ((miscellaneous[i].size%2) != 0)
+					writeU8(&zero);
+			}
+			else
+			{
+				int	size;
+				size = miscellaneous[i].size;
+
+				/* Pad if necessary. */
+				if ((size % 2) != 0)
+					size++;
+				af_fseek(fh, size, SEEK_CUR);
+			}
+		}
+	}
+
+	return AF_SUCCEED;
+}
+
+status WAVEFile::writeCues()
+{
+	int *markids, markCount;
+	uint32_t numCues, cueChunkSize, listChunkSize;
+
+	markCount = afGetMarkIDs(this, AF_DEFAULT_TRACK, NULL);
+	if (markCount == 0)
+		return AF_SUCCEED;
+
+	if (markOffset == 0)
+		markOffset = af_ftell(fh);
+	else
+		af_fseek(fh, markOffset, SEEK_SET);
+
+	af_write("cue ", 4, fh);
+
+	/*
+		The cue chunk consists of 4 bytes for the number of cue points
+		followed by 24 bytes for each cue point record.
+	*/
+	cueChunkSize = 4 + markCount * 24;
+	writeU32(&cueChunkSize);
+	numCues = markCount;
+	writeU32(&numCues);
+
+	markids = (int *) _af_calloc(markCount, sizeof (int));
+	assert(markids != NULL);
+	afGetMarkIDs(this, AF_DEFAULT_TRACK, markids);
+
+	/* Write each marker to the file. */
+	for (int i=0; i < markCount; i++)
+	{
+		uint32_t	identifier, position, chunkStart, blockStart;
+		uint32_t	sampleOffset;
+		AFframecount	markposition;
+
+		identifier = markids[i];
+		writeU32(&identifier);
+
+		position = i;
+		writeU32(&position);
+
+		/* For now the RIFF id is always the first data chunk. */
+		af_write("data", 4, fh);
+
+		/*
+			For an uncompressed WAVE file which contains
+			only one data chunk, chunkStart and blockStart
+			are zero.
+		*/
+		chunkStart = 0;
+		af_write(&chunkStart, sizeof (uint32_t), fh);
+
+		blockStart = 0;
+		af_write(&blockStart, sizeof (uint32_t), fh);
+
+		markposition = afGetMarkPosition(this, AF_DEFAULT_TRACK, markids[i]);
+
+		/* Sample offsets are stored in the WAVE file as frames. */
+		sampleOffset = markposition;
+		writeU32(&sampleOffset);
+	}
+
+	/*
+		Now write the cue names which is in a master list chunk
+		with a subchunk for each cue's name.
+	*/
+
+	listChunkSize = 4;
+	for (int i=0; i<markCount; i++)
+	{
+		const char *name;
+
+		name = afGetMarkName(this, AF_DEFAULT_TRACK, markids[i]);
+
+		/*
+			Each label chunk consists of 4 bytes for the
+			"labl" chunk ID, 4 bytes for the chunk data
+			size, 4 bytes for the cue point ID, and then
+			the length of the label as a Pascal-style string.
+
+			In all, this is 12 bytes plus the length of the
+			string, its size byte, and a trailing pad byte
+			if the length of the chunk is otherwise odd.
+		*/
+		listChunkSize += 12 + (strlen(name) + 1) +
+			((strlen(name) + 1) % 2);
+	}
+
+	af_write("LIST", 4, fh);
+	writeU32(&listChunkSize);
+	af_write("adtl", 4, fh);
+
+	for (int i=0; i<markCount; i++)
+	{
+		const char	*name;
+		uint32_t	labelSize, cuePointID;
+
+		name = afGetMarkName(this, AF_DEFAULT_TRACK, markids[i]);
+
+		/* Make labelSize even if it is not already. */
+		labelSize = 4+(strlen(name)+1) + ((strlen(name) + 1) % 2);
+		cuePointID = markids[i];
+
+		af_write("labl", 4, fh);
+		writeU32(&labelSize);
+		writeU32(&cuePointID);
+		af_write(name, strlen(name) + 1, fh);
+		/*
+			If the name plus the size byte comprises an odd
+			length, add another byte to make the string an
+			even length.
+		*/
+		if (((strlen(name) + 1) % 2) != 0)
+		{
+			uint8_t	zero=0;
+			writeU8(&zero);
+		}
+	}
+
+	free(markids);
+
+	return AF_SUCCEED;
+}
+
+status WAVEFile::writeInit(AFfilesetup setup)
+{
+	uint32_t	zero = 0;
+
+	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
+		return AF_FAIL;
+
+	af_fseek(fh, 0, SEEK_SET);
+	af_write("RIFF", 4, fh);
+	af_write(&zero, 4, fh);
+	af_write("WAVE", 4, fh);
+
+	writeMiscellaneous();
+	writeCues();
+	writeFormat();
+	writeFrameCount();
+	writeData();
+
+	return AF_SUCCEED;
 }

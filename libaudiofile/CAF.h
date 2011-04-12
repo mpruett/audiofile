@@ -67,4 +67,4 @@ private:
 	}
 };
 
-#endif // CAF_H
+#endif

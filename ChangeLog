@@ -1,5 +1,9 @@
 2011-04-11  Michael Pruett <michael@68k.org>
 
+	* Reorganize source files.
+
+2011-04-11  Michael Pruett <michael@68k.org>
+
 	* Support more sample formats in IRCAM sound files.
 
 2011-04-04  Michael Pruett <michael@68k.org>

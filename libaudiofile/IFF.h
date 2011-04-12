@@ -29,7 +29,6 @@
 #define IFF_H
 
 #include "FileHandle.h"
-#include <stdint.h>
 
 class IFFFile : public _AFfilehandle
 {

@@ -30,42 +30,6 @@
 #define IRCAM_H
 
 #include "FileHandle.h"
-#include <stdint.h>
-
-enum
-{
-	SF_CHAR = 1,
-	SF_SHORT = 2,
-	SF_24INT = 3,
-	SF_LONG = 0x40004,
-	SF_FLOAT = 4,
-	SF_DOUBLE = 8,
-	SF_ALAW = 0x10001,
-	SF_ULAW = 0x20001
-};
-
-#define SF_MAXCHAN 4
-#define SF_MAXCOMMENT 512
-#define SF_MINCOMMENT 256
-
-enum
-{
-	SF_END,
-	SF_MAXAMP,
-	SF_COMMENT,
-	SF_LINKCODE
-};
-
-#define SIZEOF_BSD_HEADER 1024
-
-extern const uint8_t _af_ircam_vax_le_magic[4],
-	_af_ircam_vax_be_magic[4],
-	_af_ircam_sun_be_magic[4],
-	_af_ircam_sun_le_magic[4],
-	_af_ircam_mips_le_magic[4],
-	_af_ircam_mips_be_magic[4],
-	_af_ircam_next_be_magic[4],
-	_af_ircam_next_le_magic[4];
 
 #define _AF_IRCAM_NUM_COMPTYPES 2
 extern const int _af_ircam_compression_types[_AF_IRCAM_NUM_COMPTYPES];
@@ -81,4 +45,4 @@ public:
 	status update();
 };
 
-#endif /* IRCAM_H */
+#endif

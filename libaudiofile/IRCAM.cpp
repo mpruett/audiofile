@@ -22,8 +22,8 @@
 /*
 	IRCAM.cpp
 
-	This file contains routines for parsing Berkeley/IRCAM/CARL
-	format files.
+	This file contains routines for reading and writing
+	Berkeley/IRCAM/CARL sound files.
 */
 
 #include "config.h"
@@ -41,16 +41,42 @@
 #include "byteorder.h"
 #include "util.h"
 
-const uint8_t _af_ircam_vax_le_magic[4] = {0x64, 0xa3, 0x01, 0x00},
-	_af_ircam_vax_be_magic[4] = {0x00, 0x01, 0xa3, 0x64},
-	_af_ircam_sun_be_magic[4] = {0x64, 0xa3, 0x02, 0x00},
-	_af_ircam_sun_le_magic[4] = {0x00, 0x02, 0xa3, 0x64},
-	_af_ircam_mips_le_magic[4] = {0x64, 0xa3, 0x03, 0x00},
-	_af_ircam_mips_be_magic[4] = {0x00, 0x03, 0xa3, 0x64},
-	_af_ircam_next_be_magic[4] = {0x64, 0xa3, 0x04, 0x00},
-	_af_ircam_next_le_magic[4] = {0x00, 0x04, 0xa3, 0x64};
+enum
+{
+	SF_CHAR = 1,
+	SF_SHORT = 2,
+	SF_24INT = 3,
+	SF_LONG = 0x40004,
+	SF_FLOAT = 4,
+	SF_DOUBLE = 8,
+	SF_ALAW = 0x10001,
+	SF_ULAW = 0x20001
+};
 
-_AFfilesetup _af_ircam_default_filesetup =
+#define SF_MAXCHAN 4
+#define SF_MAXCOMMENT 512
+#define SF_MINCOMMENT 256
+
+enum
+{
+	SF_END,
+	SF_MAXAMP,
+	SF_COMMENT,
+	SF_LINKCODE
+};
+
+#define SIZEOF_BSD_HEADER 1024
+
+static const uint8_t ircam_vax_le_magic[4] = {0x64, 0xa3, 0x01, 0x00},
+	ircam_vax_be_magic[4] = {0x00, 0x01, 0xa3, 0x64},
+	ircam_sun_be_magic[4] = {0x64, 0xa3, 0x02, 0x00},
+	ircam_sun_le_magic[4] = {0x00, 0x02, 0xa3, 0x64},
+	ircam_mips_le_magic[4] = {0x64, 0xa3, 0x03, 0x00},
+	ircam_mips_be_magic[4] = {0x00, 0x03, 0xa3, 0x64},
+	ircam_next_be_magic[4] = {0x64, 0xa3, 0x04, 0x00},
+	ircam_next_le_magic[4] = {0x00, 0x04, 0xa3, 0x64};
+
+static _AFfilesetup ircam_default_filesetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_IRCAM,		/* fileFormat */
@@ -81,14 +107,14 @@ bool IRCAMFile::recognize(File *fh)
 		return false;
 
 	/* Check to see if the file's magic number matches. */
-	if (!memcmp(buffer, _af_ircam_vax_le_magic, 4) ||
-		!memcmp(buffer, _af_ircam_vax_be_magic, 4) ||
-		!memcmp(buffer, _af_ircam_sun_be_magic, 4) ||
-		!memcmp(buffer, _af_ircam_sun_le_magic, 4) ||
-		!memcmp(buffer, _af_ircam_mips_le_magic, 4) ||
-		!memcmp(buffer, _af_ircam_mips_be_magic, 4) ||
-		!memcmp(buffer, _af_ircam_next_be_magic, 4) ||
-		!memcmp(buffer, _af_ircam_next_le_magic, 4))
+	if (!memcmp(buffer, ircam_vax_le_magic, 4) ||
+		!memcmp(buffer, ircam_vax_be_magic, 4) ||
+		!memcmp(buffer, ircam_sun_be_magic, 4) ||
+		!memcmp(buffer, ircam_sun_le_magic, 4) ||
+		!memcmp(buffer, ircam_mips_le_magic, 4) ||
+		!memcmp(buffer, ircam_mips_be_magic, 4) ||
+		!memcmp(buffer, ircam_next_be_magic, 4) ||
+		!memcmp(buffer, ircam_next_le_magic, 4))
 	{
 		return true;
 	}
@@ -181,7 +207,7 @@ AFfilesetup IRCAMFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	return _af_filesetup_copy(setup, &_af_ircam_default_filesetup, true);
+	return _af_filesetup_copy(setup, &ircam_default_filesetup, true);
 }
 
 status IRCAMFile::readInit(AFfilesetup setup)
@@ -205,14 +231,14 @@ status IRCAMFile::readInit(AFfilesetup setup)
 		return AF_FAIL;
 	}
 
-	if (memcmp(magic, _af_ircam_vax_le_magic, 4) != 0 &&
-		memcmp(magic, _af_ircam_vax_be_magic, 4) != 0 &&
-		memcmp(magic, _af_ircam_sun_be_magic, 4) != 0 &&
-		memcmp(magic, _af_ircam_sun_le_magic, 4) != 0 &&
-		memcmp(magic, _af_ircam_mips_le_magic, 4) != 0 &&
-		memcmp(magic, _af_ircam_mips_be_magic, 4) != 0 &&
-		memcmp(magic, _af_ircam_next_be_magic, 4) != 0 &&
-		memcmp(magic, _af_ircam_next_le_magic, 4) != 0)
+	if (memcmp(magic, ircam_vax_le_magic, 4) != 0 &&
+		memcmp(magic, ircam_vax_be_magic, 4) != 0 &&
+		memcmp(magic, ircam_sun_be_magic, 4) != 0 &&
+		memcmp(magic, ircam_sun_le_magic, 4) != 0 &&
+		memcmp(magic, ircam_mips_le_magic, 4) != 0 &&
+		memcmp(magic, ircam_mips_be_magic, 4) != 0 &&
+		memcmp(magic, ircam_next_be_magic, 4) != 0 &&
+		memcmp(magic, ircam_next_le_magic, 4) != 0)
 	{
 		_af_error(AF_BAD_FILEFMT,
 			"file is not a BICSF file (bad magic number)");
@@ -220,10 +246,10 @@ status IRCAMFile::readInit(AFfilesetup setup)
 	}
 
 	// Check whether the file's magic number indicates little-endian data.
-	bool isLittleEndian = !memcmp(magic, _af_ircam_vax_le_magic, 4) ||
-		!memcmp(magic, _af_ircam_sun_le_magic, 4) ||
-		!memcmp(magic, _af_ircam_mips_le_magic, 4) ||
-		!memcmp(magic, _af_ircam_next_le_magic, 4);
+	bool isLittleEndian = !memcmp(magic, ircam_vax_le_magic, 4) ||
+		!memcmp(magic, ircam_sun_le_magic, 4) ||
+		!memcmp(magic, ircam_mips_le_magic, 4) ||
+		!memcmp(magic, ircam_next_le_magic, 4);
 
 	setFormatByteOrder(isLittleEndian ? AF_BYTEORDER_LITTLEENDIAN :
 		AF_BYTEORDER_BIGENDIAN);
@@ -326,5 +352,99 @@ status IRCAMFile::readInit(AFfilesetup setup)
 	track->nextfframe = 0;
 	track->fpos_next_frame = track->fpos_first_frame;
 
+	return AF_SUCCEED;
+}
+
+/* We write IRCAM files using the native byte order. */
+status IRCAMFile::writeInit(AFfilesetup setup)
+{
+	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
+		return AF_FAIL;
+
+	uint32_t dataOffset = SIZEOF_BSD_HEADER;
+
+	Track *track = &tracks[0];
+	track->totalfframes = 0;
+	track->fpos_first_frame = dataOffset;
+	track->nextfframe = 0;
+	track->fpos_next_frame = track->fpos_first_frame;
+
+	/* Choose the magic number appropriate for the byte order. */
+	const uint8_t *magic;
+#ifdef WORDS_BIGENDIAN
+	magic = ircam_sun_be_magic;
+#else
+	magic = ircam_vax_le_magic;
+#endif
+
+	uint32_t channels = track->f.channelCount;
+	float rate = track->f.sampleRate;
+
+	if (track->f.compressionType != AF_COMPRESSION_NONE &&
+		track->f.compressionType != AF_COMPRESSION_G711_ULAW &&
+		track->f.compressionType != AF_COMPRESSION_G711_ALAW)
+	{
+		_af_error(AF_BAD_COMPTYPE,
+			"unsupported compression type %d in IRCAM sound file",
+			track->f.compressionType);
+		return AF_FAIL;
+	}
+
+	uint32_t packMode = 0;
+	if (track->f.compressionType == AF_COMPRESSION_G711_ULAW)
+		packMode = SF_ULAW;
+	else if (track->f.compressionType == AF_COMPRESSION_G711_ALAW)
+		packMode = SF_ALAW;
+	else if (track->f.isSigned())
+	{
+		switch (track->f.bytesPerFrame(false))
+		{
+			case 1: packMode = SF_CHAR; break;
+			case 2: packMode = SF_SHORT; break;
+			case 3: packMode = SF_24INT; break;
+			case 4: packMode = SF_LONG; break;
+			default:
+				_af_error(AF_BAD_SAMPFMT,
+					"unsupported sample width %d for two's complement BICSF file",
+					track->f.sampleWidth);
+				return AF_FAIL;
+		}
+	}
+	else if (track->f.isFloat())
+	{
+		if (track->f.sampleWidth == 32)
+			packMode = SF_FLOAT;
+		else if (track->f.sampleWidth == 64)
+			packMode = SF_DOUBLE;
+		else
+		{
+			_af_error(AF_BAD_SAMPFMT,
+				"unsupported sample width %d for BICSF file",
+				track->f.sampleWidth);
+			return AF_FAIL;
+		}
+	}
+	else if (track->f.isUnsigned())
+	{
+		_af_error(AF_BAD_SAMPFMT, "BICSF format does not support unsigned integer audio data");
+		return AF_FAIL;
+	}
+
+	fh->seek(0, File::SeekFromBeginning);
+	fh->write(magic, 4);
+	writeFloat(&rate);
+	writeU32(&channels);
+	writeU32(&packMode);
+
+	/* Zero the entire description block. */
+	uint8_t zeros[SIZEOF_BSD_HEADER];
+	memset(zeros, 0, SIZEOF_BSD_HEADER);
+	fh->write(zeros, SIZEOF_BSD_HEADER - 4*4);
+
+	return AF_SUCCEED;
+}
+
+status IRCAMFile::update()
+{
 	return AF_SUCCEED;
 }

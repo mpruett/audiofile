@@ -13,13 +13,13 @@ libaudiofile_la_SOURCES = \
 	aes.cpp Instrument.cpp Instrument.h Loop.cpp Marker.cpp Marker.h \
 	Miscellaneous.cpp Track.cpp Track.h query.cpp \
 	Raw.cpp Raw.h \
-	AIFF.cpp AIFFWrite.cpp AIFF.h extended.c \
-	NeXT.cpp NeXTWrite.cpp NeXT.h \
-	WAVE.cpp WAVEWrite.cpp WAVE.h \
-	IRCAM.cpp IRCAMWrite.cpp IRCAM.h \
-	AVR.cpp AVRWrite.cpp AVR.h \
-	IFF.cpp IFFWrite.cpp IFF.h \
-	NIST.cpp NISTWrite.cpp NIST.h \
+	AIFF.cpp AIFF.h extended.c \
+	NeXT.cpp NeXT.h \
+	WAVE.cpp WAVE.h \
+	IRCAM.cpp IRCAM.h \
+	AVR.cpp AVR.h \
+	IFF.cpp IFF.h \
+	NIST.cpp NIST.h \
 	CAF.cpp CAF.h \
 	g711.c g711.h \
 	afinternal.h aupvinternal.h aupvlist.h byteorder.h \

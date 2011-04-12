@@ -41,4 +41,4 @@ public:
 	status update();
 };
 
-#endif /* RAW_H */
+#endif

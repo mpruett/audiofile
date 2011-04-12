@@ -29,9 +29,6 @@
 
 #include "FileHandle.h"
 
-#define NIST_SPHERE_HEADER_LENGTH 1024
-#define NIST_SPHERE_MAX_FIELD_LENGTH 80
-
 class NISTFile : public _AFfilehandle
 {
 public:
@@ -46,4 +43,4 @@ private:
 	status writeHeader();
 };
 
-#endif /* NIST_H */
+#endif

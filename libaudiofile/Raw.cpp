@@ -33,7 +33,7 @@
 #include "af_vfs.h"
 #include "util.h"
 
-_AFfilesetup _af_raw_default_filesetup =
+static _AFfilesetup raw_default_filesetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_RAWDATA,	/* fileFormat */
@@ -173,7 +173,7 @@ AFfilesetup RawFile::completeSetup(AFfilesetup setup)
 	}
 
 	newSetup = (_AFfilesetup *) _af_malloc(sizeof (_AFfilesetup));
-	*newSetup = _af_raw_default_filesetup;
+	*newSetup = raw_default_filesetup;
 
 	newSetup->tracks = (TrackSetup *) _af_malloc(sizeof (TrackSetup));
 	newSetup->tracks[0] = setup->tracks[0];

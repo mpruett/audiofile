@@ -19,10 +19,10 @@
 */
 
 /*
-	NEXT.cpp
+	NeXT.cpp
 
-	This file contains routines for parsing NeXT/Sun .snd format sound
-	files.
+	This file contains routines for reading and writing NeXT/Sun
+	.snd/.au sound files.
 */
 
 #include "config.h"
@@ -48,7 +48,7 @@ const int _af_next_compression_types[_AF_NEXT_NUM_COMPTYPES] =
 	AF_COMPRESSION_G711_ALAW
 };
 
-_AFfilesetup _af_next_default_filesetup =
+static _AFfilesetup next_default_filesetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_NEXTSND,	/* fileFormat */
@@ -61,6 +61,39 @@ _AFfilesetup _af_next_default_filesetup =
 	NULL,			/* instruments */
 	0,			/* miscellaneousCount */
 	NULL			/* miscellaneous */
+};
+
+enum
+{
+	_AU_FORMAT_UNSPECIFIED = 0,
+	_AU_FORMAT_MULAW_8 = 1,		/* CCITT G.711 mu-law 8-bit */
+	_AU_FORMAT_LINEAR_8 = 2,
+	_AU_FORMAT_LINEAR_16 = 3,
+	_AU_FORMAT_LINEAR_24 = 4,
+	_AU_FORMAT_LINEAR_32 = 5,
+	_AU_FORMAT_FLOAT = 6,
+	_AU_FORMAT_DOUBLE = 7,
+	_AU_FORMAT_INDIRECT = 8,
+	_AU_FORMAT_NESTED = 9,
+	_AU_FORMAT_DSP_CORE = 10,
+	_AU_FORMAT_DSP_DATA_8 = 11,	/* 8-bit fixed point */
+	_AU_FORMAT_DSP_DATA_16 = 12,	/* 16-bit fixed point */
+	_AU_FORMAT_DSP_DATA_24 = 13,	/* 24-bit fixed point */
+	_AU_FORMAT_DSP_DATA_32 = 14,	/* 32-bit fixed point */
+	_AU_FORMAT_DISPLAY = 16,
+	_AU_FORMAT_MULAW_SQUELCH = 17,	/* 8-bit mu-law, squelched */
+	_AU_FORMAT_EMPHASIZED = 18,
+	_AU_FORMAT_COMPRESSED = 19,
+	_AU_FORMAT_COMPRESSED_EMPHASIZED = 20,
+	_AU_FORMAT_DSP_COMMANDS = 21,
+	_AU_FORMAT_DSP_COMMANDS_SAMPLES = 22,
+	_AU_FORMAT_ADPCM_G721 = 23,	/* CCITT G.721 ADPCM 32 kbits/s */
+	_AU_FORMAT_ADPCM_G722 = 24,	/* CCITT G.722 ADPCM */
+	_AU_FORMAT_ADPCM_G723_3 = 25,	/* CCITT G.723 ADPCM 24 kbits/s */
+	_AU_FORMAT_ADPCM_G723_5 = 26,	/* CCITT G.723 ADPCM 40 kbits/s */
+	_AU_FORMAT_ALAW_8 = 27,		/* CCITT G.711 a-law */
+	_AU_FORMAT_AES = 28,
+	_AU_FORMAT_DELTA_MULAW_8 = 29
 };
 
 static const uint32_t _AU_LENGTH_UNSPECIFIED = 0xffffffff;
@@ -260,5 +293,89 @@ AFfilesetup NeXTFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	return _af_filesetup_copy(setup, &_af_next_default_filesetup, false);
+	return _af_filesetup_copy(setup, &next_default_filesetup, false);
+}
+
+static uint32_t nextencodingtype (AudioFormat *format);
+
+/* A return value of zero indicates successful synchronisation. */
+status NeXTFile::update()
+{
+	writeHeader();
+	return AF_SUCCEED;
+}
+
+status NeXTFile::writeHeader()
+{
+	Track *track = getTrack();
+
+	if (af_fseek(fh, 0, SEEK_SET) != 0)
+		_af_error(AF_BAD_LSEEK, "bad seek");
+
+	uint32_t offset = track->fpos_first_frame;
+	int frameSize = _af_format_frame_size(&track->f, false);
+	uint32_t length = track->totalfframes * frameSize;
+	uint32_t encoding = nextencodingtype(&track->f);
+	uint32_t sampleRate = track->f.sampleRate;
+	uint32_t channelCount = track->f.channelCount;
+
+	af_write(".snd", 4, fh);
+	writeU32(&offset);
+	writeU32(&length);
+	writeU32(&encoding);
+	writeU32(&sampleRate);
+	writeU32(&channelCount);
+
+	return AF_SUCCEED;
+}
+
+static uint32_t nextencodingtype (AudioFormat *format)
+{
+	uint32_t encoding = 0;
+
+	if (format->compressionType != AF_COMPRESSION_NONE)
+	{
+		if (format->compressionType == AF_COMPRESSION_G711_ULAW)
+			encoding = _AU_FORMAT_MULAW_8;
+		else if (format->compressionType == AF_COMPRESSION_G711_ALAW)
+			encoding = _AU_FORMAT_ALAW_8;
+	}
+	else if (format->sampleFormat == AF_SAMPFMT_TWOSCOMP)
+	{
+		if (format->sampleWidth == 8)
+			encoding = _AU_FORMAT_LINEAR_8;
+		else if (format->sampleWidth == 16)
+			encoding = _AU_FORMAT_LINEAR_16;
+		else if (format->sampleWidth == 24)
+			encoding = _AU_FORMAT_LINEAR_24;
+		else if (format->sampleWidth == 32)
+			encoding = _AU_FORMAT_LINEAR_32;
+	}
+	else if (format->sampleFormat == AF_SAMPFMT_FLOAT)
+		encoding = _AU_FORMAT_FLOAT;
+	else if (format->sampleFormat == AF_SAMPFMT_DOUBLE)
+		encoding = _AU_FORMAT_DOUBLE;
+
+	return encoding;
+}
+
+status NeXTFile::writeInit(AFfilesetup setup)
+{
+	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
+		return AF_FAIL;
+
+	if (miscellaneousCount > 0)
+	{
+		_af_error(AF_BAD_NUMMISC, "NeXT format supports no miscellaneous chunks");
+		return AF_FAIL;
+	}
+
+	writeHeader();
+
+	Track *track = getTrack();
+	track->fpos_first_frame = 28;
+
+	track->f.byteOrder = AF_BYTEORDER_BIGENDIAN;
+
+	return AF_SUCCEED;
 }

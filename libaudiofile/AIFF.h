@@ -29,26 +29,6 @@
 #define AIFF_H
 
 #include "FileHandle.h"
-#include <stdint.h>
-
-#define AIFC_VERSION_1 0xa2805140
-
-struct _INST
-{
-	uint8_t		baseNote;
-	int8_t		detune;
-	uint8_t		lowNote, highNote;
-	uint8_t		lowVelocity, highVelocity;
-	int16_t		gain;
-
-	uint16_t	sustainLoopPlayMode;
-	uint16_t	sustainLoopBegin;
-	uint16_t	sustainLoopEnd;
-
-	uint16_t	releaseLoopPlayMode;
-	uint16_t	releaseLoopBegin;
-	uint16_t	releaseLoopEnd;
-};
 
 #define _AF_AIFF_NUM_INSTPARAMS 9
 extern const InstParamInfo _af_aiff_inst_params[_AF_AIFF_NUM_INSTPARAMS];
