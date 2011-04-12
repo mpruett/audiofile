@@ -1,6 +1,7 @@
 /*
 	Audio File Library
 	Copyright (C) 2001, Silicon Graphics, Inc.
+	Copyright (C) 2011, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -33,10 +34,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "File.h"
 #include "Marker.h"
 #include "Setup.h"
 #include "Track.h"
-#include "af_vfs.h"
 #include "byteorder.h"
 #include "util.h"
 
@@ -63,13 +64,19 @@ _AFfilesetup _af_ircam_default_filesetup =
 	NULL			/* miscellaneous */
 };
 
+const int _af_ircam_compression_types[_AF_IRCAM_NUM_COMPTYPES] =
+{
+	AF_COMPRESSION_G711_ULAW,
+	AF_COMPRESSION_G711_ALAW
+};
+
 bool IRCAMFile::recognize(File *fh)
 {
 	uint8_t buffer[4];
 
-	af_fseek(fh, 0, SEEK_SET);
+	fh->seek(0, File::SeekFromBeginning);
 
-	if (af_read(buffer, 4, fh) != 4)
+	if (fh->read(buffer, 4) != 4)
 		return false;
 
 	/* Check to see if the file's magic number matches. */
@@ -89,39 +96,31 @@ bool IRCAMFile::recognize(File *fh)
 
 AFfilesetup IRCAMFile::completeSetup(AFfilesetup setup)
 {
-	TrackSetup	*track;
-
 	if (setup->trackSet && setup->trackCount != 1)
 	{
 		_af_error(AF_BAD_NUMTRACKS, "BICSF file must have 1 track");
 		return AF_NULL_FILESETUP;
 	}
 
-	track = &setup->tracks[0];
-
+	TrackSetup *track = &setup->tracks[0];
 	if (track->sampleFormatSet)
 	{
-		if (track->f.sampleFormat == AF_SAMPFMT_UNSIGNED)
+		if (track->f.isUnsigned())
 		{
 			_af_error(AF_BAD_SAMPFMT,
 				"BICSF format does not support unsigned data");
 			return AF_NULL_FILESETUP;
 		}
 
-		if (track->f.sampleFormat == AF_SAMPFMT_TWOSCOMP &&
-			track->f.sampleWidth != 16)
+		if (track->f.isSigned() &&
+			track->f.sampleWidth != 8 &&
+			track->f.sampleWidth != 16 &&
+			track->f.sampleWidth != 24 &&
+			track->f.sampleWidth != 32)
 		{
 			_af_error(AF_BAD_WIDTH,
-				"BICSF format supports only 16-bit width for "
+				"BICSF format supports only 8-, 16-, 24-, or 32-bit "
 				"two's complement audio data");
-			return AF_NULL_FILESETUP;
-		}
-
-		if (track->f.sampleFormat == AF_SAMPFMT_DOUBLE)
-		{
-			_af_error(AF_BAD_SAMPFMT,
-				"BICSF format does not support "
-				"double-precision floating-point data");
 			return AF_NULL_FILESETUP;
 		}
 	}
@@ -145,10 +144,13 @@ AFfilesetup IRCAMFile::completeSetup(AFfilesetup setup)
 	}
 
 	if (track->compressionSet &&
-		track->f.compressionType != AF_COMPRESSION_NONE)
+		track->f.compressionType != AF_COMPRESSION_NONE &&
+		track->f.compressionType != AF_COMPRESSION_G711_ULAW &&
+		track->f.compressionType != AF_COMPRESSION_G711_ALAW)
 	{
 		_af_error(AF_BAD_NOT_IMPLEMENTED,
-			"BICSF format does not support compression");
+			"BICSF format does not support compression type %d",
+			track->f.compressionType);
 		return AF_NULL_FILESETUP;
 	}
 
@@ -192,10 +194,10 @@ status IRCAMFile::readInit(AFfilesetup setup)
 	tracks = NULL;
 	trackCount = 1;
 
-	af_fseek(fh, 0, SEEK_SET);
+	fh->seek(0, File::SeekFromBeginning);
 
 	uint8_t magic[4];
-	if (af_read(magic, 4, fh) != 4)
+	if (fh->read(magic, 4) != 4)
 	{
 		_af_error(AF_BAD_READ, "Could not read BICSF file header");
 		return AF_FAIL;
@@ -238,15 +240,49 @@ status IRCAMFile::readInit(AFfilesetup setup)
 	track->f.sampleRate = rate;
 	track->f.compressionType = AF_COMPRESSION_NONE;
 
+	if (isLittleEndian)
+		track->f.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
+	else
+		track->f.byteOrder = AF_BYTEORDER_BIGENDIAN;
+
 	switch (packMode)
 	{
+		case SF_CHAR:
+			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
+			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
+			track->f.sampleWidth = 8;
+			break;
 		case SF_SHORT:
 			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
 			track->f.sampleWidth = 16;
 			break;
+		case SF_24INT:
+			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
+			track->f.sampleWidth = 24;
+			break;
+		case SF_LONG:
+			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
+			track->f.sampleWidth = 32;
+			break;
 		case SF_FLOAT:
 			track->f.sampleFormat = AF_SAMPFMT_FLOAT;
 			track->f.sampleWidth = 32;
+			break;
+		case SF_DOUBLE:
+			track->f.sampleFormat = AF_SAMPFMT_DOUBLE;
+			track->f.sampleWidth = 64;
+			break;
+		case SF_ALAW:
+			track->f.compressionType = AF_COMPRESSION_G711_ALAW;
+			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
+			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
+			track->f.sampleWidth = 16;
+			break;
+		case SF_ULAW:
+			track->f.compressionType = AF_COMPRESSION_G711_ULAW;
+			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
+			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
+			track->f.sampleWidth = 16;
 			break;
 		default:
 			_af_error(AF_BAD_NOT_IMPLEMENTED,
@@ -263,11 +299,6 @@ status IRCAMFile::readInit(AFfilesetup setup)
 		return AF_FAIL;
 	}
 
-	if (isLittleEndian)
-		track->f.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
-	else
-		track->f.byteOrder = AF_BYTEORDER_BIGENDIAN;
-
 	if (_af_set_sample_format(&track->f, track->f.sampleFormat,
 		track->f.sampleWidth) == AF_FAIL)
 	{
@@ -277,7 +308,7 @@ status IRCAMFile::readInit(AFfilesetup setup)
 	if (track->f.sampleFormat == AF_SAMPFMT_FLOAT)
 		track->f.pcm.slope = maxAmp;
 
-	track->data_size = af_flength(fh) - SIZEOF_BSD_HEADER;
+	track->data_size = fh->length() - SIZEOF_BSD_HEADER;
 
 	/*
 		Only uncompressed data formats are supported for IRCAM

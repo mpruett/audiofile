@@ -159,8 +159,12 @@ TEST(NeXT, Int32) { testInt32(AF_FILE_NEXTSND); }
 TEST(NeXT, Float) { testFloat32(AF_FILE_NEXTSND); }
 TEST(NeXT, Double) { testFloat64(AF_FILE_NEXTSND); }
 
+TEST(IRCAM, Int8) { testInt8(AF_FILE_IRCAM); }
 TEST(IRCAM, Int16) { testInt16(AF_FILE_IRCAM); }
+TEST(IRCAM, Int24) { testInt24(AF_FILE_IRCAM); }
+TEST(IRCAM, Int32) { testInt32(AF_FILE_IRCAM); }
 TEST(IRCAM, Float) { testFloat32(AF_FILE_IRCAM); }
+TEST(IRCAM, Double) { testFloat64(AF_FILE_IRCAM); }
 
 TEST(IFF, Int8) { testInt8(AF_FILE_IFF_8SVX); }
 
