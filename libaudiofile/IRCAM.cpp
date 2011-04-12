@@ -47,7 +47,8 @@ const uint8_t _af_ircam_vax_le_magic[4] = {0x64, 0xa3, 0x01, 0x00},
 	_af_ircam_sun_le_magic[4] = {0x00, 0x02, 0xa3, 0x64},
 	_af_ircam_mips_le_magic[4] = {0x64, 0xa3, 0x03, 0x00},
 	_af_ircam_mips_be_magic[4] = {0x00, 0x03, 0xa3, 0x64},
-	_af_ircam_next_be_magic[4] = {0x64, 0xa3, 0x04, 0x00};
+	_af_ircam_next_be_magic[4] = {0x64, 0xa3, 0x04, 0x00},
+	_af_ircam_next_le_magic[4] = {0x00, 0x04, 0xa3, 0x64};
 
 _AFfilesetup _af_ircam_default_filesetup =
 {
@@ -86,7 +87,8 @@ bool IRCAMFile::recognize(File *fh)
 		!memcmp(buffer, _af_ircam_sun_le_magic, 4) ||
 		!memcmp(buffer, _af_ircam_mips_le_magic, 4) ||
 		!memcmp(buffer, _af_ircam_mips_be_magic, 4) ||
-		!memcmp(buffer, _af_ircam_next_be_magic, 4))
+		!memcmp(buffer, _af_ircam_next_be_magic, 4) ||
+		!memcmp(buffer, _af_ircam_next_le_magic, 4))
 	{
 		return true;
 	}
@@ -209,7 +211,8 @@ status IRCAMFile::readInit(AFfilesetup setup)
 		memcmp(magic, _af_ircam_sun_le_magic, 4) != 0 &&
 		memcmp(magic, _af_ircam_mips_le_magic, 4) != 0 &&
 		memcmp(magic, _af_ircam_mips_be_magic, 4) != 0 &&
-		memcmp(magic, _af_ircam_next_be_magic, 4) != 0)
+		memcmp(magic, _af_ircam_next_be_magic, 4) != 0 &&
+		memcmp(magic, _af_ircam_next_le_magic, 4) != 0)
 	{
 		_af_error(AF_BAD_FILEFMT,
 			"file is not a BICSF file (bad magic number)");
@@ -219,7 +222,8 @@ status IRCAMFile::readInit(AFfilesetup setup)
 	// Check whether the file's magic number indicates little-endian data.
 	bool isLittleEndian = !memcmp(magic, _af_ircam_vax_le_magic, 4) ||
 		!memcmp(magic, _af_ircam_sun_le_magic, 4) ||
-		!memcmp(magic, _af_ircam_mips_le_magic, 4);
+		!memcmp(magic, _af_ircam_mips_le_magic, 4) ||
+		!memcmp(magic, _af_ircam_next_le_magic, 4);
 
 	setFormatByteOrder(isLittleEndian ? AF_BYTEORDER_LITTLEENDIAN :
 		AF_BYTEORDER_BIGENDIAN);

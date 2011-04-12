@@ -64,7 +64,8 @@ extern const uint8_t _af_ircam_vax_le_magic[4],
 	_af_ircam_sun_le_magic[4],
 	_af_ircam_mips_le_magic[4],
 	_af_ircam_mips_be_magic[4],
-	_af_ircam_next_be_magic[4];
+	_af_ircam_next_be_magic[4],
+	_af_ircam_next_le_magic[4];
 
 #define _AF_IRCAM_NUM_COMPTYPES 2
 extern const int _af_ircam_compression_types[_AF_IRCAM_NUM_COMPTYPES];
