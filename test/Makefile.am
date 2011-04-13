@@ -84,10 +84,13 @@ error_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 next_SOURCES = next.cpp
 next_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
+seek_SOURCES = seek.cpp
 seek_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
+large_SOURCES = large.cpp
 large_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
+pcmdata_SOURCES = pcmdata.cpp
 pcmdata_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 coverage-reset:
