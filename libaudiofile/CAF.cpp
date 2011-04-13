@@ -293,8 +293,7 @@ status CAFFile::writeData(bool update)
 	int64_t dataLength = -1;
 	uint32_t editCount = 0;
 	if (update)
-		dataLength = _af_format_frame_size(&track->f, false) *
-			track->totalfframes + 4;
+		dataLength = track->f.bytesPerFrame(false) * track->totalfframes + 4;
 
 	if (!writeTag(&data) ||
 		!writeS64(&dataLength) ||
