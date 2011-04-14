@@ -105,6 +105,8 @@ TEST(NeXT, UnspecifiedLength)
 		EXPECT_EQ(data[i], kFrames[i]);
 	delete [] data;
 
+	afCloseFile(file);
+
 	::unlink(kTestFileName);
 }
 
@@ -134,6 +136,8 @@ TEST(NeXT, Truncated)
 	for (int i=0; i<truncatedFrameCount; i++)
 		EXPECT_EQ(data[i], kFrames[i]);
 	delete [] data;
+
+	afCloseFile(file);
 
 	::unlink(kTestFileName);
 }
