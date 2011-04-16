@@ -19,7 +19,7 @@
 */
 
 /*
-	af_vfs.c
+	af_vfs.cpp
 
 	Virtual file operations for the Audio File Library.
 */
@@ -28,47 +28,17 @@
 
 #include "afinternal.h"
 #include "af_vfs.h"
-#include "File.h"
-#include <string.h>
-#include <errno.h>
 
 #include <stdlib.h>
 
-ssize_t af_read (void *data, size_t size, File *vfile)
+AFvirtualfile *af_virtual_file_new()
 {
-	return vfile->read(data, size);
+	return (AFvirtualfile *) calloc(sizeof (AFvirtualfile), 1);
 }
 
-ssize_t af_write (const void *data, size_t size, File *vfile)
+void af_virtual_file_destroy(AFvirtualfile *vfile)
 {
-	return vfile->write(data, size);
-}
+	vfile->destroy(vfile);
 
-int af_fclose (File *vfile)
-{
-	vfile->close();
-	delete vfile;
-	return 0;
-}
-
-long af_flength (File *vfile)
-{
-	off_t length = vfile->length();
-	return length;
-}
-
-int af_fseek (File *vfile, long offset, int whence)
-{
-	if (whence == SEEK_CUR)
-		vfile->seek(offset, File::SeekFromCurrent);
-	else if (whence == SEEK_SET)
-		vfile->seek(offset, File::SeekFromBeginning);
-	else
-		return -1;
-	return 0;
-}
-
-long af_ftell (File *vfile)
-{
-	return vfile->tell();
+	free(vfile);
 }

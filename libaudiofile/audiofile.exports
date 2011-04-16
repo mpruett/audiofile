@@ -71,6 +71,7 @@ afNewFileSetup
 afOpenFD
 afOpenFile
 afOpenNamedFD
+afOpenVirtualFile
 afQuery
 afQueryDouble
 afQueryLong
@@ -101,3 +102,5 @@ afSyncFile
 afTellFrame
 afWriteFrames
 afWriteMisc
+af_virtual_file_destroy
+af_virtual_file_new

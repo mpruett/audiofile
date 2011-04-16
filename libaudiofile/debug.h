@@ -32,7 +32,6 @@
 #include "audiofile.h"
 #include "afinternal.h"
 
-void _af_printid (uint32_t id);
 void _af_print_filehandle (AFfilehandle filehandle);
 void _af_print_tracks (AFfilehandle filehandle);
 void _af_print_channel_matrix (double *matrix, int fchans, int vchans);

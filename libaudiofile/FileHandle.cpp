@@ -38,6 +38,7 @@
 
 #include "File.h"
 #include "Instrument.h"
+#include "Tag.h"
 #include "Track.h"
 
 _AFfilehandle *_AFfilehandle::create(int fileFormat)
@@ -262,4 +263,21 @@ bool _AFfilehandle::writeFloat(const float *v)
 bool _AFfilehandle::writeDouble(const double *v)
 {
 	return writeSwap(fh, v, m_formatByteOrder);
+}
+
+bool _AFfilehandle::readTag(Tag *t)
+{
+	uint32_t v;
+	if (fh->read(&v, sizeof (v)) == sizeof (v))
+	{
+		*t = Tag(v);
+		return true;
+	}
+	return false;
+}
+
+bool _AFfilehandle::writeTag(const Tag *t)
+{
+	uint32_t v = t->value();
+	return fh->write(&v, sizeof (v)) == sizeof (v);
 }

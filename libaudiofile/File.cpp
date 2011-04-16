@@ -36,6 +36,43 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <stdio.h>
+
+#include "af_vfs.h"
+
+class FilePOSIX : public File
+{
+public:
+	FilePOSIX(int fd, AccessMode mode) : File(mode), m_fd(fd) { }
+	virtual ~FilePOSIX() { }
+
+	virtual int close();
+	virtual ssize_t read(void *data, size_t nbytes);
+	virtual ssize_t write(const void *data, size_t nbytes);
+	virtual off_t length();
+	virtual off_t seek(off_t offset, SeekOrigin origin);
+	virtual off_t tell();
+
+private:
+	int m_fd;
+};
+
+class FileVF : public File
+{
+public:
+	FileVF(AFvirtualfile *vf, AccessMode mode) : File(mode), m_vf(vf) { }
+	virtual ~FileVF() { }
+
+	virtual int close();
+	virtual ssize_t read(void *data, size_t nbytes);
+	virtual ssize_t write(const void *data, size_t nbytes);
+	virtual off_t length();
+	virtual off_t seek(off_t offset, SeekOrigin origin);
+	virtual off_t tell();
+
+private:
+	AFvirtualfile *m_vf;
+};
 
 File *File::open(const char *path, File::AccessMode mode)
 {
@@ -47,13 +84,18 @@ File *File::open(const char *path, File::AccessMode mode)
 	int fd = ::open(path, flags, 0666);
 	if (fd == -1)
 		return NULL;
-	File *file = new File(fd, mode);
+	File *file = new FilePOSIX(fd, mode);
 	return file;
 }
 
-File::File(int fd, AccessMode mode) :
-	m_fd(fd), m_accessMode(mode)
+File *File::create(int fd, File::AccessMode mode)
 {
+	return new FilePOSIX(fd, mode);
+}
+
+File *File::create(AFvirtualfile *vf, File::AccessMode mode)
+{
+	return new FileVF(vf, mode);
 }
 
 File::~File()
@@ -61,24 +103,32 @@ File::~File()
 	close();
 }
 
-void File::close()
+bool File::canSeek()
 {
-	if (m_fd != -1)
-		::close(m_fd);
-	m_fd = -1;
+	return seek(0, File::SeekFromCurrent) != -1;
 }
 
-ssize_t File::read(void *data, size_t nbytes)
+int FilePOSIX::close()
+{
+	if (m_fd == -1)
+		return 0;
+
+	int result = ::close(m_fd);
+	m_fd = -1;
+	return result;
+}
+
+ssize_t FilePOSIX::read(void *data, size_t nbytes)
 {
 	return ::read(m_fd, data, nbytes);
 }
 
-ssize_t File::write(const void *data, size_t nbytes)
+ssize_t FilePOSIX::write(const void *data, size_t nbytes)
 {
 	return ::write(m_fd, data, nbytes);
 }
 
-off_t File::length()
+off_t FilePOSIX::length()
 {
 	off_t current = tell();
 	if (current == -1)
@@ -90,7 +140,7 @@ off_t File::length()
 	return length;
 }
 
-off_t File::seek(off_t offset, File::SeekOrigin origin)
+off_t FilePOSIX::seek(off_t offset, File::SeekOrigin origin)
 {
 	int whence;
 	switch (origin)
@@ -103,7 +153,41 @@ off_t File::seek(off_t offset, File::SeekOrigin origin)
 	return ::lseek(m_fd, offset, whence);
 }
 
-off_t File::tell()
+off_t FilePOSIX::tell()
 {
 	return seek(0, File::SeekFromCurrent);
+}
+
+int FileVF::close()
+{
+	af_virtual_file_destroy(m_vf);
+	m_vf = 0;
+	return 0;
+}
+
+ssize_t FileVF::read(void *data, size_t nbytes)
+{
+	return m_vf->read(m_vf, data, nbytes);
+}
+
+ssize_t FileVF::write(const void *data, size_t nbytes)
+{
+	return m_vf->write(m_vf, data, nbytes);
+}
+
+off_t FileVF::length()
+{
+	return m_vf->length(m_vf);
+}
+
+off_t FileVF::seek(off_t offset, SeekOrigin origin)
+{
+	if (origin == SeekFromEnd)
+		offset += length();
+	return m_vf->seek(m_vf, offset, origin == SeekFromCurrent);
+}
+
+off_t FileVF::tell()
+{
+	return m_vf->tell(m_vf);
 }

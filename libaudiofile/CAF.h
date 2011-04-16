@@ -48,23 +48,6 @@ private:
 
 	status writeDescription();
 	status writeData(bool update);
-
-	bool readTag(Tag *t)
-	{
-		uint32_t v;
-		if (fh->read(&v, sizeof (v)) == sizeof (v))
-		{
-			*t = Tag(v);
-			return true;
-		}
-		return false;
-	}
-
-	bool writeTag(const Tag *t)
-	{
-		uint32_t v = t->value();
-		return fh->write(&v, sizeof (v)) == sizeof (v);
-	}
 };
 
 #endif

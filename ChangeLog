@@ -1,3 +1,7 @@
+2011-04-16  Michael Pruett <michael@68k.org>
+
+	* Refactor file parsing and writing. Update VFS interface.
+
 2011-04-11  Michael Pruett <michael@68k.org>
 
 	* Reorganize source files.

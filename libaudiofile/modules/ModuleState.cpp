@@ -27,7 +27,6 @@
 #include "RebufferModule.h"
 #include "SimpleModule.h"
 #include "Track.h"
-#include "af_vfs.h"
 #include "byteorder.h"
 #include "compression.h"
 #include "units.h"
@@ -53,7 +52,9 @@ status ModuleState::initFileModule(AFfilehandle file, Track *track)
 	int compressionIndex = _af_compression_index_from_id(track->f.compressionType);
 	const _CompressionUnit *unit = &_af_compression[compressionIndex];
 
-	if (af_fseek(file->fh, track->fpos_first_frame, SEEK_SET) < 0)
+	if (file->seekok &&
+		file->fh->seek(track->fpos_first_frame, File::SeekFromBeginning) !=
+			track->fpos_first_frame)
 	{
 		_af_error(AF_BAD_LSEEK, "unable to position file handle at beginning of sound data");
 		return AF_FAIL;

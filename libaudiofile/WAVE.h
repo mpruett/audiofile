@@ -72,15 +72,15 @@ private:
 	*/
 	int16_t		msadpcmCoefficients[256][2];
 
-	status parseFrameCount(uint32_t type, uint32_t size);
-	status parseFormat(uint32_t type, uint32_t size);
-	status parseData(uint32_t type, uint32_t size);
-	status parsePlayList(uint32_t type, uint32_t size);
-	status parseCues(uint32_t type, uint32_t size);
-	status parseADTLSubChunk(uint32_t type, uint32_t size);
-	status parseINFOSubChunk(uint32_t type, uint32_t size);
-	status parseList(uint32_t type, uint32_t size);
-	status parseInstrument(uint32_t type, uint32_t size);
+	status parseFrameCount(const Tag &type, uint32_t size);
+	status parseFormat(const Tag &type, uint32_t size);
+	status parseData(const Tag &type, uint32_t size);
+	status parsePlayList(const Tag &type, uint32_t size);
+	status parseCues(const Tag &type, uint32_t size);
+	status parseADTLSubChunk(const Tag &type, uint32_t size);
+	status parseINFOSubChunk(const Tag &type, uint32_t size);
+	status parseList(const Tag &type, uint32_t size);
+	status parseInstrument(const Tag &type, uint32_t size);
 
 	status writeFormat();
 	status writeFrameCount();

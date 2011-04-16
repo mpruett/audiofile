@@ -28,9 +28,9 @@
 #include "config.h"
 #include "Raw.h"
 
+#include "File.h"
 #include "Setup.h"
 #include "Track.h"
-#include "af_vfs.h"
 #include "util.h"
 
 static _AFfilesetup raw_default_filesetup =
@@ -87,8 +87,7 @@ status RawFile::readInit(AFfilesetup filesetup)
 	}
 	else
 	{
-		AFfileoffset	filesize;
-		filesize = af_flength(fh);
+		AFfileoffset filesize = fh->length();
 		if (filesize == -1)
 			track->totalfframes = -1;
 		else

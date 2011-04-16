@@ -8,10 +8,11 @@ EXTRA_DIST = audiofile.exports
 
 libaudiofile_la_SOURCES = \
 	openclose.cpp Setup.cpp Setup.h format.cpp data.cpp pcm.cpp \
-	error.c byteorder.h af_vfs.cpp \
+	error.c byteorder.h \
 	util.cpp util.h debug.cpp aupv.c units.cpp compression.cpp \
 	aes.cpp Instrument.cpp Instrument.h Loop.cpp Marker.cpp Marker.h \
 	Miscellaneous.cpp Track.cpp Track.h query.cpp \
+	af_vfs.cpp af_vfs.h \
 	Raw.cpp Raw.h \
 	AIFF.cpp AIFF.h extended.c \
 	NeXT.cpp NeXT.h \

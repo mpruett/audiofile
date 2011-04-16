@@ -25,6 +25,7 @@
 #include <stdint.h>
 
 class File;
+class Tag;
 struct Instrument;
 struct Miscellaneous;
 struct Track;
@@ -97,6 +98,9 @@ protected:
 	bool writeS64(const int64_t *);
 	bool writeFloat(const float *);
 	bool writeDouble(const double *);
+
+	bool readTag(Tag *t);
+	bool writeTag(const Tag *t);
 };
 
 #endif

@@ -63,13 +63,13 @@ private:
 	AFfileoffset	AESD_offset;
 	AFfileoffset	SSND_offset;
 
-	status parseFVER(uint32_t type, size_t size);
-	status parseAESD(uint32_t type, size_t size);
-	status parseMiscellaneous(uint32_t type, size_t size);
-	status parseINST(uint32_t type, size_t size);
-	status parseMARK(uint32_t type, size_t size);
-	status parseCOMM(uint32_t type, size_t size);
-	status parseSSND(uint32_t type, size_t size);
+	status parseFVER(const Tag &type, size_t size);
+	status parseAESD(const Tag &type, size_t size);
+	status parseMiscellaneous(const Tag &type, size_t size);
+	status parseINST(const Tag &type, size_t size);
+	status parseMARK(const Tag &type, size_t size);
+	status parseCOMM(const Tag &type, size_t size);
+	status parseSSND(const Tag &type, size_t size);
 
 	status writeCOMM();
 	status writeSSND();

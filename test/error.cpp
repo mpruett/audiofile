@@ -214,6 +214,12 @@ TEST(File, Bad)
 	TEST_ERROR(AF_BAD_OPEN, "opening nonexistent file for reading",
 		afOpenFile("sldkjflsdkfjalksdjflaksdjflsakfdj", "r", NULL));
 
+	TEST_ERROR(AF_BAD_ACCMODE, "opening file with null access mode",
+		afOpenFile("", NULL, NULL));
+
+	TEST_ERROR(AF_BAD_ACCMODE, "opening file with invalid access mode",
+		afOpenFile("", "x", NULL));
+
 	TEST_ERROR(AF_BAD_FILEFMT, "initializing file format to invalid value",
 		AFfilesetup setup = afNewFileSetup();
 		afInitFileFormat(setup, 91094);

@@ -35,11 +35,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "File.h"
 #include "Instrument.h"
 #include "Marker.h"
 #include "Setup.h"
+#include "Tag.h"
 #include "Track.h"
-#include "af_vfs.h"
 #include "byteorder.h"
 #include "extended.h"
 #include "util.h"
@@ -113,9 +114,9 @@ AIFFFile::AIFFFile()
 /*
 	FVER chunks are only present in AIFF-C files.
 */
-status AIFFFile::parseFVER(uint32_t type, size_t size)
+status AIFFFile::parseFVER(const Tag &type, size_t size)
 {
-	assert(!memcmp(&type, "FVER", 4));
+	assert(type == "FVER");
 
 	uint32_t timestamp;
 	readU32(&timestamp);
@@ -127,11 +128,11 @@ status AIFFFile::parseFVER(uint32_t type, size_t size)
 /*
 	Parse AES recording data.
 */
-status AIFFFile::parseAESD(uint32_t type, size_t size)
+status AIFFFile::parseAESD(const Tag &type, size_t size)
 {
 	unsigned char aesChannelStatusData[24];
 
-	assert(!memcmp(&type, "AESD", 4));
+	assert(type == "AESD");
 	assert(size == 24);
 
 	Track *track = getTrack();
@@ -142,7 +143,7 @@ status AIFFFile::parseAESD(uint32_t type, size_t size)
 		Try to read 24 bytes of AES nonaudio data from the file.
 		Fail if the file disappoints.
 	*/
-	if (af_read(aesChannelStatusData, 24, fh) != 24)
+	if (fh->read(aesChannelStatusData, 24) != 24)
 		return AF_FAIL;
 
 	memcpy(track->aesData, aesChannelStatusData, 24);
@@ -154,13 +155,16 @@ status AIFFFile::parseAESD(uint32_t type, size_t size)
 	Parse miscellaneous data chunks such as name, author, copyright,
 	and annotation chunks.
 */
-status AIFFFile::parseMiscellaneous(uint32_t type, size_t size)
+status AIFFFile::parseMiscellaneous(const Tag &type, size_t size)
 {
 	int misctype = AF_MISC_UNRECOGNIZED;
 
-	assert(!memcmp(&type, "NAME", 4) || !memcmp(&type, "AUTH", 4) ||
-		!memcmp(&type, "(c) ", 4) || !memcmp(&type, "ANNO", 4) ||
-		!memcmp(&type, "APPL", 4) || !memcmp(&type, "MIDI", 4));
+	assert(type == "NAME" ||
+		type == "AUTH" ||
+		type == "(c) " ||
+		type == "ANNO" ||
+		type == "APPL" ||
+		type == "MIDI");
 
 	/* Skip zero-length miscellaneous chunks. */
 	if (size == 0)
@@ -170,17 +174,17 @@ status AIFFFile::parseMiscellaneous(uint32_t type, size_t size)
 	miscellaneous = (Miscellaneous *) _af_realloc(miscellaneous,
 		miscellaneousCount * sizeof (Miscellaneous));
 
-	if (!memcmp(&type, "NAME", 4))
+	if (type == "NAME")
 		misctype = AF_MISC_NAME;
-	else if (!memcmp(&type, "AUTH", 4))
+	else if (type == "AUTH")
 		misctype = AF_MISC_AUTH;
-	else if (!memcmp(&type, "(c) ", 4))
+	else if (type == "(c) ")
 		misctype = AF_MISC_COPY;
-	else if (!memcmp(&type, "ANNO", 4))
+	else if (type == "ANNO")
 		misctype = AF_MISC_ANNO;
-	else if (!memcmp(&type, "APPL", 4))
+	else if (type == "APPL")
 		misctype = AF_MISC_APPL;
-	else if (!memcmp(&type, "MIDI", 4))
+	else if (type == "MIDI")
 		misctype = AF_MISC_MIDI;
 
 	miscellaneous[miscellaneousCount - 1].id = miscellaneousCount;
@@ -188,8 +192,7 @@ status AIFFFile::parseMiscellaneous(uint32_t type, size_t size)
 	miscellaneous[miscellaneousCount - 1].size = size;
 	miscellaneous[miscellaneousCount - 1].position = 0;
 	miscellaneous[miscellaneousCount - 1].buffer = _af_malloc(size);
-	af_read(miscellaneous[miscellaneousCount - 1].buffer,
-		size, fh);
+	fh->read(miscellaneous[miscellaneousCount - 1].buffer, size);
 
 	return AF_SUCCEED;
 }
@@ -198,7 +201,7 @@ status AIFFFile::parseMiscellaneous(uint32_t type, size_t size)
 	Parse instrument chunks, which contain information about using
 	sound data as a sampled instrument.
 */
-status AIFFFile::parseINST(uint32_t type, size_t size)
+status AIFFFile::parseINST(const Tag &type, size_t size)
 {
 	uint8_t baseNote;
 	int8_t detune;
@@ -208,7 +211,7 @@ status AIFFFile::parseINST(uint32_t type, size_t size)
 	uint16_t sustainLoopPlayMode, sustainLoopBegin, sustainLoopEnd;
 	uint16_t releaseLoopPlayMode, releaseLoopBegin, releaseLoopEnd;
 
-	assert(!memcmp(&type, "INST", 4));
+	assert(type == "INST");
 
 	Instrument *instrument = (Instrument *) _af_calloc(1, sizeof (Instrument));
 	instrument->id = AF_DEFAULT_INST;
@@ -277,9 +280,9 @@ status AIFFFile::parseINST(uint32_t type, size_t size)
 /*
 	Parse marker chunks, which contain the positions and names of loop markers.
 */
-status AIFFFile::parseMARK(uint32_t type, size_t size)
+status AIFFFile::parseMARK(const Tag &type, size_t size)
 {
-	assert(!memcmp(&type, "MARK", 4));
+	assert(type == "MARK");
 
 	Track *track = getTrack();
 
@@ -299,9 +302,9 @@ status AIFFFile::parseMARK(uint32_t type, size_t size)
 
 		readU16(&markerID);
 		readU32(&markerPosition);
-		af_read(&sizeByte, 1, fh);
+		fh->read(&sizeByte, 1);
 		markerName = (char *) _af_malloc(sizeByte + 1);
-		af_read(markerName, sizeByte, fh);
+		fh->read(markerName, sizeByte);
 
 		markerName[sizeByte] = '\0';
 
@@ -319,7 +322,7 @@ status AIFFFile::parseMARK(uint32_t type, size_t size)
 		*/
 
 		if ((sizeByte % 2) == 0)
-			af_fseek(fh, 1, SEEK_CUR);
+			fh->seek(1, File::SeekFromCurrent);
 
 		track->markers[i].id = markerID;
 		track->markers[i].position = markerPosition;
@@ -335,9 +338,9 @@ status AIFFFile::parseMARK(uint32_t type, size_t size)
 	sampling rate, the number of sample frames, and the number of
 	sound channels.
 */
-status AIFFFile::parseCOMM(uint32_t type, size_t size)
+status AIFFFile::parseCOMM(const Tag &type, size_t size)
 {
-	assert(!memcmp(&type, "COMM", 4));
+	assert(type == "COMM");
 
 	Track *track = getTrack();
 
@@ -355,7 +358,7 @@ status AIFFFile::parseCOMM(uint32_t type, size_t size)
 	readU16(&sampleSize);
 	track->f.sampleWidth = sampleSize;
 
-	af_read(sampleRate, 10, fh);
+	fh->read(sampleRate, 10);
 	track->f.sampleRate = _af_convert_from_ieee_extended(sampleRate);
 
 	track->f.compressionType = AF_COMPRESSION_NONE;
@@ -364,74 +367,66 @@ status AIFFFile::parseCOMM(uint32_t type, size_t size)
 
 	if (fileFormat == AF_FILE_AIFFC)
 	{
-		uint8_t compressionID[4];
+		Tag compressionID;
 		/* Pascal strings are at most 255 bytes long. */
 		char compressionName[256];
 
-		af_read(compressionID, 4, fh);
+		readTag(&compressionID);
 
 		/* Read the Pascal-style string containing the name. */
 		af_read_pstring(compressionName, fh);
 
-		if (!memcmp(compressionID, "NONE", 4) ||
-			!memcmp(compressionID, "twos", 4))
+		if (compressionID == "NONE" || compressionID == "twos")
 		{
 			track->f.compressionType = AF_COMPRESSION_NONE;
 		}
-		else if (!memcmp(compressionID, "in24", 4))
+		else if (compressionID == "in24")
 		{
 			track->f.compressionType = AF_COMPRESSION_NONE;
 			track->f.sampleWidth = 24;
 		}
-		else if (!memcmp(compressionID, "in32", 4))
+		else if (compressionID == "in32")
 		{
 			track->f.compressionType = AF_COMPRESSION_NONE;
 			track->f.sampleWidth = 32;
 		}
-		else if (!memcmp(compressionID, "ACE2", 4) ||
-			!memcmp(compressionID, "ACE8", 4) ||
-			!memcmp(compressionID, "MAC3", 4) ||
-			!memcmp(compressionID, "MAC6", 4))
+		else if (compressionID == "ACE2" ||
+			compressionID == "ACE8" ||
+			compressionID == "MAC3" ||
+			compressionID == "MAC6")
 		{
 			_af_error(AF_BAD_NOT_IMPLEMENTED, "AIFF-C format does not support Apple's proprietary %s compression format", compressionName);
 			return AF_FAIL;
 		}
-		else if (!memcmp(compressionID, "ulaw", 4) ||
-			!memcmp(compressionID, "ULAW", 4))
+		else if (compressionID == "ulaw" || compressionID == "ULAW")
 		{
 			track->f.compressionType = AF_COMPRESSION_G711_ULAW;
 		}
-		else if (!memcmp(compressionID, "alaw", 4) ||
-			!memcmp(compressionID, "ALAW", 4))
+		else if (compressionID == "alaw" || compressionID == "ALAW")
 		{
 			track->f.compressionType = AF_COMPRESSION_G711_ALAW;
 		}
-		else if (!memcmp(compressionID, "fl32", 4) ||
-			!memcmp(compressionID, "FL32", 4))
+		else if (compressionID == "fl32" || compressionID == "FL32")
 		{
 			track->f.sampleFormat = AF_SAMPFMT_FLOAT;
 			track->f.sampleWidth = 32;
 			track->f.compressionType = AF_COMPRESSION_NONE;
 		}
-		else if (!memcmp(compressionID, "fl64", 4) ||
-			!memcmp(compressionID, "FL64", 4))
+		else if (compressionID == "fl64" || compressionID == "FL64")
 		{
 			track->f.sampleFormat = AF_SAMPFMT_DOUBLE;
 			track->f.sampleWidth = 64;
 			track->f.compressionType = AF_COMPRESSION_NONE;
 		}
-		else if (!memcmp(compressionID, "sowt", 4))
+		else if (compressionID == "sowt")
 		{
 			track->f.compressionType = AF_COMPRESSION_NONE;
 			track->f.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
 		}
 		else
 		{
-			_af_error(AF_BAD_NOT_IMPLEMENTED, "AIFF-C compression type '%c%c%c%c' not currently supported",
-				compressionID[0],
-				compressionID[1],
-				compressionID[2],
-				compressionID[3]);
+			_af_error(AF_BAD_NOT_IMPLEMENTED, "AIFF-C compression type '%s' not currently supported",
+				compressionID.name().c_str());
 			return AF_FAIL;
 		}
 	}
@@ -445,9 +440,9 @@ status AIFFFile::parseCOMM(uint32_t type, size_t size)
 	Parse the stored sound chunk, which usually contains little more
 	than the sound data.
 */
-status AIFFFile::parseSSND(uint32_t type, size_t size)
+status AIFFFile::parseSSND(const Tag &type, size_t size)
 {
-	assert(!memcmp(&type, "SSND", 4));
+	assert(type == "SSND");
 
 	Track *track = getTrack();
 
@@ -466,7 +461,7 @@ status AIFFFile::parseSSND(uint32_t type, size_t size)
 	printf("block size: %d\n", blockSize);
 #endif
 
-	track->fpos_first_frame = af_ftell(fh) + offset;
+	track->fpos_first_frame = fh->tell() + offset;
 
 #ifdef DEBUG
 	printf("data start: %d\n", track->fpos_first_frame);
@@ -491,13 +486,11 @@ status AIFFFile::readInit(AFfilesetup setup)
 	bool hasAUTH = false;
 	bool hasCOPY = false;
 
-	assert(fh != NULL);
+	fh->seek(0, File::SeekFromBeginning);
 
-	af_fseek(fh, 0, SEEK_SET);
-
-	af_read(&type, 4, fh);
+	fh->read(&type, 4);
 	readU32(&size);
-	af_read(&formtype, 4, fh);
+	fh->read(&formtype, 4);
 
 	if (memcmp(&type, "FORM", 4) != 0 ||
 		(memcmp(&formtype, "AIFF", 4) && memcmp(&formtype, "AIFC", 4)))
@@ -521,51 +514,52 @@ status AIFFFile::readInit(AFfilesetup setup)
 	size_t index = 4;
 	while (index < size)
 	{
-		uint32_t chunkid = 0, chunksize = 0;
+		Tag chunkid;
+		uint32_t chunksize = 0;
 		status result = AF_SUCCEED;
 
 #ifdef DEBUG
 		printf("index: %d\n", index);
 #endif
-		af_read(&chunkid, 4, fh);
+		readTag(&chunkid);
 		readU32(&chunksize);
 
 #ifdef DEBUG
-		_af_printid(chunkid);
+		printf("%s", chunkid.name().c_str());
 		printf(" size: %d\n", chunksize);
 #endif
 
-		if (!memcmp("COMM", &chunkid, 4))
+		if (chunkid == "COMM")
 		{
 			hasCOMM = true;
 			result = parseCOMM(chunkid, chunksize);
 		}
-		else if (!memcmp("FVER", &chunkid, 4))
+		else if (chunkid == "FVER")
 		{
 			hasFVER = true;
 			parseFVER(chunkid, chunksize);
 		}
-		else if (!memcmp("INST", &chunkid, 4))
+		else if (chunkid == "INST")
 		{
 			hasINST = true;
 			parseINST(chunkid, chunksize);
 		}
-		else if (!memcmp("MARK", &chunkid, 4))
+		else if (chunkid == "MARK")
 		{
 			hasMARK = true;
 			parseMARK(chunkid, chunksize);
 		}
-		else if (!memcmp("AESD", &chunkid, 4))
+		else if (chunkid == "AESD")
 		{
 			hasAESD = true;
 			parseAESD(chunkid, chunksize);
 		}
-		else if (!memcmp("NAME", &chunkid, 4) ||
-			!memcmp("AUTH", &chunkid, 4) ||
-			!memcmp("(c) ", &chunkid, 4) ||
-			!memcmp("ANNO", &chunkid, 4) ||
-			!memcmp("APPL", &chunkid, 4) ||
-			!memcmp("MIDI", &chunkid, 4))
+		else if (chunkid == "NAME" ||
+			chunkid == "AUTH" ||
+			chunkid == "(c) " ||
+			chunkid == "ANNO" ||
+			chunkid == "APPL" ||
+			chunkid == "MIDI")
 		{
 			parseMiscellaneous(chunkid, chunksize);
 		}
@@ -573,7 +567,7 @@ status AIFFFile::readInit(AFfilesetup setup)
 			The sound data chunk is required if there are more than
 			zero sample frames.
 		*/
-		else if (!memcmp("SSND", &chunkid, 4))
+		else if (chunkid == "SSND")
 		{
 			if (hasSSND)
 			{
@@ -593,7 +587,7 @@ status AIFFFile::readInit(AFfilesetup setup)
 		if ((index % 2) != 0)
 			index++;
 
-		af_fseek(fh, index + 8, SEEK_SET);
+		fh->seek(index + 8, File::SeekFromBeginning);
 	}
 
 	if (!hasCOMM)
@@ -609,11 +603,11 @@ bool AIFFFile::recognizeAIFF(File *fh)
 {
 	uint8_t buffer[8];
 
-	af_fseek(fh, 0, SEEK_SET);
+	fh->seek(0, File::SeekFromBeginning);
 
-	if (af_read(buffer, 8, fh) != 8 || memcmp(buffer, "FORM", 4) != 0)
+	if (fh->read(buffer, 8) != 8 || memcmp(buffer, "FORM", 4) != 0)
 		return false;
-	if (af_read(buffer, 4, fh) != 4 || memcmp(buffer, "AIFF", 4) != 0)
+	if (fh->read(buffer, 4) != 4 || memcmp(buffer, "AIFF", 4) != 0)
 		return false;
 
 	return true;
@@ -623,11 +617,11 @@ bool AIFFFile::recognizeAIFFC(File *fh)
 {
 	uint8_t buffer[8];
 
-	af_fseek(fh, 0, SEEK_SET);
+	fh->seek(0, File::SeekFromBeginning);
 
-	if (af_read(buffer, 8, fh) != 8 || memcmp(buffer, "FORM", 4) != 0)
+	if (fh->read(buffer, 8) != 8 || memcmp(buffer, "FORM", 4) != 0)
 		return false;
-	if (af_read(buffer, 4, fh) != 4 || memcmp(buffer, "AIFC", 4) != 0)
+	if (fh->read(buffer, 4) != 4 || memcmp(buffer, "AIFC", 4) != 0)
 		return false;
 
 	return true;
@@ -792,13 +786,13 @@ status AIFFFile::writeInit(AFfilesetup setup)
 	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
 		return AF_FAIL;
 
-	af_write("FORM", 4, fh);
+	fh->write("FORM", 4);
 	writeU32(&fileSize);
 
 	if (fileFormat == AF_FILE_AIFF)
-		af_write("AIFF", 4, fh);
+		fh->write("AIFF", 4);
 	else if (fileFormat == AF_FILE_AIFFC)
-		af_write("AIFC", 4, fh);
+		fh->write("AIFC", 4);
 
 	if (fileFormat == AF_FILE_AIFFC)
 		writeFVER();
@@ -820,11 +814,11 @@ status AIFFFile::update()
 #endif
 
 	/* Get the length of the file. */
-	uint32_t length = af_flength(fh);
+	uint32_t length = fh->length();
 	length -= 8;
 
 	/* Set the length of the FORM chunk. */
-	af_fseek(fh, 4, SEEK_SET);
+	fh->seek(4, File::SeekFromBeginning);
 	writeU32(&length);
 
 	if (fileFormat == AF_FILE_AIFFC)
@@ -849,13 +843,13 @@ status AIFFFile::writeCOMM()
 		current offset.
 	*/
 	if (COMM_offset == 0)
-		COMM_offset = af_ftell(fh);
+		COMM_offset = fh->tell();
 	else
-		af_fseek(fh, COMM_offset, SEEK_SET);
+		fh->seek(COMM_offset, File::SeekFromBeginning);
 
 	Track *track = getTrack();
 
-	uint8_t compressionTag[4];
+	Tag compressionTag;
 	/* Pascal strings can occupy only 255 bytes (+ a size byte). */
 	char compressionName[256];
 
@@ -865,17 +859,17 @@ status AIFFFile::writeCOMM()
 		{
 			if (track->f.sampleFormat == AF_SAMPFMT_TWOSCOMP)
 			{
-				memcpy(compressionTag, "NONE", 4);
+				compressionTag = "NONE";
 				strcpy(compressionName, "not compressed");
 			}
 			else if (track->f.sampleFormat == AF_SAMPFMT_FLOAT)
 			{
-				memcpy(compressionTag, "fl32", 4);
+				compressionTag = "fl32";
 				strcpy(compressionName, "32-bit Floating Point");
 			}
 			else if (track->f.sampleFormat == AF_SAMPFMT_DOUBLE)
 			{
-				memcpy(compressionTag, "fl64", 4);
+				compressionTag = "fl64";
 				strcpy(compressionName, "64-bit Floating Point");
 			}
 			/*
@@ -894,17 +888,17 @@ status AIFFFile::writeCOMM()
 		}
 		else if (track->f.compressionType == AF_COMPRESSION_G711_ULAW)
 		{
-			memcpy(compressionTag, "ulaw", 4);
+			compressionTag = "ulaw";
 			strcpy(compressionName, "CCITT G.711 u-law");
 		}
 		else if (track->f.compressionType == AF_COMPRESSION_G711_ALAW)
 		{
-			memcpy(compressionTag, "alaw", 4);
+			compressionTag = "alaw";
 			strcpy(compressionName, "CCITT G.711 A-law");
 		}
 	}
 
-	af_write("COMM", 4, fh);
+	fh->write("COMM", 4);
 
 	/*
 		For AIFF-C files, the length of the COMM chunk is 22
@@ -935,11 +929,11 @@ status AIFFFile::writeCOMM()
 	/* sample rate, 10 bytes */
 	uint8_t sampleRate[10];
 	_af_convert_to_ieee_extended(track->f.sampleRate, sampleRate);
-	af_write(sampleRate, 10, fh);
+	fh->write(sampleRate, 10);
 
 	if (isAIFFC)
 	{
-		af_write(compressionTag, 4, fh);
+		writeTag(&compressionTag);
 		af_write_pstring(compressionName, fh);
 	}
 
@@ -958,18 +952,18 @@ status AIFFFile::writeAESD()
 		return AF_SUCCEED;
 
 	if (AESD_offset == 0)
-		AESD_offset = af_ftell(fh);
+		AESD_offset = fh->tell();
 	else
-		af_fseek(fh, AESD_offset, SEEK_SET);
+		fh->seek(AESD_offset, File::SeekFromBeginning);
 
-	if (af_write("AESD", 4, fh) < 4)
+	if (fh->write("AESD", 4) < 4)
 		return AF_FAIL;
 
 	uint32_t size = 24;
 	if (!writeU32(&size))
 		return AF_FAIL;
 
-	if (af_write(track->aesData, 24, fh) < 24)
+	if (fh->write(track->aesData, 24) < 24)
 		return AF_FAIL;
 
 	return AF_SUCCEED;
@@ -977,19 +971,17 @@ status AIFFFile::writeAESD()
 
 status AIFFFile::writeSSND()
 {
-	assert(fh);
-
 	Track *track = getTrack();
 
 	if (SSND_offset == 0)
-		SSND_offset = af_ftell(fh);
+		SSND_offset = fh->tell();
 	else
-		af_fseek(fh, SSND_offset, SEEK_SET);
+		fh->seek(SSND_offset, File::SeekFromBeginning);
 
 	uint32_t chunkSize = (int) _af_format_frame_size(&track->f, false) *
 		track->totalfframes + 8;
 
-	af_write("SSND", 4, fh);
+	fh->write("SSND", 4);
 	writeU32(&chunkSize);
 
 	uint32_t zero = 0;
@@ -999,7 +991,7 @@ status AIFFFile::writeSSND()
 	writeU32(&zero);
 
 	if (track->fpos_first_frame == 0)
-		track->fpos_first_frame = af_ftell(fh);
+		track->fpos_first_frame = fh->tell();
 
 	return AF_SUCCEED;
 }
@@ -1024,7 +1016,7 @@ status AIFFFile::writeINST()
 	instrumentdata.releaseLoopEnd =
 		afGetLoopEnd(this, AF_DEFAULT_INST, 2);
 
-	af_write("INST", 4, fh);
+	fh->write("INST", 4);
 	writeU32(&length);
 
 	instrumentdata.baseNote =
@@ -1068,17 +1060,17 @@ status AIFFFile::writeMARK()
 		return AF_SUCCEED;
 
 	if (MARK_offset == 0)
-		MARK_offset = af_ftell(fh);
+		MARK_offset = fh->tell();
 	else
-		af_fseek(fh, MARK_offset, SEEK_SET);
+		fh->seek(MARK_offset, File::SeekFromBeginning);
 
 	AFfileoffset chunkStartPosition, chunkEndPosition;
 	uint32_t length = 0;
 
-	af_write("MARK", 4, fh);
+	fh->write("MARK", 4);
 	writeU32(&length);
 
-	chunkStartPosition = af_ftell(fh);
+	chunkStartPosition = fh->tell();
 
 	int *markids = (int *) _af_calloc(numMarkers, sizeof (int));
 	assert(markids);
@@ -1103,7 +1095,7 @@ status AIFFFile::writeMARK()
 
 	free(markids);
 
-	chunkEndPosition = af_ftell(fh);
+	chunkEndPosition = fh->tell();
 	length = chunkEndPosition - chunkStartPosition;
 
 #ifdef DEBUG
@@ -1111,10 +1103,10 @@ status AIFFFile::writeMARK()
 	printf(" length: %d\n", length);
 #endif
 
-	af_fseek(fh, chunkStartPosition - 4, SEEK_SET);
+	fh->seek(chunkStartPosition - 4, File::SeekFromBeginning);
 
 	writeU32(&length);
-	af_fseek(fh, chunkEndPosition, SEEK_SET);
+	fh->seek(chunkEndPosition, File::SeekFromBeginning);
 
 	return AF_SUCCEED;
 }
@@ -1129,11 +1121,11 @@ status AIFFFile::writeFVER()
 	assert(fileFormat == AF_FILE_AIFFC);
 
 	if (FVER_offset == 0)
-		FVER_offset = af_ftell(fh);
+		FVER_offset = fh->tell();
 	else
-		af_fseek(fh, FVER_offset, SEEK_SET);
+		fh->seek(FVER_offset, File::SeekFromBeginning);
 
-	af_write("FVER", 4, fh);
+	fh->write("FVER", 4);
 
 	chunkSize = 4;
 	writeU32(&chunkSize);
@@ -1151,14 +1143,15 @@ status AIFFFile::writeFVER()
 status AIFFFile::writeMiscellaneous()
 {
 	if (miscellaneousPosition == 0)
-		miscellaneousPosition = af_ftell(fh);
+		miscellaneousPosition = fh->tell();
 	else
-		af_fseek(fh, miscellaneousPosition, SEEK_SET);
+		fh->seek(miscellaneousPosition, File::SeekFromBeginning);
 
 	for (int i=0; i<miscellaneousCount; i++)
 	{
 		Miscellaneous *misc = &miscellaneous[i];
-		uint32_t chunkType, chunkSize;
+		Tag chunkType;
+		uint32_t chunkSize;
 		uint8_t padByte = 0;
 
 #ifdef DEBUG
@@ -1168,21 +1161,20 @@ status AIFFFile::writeMiscellaneous()
 		switch (misc->type)
 		{
 			case AF_MISC_NAME:
-				memcpy(&chunkType, "NAME", 4); break;
+				chunkType = "NAME"; break;
 			case AF_MISC_AUTH:
-				memcpy(&chunkType, "AUTH", 4); break;
+				chunkType = "AUTH"; break;
 			case AF_MISC_COPY:
-				memcpy(&chunkType, "(c) ", 4); break;
+				chunkType = "(c) "; break;
 			case AF_MISC_ANNO:
-				memcpy(&chunkType, "ANNO", 4); break;
+				chunkType = "ANNO"; break;
 			case AF_MISC_MIDI:
-				memcpy(&chunkType, "MIDI", 4); break;
+				chunkType = "MIDI"; break;
 			case AF_MISC_APPL:
-				memcpy(&chunkType, "APPL", 4); break;
+				chunkType = "APPL"; break;
 		}
 
-
-		af_write(&chunkType, 4, fh);
+		writeTag(&chunkType);
 
 		chunkSize = misc->size;
 		writeU32(&chunkSize);
@@ -1192,9 +1184,9 @@ status AIFFFile::writeMiscellaneous()
 			for now.
 		*/
 		if (misc->buffer != NULL)
-			af_write(misc->buffer, misc->size, fh);
+			fh->write(misc->buffer, misc->size);
 		else
-			af_fseek(fh, misc->size, SEEK_CUR);
+			fh->seek(misc->size, File::SeekFromCurrent);
 
 		if (misc->size % 2 != 0)
 			writeU8(&padByte);

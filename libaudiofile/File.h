@@ -33,6 +33,8 @@
 #include "Shared.h"
 #include <sys/types.h>
 
+typedef struct _AFvirtualfile AFvirtualfile;
+
 class File : public Shared<File>
 {
 public:
@@ -50,21 +52,26 @@ public:
 	};
 
 	static File *open(const char *path, AccessMode mode);
+	static File *create(int fd, AccessMode mode);
+	static File *create(AFvirtualfile *vf, AccessMode mode);
 
-	File(int fd, AccessMode mode);
 	virtual ~File();
-	void close();
-	ssize_t read(void *data, size_t nbytes);
-	ssize_t write(const void *data, size_t nbytes);
-	off_t length();
-	off_t seek(off_t offset, SeekOrigin origin);
-	off_t tell();
+	virtual int close() { return -1; }
+	virtual ssize_t read(void *data, size_t nbytes) = 0;
+	virtual ssize_t write(const void *data, size_t nbytes) = 0;
+	virtual off_t length() = 0;
+	virtual off_t seek(off_t offset, SeekOrigin origin) = 0;
+	virtual off_t tell() = 0;
+
+	bool canSeek();
 
 	AccessMode accessMode() const { return m_accessMode; }
 
 private:
-	int m_fd;
 	AccessMode m_accessMode;
+
+protected:
+	File(AccessMode mode) : m_accessMode(mode) { }
 };
 
 #endif // FILE_H

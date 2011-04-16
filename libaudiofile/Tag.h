@@ -38,8 +38,8 @@ struct Tag
 
 	uint32_t value() const { return m_value; }
 
-	bool operator==(const Tag &t) { return m_value == t.m_value; }
-	bool operator!=(const Tag &t) { return m_value != t.m_value; }
+	bool operator==(const Tag &t) const { return m_value == t.m_value; }
+	bool operator!=(const Tag &t) const { return m_value != t.m_value; }
 
 	std::string name() const
 	{

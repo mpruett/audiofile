@@ -35,7 +35,7 @@
 
 #include "Setup.h"
 #include "Track.h"
-#include "af_vfs.h"
+#include "File.h"
 #include "afinternal.h"
 #include "audiofile.h"
 #include "byteorder.h"
@@ -63,9 +63,9 @@ bool NISTFile::recognize(File *fh)
 {
 	uint8_t buffer[16];
 
-	af_fseek(fh, 0, SEEK_SET);
+	fh->seek(0, File::SeekFromBeginning);
 
-	if (af_read(buffer, 16, fh) != 16)
+	if (fh->read(buffer, 16) != 16)
 		return false;
 
 	/* Check to see if the file's magic number matches. */
@@ -214,9 +214,9 @@ status NISTFile::readInit(AFfilesetup setup)
 	tracks = NULL;
 	trackCount = 1;
 
-	af_fseek(fh, 0, SEEK_SET);
+	fh->seek(0, File::SeekFromBeginning);
 
-	if (af_read(header, NIST_SPHERE_HEADER_LENGTH, fh) != NIST_SPHERE_HEADER_LENGTH)
+	if (fh->read(header, NIST_SPHERE_HEADER_LENGTH) != NIST_SPHERE_HEADER_LENGTH)
 	{
 		_af_error(AF_BAD_READ, "Could not read NIST SPHERE file header");
 		return AF_FAIL;
@@ -382,7 +382,7 @@ status NISTFile::readInit(AFfilesetup setup)
 	}
 
 	track->fpos_first_frame = NIST_SPHERE_HEADER_LENGTH;
-	track->data_size = af_flength(fh) - NIST_SPHERE_HEADER_LENGTH;
+	track->data_size = fh->length() - NIST_SPHERE_HEADER_LENGTH;
 	track->nextfframe = 0;
 	track->fpos_next_frame = track->fpos_first_frame;
 
@@ -449,7 +449,7 @@ status NISTFile::writeHeader()
 	if (printed < NIST_SPHERE_HEADER_LENGTH)
 		memset(header + printed, ' ', NIST_SPHERE_HEADER_LENGTH - printed);
 
-	return af_write(header, NIST_SPHERE_HEADER_LENGTH, fh) == NIST_SPHERE_HEADER_LENGTH ? AF_SUCCEED : AF_FAIL;
+	return fh->write(header, NIST_SPHERE_HEADER_LENGTH) == NIST_SPHERE_HEADER_LENGTH ? AF_SUCCEED : AF_FAIL;
 }
 
 status NISTFile::writeInit(AFfilesetup setup)
@@ -467,7 +467,7 @@ status NISTFile::writeInit(AFfilesetup setup)
 	track->nextfframe = 0;
 	track->fpos_next_frame = track->fpos_first_frame;
 
-	af_fseek(fh, 0, SEEK_SET);
+	fh->seek(0, File::SeekFromBeginning);
 	writeHeader();
 
 	return AF_SUCCEED;
@@ -475,7 +475,7 @@ status NISTFile::writeInit(AFfilesetup setup)
 
 status NISTFile::update()
 {
-	af_fseek(fh, 0, SEEK_SET);
+	fh->seek(0, File::SeekFromBeginning);
 	writeHeader();
 
 	return AF_SUCCEED;

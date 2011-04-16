@@ -33,9 +33,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "File.h"
 #include "Setup.h"
 #include "Track.h"
-#include "af_vfs.h"
 #include "afinternal.h"
 #include "audiofile.h"
 #include "byteorder.h"
@@ -65,9 +65,9 @@ bool AVRFile::recognize(File *fh)
 {
 	uint32_t	magic;
 
-	af_fseek(fh, 0, SEEK_SET);
+	fh->seek(0, File::SeekFromBeginning);
 
-	if (af_read(&magic, 4, fh) != 4 || memcmp(&magic, "2BIT", 4) != 0)
+	if (fh->read(&magic, 4) != 4 || memcmp(&magic, "2BIT", 4) != 0)
 		return false;
 
 	return true;
@@ -82,11 +82,9 @@ status AVRFile::readInit(AFfilesetup setup)
 	char		reserved[26];
 	char		user[64];
 
-	Track		*track;
+	fh->seek(0, File::SeekFromBeginning);
 
-	af_fseek(fh, 0, SEEK_SET);
-
-	if (af_read(&magic, 4, fh) != 4)
+	if (fh->read(&magic, 4) != 4)
 	{
 		_af_error(AF_BAD_READ, "could not read AVR file header");
 		return AF_FAIL;
@@ -99,7 +97,7 @@ status AVRFile::readInit(AFfilesetup setup)
 	}
 
 	/* Read name. */
-	af_read(name, 8, fh);
+	fh->read(name, 8);
 
 	readU16(&mono);
 	readU16(&resolution);
@@ -112,10 +110,11 @@ status AVRFile::readInit(AFfilesetup setup)
 	readU32(&loopStart);
 	readU32(&loopEnd);
 
-	af_read(reserved, 26, fh);
-	af_read(user, 64, fh);
+	fh->read(reserved, 26);
+	fh->read(user, 64);
 
-	if ((track = _af_track_new()) == NULL)
+	Track *track = _af_track_new();
+	if (!track)
 		return AF_FAIL;
 
 	tracks = track;
@@ -165,12 +164,11 @@ status AVRFile::readInit(AFfilesetup setup)
 
 	_af_set_sample_format(&track->f, track->f.sampleFormat, track->f.sampleWidth);
 
-	track->fpos_first_frame = af_ftell(fh);
+	track->fpos_first_frame = fh->tell();
 	track->totalfframes = size;
-	track->data_size = track->totalfframes *
-		(int) _af_format_frame_size(&track->f, false);
-        track->nextfframe = 0;
-        track->fpos_next_frame = track->fpos_first_frame;
+	track->data_size = track->totalfframes * track->f.bytesPerFrame(false);
+	track->nextfframe = 0;
+	track->fpos_next_frame = track->fpos_first_frame;
 
 	/* The file has been parsed successfully. */
 	return AF_SUCCEED;
@@ -257,7 +255,7 @@ status AVRFile::update()
 	Track *track = getTrack();
 
 	/* Seek to the position of the size field. */
-	af_fseek(fh, 26, SEEK_SET);
+	fh->seek(26, File::SeekFromBeginning);
 
 	size = track->totalfframes;
 
@@ -295,17 +293,17 @@ status AVRFile::writeInit(AFfilesetup setup)
 
 	Track *track = getTrack();
 
-	if (af_fseek(fh, 0, SEEK_SET) != 0)
+	if (fh->seek(0, File::SeekFromBeginning) != 0)
 	{
 		_af_error(AF_BAD_LSEEK, "bad seek");
 		return AF_FAIL;
 	}
 
-	af_write("2BIT", 4, fh);
+	fh->write("2BIT", 4);
 	memset(name, 0, 8);
 	if (fileName != NULL)
 		strncpy(name, af_basename(fileName), 8);
-	af_write(name, 8, fh);
+	fh->write(name, 8);
 
 	if (track->f.channelCount == 1)
 		mono = 0x0;
@@ -341,13 +339,13 @@ status AVRFile::writeInit(AFfilesetup setup)
 	writeU32(&loopEnd);
 
 	memset(reserved, 0, 26);
-	af_write(reserved, 26, fh);
+	fh->write(reserved, 26);
 
 	memset(user, 0, 64);
-	af_write(user, 64, fh);
+	fh->write(user, 64);
 
 	if (track->fpos_first_frame == 0)
-		track->fpos_first_frame = af_ftell(fh);
+		track->fpos_first_frame = fh->tell();
 
 	return AF_SUCCEED;
 }

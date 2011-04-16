@@ -33,10 +33,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "File.h"
 #include "Marker.h"
 #include "Setup.h"
+#include "Tag.h"
 #include "Track.h"
-#include "af_vfs.h"
 #include "afinternal.h"
 #include "audiofile.h"
 #include "byteorder.h"
@@ -61,11 +62,11 @@ bool IFFFile::recognize(File *fh)
 {
 	uint8_t buffer[8];
 
-	af_fseek(fh, 0, SEEK_SET);
+	fh->seek(0, File::SeekFromBeginning);
 
-	if (af_read(buffer, 8, fh) != 8 || memcmp(buffer, "FORM", 4) != 0)
+	if (fh->read(buffer, 8) != 8 || memcmp(buffer, "FORM", 4) != 0)
 		return false;
-	if (af_read(buffer, 4, fh) != 4 || memcmp(buffer, "8SVX", 4) != 0)
+	if (fh->read(buffer, 4) != 4 || memcmp(buffer, "8SVX", 4) != 0)
 		return false;
 
 	return true;
@@ -84,12 +85,12 @@ IFFFile::IFFFile()
 	Parse miscellaneous data chunks such as name, author, copyright,
 	and annotation chunks.
 */
-status IFFFile::parseMiscellaneous(uint32_t type, size_t size)
+status IFFFile::parseMiscellaneous(const Tag &type, size_t size)
 {
 	int misctype = AF_MISC_UNRECOGNIZED;
 
-	assert(!memcmp(&type, "NAME", 4) || !memcmp(&type, "AUTH", 4) ||
-		!memcmp(&type, "(c) ", 4) || !memcmp(&type, "ANNO", 4));
+	assert(type == "NAME" || type == "AUTH" ||
+		type == "(c) " || type == "ANNO");
 
 	/* Skip zero-length miscellaneous chunks. */
 	if (size == 0)
@@ -99,13 +100,13 @@ status IFFFile::parseMiscellaneous(uint32_t type, size_t size)
 	miscellaneous = (Miscellaneous *) _af_realloc(miscellaneous,
 		miscellaneousCount * sizeof (Miscellaneous));
 
-	if (!memcmp(&type, "NAME", 4))
+	if (type == "NAME")
 		misctype = AF_MISC_NAME;
-	else if (!memcmp(&type, "AUTH", 4))
+	else if (type == "AUTH")
 		misctype = AF_MISC_AUTH;
-	else if (!memcmp(&type, "(c) ", 4))
+	else if (type == "(c) ")
 		misctype = AF_MISC_COPY;
-	else if (!memcmp(&type, "ANNO", 4))
+	else if (type == "ANNO")
 		misctype = AF_MISC_ANNO;
 
 	miscellaneous[miscellaneousCount - 1].id = miscellaneousCount;
@@ -113,8 +114,7 @@ status IFFFile::parseMiscellaneous(uint32_t type, size_t size)
 	miscellaneous[miscellaneousCount - 1].size = size;
 	miscellaneous[miscellaneousCount - 1].position = 0;
 	miscellaneous[miscellaneousCount - 1].buffer = _af_malloc(size);
-	af_read(miscellaneous[miscellaneousCount - 1].buffer,
-		size, fh);
+	fh->read(miscellaneous[miscellaneousCount - 1].buffer, size);
 
 	return AF_SUCCEED;
 }
@@ -122,9 +122,9 @@ status IFFFile::parseMiscellaneous(uint32_t type, size_t size)
 /*
 	Parse voice header chunk.
 */
-status IFFFile::parseVHDR(uint32_t type, size_t size)
+status IFFFile::parseVHDR(const Tag &type, size_t size)
 {
-	assert(!memcmp(&type, "VHDR", 4));
+	assert(type == "VHDR");
 
 	Track *track = getTrack();
 
@@ -153,7 +153,7 @@ status IFFFile::parseVHDR(uint32_t type, size_t size)
 	return AF_SUCCEED;
 }
 
-status IFFFile::parseBODY(uint32_t type, size_t size)
+status IFFFile::parseBODY(const Tag &type, size_t size)
 {
 	Track *track = getTrack();
 
@@ -166,22 +166,24 @@ status IFFFile::parseBODY(uint32_t type, size_t size)
 	track->data_size = size;
 
 	/* Sound data follows. */
-	track->fpos_first_frame = af_ftell(fh);
+	track->fpos_first_frame = fh->tell();
 
 	return AF_SUCCEED;
 }
 
 status IFFFile::readInit(AFfilesetup setup)
 {
-	uint32_t type, size, formtype;
+	fh->seek(0, File::SeekFromBeginning);
 
-	af_fseek(fh, 0, SEEK_SET);
+	Tag type;
+	uint32_t size;
+	Tag formtype;
 
-	af_read(&type, 4, fh);
+	readTag(&type);
 	readU32(&size);
-	af_read(&formtype, 4, fh);
+	readTag(&formtype);
 
-	if (memcmp(&type, "FORM", 4) != 0 || memcmp(&formtype, "8SVX", 4) != 0)
+	if (type != "FORM" || formtype != "8SVX")
 		return AF_FAIL;
 
 	instrumentCount = 0;
@@ -198,24 +200,25 @@ status IFFFile::readInit(AFfilesetup setup)
 	size_t index = 4;
 	while (index < size)
 	{
-		uint32_t chunkid = 0, chunksize = 0;
+		Tag chunkid;
+		uint32_t chunksize = 0;
 		status result = AF_SUCCEED;
 
-		af_read(&chunkid, 4, fh);
+		readTag(&chunkid);
 		readU32(&chunksize);
 
-		if (!memcmp("VHDR", &chunkid, 4))
+		if (chunkid == "VHDR")
 		{
 			result = parseVHDR(chunkid, chunksize);
 		}
-		else if (!memcmp("BODY", &chunkid, 4))
+		else if (chunkid == "BODY")
 		{
 			result = parseBODY(chunkid, chunksize);
 		}
-		else if (!memcmp("NAME", &chunkid, 4) ||
-			!memcmp("AUTH", &chunkid, 4) ||
-			!memcmp("(c) ", &chunkid, 4) ||
-			!memcmp("ANNO", &chunkid, 4))
+		else if (chunkid == "NAME" ||
+			chunkid == "AUTH" ||
+			chunkid == "(c) " ||
+			chunkid == "ANNO")
 		{
 			parseMiscellaneous(chunkid, chunksize);
 		}
@@ -234,7 +237,7 @@ status IFFFile::readInit(AFfilesetup setup)
 			index++;
 
 		/* Set the seek position to the beginning of the next chunk. */
-		af_fseek(fh, index + 8, SEEK_SET);
+		fh->seek(index + 8, File::SeekFromBeginning);
 	}
 
 	/* The file has been successfully parsed. */
@@ -313,10 +316,10 @@ status IFFFile::writeInit(AFfilesetup setup)
 	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
 		return AF_FAIL;
 
-	af_write("FORM", 4, fh);
+	fh->write("FORM", 4);
 	writeU32(&fileSize);
 
-	af_write("8SVX", 4, fh);
+	fh->write("8SVX", 4);
 
 	writeVHDR();
 	writeMiscellaneous();
@@ -334,11 +337,11 @@ status IFFFile::update()
 	writeBODY();
 
 	/* Get the length of the file. */
-	length = af_flength(fh);
+	length = fh->length();
 	length -= 8;
 
 	/* Set the length of the FORM chunk. */
-	af_fseek(fh, 4, SEEK_SET);
+	fh->seek(4, File::SeekFromBeginning);
 	writeU32(&length);
 
 	return AF_SUCCEED;
@@ -357,13 +360,13 @@ status IFFFile::writeVHDR()
 		current offset.
 	*/
 	if (VHDR_offset == 0)
-		VHDR_offset = af_ftell(fh);
+		VHDR_offset = fh->tell();
 	else
-		af_fseek(fh, VHDR_offset, SEEK_SET);
+		fh->seek(VHDR_offset, File::SeekFromBeginning);
 
 	Track *track = getTrack();
 
-	af_write("VHDR", 4, fh);
+	fh->write("VHDR", 4);
 
 	chunkSize = 20;
 	writeU32(&chunkSize);
@@ -401,11 +404,11 @@ status IFFFile::writeBODY()
 	Track *track = getTrack();
 
 	if (BODY_offset == 0)
-		BODY_offset = af_ftell(fh);
+		BODY_offset = fh->tell();
 	else
-		af_fseek(fh, BODY_offset, SEEK_SET);
+		fh->seek(BODY_offset, File::SeekFromBeginning);
 
-	af_write("BODY", 4, fh);
+	fh->write("BODY", 4);
 
 	/*
 		IFF/8SVX supports only one channel, so the number of
@@ -416,13 +419,13 @@ status IFFFile::writeBODY()
 	writeU32(&chunkSize);
 
 	if (track->fpos_first_frame == 0)
-		track->fpos_first_frame = af_ftell(fh);
+		track->fpos_first_frame = fh->tell();
 
 	/* Add a pad byte to the end of the chunk if the chunk size is odd. */
 	if ((chunkSize % 2) == 1)
 	{
 		uint8_t zero = 0;
-		af_fseek(fh, BODY_offset + 8 + chunkSize, SEEK_SET);
+		fh->seek(BODY_offset + 8 + chunkSize, File::SeekFromBeginning);
 		writeU8(&zero);
 	}
 
@@ -436,29 +439,30 @@ status IFFFile::writeBODY()
 status IFFFile::writeMiscellaneous()
 {
 	if (miscellaneousPosition == 0)
-		miscellaneousPosition = af_ftell(fh);
+		miscellaneousPosition = fh->tell();
 	else
-		af_fseek(fh, miscellaneousPosition, SEEK_SET);
+		fh->seek(miscellaneousPosition, File::SeekFromBeginning);
 
 	for (int i=0; i<miscellaneousCount; i++)
 	{
 		Miscellaneous *misc = &miscellaneous[i];
-		uint32_t chunkType, chunkSize;
+		Tag chunkType;
+		uint32_t chunkSize;
 		uint8_t padByte = 0;
 
 		switch (misc->type)
 		{
 			case AF_MISC_NAME:
-				memcpy(&chunkType, "NAME", 4); break;
+				chunkType = "NAME"; break;
 			case AF_MISC_AUTH:
-				memcpy(&chunkType, "AUTH", 4); break;
+				chunkType = "AUTH"; break;
 			case AF_MISC_COPY:
-				memcpy(&chunkType, "(c) ", 4); break;
+				chunkType = "(c) "; break;
 			case AF_MISC_ANNO:
-				memcpy(&chunkType, "ANNO", 4); break;
+				chunkType = "ANNO"; break;
 		}
 
-		af_write(&chunkType, 4, fh);
+		writeTag(&chunkType);
 
 		chunkSize = misc->size;
 		writeU32(&chunkSize);
@@ -469,9 +473,9 @@ status IFFFile::writeMiscellaneous()
 			for now.
 		*/
 		if (misc->buffer != NULL)
-			af_write(misc->buffer, misc->size, fh);
+			fh->write(misc->buffer, misc->size);
 		else
-			af_fseek(fh, misc->size, SEEK_CUR);
+			fh->seek(misc->size, File::SeekFromCurrent);
 
 		if (misc->size % 2 != 0)
 			writeU8(&padByte);

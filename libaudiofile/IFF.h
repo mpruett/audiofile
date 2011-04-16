@@ -46,9 +46,9 @@ private:
 	AFfileoffset	VHDR_offset;
 	AFfileoffset	BODY_offset;
 
-	status parseMiscellaneous(uint32_t type, size_t size);
-	status parseVHDR(uint32_t type, size_t size);
-	status parseBODY(uint32_t type, size_t size);
+	status parseMiscellaneous(const Tag &type, size_t size);
+	status parseVHDR(const Tag &type, size_t size);
+	status parseBODY(const Tag &type, size_t size);
 
 	status writeVHDR();
 	status writeMiscellaneous();

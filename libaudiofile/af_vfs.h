@@ -27,16 +27,31 @@
 #ifndef AUDIOFILE_VFS_H
 #define AUDIOFILE_VFS_H 1
 
-#include <stdio.h>
-#include <audiofile.h>
+#include <sys/types.h>
 
-#include "File.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-ssize_t af_read (void *data, size_t size, File *);
-ssize_t af_write (const void *data, size_t size, File *);
-int af_fclose (File *);
-long af_flength (File *);
-int af_fseek (File *, long offset, int whence);
-long af_ftell (File *);
+typedef struct _AFvirtualfile AFvirtualfile;
+
+struct _AFvirtualfile
+{
+	ssize_t (*read) (AFvirtualfile *vfile, void *data, size_t nbytes);
+	off_t (*length) (AFvirtualfile *vfile);
+	ssize_t (*write) (AFvirtualfile *vfile, const void *data, size_t nbytes);
+	void (*destroy) (AFvirtualfile *vfile);
+	off_t (*seek) (AFvirtualfile *vfile, off_t offset, int is_relative);
+	off_t (*tell) (AFvirtualfile *vfile);
+
+	void *closure;
+};
+
+AFvirtualfile *af_virtual_file_new (void);
+void af_virtual_file_destroy (AFvirtualfile *vfile);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

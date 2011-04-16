@@ -36,7 +36,6 @@
 #include "Marker.h"
 #include "Setup.h"
 #include "Track.h"
-#include "af_vfs.h"
 #include "afinternal.h"
 #include "modules/Module.h"
 #include "modules/ModuleState.h"
@@ -47,26 +46,32 @@ extern const _Unit _af_units[];
 
 static void freeFileHandle (AFfilehandle filehandle);
 static void freeInstParams (AFPVu *values, int fileFormat);
-static status _afOpenFile (int access, File *vf, const char *filename,
+static status _afOpenFile (int access, File *f, const char *filename,
 	AFfilehandle *file, AFfilesetup filesetup);
 
-int _af_identify (File *vf, int *implemented)
+int _af_identify (File *f, int *implemented)
 {
-	AFfileoffset curpos = af_ftell(vf);
+	if (!f->canSeek())
+	{
+		_af_error(AF_BAD_LSEEK, "Cannot seek in file");
+		return AF_FILE_UNKNOWN;
+	}
+
+	AFfileoffset curpos = f->tell();
 
 	for (int i=0; i<_AF_NUM_UNITS; i++)
 	{
 		if (_af_units[i].recognize &&
-			_af_units[i].recognize(vf))
+			_af_units[i].recognize(f))
 		{
 			if (implemented != NULL)
 				*implemented = _af_units[i].implemented;
-			af_fseek(vf, curpos, SEEK_SET);
+			f->seek(curpos, File::SeekFromBeginning);
 			return _af_units[i].fileFormat;
 		}
 	}
 
-	af_fseek(vf, curpos, SEEK_SET);
+	f->seek(curpos, File::SeekFromBeginning);
 
 	if (implemented != NULL)
 		*implemented = false;
@@ -76,20 +81,17 @@ int _af_identify (File *vf, int *implemented)
 
 int afIdentifyFD (int fd)
 {
-	File	*vf;
-	int		result;
-
 	/*
 		Duplicate the file descriptor since otherwise the
 		original file descriptor would get closed when we close
 		the virtual file below.
 	*/
 	fd = dup(fd);
-	vf = new File(fd, File::ReadAccess);
+	File *f = File::create(fd, File::ReadAccess);
 
-	result = _af_identify(vf, NULL);
+	int result = _af_identify(f, NULL);
 
-	af_fclose(vf);
+	delete f;
 
 	return result;
 }
@@ -103,16 +105,16 @@ int afIdentifyNamedFD (int fd, const char *filename, int *implemented)
 	*/
 	fd = dup(fd);
 
-	File *vf = new File(fd, File::ReadAccess);
-	if (!vf)
+	File *f = File::create(fd, File::ReadAccess);
+	if (!f)
 	{
 		_af_error(AF_BAD_OPEN, "could not open file '%s'", filename);
 		return AF_FILE_UNKNOWN;
 	}
 
-	int result = _af_identify(vf, implemented);
+	int result = _af_identify(f, implemented);
 
-	af_fclose(vf);
+	delete f;
 
 	return result;
 }
@@ -140,12 +142,14 @@ AFfilehandle afOpenFD (int fd, const char *mode, AFfilesetup setup)
 		return AF_NULL_FILEHANDLE;
 	}
 
-	File *vf = new File(fd, access == _AF_READ_ACCESS ?
+	File *f = File::create(fd, access == _AF_READ_ACCESS ?
 		File::ReadAccess : File::WriteAccess);
 
 	AFfilehandle filehandle = NULL;
-	if (_afOpenFile(access, vf, NULL, &filehandle, setup) != AF_SUCCEED)
-		af_fclose(vf);
+	if (_afOpenFile(access, f, NULL, &filehandle, setup) != AF_SUCCEED)
+	{
+		delete f;
+	}
 
 	return filehandle;
 }
@@ -170,12 +174,14 @@ AFfilehandle afOpenNamedFD (int fd, const char *mode, AFfilesetup setup,
 		return AF_NULL_FILEHANDLE;
 	}
 
-	File *vf = new File(fd, access == _AF_READ_ACCESS ?
+	File *f = File::create(fd, access == _AF_READ_ACCESS ?
 		File::ReadAccess : File::WriteAccess);
 
 	AFfilehandle filehandle;
-	if (_afOpenFile(access, vf, filename, &filehandle, setup) != AF_SUCCEED)
-		af_fclose(vf);
+	if (_afOpenFile(access, f, filename, &filehandle, setup) != AF_SUCCEED)
+	{
+		delete f;
+	}
 
 	return filehandle;
 }
@@ -203,22 +209,73 @@ AFfilehandle afOpenFile (const char *filename, const char *mode, AFfilesetup set
 		return AF_NULL_FILEHANDLE;
 	}
 
-	File *vf = File::open(filename,
+	File *f = File::open(filename,
 		access == _AF_READ_ACCESS ? File::ReadAccess : File::WriteAccess);
-	if (!vf)
+	if (!f)
 	{
 		_af_error(AF_BAD_OPEN, "could not open file '%s'", filename);
 		return AF_NULL_FILEHANDLE;
 	}
 
 	AFfilehandle filehandle;
-	if (_afOpenFile(access, vf, filename, &filehandle, setup) != AF_SUCCEED)
-		af_fclose(vf);
+	if (_afOpenFile(access, f, filename, &filehandle, setup) != AF_SUCCEED)
+	{
+		f->close();
+		delete f;
+	}
 
 	return filehandle;
 }
 
-static status _afOpenFile (int access, File *vf, const char *filename,
+AFfilehandle afOpenVirtualFile (AFvirtualfile *vf, const char *mode,
+	AFfilesetup setup)
+{
+	if (!vf)
+	{
+		_af_error(AF_BAD_OPEN, "null virtual file");
+		return AF_NULL_FILEHANDLE;
+	}
+
+	if (!mode)
+	{
+		_af_error(AF_BAD_ACCMODE, "null access mode");
+		return AF_NULL_FILEHANDLE;
+	}
+
+	int access;
+	if (mode[0] == 'r')
+	{
+		access = _AF_READ_ACCESS;
+	}
+	else if (mode[0] == 'w')
+	{
+		access = _AF_WRITE_ACCESS;
+	}
+	else
+	{
+		_af_error(AF_BAD_ACCMODE, "unrecognized access mode '%s'", mode);
+		return AF_NULL_FILEHANDLE;
+	}
+
+	File *f = File::create(vf,
+		access == _AF_READ_ACCESS ? File::ReadAccess : File::WriteAccess);
+	if (!f)
+	{
+		_af_error(AF_BAD_OPEN, "could not open virtual file");
+		return AF_NULL_FILEHANDLE;
+	}
+
+	AFfilehandle filehandle;
+	if (_afOpenFile(access, f, NULL, &filehandle, setup) != AF_SUCCEED)
+	{
+		f->close();
+		delete f;
+	}
+
+	return filehandle;
+}
+
+static status _afOpenFile (int access, File *f, const char *filename,
 	AFfilehandle *file, AFfilesetup filesetup)
 {
 	int	fileFormat = AF_FILE_UNKNOWN;
@@ -246,11 +303,11 @@ static status _afOpenFile (int access, File *vf, const char *filename,
 				"warning: opening file for read access: "
 				"ignoring file setup with non-raw file format");
 			filesetup = AF_NULL_FILESETUP;
-			fileFormat = _af_identify(vf, &implemented);
+			fileFormat = _af_identify(f, &implemented);
 		}
 	}
 	else if (filesetup == AF_NULL_FILESETUP)
-		fileFormat = _af_identify(vf, &implemented);
+		fileFormat = _af_identify(f, &implemented);
 
 	if (fileFormat == AF_FILE_UNKNOWN)
 	{
@@ -292,8 +349,9 @@ static status _afOpenFile (int access, File *vf, const char *filename,
 	}
 
 	filehandle->valid = _AF_VALID_FILEHANDLE;
-	filehandle->fh = vf;
+	filehandle->fh = f;
 	filehandle->access = access;
+	filehandle->seekok = f->canSeek();
 	if (filename != NULL)
 		filehandle->fileName = strdup(filename);
 	else
@@ -403,9 +461,11 @@ int afCloseFile (AFfilehandle file)
 
 	afSyncFile(file);
 
-	err = af_fclose(file->fh);
+	err = file->fh->close();
 	if (err < 0)
 		_af_error(AF_BAD_CLOSE, "close returned %d", err);
+
+	delete file->fh;
 
 	freeFileHandle(file);
 

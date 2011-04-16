@@ -29,10 +29,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "File.h"
 #include "FileHandle.h"
 #include "Setup.h"
 #include "Track.h"
-#include "af_vfs.h"
 #include "afinternal.h"
 #include "audiofile.h"
 #include "modules/Module.h"
@@ -60,15 +60,13 @@ int afWriteFrames (AFfilehandle file, int trackid, const void *samples,
 	if (track->ms->isDirty() && track->ms->setup(file, track) == AF_FAIL)
 		return -1;
 
-	/*if (file->seekok) {*/
-
-	if (af_fseek(file->fh, track->fpos_next_frame, SEEK_SET) < 0)
+	if (file->seekok &&
+		file->fh->seek(track->fpos_next_frame, File::SeekFromBeginning) !=
+			track->fpos_next_frame)
 	{
 		_af_error(AF_BAD_LSEEK, "unable to position write pointer at next frame");
 		return -1;
 	}
-
-	/* } */
 
 	bytes_per_vframe = _af_format_frame_size(&track->v, true);
 
@@ -145,15 +143,13 @@ int afReadFrames (AFfilehandle file, int trackid, void *samples,
 	if (track->ms->isDirty() && track->ms->setup(file, track) == AF_FAIL)
 		return -1;
 
-	/*if (file->seekok) {*/
-
-	if (af_fseek(file->fh, track->fpos_next_frame, SEEK_SET) < 0)
+	if (file->seekok &&
+		file->fh->seek(track->fpos_next_frame, File::SeekFromBeginning) !=
+			track->fpos_next_frame)
 	{
 		_af_error(AF_BAD_LSEEK, "unable to position read pointer at next frame");
 		return -1;
 	}
-
-	/* } */
 
 	if (track->totalvframes == -1)
 		nvframes2read = nvframeswanted;

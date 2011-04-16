@@ -34,9 +34,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "File.h"
 #include "Setup.h"
 #include "Track.h"
-#include "af_vfs.h"
 #include "afinternal.h"
 #include "audiofile.h"
 #include "byteorder.h"
@@ -116,9 +116,9 @@ status NeXTFile::readInit(AFfilesetup setup)
 	tracks = NULL;	/* Allocate this later. */
 	trackCount = 1;
 
-	af_fseek(fh, 0, SEEK_SET);
+	fh->seek(0, File::SeekFromBeginning);
 
-	af_read(&id, 4, fh);
+	fh->read(&id, 4);
 	assert(!memcmp(&id, ".snd", 4));
 
 	readU32(&offset);
@@ -217,9 +217,9 @@ bool NeXTFile::recognize(File *fh)
 {
 	uint8_t buffer[4];
 
-	af_fseek(fh, 0, SEEK_SET);
+	fh->seek(0, File::SeekFromBeginning);
 
-	if (af_read(buffer, 4, fh) != 4 || memcmp(buffer, ".snd", 4) != 0)
+	if (fh->read(buffer, 4) != 4 || memcmp(buffer, ".snd", 4) != 0)
 		return false;
 
 	return true;
@@ -298,7 +298,6 @@ AFfilesetup NeXTFile::completeSetup(AFfilesetup setup)
 
 static uint32_t nextencodingtype (AudioFormat *format);
 
-/* A return value of zero indicates successful synchronisation. */
 status NeXTFile::update()
 {
 	writeHeader();
@@ -309,7 +308,7 @@ status NeXTFile::writeHeader()
 {
 	Track *track = getTrack();
 
-	if (af_fseek(fh, 0, SEEK_SET) != 0)
+	if (fh->seek(0, File::SeekFromBeginning) != 0)
 		_af_error(AF_BAD_LSEEK, "bad seek");
 
 	uint32_t offset = track->fpos_first_frame;
@@ -319,7 +318,7 @@ status NeXTFile::writeHeader()
 	uint32_t sampleRate = track->f.sampleRate;
 	uint32_t channelCount = track->f.channelCount;
 
-	af_write(".snd", 4, fh);
+	fh->write(".snd", 4);
 	writeU32(&offset);
 	writeU32(&length);
 	writeU32(&encoding);
