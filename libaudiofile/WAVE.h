@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 1998, Michael Pruett <michael@68k.org>
+	Copyright (C) 1998, 2011, Michael Pruett <michael@68k.org>
 	Copyright (C) 2000, Silicon Graphics, Inc.
 
 	This library is free software; you can redistribute it and/or
@@ -36,6 +36,8 @@
 extern const InstParamInfo _af_wave_inst_params[_AF_WAVE_NUM_INSTPARAMS];
 #define _AF_WAVE_NUM_COMPTYPES 2
 extern const int _af_wave_compression_types[_AF_WAVE_NUM_COMPTYPES];
+
+struct UUID;
 
 class WAVEFile : public _AFfilehandle
 {
@@ -87,6 +89,9 @@ private:
 	status writeMiscellaneous();
 	status writeCues();
 	status writeData();
+
+	bool readUUID(UUID *g);
+	bool writeUUID(const UUID *g);
 };
 
 #endif

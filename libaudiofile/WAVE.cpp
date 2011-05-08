@@ -32,6 +32,7 @@
 #include <assert.h>
 #include <math.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -41,6 +42,7 @@
 #include "Setup.h"
 #include "Tag.h"
 #include "Track.h"
+#include "UUID.h"
 #include "byteorder.h"
 #include "util.h"
 
@@ -86,7 +88,9 @@ enum
 	IBM_FORMAT_ALAW = 0x0102,
 	IBM_FORMAT_ADPCM = 0x0103,
 
-	WAVE_FORMAT_CREATIVE_ADPCM = 0x0200
+	WAVE_FORMAT_CREATIVE_ADPCM = 0x0200,
+
+	WAVE_FORMAT_EXTENSIBLE = 0xfffe
 };
 
 const int _af_wave_compression_types[_AF_WAVE_NUM_COMPTYPES] =
@@ -121,6 +125,27 @@ static _AFfilesetup wave_default_filesetup =
 	NULL			/* miscellaneous */
 };
 
+static const UUID _af_wave_guid_pcm =
+{{
+	0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00,
+	0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71
+}};
+static const UUID _af_wave_guid_ieee_float =
+{{
+	0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00,
+	0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71
+}};
+static const UUID _af_wave_guid_ulaw =
+{{
+	0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00,
+	0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71
+}};
+static const UUID _af_wave_guid_alaw =
+{{
+	0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00,
+	0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71
+}};
+
 WAVEFile::WAVEFile()
 {
 	setFormatByteOrder(AF_BYTEORDER_LITTLEENDIAN);
@@ -146,8 +171,6 @@ status WAVEFile::parseFrameCount(const Tag &id, uint32_t size)
 
 status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 {
-	assert(id == "fmt ");
-
 	Track *track = getTrack();
 
 	uint16_t formatTag;
@@ -196,6 +219,7 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 		case IBM_FORMAT_MULAW:
 			track->f.sampleWidth = 16;
 			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
+			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 			track->f.compressionType = AF_COMPRESSION_G711_ULAW;
 			break;
 
@@ -203,6 +227,7 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 		case IBM_FORMAT_ALAW:
 			track->f.sampleWidth = 16;
 			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
+			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 			track->f.compressionType = AF_COMPRESSION_G711_ALAW;
 			break;
 
@@ -332,6 +357,70 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 		}
 		break;
 
+		case WAVE_FORMAT_EXTENSIBLE:
+		{
+			uint16_t bitsPerSample;
+			readU16(&bitsPerSample);
+			uint16_t extraByteCount;
+			readU16(&extraByteCount);
+			uint16_t reserved;
+			readU16(&reserved);
+			uint32_t channelMask;
+			readU32(&channelMask);
+			UUID subformat;
+			readUUID(&subformat);
+			if (subformat == _af_wave_guid_pcm)
+			{
+				track->f.sampleWidth = bitsPerSample;
+
+				if (bitsPerSample == 0 || bitsPerSample > 32)
+				{
+					_af_error(AF_BAD_WIDTH,
+						"bad sample width of %d bits",
+						bitsPerSample);
+					return AF_FAIL;
+				}
+
+				// Use valid bits per sample if bytes per sample is the same.
+				if (reserved <= bitsPerSample &&
+					(reserved + 7) / 8 == (bitsPerSample + 7) / 8)
+					track->f.sampleWidth = reserved;
+
+				if (bitsPerSample <= 8)
+					track->f.sampleFormat = AF_SAMPFMT_UNSIGNED;
+				else
+					track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
+			}
+			else if (subformat == _af_wave_guid_ieee_float)
+			{
+				if (bitsPerSample == 64)
+				{
+					track->f.sampleWidth = 64;
+					track->f.sampleFormat = AF_SAMPFMT_DOUBLE;
+				}
+				else
+				{
+					track->f.sampleWidth = 32;
+					track->f.sampleFormat = AF_SAMPFMT_FLOAT;
+				}
+			}
+			else if (subformat == _af_wave_guid_alaw ||
+				subformat == _af_wave_guid_ulaw)
+			{
+				track->f.compressionType = subformat == _af_wave_guid_alaw ?
+					AF_COMPRESSION_G711_ALAW : AF_COMPRESSION_G711_ULAW;
+				track->f.sampleWidth = 16;
+				track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
+				track->f.byteOrder = _AF_BYTEORDER_NATIVE;
+			}
+			else
+			{
+				_af_error(AF_BAD_NOT_IMPLEMENTED, "WAVE extensible data format %s is not currently supported", subformat.name().c_str());
+				return AF_FAIL;
+			}
+		}
+		break;
+
 		case WAVE_FORMAT_YAMAHA_ADPCM:
 		case WAVE_FORMAT_OKI_ADPCM:
 		case WAVE_FORMAT_CREATIVE_ADPCM:
@@ -351,7 +440,7 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 			break;
 
 		default:
-			_af_error(AF_BAD_NOT_IMPLEMENTED, "WAVE file data format 0x%x not currently supported", formatTag);
+			_af_error(AF_BAD_NOT_IMPLEMENTED, "WAVE file data format 0x%x not currently supported != 0xfffe ? %d, != EXTENSIBLE? %d", formatTag, formatTag != 0xfffe, formatTag != WAVE_FORMAT_EXTENSIBLE);
 			return AF_FAIL;
 			break;
 	}
@@ -1441,4 +1530,14 @@ status WAVEFile::writeInit(AFfilesetup setup)
 	writeData();
 
 	return AF_SUCCEED;
+}
+
+bool WAVEFile::readUUID(UUID *u)
+{
+	return fh->read(u->data, 16) == 16;
+}
+
+bool WAVEFile::writeUUID(const UUID *u)
+{
+	return fh->write(u->data, 16) == 16;
 }

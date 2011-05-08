@@ -1,3 +1,8 @@
+2011-05-07  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/Makefile.am,  libaudiofile/WAVE.{cpp,h},
+	libaudiofile/UUID.{cpp,h}: Add support for extensible WAVE format.
+
 2011-04-16  Michael Pruett <michael@68k.org>
 
 	* Refactor file parsing and writing. Update VFS interface.

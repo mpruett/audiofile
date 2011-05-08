@@ -28,7 +28,8 @@ libaudiofile_la_SOURCES = \
 	pcm.h units.h \
 	print.h util.h debug.h \
 	File.cpp File.h Shared.h \
-	AudioFormat.cpp AudioFormat.h FileHandle.cpp Tag.h
+	AudioFormat.cpp AudioFormat.h FileHandle.cpp Tag.h \
+	UUID.cpp UUID.h
 
 libaudiofile_la_LIBADD = modules/libmodules.la $(COVERAGE_LIBS)
 
