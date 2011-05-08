@@ -33,7 +33,8 @@ libaudiofile_la_SOURCES = \
 
 libaudiofile_la_LIBADD = modules/libmodules.la $(COVERAGE_LIBS)
 
-libaudiofile_la_LDFLAGS = -version-info 0:2:0 -no-undefined \
+libaudiofile_la_LDFLAGS = -version-info $(AUDIOFILE_VERSION_INFO) \
+	-no-undefined \
 	-export-symbols $(srcdir)/audiofile.exports
 
 include_HEADERS = audiofile.h aupvlist.h af_vfs.h

@@ -13,10 +13,10 @@ alsaplay_SOURCES = alsaplay.cpp
 alsaplay_LDADD = $(LIBAUDIOFILE) -lasound
 
 irixread_SOURCES = irixread.c sgi.c sgi.h
-irixread_LDADD = $(LIBAUDIOFILE) @AUDIO_LIB@
+irixread_LDADD = $(LIBAUDIOFILE) -laudio
 
 irixtestloop_SOURCES = irixtestloop.c sgi.c sgi.h
-irixtestloop_LDADD = $(LIBAUDIOFILE) @AUDIO_LIB@
+irixtestloop_LDADD = $(LIBAUDIOFILE) -laudio
 
 linuxtest_SOURCES = linuxtest.c
 
