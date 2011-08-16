@@ -121,6 +121,5 @@ AC_CONFIG_FILES([
 	libaudiofile/Makefile 
 	libaudiofile/modules/Makefile 
 	docs/Makefile 
-	win32/Makefile 
 	Makefile])
 AC_OUTPUT

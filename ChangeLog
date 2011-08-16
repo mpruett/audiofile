@@ -1,3 +1,7 @@
+2011-08-16  Michael Pruett <michael@68k.org>
+
+	* win32: Remove obsolete Windows project files.
+
 2011-05-07  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/Makefile.am,  libaudiofile/WAVE.{cpp,h},
