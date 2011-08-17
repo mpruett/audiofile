@@ -36,11 +36,10 @@ ERRORS
 ------
 `afWriteFrames` can produce these errors:
 
-* AF_BAD_FILEHANDLE
-* AF_BAD_TRACKID
-* AF_BAD_WRITE
-* AF_BAD_LSEEK
-* AF_BAD_TRACKID
+`AF_BAD_FILEHANDLE`:: the file handle was invalid
+`AF_BAD_TRACKID`:: the track is not `AF_DEFAULT_TRACK` 
+`AF_BAD_WRITE`:: writing audio data to the file failed
+`AF_BAD_LSEEK`:: seeking within the file failed
 
 SEE ALSO
 --------

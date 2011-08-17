@@ -17,17 +17,18 @@ PARAMETERS
 ----------
 'path' is the path to the file to be opened.
 
-'mode' specifies a mode for opening the file (typically `"r"` or `"w"`).
+'mode' specifies a mode for opening the file: `"r"` for reading or
+`"w"` for writing.
 
-'setup' is ignored unless the mode specifies writing.
+'setup' is an AFfilesetup created by linkaf:afNewFileSetup[3]. This value
+is ignored for files opened for reading except when the file format is
+`AF_FILE_RAWDATA`.
 
 RETURN VALUE
 ------------
-`afOpenFile` returns, upon success, a valid `AFfilehandle` which can be
-used in subsequent calls to the Audio File Library for reading or
-writing.
-
-Upon failure, `afOpenFile` returns a null file handle.
+Upon success, `afOpenFile` returns a valid `AFfilehandle` which can
+be used in subsequent calls to the Audio File Library. Upon failure,
+`afOpenFile` returns NULL.
 
 linkaf:afCloseFile[3] is used to close the file when it is no longer
 needed.

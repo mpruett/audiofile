@@ -40,8 +40,7 @@ a sample frame consists of one audio sample. For stereophonic data,
 a sample frame consists of a stereo pair.
 
 `afGetTrackBytes` returns the total number of bytes of raw audio data
-(i.e., prior to decompression) in track.  This is useful for determining
-raw file seek points, etc.
+(i.e., prior to decompression or conversion) in the track.
 
 `afGetDataOffset` returns the offset in bytes of the start of the audio
 data contained within the specified track of the specified file.
@@ -57,7 +56,7 @@ in 'track'.
 `afGetDataOffset` returns the offset in bytes to the beginning of the
 audio data in 'track'.
 
-If an error occurs, -1 is returned by all of these routines.
+Each of these routines returns -1 in case of error.
 
 AUTHOR
 ------

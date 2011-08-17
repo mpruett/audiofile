@@ -1,7 +1,5 @@
 INCLUDES = -I$(top_srcdir)/libaudiofile
 
-EXTRA_DIST = README
-
 bin_PROGRAMS = sfconvert sfinfo
 
 sfconvert_SOURCES = sfconvert.c printinfo.c printinfo.h

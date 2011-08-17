@@ -35,11 +35,10 @@ ERRORS
 ------
 `afReadFrames` can produce these errors:
 
-* AF_BAD_READ
-* AF_BAD_FILEHANDLE
-* AF_BAD_LSEEK
-* AF_BAD_TRACKID (the track parameter differs from AF_DEFAULT_TRACK)
-* AF_BAD_AIFF_SSND
+`AF_BAD_FILEHANDLE`:: the file handle was invalid
+`AF_BAD_TRACKID`:: the track parameter is not `AF_DEFAULT_TRACK`
+`AF_BAD_READ`:: reading audio data from the file failed
+`AF_BAD_LSEEK`:: seeking within the file failed
 
 SEE ALSO
 --------

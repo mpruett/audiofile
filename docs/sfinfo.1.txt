@@ -26,21 +26,21 @@ and Core Audio Format.
 OPTIONS
 -------
 
---short::
--s::
+`--short`::
+`-s`::
 Print short single-line summary of each recognized audio file.
 
---reporterror::
--r::
+`--reporterror`::
+`-r`::
 Print an error message if any of the specified files are not recognized
 as valid audio files.
 
---help::
--h::
+`--help`::
+`-h`::
 Print help message.
 
---version::
--v::
+`--version`::
+`-v`::
 Print version information.
 
 EXAMPLES

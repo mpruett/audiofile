@@ -1,5 +1,0 @@
-For the most part, sfinfo is just as it is under Irix.
-
-For the most part, sfconvert is much more limited than its Irix
-counterpart.  This will be improved as I implement more of the Audio
-File Library.  For now it is capable of converting only file formats.

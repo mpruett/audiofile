@@ -41,12 +41,13 @@ The following keywords specify the format of the output sound file:
   exclusive.
 
 The following options take no additional arguments:
---help::
--h::
+
+`--help`::
+`-h`::
 Print help message.
 
---version::
--v::
+`--version`::
+`-v`::
 Print version information.
 
 SEE ALSO
