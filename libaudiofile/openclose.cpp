@@ -283,7 +283,7 @@ static status _afOpenFile (int access, File *f, const char *filename,
 
 	int		userSampleFormat = 0;
 	double		userSampleRate = 0.0;
-	PCMInfo	userPCM;
+	PCMInfo	userPCM = {0};
 	bool		userFormatSet = false;
 
 	AFfilehandle	filehandle = AF_NULL_FILEHANDLE;

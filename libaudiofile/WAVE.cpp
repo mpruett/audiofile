@@ -716,7 +716,6 @@ status WAVEFile::readInit(AFfilesetup setup)
 	bool hasPlayList = false;
 	bool hasFrameCount = false;
 	bool hasINST = false;
-	bool hasINFO = false;
 
 	instruments = NULL;
 	instrumentCount = 0;

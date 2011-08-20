@@ -148,7 +148,7 @@ off_t FilePOSIX::seek(off_t offset, File::SeekOrigin origin)
 		case SeekFromBeginning: whence = SEEK_SET; break;
 		case SeekFromCurrent: whence = SEEK_CUR; break;
 		case SeekFromEnd: whence = SEEK_END; break;
-		default: assert(false);
+		default: assert(false); return -1;
 	}
 	return ::lseek(m_fd, offset, whence);
 }

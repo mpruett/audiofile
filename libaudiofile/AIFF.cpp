@@ -482,9 +482,6 @@ status AIFFFile::readInit(AFfilesetup setup)
 	bool hasMARK = false;
 	bool hasINST = false;
 	bool hasAESD = false;
-	bool hasNAME = false;
-	bool hasAUTH = false;
-	bool hasCOPY = false;
 
 	fh->seek(0, File::SeekFromBeginning);
 

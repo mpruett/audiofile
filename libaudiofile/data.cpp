@@ -192,7 +192,7 @@ int afReadFrames (AFfilehandle file, int trackid, void *samples,
 			firstmod->runPull();
 
 			/* Have we hit EOF? */
-			if (userc->frameCount < track->frames2ignore)
+			if (static_cast<ssize_t>(userc->frameCount) < track->frames2ignore)
 				eof = true;
 
 			track->frames2ignore = 0;
@@ -223,7 +223,7 @@ int afReadFrames (AFfilehandle file, int trackid, void *samples,
 			if (track->filemodhappy)
 			{
 				vframe += userc->frameCount;
-				if (userc->frameCount < nvframes2pull)
+				if (static_cast<ssize_t>(userc->frameCount) < nvframes2pull)
 					eof = true;
 			}
 		}

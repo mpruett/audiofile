@@ -56,7 +56,7 @@ void _af_print_pvlist (AUpvlist list)
 	printf("list.valid: %d\n", list->valid);
 	printf("list.count: %d\n", list->count);
 
-	for (int i=0; i<list->count; i++)
+	for (size_t i=0; i<list->count; i++)
 	{
 		printf("item %d valid %d, should be %d\n",
 			i, list->items[i].valid, _AU_VALID_PVITEM);

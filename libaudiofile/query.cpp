@@ -282,7 +282,7 @@ AUpvlist _afQueryInstrumentParameter (int arg1, int arg2, int arg3, int arg4)
 
 		case AF_QUERY_IDS:
 		{
-			int	i, count;
+			int	count;
 			int	*buffer;
 
 			if (arg2 < 0 || arg2 >= _AF_NUM_UNITS)

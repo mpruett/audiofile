@@ -125,7 +125,7 @@ static int16_t ms_adpcm_decode_sample (ms_adpcm_state *state,
 int MSADPCM::decodeBlock (const uint8_t *encoded, int16_t *decoded)
 {
 	int16_t *coefficient[2];
-	ms_adpcm_state decoderState[2];
+	ms_adpcm_state decoderState[2] = {{0}};
 	ms_adpcm_state *state[2];
 
 	int channelCount = m_track->f.channelCount;
@@ -263,7 +263,7 @@ void MSADPCM::runPull()
 	/* Decompress into m_outChunk. */
 	for (int i=0; i<blockCount; i++)
 	{
-		size_t bytesDecoded = decodeBlock(static_cast<const uint8_t *>(m_inChunk->buffer) + i * m_blockAlign,
+		decodeBlock(static_cast<const uint8_t *>(m_inChunk->buffer) + i * m_blockAlign,
 			static_cast<int16_t *>(m_outChunk->buffer) + i * m_framesPerBlock * m_track->f.channelCount);
 
 		framesRead += m_framesPerBlock;

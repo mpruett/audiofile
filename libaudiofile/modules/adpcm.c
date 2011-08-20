@@ -91,7 +91,7 @@ void _af_adpcm_coder (const int16_t *indata, uint8_t *outdata, int frameCount,
     int valpred;		/* Predicted output value */
     int vpdiff;			/* Current change to valpred */
     int index;			/* Current step change index */
-    int outputbuffer;		/* place to keep previous 4-bit value */
+    int outputbuffer = 0;	/* place to keep previous 4-bit value */
     int bufferstep;		/* toggle between outputbuffer/output */
 
     outp = outdata;
@@ -200,7 +200,7 @@ void _af_adpcm_decoder (const uint8_t *indata, int16_t *outdata, int frameCount,
 		for (int c=0; c<channelCount; c++)
 		{
 			int bufferstep = 0;
-			uint8_t inputbuffer; /* storage for next 4-bit encoded value */
+			uint8_t inputbuffer = 0; /* storage for next 4-bit encoded value */
 			for (int s=0; s<8; s++)
 			{
 				int delta;

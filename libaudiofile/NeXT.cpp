@@ -147,7 +147,7 @@ status NeXTFile::readInit(AFfilesetup setup)
 	track->fpos_first_frame = offset;
 
 	off_t lengthAvailable = fh->length() - offset;
-	if (length == _AU_LENGTH_UNSPECIFIED || length > lengthAvailable)
+	if (length == _AU_LENGTH_UNSPECIFIED || static_cast<off_t>(length) > lengthAvailable)
 		length = lengthAvailable;
 
 	track->data_size = length;
