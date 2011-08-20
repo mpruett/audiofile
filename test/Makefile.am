@@ -53,7 +53,7 @@ TESTS = error writeaiff writeircam writenext writewave writeraw \
 	writeulaw writealaw \
 	transparency.sh pipe.sh \
 	query2 sixteen-to-eight twentyfour twentyfour2 floatto24 \
-	testfloat testdouble testmarkers testchannelmatrix seek large \
+	testfloat testdouble testmarkers testchannelmatrix seek large loop \
 	sign inttofloat floattoint pcmmapping miscellaneous next pcmdata virtualfile
 
 LIBAUDIOFILE = $(top_builddir)/libaudiofile/libaudiofile.la
@@ -90,6 +90,9 @@ seek_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 large_SOURCES = large.cpp
 large_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+loop_SOURCES = loop.cpp
+loop_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 pcmdata_SOURCES = pcmdata.cpp
 pcmdata_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)

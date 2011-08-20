@@ -54,7 +54,25 @@
 
 #include <stdlib.h>
 
-extern const _Unit _af_units[];
+bool InstrumentSetup::allocateLoops(int count)
+{
+	freeLoops();
+	loops = (LoopSetup *) _af_calloc(count, sizeof (LoopSetup));
+	if (loops)
+	{
+		loopCount = count;
+		return true;
+	}
+	return false;
+}
+
+void InstrumentSetup::freeLoops()
+{
+	if (loops)
+		free(loops);
+	loops = NULL;
+	loopCount = 0;
+}
 
 /*
 	Initialize instrument id list for audio file.
@@ -270,18 +288,6 @@ int _af_instparam_index_from_id (int filefmt, int id)
 	}
 
 	return i;
-}
-
-int _af_setup_instrument_index_from_id (AFfilesetup setup, int id)
-{
-	int i;
-
-	for (i = 0; i < setup->instrumentCount; i++)
-		if (setup->instruments[i].id == id)
-			return i;
-
-	_af_error(AF_BAD_INSTID, "invalid instrument id %d", id);
-	return -1;
 }
 
 Loop *Instrument::getLoop(int loopID)

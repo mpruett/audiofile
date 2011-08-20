@@ -42,6 +42,9 @@ struct InstrumentSetup
 	LoopSetup *loops;
 
 	bool loopSet;
+
+	bool allocateLoops(int count);
+	void freeLoops();
 };
 
 struct Instrument

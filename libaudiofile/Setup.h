@@ -54,7 +54,6 @@ AFfilesetup _af_filesetup_copy (AFfilesetup setup, AFfilesetup defaultSetup,
 
 void _af_setup_free_markers (AFfilesetup setup, int trackno);
 void _af_setup_free_tracks (AFfilesetup setup);
-void _af_setup_free_loops (AFfilesetup setup, int instno);
 void _af_setup_free_instruments (AFfilesetup setup);
 AFfilesetup _af_filesetup_copy (AFfilesetup setup, AFfilesetup defaultSetup,
         bool copyMarks);

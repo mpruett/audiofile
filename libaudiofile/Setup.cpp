@@ -125,14 +125,13 @@ TrackSetup *_af_tracksetup_new (int trackCount)
 			tracks[i].markers = NULL;
 		else
 		{
-			int	j;
 			tracks[i].markers = (MarkerSetup *) _af_calloc(tracks[i].markerCount,
 				sizeof (MarkerSetup));
 
 			if (tracks[i].markers == NULL)
 				return NULL;
 
-			for (j=0; j<tracks[i].markerCount; j++)
+			for (int j=0; j<tracks[i].markerCount; j++)
 			{
 				tracks[i].markers[j].id = j+1;
 
@@ -168,12 +167,11 @@ InstrumentSetup *_af_instsetup_new (int instrumentCount)
 			instruments[i].loops = NULL;
 		else
 		{
-			int	j;
 			instruments[i].loops = (LoopSetup *) _af_calloc(instruments[i].loopCount, sizeof (LoopSetup));
 			if (instruments[i].loops == NULL)
 				return NULL;
 
-			for (j=0; j<instruments[i].loopCount; j++)
+			for (int j=0; j<instruments[i].loopCount; j++)
 				instruments[i].loops[j].id = j+1;
 		}
 	}
@@ -251,30 +249,14 @@ void _af_setup_free_tracks (AFfilesetup setup)
 }
 
 /*
-	Free the specified instrument's loops.
-*/
-void _af_setup_free_loops (AFfilesetup setup, int instno)
-{
-	if (setup->instruments[instno].loops)
-	{
-		free(setup->instruments[instno].loops);
-	}
-
-	setup->instruments[instno].loops = NULL;
-	setup->instruments[instno].loopCount = 0;
-}
-
-/*
 	Free the specified setup's instruments and their subfields.
 */
 void _af_setup_free_instruments (AFfilesetup setup)
 {
-	int i;
-
 	if (setup->instruments)
 	{
-		for (i = 0; i < setup->instrumentCount; i++)
-			_af_setup_free_loops(setup, i);
+		for (int i=0; i < setup->instrumentCount; i++)
+			setup->instruments[i].freeLoops();
 
 		free(setup->instruments);
 	}
@@ -655,15 +637,12 @@ status _af_filesetup_make_handle (AFfilesetup setup, AFfilehandle handle)
 				handle->instruments[i].loops = NULL;
 			else
 			{
-				int	j;
-
 				handle->instruments[i].loops = (Loop *) _af_calloc(handle->instruments[i].loopCount, sizeof (Loop));
 				if (handle->instruments[i].loops == NULL)
 					return AF_FAIL;
-				for (j=0; j<handle->instruments[i].loopCount; j++)
+				for (int j=0; j<handle->instruments[i].loopCount; j++)
 				{
-					Loop	*loop;
-					loop = &handle->instruments[i].loops[j];
+					Loop *loop = &handle->instruments[i].loops[j];
 					loop->id = setup->instruments[i].loops[j].id;
 					loop->mode = AF_LOOP_MODE_NOLOOP;
 					loop->count = 0;
@@ -678,11 +657,10 @@ status _af_filesetup_make_handle (AFfilesetup setup, AFfilehandle handle)
 				handle->instruments[i].values = NULL;
 			else
 			{
-				int	j;
 				handle->instruments[i].values = (AFPVu *) _af_calloc(instParamCount, sizeof (AFPVu));
 				if (handle->instruments[i].values == NULL)
 					return AF_FAIL;
-				for (j=0; j<instParamCount; j++)
+				for (int j=0; j<instParamCount; j++)
 				{
 					handle->instruments[i].values[j] =
 						_af_units[setup->fileFormat].instrumentParameters[j].defaultValue;
@@ -728,7 +706,7 @@ TrackSetup *_AFfilesetup::getTrack(int trackID)
 
 InstrumentSetup *_AFfilesetup::getInstrument(int instrumentID)
 {
-	for (int i = 0; i < instrumentCount; i++)
+	for (int i=0; i < instrumentCount; i++)
 		if (instruments[i].id == instrumentID)
 			return &instruments[i];
 

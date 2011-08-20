@@ -36,8 +36,6 @@
 
 void afInitLoopIDs (AFfilesetup setup, int instid, const int *loopids, int nloops)
 {
-	int instno;
-
 	if (!_af_filesetup_ok(setup))
 		return;
 
@@ -48,21 +46,12 @@ void afInitLoopIDs (AFfilesetup setup, int instid, const int *loopids, int nloop
 	if (!instrument)
 		return;
 
-	_af_setup_free_loops(setup, instno);
+	instrument->freeLoops();
+	if (!instrument->allocateLoops(nloops))
+		return;
 
-	setup->instruments[instno].loopCount = nloops;
-	setup->instruments[instno].loopSet = true;
-
-	if (nloops == 0)
-		setup->instruments[instno].loops = NULL;
-	else
-	{
-		if ((setup->instruments[instno].loops = (LoopSetup *) _af_calloc(nloops, sizeof (LoopSetup))) == NULL)
-			return;
-
-		for (int i=0; i < nloops; i++)
-			setup->instruments[instno].loops[i].id = loopids[i];
-	}
+	for (int i=0; i < nloops; i++)
+		instrument->loops[i].id = loopids[i];
 }
 
 int afGetLoopIDs (AFfilehandle file, int instid, int *loopids)
@@ -172,8 +161,7 @@ int afGetLoopCount(AFfilehandle file, int instid, int loopid)
 /*
 	Set loop start marker id in the file structure
 */
-void
-afSetLoopStart(AFfilehandle file, int instid, int loopid, int markid)
+void afSetLoopStart(AFfilehandle file, int instid, int loopid, int markid)
 {
 	Loop *loop = getLoop(file, instid, loopid, true);
 

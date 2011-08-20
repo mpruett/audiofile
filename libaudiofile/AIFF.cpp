@@ -211,8 +211,6 @@ status AIFFFile::parseINST(const Tag &type, size_t size)
 	uint16_t sustainLoopPlayMode, sustainLoopBegin, sustainLoopEnd;
 	uint16_t releaseLoopPlayMode, releaseLoopBegin, releaseLoopEnd;
 
-	assert(type == "INST");
-
 	Instrument *instrument = (Instrument *) _af_calloc(1, sizeof (Instrument));
 	instrument->id = AF_DEFAULT_INST;
 	instrument->values = (AFPVu *) _af_calloc(_AF_AIFF_NUM_INSTPARAMS, sizeof (AFPVu));
@@ -268,11 +266,13 @@ status AIFFFile::parseINST(const Tag &type, size_t size)
 	instrument->loops[0].mode = sustainLoopPlayMode;
 	instrument->loops[0].beginMarker = sustainLoopBegin;
 	instrument->loops[0].endMarker = sustainLoopEnd;
+	instrument->loops[0].trackid = AF_DEFAULT_TRACK;
 
 	instrument->loops[1].id = 2;
 	instrument->loops[1].mode = releaseLoopPlayMode;
 	instrument->loops[1].beginMarker = releaseLoopBegin;
 	instrument->loops[1].endMarker = releaseLoopEnd;
+	instrument->loops[1].trackid = AF_DEFAULT_TRACK;
 
 	return AF_SUCCEED;
 }
