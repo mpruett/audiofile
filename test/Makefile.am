@@ -8,14 +8,7 @@ check_PROGRAMS = \
 	transparency \
 	query2 \
 	testaupv \
-	writeaiff \
-	writeircam \
-	writenext \
-	writewave \
 	writeraw \
-	writeavr \
-	writeiff \
-	writenist \
 	writeulaw \
 	writealaw \
 	loop \
@@ -48,9 +41,7 @@ VALGRIND_FLAGS = --quiet --leak-check=full --show-reachable=yes --error-exitcode
 TESTS_ENVIRONMENT = $(top_builddir)/libtool --mode=execute $(VALGRIND) $(VALGRIND_FLAGS)
 endif
 
-TESTS = error writeaiff writeircam writenext writewave writeraw \
-	writeavr writeiff writenist \
-	writeulaw writealaw \
+TESTS = error writeraw writeulaw writealaw \
 	transparency.sh pipe.sh \
 	query2 sixteen-to-eight twentyfour twentyfour2 floatto24 \
 	testfloat testdouble testmarkers testchannelmatrix seek large loop \
