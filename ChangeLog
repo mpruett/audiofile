@@ -1,5 +1,10 @@
 2011-08-20  Michael Pruett <michael@68k.org>
 
+	* test/Makefile.am, test/aes.cpp: Add test for reading and writing
+	AES channel data.
+
+2011-08-20  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/AIFF.cpp, libaudiofile/Instrument.cpp,
 	libaudiofile/Instrument.h, libaudiofile/Loop.cpp,
 	libaudiofile/Setup.cpp, libaudiofile/Setup.h, test/Makefile.am,
