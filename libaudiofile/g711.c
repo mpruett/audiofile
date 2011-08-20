@@ -266,23 +266,3 @@ int _af_ulaw2linear (unsigned char u_val)
 }
 
 #endif
-
-/* A-law to u-law conversion */
-static unsigned char
-alaw2ulaw(aval)
-	unsigned char	aval;
-{
-	aval &= 0xff;
-	return ((aval & 0x80) ? (0xFF ^ _a2u[aval ^ 0xD5]) :
-	    (0x7F ^ _a2u[aval ^ 0x55]));
-}
-
-/* u-law to A-law conversion */
-static unsigned char
-ulaw2alaw(uval)
-	unsigned char	uval;
-{
-	uval &= 0xff;
-	return ((uval & 0x80) ? (0xD5 ^ (_u2a[0xFF ^ uval] - 1)) :
-	    (0x55 ^ (_u2a[0x7F ^ uval] - 1)));
-}
