@@ -31,11 +31,7 @@
 	This program tests seeking within an audio file.
 */
 
-#include "config.h"
-
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 
 #include <gtest/gtest.h>
