@@ -70,7 +70,7 @@ int main (int argc, char **argv)
 
 	AFfilehandle file = afOpenFile(argv[1], "r", NULL);
 	AFframecount frameCount = afGetFrameCount(file, AF_DEFAULT_TRACK);
-	printf("frame count: %d\n", (int) frameCount);
+	printf("frame count: %jd\n", (intmax_t) frameCount);
 
 	int channelCount = afGetVirtualChannels(file, AF_DEFAULT_TRACK);
 	int sampleFormat, sampleWidth;
@@ -107,15 +107,18 @@ int main (int argc, char **argv)
 
 	setupdsp(audiofd, channelCount, frequency);
 
-	AFframecount framesRead = afReadFrames(file, AF_DEFAULT_TRACK, buffer,
-		BUFFER_FRAMES);
-
-	while (framesRead > 0)
+	while (1)
 	{
-		printf("read %ld frames\n", framesRead);
-		write(audiofd, buffer, framesRead * frameSize);
-		framesRead = afReadFrames(file, AF_DEFAULT_TRACK, buffer,
+		AFframecount framesRead = afReadFrames(file, AF_DEFAULT_TRACK, buffer,
 			BUFFER_FRAMES);
+		if (framesRead <= 0)
+			break;
+
+		printf("read %jd frames\n", (intmax_t) framesRead);
+
+		ssize_t bytesWritten = write(audiofd, buffer, framesRead * frameSize);
+		if (bytesWritten < 0)
+			break;
 	}
 
 	close(audiofd);

@@ -91,15 +91,15 @@ Track *_af_track_new (void)
 
 void Track::print()
 {
-	fprintf(stderr, "totalfframes %ld\n", totalfframes);
-	fprintf(stderr, "nextfframe %ld\n", nextfframe);
-	fprintf(stderr, "frames2ignore %ld\n", frames2ignore);
-	fprintf(stderr, "fpos_first_frame %ld\n", fpos_first_frame);
-	fprintf(stderr, "fpos_next_frame %ld\n", fpos_next_frame);
-	fprintf(stderr, "fpos_after_data %ld\n", fpos_after_data);
-	fprintf(stderr, "totalvframes %ld\n", totalvframes);
-	fprintf(stderr, "nextvframe %ld\n", nextvframe);
-	fprintf(stderr, "data_size %ld\n", data_size);
+	fprintf(stderr, "totalfframes %jd\n", (intmax_t) totalfframes);
+	fprintf(stderr, "nextfframe %jd\n", (intmax_t) nextfframe);
+	fprintf(stderr, "frames2ignore %jd\n", (intmax_t) frames2ignore);
+	fprintf(stderr, "fpos_first_frame %jd\n", (intmax_t) fpos_first_frame);
+	fprintf(stderr, "fpos_next_frame %jd\n", (intmax_t) fpos_next_frame);
+	fprintf(stderr, "fpos_after_data %jd\n", (intmax_t) fpos_after_data);
+	fprintf(stderr, "totalvframes %jd\n", (intmax_t) totalvframes);
+	fprintf(stderr, "nextvframe %jd\n", (intmax_t) nextvframe);
+	fprintf(stderr, "data_size %jd\n", (intmax_t) data_size);
 }
 
 Marker *Track::getMarker(int markerID)

@@ -26,7 +26,7 @@ libaudiofile_la_SOURCES = \
 	afinternal.h aupvinternal.h aupvlist.h byteorder.h \
 	compression.h error.h extended.h \
 	pcm.h units.h \
-	print.h util.h debug.h \
+	util.h debug.h \
 	File.cpp File.h Shared.h \
 	AudioFormat.cpp AudioFormat.h \
 	FileHandle.cpp FileHandle.h \

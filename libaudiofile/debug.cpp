@@ -45,7 +45,6 @@
 #include "byteorder.h"
 #include "compression.h"
 #include "debug.h"
-#include "print.h"
 #include "units.h"
 #include "util.h"
 
@@ -54,35 +53,35 @@ void _af_print_pvlist (AUpvlist list)
 	assert(list);
 
 	printf("list.valid: %d\n", list->valid);
-	printf("list.count: %d\n", list->count);
+	printf("list.count: %zu\n", list->count);
 
-	for (size_t i=0; i<list->count; i++)
+	for (unsigned i=0; i<list->count; i++)
 	{
-		printf("item %d valid %d, should be %d\n",
+		printf("item %u valid %d, should be %d\n",
 			i, list->items[i].valid, _AU_VALID_PVITEM);
 
 		switch (list->items[i].type)
 		{
 			case AU_PVTYPE_LONG:
-				printf("item #%d, parameter %d, long: %ld\n",
+				printf("item #%u, parameter %d, long: %ld\n",
 					i, list->items[i].parameter,
 					list->items[i].value.l);
 				break;
 			case AU_PVTYPE_DOUBLE:
-				printf("item #%d, parameter %d, double: %f\n",
+				printf("item #%u, parameter %d, double: %f\n",
 					i, list->items[i].parameter,
 					list->items[i].value.d);
 				break;
 			case AU_PVTYPE_PTR:
-				printf("item #%d, parameter %d, pointer: %p\n",
+				printf("item #%u, parameter %d, pointer: %p\n",
 					i, list->items[i].parameter,
 					list->items[i].value.v);
 				break;
 
 			default:
-				printf("item #%d, invalid type %d\n", i,
+				printf("item #%u, invalid type %d\n", i,
 					list->items[i].type);
-				assert(0);
+				assert(false);
 				break;
 		}
 	}
@@ -158,25 +157,25 @@ void _af_print_tracks (AFfilehandle filehandle)
 		_af_print_audioformat(&track->f);
 		printf(" virtual format\n");
 		_af_print_audioformat(&track->v);
-		printf(" total file frames: %" AF_FRAMECOUNT_PRINT_FMT "\n",
-			track->totalfframes);
-		printf(" total virtual frames: %" AF_FRAMECOUNT_PRINT_FMT "\n",
-			track->totalvframes);
-		printf(" next file frame: %" AF_FRAMECOUNT_PRINT_FMT "\n",
-			track->nextfframe);
-		printf(" next virtual frame: %" AF_FRAMECOUNT_PRINT_FMT "\n",
-			track->nextvframe);
-		printf(" frames to ignore: %" AF_FRAMECOUNT_PRINT_FMT "\n",
-			track->frames2ignore);
+		printf(" total file frames: %jd\n",
+			(intmax_t) track->totalfframes);
+		printf(" total virtual frames: %jd\n",
+			(intmax_t) track->totalvframes);
+		printf(" next file frame: %jd\n",
+			(intmax_t) track->nextfframe);
+		printf(" next virtual frame: %jd\n",
+			(intmax_t) track->nextvframe);
+		printf(" frames to ignore: %jd\n",
+			(intmax_t) track->frames2ignore);
 
-		printf(" data_size: %" AF_FILEOFFSET_PRINT_FMT "\n",
-			track->data_size);
-		printf(" fpos_first_frame: %" AF_FILEOFFSET_PRINT_FMT "\n",
-			track->fpos_first_frame);
-		printf(" fpos_next_frame: %" AF_FILEOFFSET_PRINT_FMT "\n",
-			track->fpos_next_frame);
-		printf(" fpos_after_data: %" AF_FILEOFFSET_PRINT_FMT "\n",
-			track->fpos_after_data);
+		printf(" data_size: %jd\n",
+			(intmax_t) track->data_size);
+		printf(" fpos_first_frame: %jd\n",
+			(intmax_t) track->fpos_first_frame);
+		printf(" fpos_next_frame: %jd\n",
+			(intmax_t) track->fpos_next_frame);
+		printf(" fpos_after_data: %jd\n",
+			(intmax_t) track->fpos_after_data);
 
 		printf(" channel matrix:");
 		_af_print_channel_matrix(track->channelMatrix,
@@ -253,7 +252,7 @@ void _af_print_frame (AFframecount frameno, double *frame, int nchannels,
 	linebuf[wavewidth-1] = '|';
 	linebuf[wavewidth] = 0;
 
-	printf("%05" AF_FRAMECOUNT_PRINT_FMT " ", frameno);
+	printf("%05jd ", (intmax_t) frameno);
 
 	for (c=0; c < nchannels; c++)
 	{

@@ -35,16 +35,11 @@
 #include <audiofile.h>
 #endif
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 static char *copyrightstring (AFfilehandle file);
-
-#if SIZEOF_OFF_T > SIZEOF_LONG
-#define FMT_off_t "%ll"
-#else
-#define FMT_off_t "%l"
-#endif
 
 bool printfileinfo (const char *filename)
 {
@@ -118,15 +113,15 @@ bool printfileinfo (const char *filename)
 	}
 	printf("\n");
 
-	printf("Audio Data     " FMT_off_t "d bytes begins at offset " FMT_off_t "d (" FMT_off_t "x hex)\n",
-		afGetTrackBytes(file, AF_DEFAULT_TRACK),
-		afGetDataOffset(file, AF_DEFAULT_TRACK),
-		afGetDataOffset(file, AF_DEFAULT_TRACK));
+	printf("Audio Data     %jd bytes begins at offset %jd (%jx hex)\n",
+		(intmax_t) afGetTrackBytes(file, AF_DEFAULT_TRACK),
+		(intmax_t) afGetDataOffset(file, AF_DEFAULT_TRACK),
+		(uintmax_t) afGetDataOffset(file, AF_DEFAULT_TRACK));
 
-	printf("               %d channel%s, " FMT_off_t "d frames\n",
+	printf("               %d channel%s, %jd frames\n",
 		afGetChannels(file, AF_DEFAULT_TRACK),
 		afGetChannels(file, AF_DEFAULT_TRACK) > 1 ? "s" : "",
-		afGetFrameCount(file, AF_DEFAULT_TRACK));
+		(intmax_t) afGetFrameCount(file, AF_DEFAULT_TRACK));
 
 	printf("Sampling Rate  %.2f Hz\n", afGetRate(file, AF_DEFAULT_TRACK));
 

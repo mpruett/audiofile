@@ -36,7 +36,6 @@
 #include "afinternal.h"
 #include "audiofile.h"
 #include "compression.h"
-#include "print.h"
 #include "util.h"
 
 #ifdef DEBUG
@@ -115,8 +114,7 @@ void PCM::runPush()
 	ssize_t bytesWritten = write(m_inChunk->buffer, m_bytesPerFrame * frames2write);
 	n = bytesWritten >= 0 ? bytesWritten / m_bytesPerFrame : 0;
 
-	CHNK(printf("writing %" AF_FRAMECOUNT_PRINT_FMT " frames to pcm file\n",
-		frames2write));
+	CHNK(printf("writing %jd frames to pcm file\n", (intmax_t) frames2write));
 
 	if (n != frames2write)
 	{
@@ -199,9 +197,8 @@ void PCM::runPull()
 	ssize_t bytesRead = read(m_outChunk->buffer, m_bytesPerFrame * framesToRead);
 	AFframecount framesRead = bytesRead >= 0 ? bytesRead / m_bytesPerFrame : 0;
 
-	CHNK(printf("reading %" AF_FRAMECOUNT_PRINT_FMT " frames from pcm file "
-		"(got %" AF_FRAMECOUNT_PRINT_FMT ")\n",
-		framesToRead, framesRead));
+	CHNK(printf("reading %jd frames from pcm file (got %jd)\n",
+		(intmax_t) framesToRead, (intmax_t) framesRead));
 
 	m_track->nextfframe += framesRead;
 	m_track->fpos_next_frame += (framesRead>0) ? framesRead * m_bytesPerFrame : 0;
