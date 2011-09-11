@@ -445,21 +445,6 @@ void afInitAESChannelDataTo (AFfilesetup, int track, int willBeData);
 int afGetAESChannelData (AFfilehandle, int track, unsigned char buf[24]);
 void afSetAESChannelData (AFfilehandle, int track, unsigned char buf[24]);
 
-#if 0
-/* track setup format initialized via DMparams */
-/* track format retrieved via DMparams */
-DMstatus afInitFormatParams (AFfilesetup, int track, DMparams *params);
-/* virtual format set via DMparams */
-DMstatus afGetFormatParams (AFfilehandle, int track, DMparams *params);
-/* virtual format retrieved via DMparams */
-DMstatus afSetVirtualFormatParams (AFfilehandle, int track, DMparams *params);
-DMstatus afGetVirtualFormatParams (AFfilehandle, int track, DMparams *params);
-/* conversion/compression params set via DMparams */
-DMstatus afSetConversionParams (AFfilehandle, int track, DMparams *params);
-/* conversion/compression params retrieved via DMparams */
-DMstatus afGetConversionParams (AFfilehandle, int track, DMparams *params);
-#endif
-
 /* track data: byte order */
 void afInitByteOrder (AFfilesetup, int track, int byteOrder);
 int afGetByteOrder (AFfilehandle, int track);
