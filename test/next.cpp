@@ -99,7 +99,9 @@ TEST(NeXT, UnspecifiedLength)
 	EXPECT_EQ(afGetFrameCount(file, AF_DEFAULT_TRACK), kFrameCount);
 
 	int16_t *data = new int16_t[kFrameCount];
-	afReadFrames(file, AF_DEFAULT_TRACK, data, kFrameCount);
+	AFframecount framesRead = afReadFrames(file, AF_DEFAULT_TRACK, data,
+		kFrameCount);
+	EXPECT_EQ(framesRead, kFrameCount);
 	for (int i=0; i<kFrameCount; i++)
 		EXPECT_EQ(data[i], kFrames[i]);
 	delete [] data;
@@ -131,7 +133,9 @@ TEST(NeXT, Truncated)
 	EXPECT_EQ(afGetFrameCount(file, AF_DEFAULT_TRACK), truncatedFrameCount);
 
 	int16_t *data = new int16_t[truncatedFrameCount];
-	afReadFrames(file, AF_DEFAULT_TRACK, data, truncatedFrameCount);
+	AFframecount framesRead = afReadFrames(file, AF_DEFAULT_TRACK, data,
+		truncatedFrameCount);
+	EXPECT_EQ(framesRead, truncatedFrameCount);
 	for (int i=0; i<truncatedFrameCount; i++)
 		EXPECT_EQ(data[i], kFrames[i]);
 	delete [] data;
