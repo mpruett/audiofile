@@ -22,7 +22,8 @@
 /*
 	pcm.cpp
 
-	This file declares default PCM mappings.
+	This file declares default PCM mappings and defines routines
+	for accessing and modifying PCM mappings in a track.
 */
 
 #include "config.h"

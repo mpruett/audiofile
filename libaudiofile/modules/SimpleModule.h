@@ -399,16 +399,6 @@ struct rshift : public std::unary_function<Arg, Result>
 	Result operator()(const Arg &x) const { return x >> shift; }
 };
 
-template <FormatCode code>
-struct DefaultPCMMapping
-{
-	static const int kBits = (code + 1) * CHAR_BIT;
-	static const double kSlope = (1LL << (kBits - 1));
-	static const double kIntercept = 0;
-	static const double kMinClip = -(1 << (kBits - 1));
-	static const double kMaxClip = (1LL << (kBits - 1)) - 1;
-};
-
 struct ConvertInt : public SimpleModule
 {
 	ConvertInt(FormatCode inFormat, FormatCode outFormat) :
