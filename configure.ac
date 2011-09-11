@@ -18,10 +18,6 @@ AC_PROG_CXX
 AC_PROG_INSTALL
 AM_PROG_LIBTOOL
 
-dnl Checks for libraries.
-dnl Check for the ldexp function in the math library.
-AC_CHECK_LIB(m, ldexp)
-
 dnl Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(fcntl.h unistd.h)
@@ -37,18 +33,6 @@ fi
 AC_SYS_LARGEFILE
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
-
-AC_CHECK_SIZEOF(off_t)
-AC_CHECK_SIZEOF(size_t)
-AC_CHECK_SIZEOF(long)
-
-dnl Workaround the lack of these types.
-AC_CHECK_TYPE(uint8_t, unsigned char)
-AC_CHECK_TYPE(uint16_t, unsigned short)
-AC_CHECK_TYPE(uint32_t, unsigned int)
-AC_CHECK_TYPE(int8_t, signed char)
-AC_CHECK_TYPE(int16_t, short)
-AC_CHECK_TYPE(int32_t, int)
 
 dnl Set up platform specific stuff
 platform=none
