@@ -26,8 +26,9 @@
 #include <string.h>
 #include <string>
 
-struct Tag
+class Tag
 {
+public:
 	Tag() : m_value(0) { }
 	Tag(uint32_t value) : m_value(value) { }
 	Tag(const char *s)
