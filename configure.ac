@@ -26,10 +26,7 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_BIGENDIAN
 
-dnl Disable large file support by default.
-if test "x$enable_largefile" = "x"; then
-	enable_largefile=no
-fi
+dnl Enable large file support by default.
 AC_SYS_LARGEFILE
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T

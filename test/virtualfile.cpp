@@ -27,6 +27,8 @@
 	THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "config.h"
+
 #include <af_vfs.h>
 #include <audiofile.h>
 #include <gtest/gtest.h>
@@ -36,13 +38,18 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+TEST(VirtualFile, Basic)
+{
+	ASSERT_GE(sizeof (off_t), 8) << "Size of off_t must be at least 8 bytes.";
+}
+
 static ssize_t vf_read(AFvirtualfile *vf, void *data, size_t nbytes)
 {
 	FILE *fp = static_cast<FILE *>(vf->closure);
 	return fread(data, 1, nbytes, fp);
 }
 
-static off_t vf_length(AFvirtualfile *vf)
+static AFfileoffset vf_length(AFvirtualfile *vf)
 {
 	FILE *fp = static_cast<FILE *>(vf->closure);
 	off_t current = ftello(fp);
@@ -64,14 +71,14 @@ static void vf_close(AFvirtualfile *vf)
 	fclose(fp);
 }
 
-static off_t vf_seek(AFvirtualfile *vf, off_t offset, int is_relative)
+static AFfileoffset vf_seek(AFvirtualfile *vf, AFfileoffset offset, int is_relative)
 {
 	FILE *fp = static_cast<FILE *>(vf->closure);
 	fseeko(fp, offset, is_relative ? SEEK_CUR : SEEK_SET);
 	return ftello(fp);
 }
 
-static off_t vf_tell(AFvirtualfile *vf)
+static AFfileoffset vf_tell(AFvirtualfile *vf)
 {
 	FILE *fp = static_cast<FILE *>(vf->closure);
 	return ftello(fp);

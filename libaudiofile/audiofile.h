@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 1998-2000, Michael Pruett <michael@68k.org>
+	Copyright (C) 1998-2000, 2010-2011, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -27,17 +27,17 @@
 #ifndef AUDIOFILE_H
 #define AUDIOFILE_H
 
-#include <sys/types.h>
 #include <aupvlist.h>
+#include <stdint.h>
+#include <sys/types.h>
 
 #define LIBAUDIOFILE_MAJOR_VERSION 0
 #define LIBAUDIOFILE_MINOR_VERSION 2
 #define LIBAUDIOFILE_MICRO_VERSION 4
 
 #ifdef __cplusplus
-extern "C"
-{
-#endif /* __cplusplus */
+extern "C" {
+#endif
 
 typedef struct _AFvirtualfile AFvirtualfile;
 
@@ -45,8 +45,23 @@ typedef struct _AFfilesetup *AFfilesetup;
 typedef struct _AFfilehandle *AFfilehandle;
 typedef void (*AFerrfunc)(long, const char *);
 
+// Define AFframecount and AFfileoffset as 64-bit signed integers.
+#if defined(__FreeBSD__) || \
+	defined(__DragonFly__) || \
+	defined(__NetBSD__) || \
+	defined(__OpenBSD__) || \
+	defined(__APPLE__) || \
+	defined(__sgi) || \
+	(defined(__linux__) && defined(__LP64__))
+// BSD and IRIX systems define off_t as a 64-bit signed integer.
+// Linux defines off_t as a 64-bit signed integer in LP64 mode. 
 typedef off_t AFframecount;
 typedef off_t AFfileoffset;
+#else
+// For all other systems, use int64_t.
+typedef int64_t AFframecount;
+typedef int64_t AFfileoffset;
+#endif
 
 #define AF_NULL_FILESETUP	((struct _AFfilesetup *) 0)
 #define AF_NULL_FILEHANDLE	((struct _AFfilehandle *) 0)
@@ -580,6 +595,6 @@ int afSeekMisc (AFfilehandle, int miscellaneousid, int offset);
 
 #ifdef __cplusplus
 }
-#endif /* __cplusplus */
+#endif
 
 #endif /* AUDIOFILE_H */

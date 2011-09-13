@@ -1,3 +1,12 @@
+2011-09-11  Michael Pruett <michael@68k.org>
+
+	* Define AFframecount and AFfileoffset as 64-bit signed integers.
+
+	Previously these types were defined using off_t, whose size can vary
+	depending upon whether large file support is enabled. Now the library
+	is built with large file support and the API uses 64-bit frame counts
+	and file offsets.
+
 2011-08-20  Michael Pruett <michael@68k.org>
 
 	* test/Makefile.am, test/aes.cpp: Add test for reading and writing
