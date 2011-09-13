@@ -32,8 +32,8 @@
 #include <sys/types.h>
 
 #define LIBAUDIOFILE_MAJOR_VERSION 0
-#define LIBAUDIOFILE_MINOR_VERSION 2
-#define LIBAUDIOFILE_MICRO_VERSION 4
+#define LIBAUDIOFILE_MINOR_VERSION 3
+#define LIBAUDIOFILE_MICRO_VERSION 0
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,13 +1,12 @@
-Audio File Library 0.2.7
+Audio File Library 0.3.0
 Development Notes
 Michael Pruett <michael@68k.org>
 
 ----
 
-Large file support is now available on many systems by running configure
-with the flag --enable-largefile.  By default support for large files
-is turned off.  This option is unnecessary on systems where off_t is
-always 64 bits (e.g. IRIX, FreeBSD, NetBSD, OpenBSD, Mac OS X).
+Large file support is now enabled by default on all systems.  This change
+has no effect on systems where off_t is always 64 bits (e.g. IRIX,
+FreeBSD, NetBSD, OpenBSD, Mac OS X).
 
 The Audio File Library supports CCITT G.711 mu-law and A-law as well
 as IMA and MS ADPCM.  Many compressed data formats are not supported.
@@ -35,6 +34,8 @@ worth the effort.
 This version of the Audio File Library has been tested under the
 following operating environments:
 
-	mips-sgi-irix6.5 / IRIX 6.5 (MIPSpro cc 7.4)
-	powerpc-apple-darwin8.11.0 / Mac OS X 10.4.11 (gcc 4.0.1)
-	i686-pc-linux-gnu / Ubuntu 9.10 (gcc 4.4.1)
+	i686-pc-linux-gnu / Ubuntu 10.10 (gcc 4.4.5)
+	x86_64-pc-linux-gnu / Ubuntu 10.10 (gcc 4.4.5)
+	i386-pc-freebsd8.2 / FreeBSD 8.2 (gcc 4.2.1)
+	i386-apple-darwin10.8.0 / Mac OS X 10.6.8 (gcc 4.2.1)
+	x86_64-apple-darwin10.8.0 / Mac OS X 10.6.8 (gcc 4.2.1)

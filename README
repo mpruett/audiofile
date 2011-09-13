@@ -1,35 +1,45 @@
 Audio File Library
-Version 0.2.7
-Sunday, 21 March 2010
+Version 0.3.0
+Monday, 12 September 2011
 
-Copyright (C) 1998-2000, 2003-2004, 2010, Michael Pruett
+Copyright (C) 1998-2000, 2003-2004, 2010-2011, Michael Pruett
 Copyright (C) 2000-2001, Silicon Graphics, Inc.
 
 michael@68k.org
-http://www.68k.org/~michael/audiofile/
+http://audiofile.68k.org/
 
 ----
 
-The Audio File Library provides a uniform programming interface to
-standard digital audio file formats.
+The Audio File Library handles reading and writing audio files in many
+common formats.
 
-This library allows the processing of audio data to and from audio
-files of many common formats (currently AIFF, AIFF-C, WAVE, NeXT/Sun
-.snd/.au, IRCAM, AVR, Amiga IFF/8SVX, and NIST SPHERE).  The library
-also supports compression (currently G.711 mu-law and A-law and IMA and
-MS ADPCM) as well as PCM formats of all flavors (signed and unsigned
-integer, single- and double-precision floating point).
+Key goals of the Audio File Library are file format transparency and data
+format transparency. The same calls for opening a file, accessing and
+manipulating audio metadata (e.g. sample rate, sample format, textual
+information, MIDI parameters), and reading and writing sample data will
+work with any supported audio file format. Likewise, the format of the
+audio data presented to the application need not be tied to the format
+of the data contained in the file.
 
-One premise of the Audio File Library is that the data presented to
-an application need not be in the same format as the data contained in
-the file.  Another, however, is that the capabilities of the file format
-are exposed to the application programmer should the programmer wish to
-take advantage of them.
+The following file formats are currently supported:
+* AIFF/AIFF-C
+* WAVE
+* NeXT .snd/Sun .au
+* Berkeley/IRCAM/CARL Sound File
+* Audio Visual Research
+* Amiga IFF/8SVX
+* NIST SPHERE
+* Core Audio Format
+
+The following compression formats are currently supported:
+* G.711 mu-law and A-law
+* IMA ADPCM
+* Microsoft ADPCM
 
 The Audio File Library itself is available under the GNU Library General
-Public License, and the programs in this package are available under
-the GNU General Public License.  The two licenses are included in the
-files COPYING and COPYING.GPL, respectively.
+Public License, and the programs in this package are available under the
+GNU General Public License. The two licenses are included in the files
+COPYING and COPYING.GPL, respectively.
 
 ----
 
