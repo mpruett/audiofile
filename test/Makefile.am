@@ -33,7 +33,8 @@ check_PROGRAMS = \
 	next \
 	pcmdata \
 	virtualfile \
-	aes
+	aes \
+	channelmatrix
 
 EXTRA_DIST = transparency.sh pipe.sh
 
@@ -47,7 +48,7 @@ TESTS = error writeraw writeulaw writealaw \
 	query2 sixteen-to-eight twentyfour twentyfour2 floatto24 \
 	testfloat testdouble testmarkers testchannelmatrix seek large loop \
 	sign inttofloat floattoint pcmmapping miscellaneous next pcmdata \
-	virtualfile aes
+	virtualfile aes channelmatrix
 
 LIBAUDIOFILE = $(top_builddir)/libaudiofile/libaudiofile.la
 
@@ -95,6 +96,9 @@ virtualfile_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 aes_SOURCES = aes.cpp
 aes_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+channelmatrix_SOURCES = channelmatrix.cpp
+channelmatrix_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 coverage-reset:
 	$(LCOV) --base-directory=@top_srcdir@ --directory @top_srcdir@/libaudiofile --zerocounters

@@ -1,3 +1,8 @@
+2011-09-14  Michael Pruett <michael@68k.org>
+
+	* test/Makefile.am, test/channelmatrix.cpp: Add test for channel
+	matrix.
+
 2011-09-12  Michael Pruett <michael@68k.org>
 
 	* Released version 0.3.0 of the Audio File Library.
