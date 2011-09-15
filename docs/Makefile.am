@@ -1,4 +1,8 @@
-DOCS = \
+DOCS_TXT_MAN1 = \
+	sfconvert.1.txt \
+	sfinfo.1.txt
+
+DOCS_TXT_MAN3 = \
 	afCloseFile.3.txt \
 	afGetFrameSize.3.txt \
 	afGetFrameCount.3.txt \
@@ -10,18 +14,17 @@ DOCS = \
 	afSeekFrame.3.txt \
 	afSetErrorHandler.3.txt \
 	afSetVirtualSampleFormat.3.txt \
-	afWriteFrames.3.txt \
-	sfconvert.1.txt \
-	sfinfo.1.txt
+	afWriteFrames.3.txt
+
+DOCS_TXT = $(DOCS_TXT_MAN1) $(DOCS_TXT_MAN3)
 
 EXTRA_DIST = \
-	$(DOCS) \
+	$(DOCS_TXT) \
 	asciidoc.conf
 
-DOCS_MAN = $(DOCS:%.1.txt=%.1) $(DOCS:%.3.txt=%.3)
-DOCS_HTML = $(DOCS:%.txt=%.html)
-
-DOCS_MAN_EXTRA = \
+DOCS_MAN1 = $(DOCS_TXT_MAN1:.txt=)
+DOCS_MAN3 = $(DOCS_TXT_MAN3:.txt=)
+DOCS_MAN3_EXTRA = \
 	afGetDataOffset.3 \
 	afGetTrackBytes.3 \
 	afQueryLong.3 \
@@ -34,7 +37,10 @@ DOCS_MAN_EXTRA = \
 	afTellFrame.3 \
 	afWriteMisc.3
 
-dist_man_MANS = $(DOCS_MAN) $(DOCS_MAN_EXTRA)
+DOCS_HTML = $(DOCS_TXT:.txt=.html)
+
+dist_man1_MANS = $(DOCS_MAN1)
+dist_man3_MANS = $(DOCS_MAN3) $(DOCS_MAN3_EXTRA)
 
 ASCIIDOCFLAGS = -arevnumber=$(VERSION) -amansource="Audio File Library"
 A2XFLAGS = $(ASCIIDOCFLAGS) -d manpage -f manpage
