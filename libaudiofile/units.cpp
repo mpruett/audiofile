@@ -228,8 +228,8 @@ const _Unit _af_units[_AF_NUM_UNITS] =
 		CAFFile::completeSetup,
 		CAFFile::recognize,
 		AF_SAMPFMT_TWOSCOMP, 16,
-		0,		// number of compression types
-		NULL,	// compression types
+		_AF_CAF_NUM_COMPTYPES,
+		_af_caf_compression_types,
 		0,		// maximum marker count
 		0,		// maximum instrument count
 		0,		// maximum number of loops per instrument

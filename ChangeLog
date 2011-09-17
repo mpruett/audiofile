@@ -1,5 +1,9 @@
 2011-09-17  Michael Pruett <michael@68k.org>
 
+	* Support u-law and A-law compression in Core Audio Format files.
+
+2011-09-17  Michael Pruett <michael@68k.org>
+
 	* Add support for Creative Voice File format.
 
 2011-09-14  Michael Pruett <michael@68k.org>

@@ -33,6 +33,12 @@
 #include <string>
 #include <vector>
 
+const int _af_caf_compression_types[_AF_CAF_NUM_COMPTYPES] =
+{
+	AF_COMPRESSION_G711_ULAW,
+	AF_COMPRESSION_G711_ALAW
+};
+
 enum
 {
 	kCAFLinearPCMFormatFlagIsFloat = (1L << 0),
@@ -172,6 +178,16 @@ AFfilesetup CAFFile::completeSetup(AFfilesetup setup)
 	if (!track->byteOrderSet)
 		track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 
+	if (track->f.compressionType != AF_COMPRESSION_NONE &&
+		track->f.compressionType != AF_COMPRESSION_G711_ULAW &&
+		track->f.compressionType != AF_COMPRESSION_G711_ALAW)
+	{
+		_af_error(AF_BAD_COMPTYPE,
+			"compression format %d not supported in CAF file",
+			track->f.compressionType);
+		return AF_NULL_FILESETUP;
+	}
+
 	return _af_filesetup_copy(setup, &caf_default_filesetup, true);
 }
 
@@ -225,6 +241,20 @@ status CAFFile::parseDescription(const Tag &, int64_t)
 		_af_set_sample_format(&track->f, track->f.sampleFormat, track->f.sampleWidth);
 		return AF_SUCCEED;
 	}
+	else if (formatID == "ulaw")
+	{
+		track->f.compressionType = AF_COMPRESSION_G711_ULAW;
+		track->f.byteOrder = _AF_BYTEORDER_NATIVE;
+		_af_set_sample_format(&track->f, AF_SAMPFMT_TWOSCOMP, 16);
+		return AF_SUCCEED;
+	}
+	else if (formatID == "alaw")
+	{
+		track->f.compressionType = AF_COMPRESSION_G711_ALAW;
+		track->f.byteOrder = _AF_BYTEORDER_NATIVE;
+		_af_set_sample_format(&track->f, AF_SAMPFMT_TWOSCOMP, 16);
+		return AF_SUCCEED;
+	}
 	else
 	{
 		_af_error(AF_BAD_NOT_IMPLEMENTED, "Compression type %s not supported",
@@ -245,7 +275,13 @@ status CAFFile::parseData(const Tag &tag, int64_t length)
 	else
 		track->data_size = length - 4;
 	track->fpos_first_frame = fh->tell();
-	track->totalfframes = track->data_size / track->f.bytesPerFrame(false);
+	int bytesPerFrame = track->f.bytesPerFrame(false);
+	if (track->f.compressionType == AF_COMPRESSION_G711_ULAW ||
+		track->f.compressionType == AF_COMPRESSION_G711_ALAW)
+	{
+		bytesPerFrame = track->f.channelCount;
+	}
+	track->totalfframes = track->data_size / bytesPerFrame;
 	return AF_SUCCEED;
 }
 
@@ -266,6 +302,21 @@ status CAFFile::writeDescription()
 	uint32_t framesPerPacket = 1;
 	uint32_t channelsPerFrame = track->f.channelCount;
 	uint32_t bitsPerChannel = track->f.sampleWidth;
+
+	if (track->f.compressionType == AF_COMPRESSION_G711_ULAW)
+	{
+		formatID = "ulaw";
+		formatFlags = 0;
+		bytesPerPacket = channelsPerFrame;
+		bitsPerChannel = 8;
+	}
+	else if (track->f.compressionType == AF_COMPRESSION_G711_ALAW)
+	{
+		formatID = "alaw";
+		formatFlags = 0;
+		bytesPerPacket = channelsPerFrame;
+		bitsPerChannel = 8;
+	}
 
 	if (!writeTag(&desc) ||
 		!writeS64(&chunkLength) ||
@@ -293,7 +344,7 @@ status CAFFile::writeData(bool update)
 	int64_t dataLength = -1;
 	uint32_t editCount = 0;
 	if (update)
-		dataLength = track->f.bytesPerFrame(false) * track->totalfframes + 4;
+		dataLength = audioDataLength() + 4;
 
 	if (!writeTag(&data) ||
 		!writeS64(&dataLength) ||
@@ -302,4 +353,19 @@ status CAFFile::writeData(bool update)
 	if (track->fpos_first_frame == 0)
 		track->fpos_first_frame = fh->tell();
 	return AF_SUCCEED;
+}
+
+int64_t CAFFile::audioDataLength()
+{
+	Track *track = getTrack();
+
+	assert(track->f.compressionType == AF_COMPRESSION_NONE ||
+		track->f.compressionType == AF_COMPRESSION_G711_ULAW ||
+		track->f.compressionType == AF_COMPRESSION_G711_ALAW);
+
+	int frameSize = track->f.bytesPerFrame(false);
+	if (track->f.compressionType == AF_COMPRESSION_G711_ALAW ||
+		track->f.compressionType == AF_COMPRESSION_G711_ULAW)
+		frameSize = track->f.channelCount;
+	return frameSize * track->totalfframes;
 }

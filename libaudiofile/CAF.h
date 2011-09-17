@@ -26,6 +26,9 @@
 #include "Tag.h"
 #include <stdint.h>
 
+#define _AF_CAF_NUM_COMPTYPES 2
+extern const int _af_caf_compression_types[_AF_CAF_NUM_COMPTYPES];
+
 class CAFFile : public _AFfilehandle
 {
 public:
@@ -48,6 +51,8 @@ private:
 
 	status writeDescription();
 	status writeData(bool update);
+
+	int64_t audioDataLength();
 };
 
 #endif
