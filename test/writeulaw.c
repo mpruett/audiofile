@@ -85,6 +85,8 @@ int main (int argc, char **argv)
 	testulaw(AF_FILE_WAVE);
 	printf("writeulaw: testing IRCAM.\n");
 	testulaw(AF_FILE_IRCAM);
+	printf("writeulaw: testing VOC.\n");
+	testulaw(AF_FILE_VOC);
 
 	printf("writeulaw test passed.\n");
 

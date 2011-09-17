@@ -22,6 +22,7 @@ libaudiofile_la_SOURCES = \
 	IFF.cpp IFF.h \
 	NIST.cpp NIST.h \
 	CAF.cpp CAF.h \
+	VOC.cpp VOC.h \
 	g711.c g711.h \
 	afinternal.h aupvinternal.h aupvlist.h byteorder.h \
 	compression.h error.h extended.h \

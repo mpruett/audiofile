@@ -171,6 +171,9 @@ TEST(IFF, Int8) { testInt8(AF_FILE_IFF_8SVX); }
 TEST(AVR, Int8) { testInt8(AF_FILE_AVR); }
 TEST(AVR, Int16) { testInt16(AF_FILE_AVR); }
 
+TEST(VOC, UInt8) { testUInt8(AF_FILE_VOC); }
+TEST(VOC, Int16) { testInt16(AF_FILE_VOC); }
+
 TEST(NIST, Int16) { testInt16(AF_FILE_NIST_SPHERE); }
 
 TEST(CAF, Int8) { testInt8(AF_FILE_CAF); }

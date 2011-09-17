@@ -17,11 +17,11 @@ file format, sample rate, duration, and audio data format.
 By default `sfinfo` displays information in a longer, multi-line format;
 specifying the --short or -s option produces a short, single-line summary.
 
-Any files which are not recognized as valid audio files will be ignored
-unless the --reporterror or -r option is given. The file formats
-currently supported by `sfinfo` are AIFF, AIFF-C, NeXT/Sun .snd/.au,
-WAVE, Berkeley/IRCAM/CARL Sound File, AVR, Amiga IFF/8SVX, NIST SPHERE,
-and Core Audio Format.
+Any files which are not recognized as valid audio files will be
+ignored unless the --reporterror or -r option is given. The file formats
+currently supported by `sfinfo` are AIFF, AIFF-C, NeXT/Sun .snd/.au, WAVE,
+Berkeley/IRCAM/CARL Sound File, AVR, Amiga IFF/8SVX, Creative Voice File,
+NIST SPHERE, and Core Audio Format.
 
 OPTIONS
 -------

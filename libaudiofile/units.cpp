@@ -35,9 +35,10 @@
 #include "CAF.h"
 #include "IFF.h"
 #include "IRCAM.h"
-#include "NIST.h"
 #include "NeXT.h"
+#include "NIST.h"
 #include "Raw.h"
+#include "VOC.h"
 #include "WAVE.h"
 
 #include "compression.h"
@@ -188,7 +189,17 @@ const _Unit _af_units[_AF_NUM_UNITS] =
 	{
 		AF_FILE_VOC,
 		"VOC", "Creative Voice File Format", "voc",
-		false
+		true,
+		VOCFile::completeSetup,
+		VOCFile::recognize,
+		AF_SAMPFMT_TWOSCOMP, 16,
+		_AF_VOC_NUM_COMPTYPES,
+		_af_voc_compression_types,
+		0,		// maximum marker count
+		0,		// maximum instrument count
+		0,		// maximum number of loops per instrument
+		0,		// number of instrument parameters
+		NULL	// instrument parameters
 	},
 	{
 		AF_FILE_NIST_SPHERE,

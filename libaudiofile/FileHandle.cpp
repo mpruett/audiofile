@@ -31,9 +31,10 @@
 #include "CAF.h"
 #include "IFF.h"
 #include "IRCAM.h"
-#include "NIST.h"
 #include "NeXT.h"
+#include "NIST.h"
 #include "Raw.h"
+#include "VOC.h"
 #include "WAVE.h"
 
 #include "File.h"
@@ -60,6 +61,8 @@ _AFfilehandle *_AFfilehandle::create(int fileFormat)
 			return new AVRFile();
 		case AF_FILE_IFF_8SVX:
 			return new IFFFile();
+		case AF_FILE_VOC:
+			return new VOCFile();
 		case AF_FILE_NIST_SPHERE:
 			return new NISTFile();
 		case AF_FILE_CAF:
