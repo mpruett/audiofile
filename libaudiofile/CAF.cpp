@@ -226,7 +226,7 @@ status CAFFile::parseDescription(const Tag &, int64_t)
 			if (bitsPerChannel != 32 && bitsPerChannel != 64)
 			{
 				_af_error(AF_BAD_WIDTH, "Invalid bits per sample %d for floating-point audio data", bitsPerChannel);
-				return false;
+				return AF_FAIL;
 			}
 			track->f.sampleFormat = bitsPerChannel == 32 ? AF_SAMPFMT_FLOAT :
 				AF_SAMPFMT_DOUBLE;

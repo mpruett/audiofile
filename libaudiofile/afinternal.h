@@ -32,9 +32,11 @@
 #include "audiofile.h"
 #include "error.h"
 
-typedef int status;
-#define AF_SUCCEED (0)
-#define AF_FAIL (-1)
+enum status
+{
+	AF_SUCCEED = 0,
+	AF_FAIL = -1
+};
 
 union AFPVu
 {
