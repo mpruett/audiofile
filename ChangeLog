@@ -1,3 +1,7 @@
+2011-09-18  Michael Pruett <michael@68k.org>
+
+	* Released version 0.3.1 of the Audio File Library.
+
 2011-09-17  Michael Pruett <michael@68k.org>
 
 	* Support u-law and A-law compression in Core Audio Format files.

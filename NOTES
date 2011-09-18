@@ -1,4 +1,4 @@
-Audio File Library 0.3.0
+Audio File Library 0.3.1
 Development Notes
 Michael Pruett <michael@68k.org>
 
@@ -21,7 +21,6 @@ this version of the library does not:
 	MPEG1 audio bitstream
 	Sound Designer II
 	SampleVision
-	VOC
 	SoundFont2
 
 I plan to implement some of these as time permits.  Sound Designer

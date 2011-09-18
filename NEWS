@@ -1,3 +1,9 @@
+Changes for Audio File Library version 0.3.1:
+
+* Fix installation of man pages.
+* Add support for Creative Voice File format.
+* Support u-law and A-law compression in Core Audio Format files.
+
 Changes for Audio File Library version 0.3.0:
 
 * Define AFframecount and AFfileoffset as 64-bit integers regardless of

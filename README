@@ -1,6 +1,6 @@
 Audio File Library
-Version 0.3.0
-Monday, 12 September 2011
+Version 0.3.1
+Sunday, 18 September 2011
 
 Copyright (C) 1998-2000, 2003-2004, 2010-2011, Michael Pruett
 Copyright (C) 2000-2001, Silicon Graphics, Inc.
@@ -28,6 +28,7 @@ The following file formats are currently supported:
 * Berkeley/IRCAM/CARL Sound File
 * Audio Visual Research
 * Amiga IFF/8SVX
+* Creative Voice File
 * NIST SPHERE
 * Core Audio Format
 
