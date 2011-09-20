@@ -48,5 +48,5 @@ include_HEADERS = audiofile.h aupvlist.h af_vfs.h
 # SGI MIPSpro cc
 # AM_CFLAGS = -fullwarn -g
 # No debugging.
-AM_CFLAGS = -DNDEBUG -Wall -Werror $(COVERAGE_CFLAGS)
+AM_CFLAGS = -DNDEBUG -Wall $(WERROR_CFLAGS) $(COVERAGE_CFLAGS)
 AM_CXXFLAGS = $(AM_CFLAGS) -fno-rtti -fno-exceptions
