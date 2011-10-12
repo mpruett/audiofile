@@ -34,8 +34,6 @@
 extern "C" {
 #endif
 
-typedef struct _AFvirtualfile AFvirtualfile;
-
 struct _AFvirtualfile
 {
 	ssize_t (*read) (AFvirtualfile *vfile, void *data, size_t nbytes);
