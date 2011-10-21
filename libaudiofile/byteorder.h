@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 1998-1999, Michael Pruett <michael@68k.org>
+	Copyright (C) 1998-1999, 2010-2011, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -18,13 +18,6 @@
 	Boston, MA  02111-1307  USA.
 */
 
-/*
-	byteorder.h
-
-	This file declares functions useful for dealing with byte
-	swapping.
-*/
-
 #ifndef BYTEORDER_H
 #define BYTEORDER_H
 
@@ -36,58 +29,6 @@
 	#define _AF_BYTEORDER_NATIVE (AF_BYTEORDER_BIGENDIAN)
 #else
 	#define _AF_BYTEORDER_NATIVE (AF_BYTEORDER_LITTLEENDIAN)
-#endif
-
-#if !WORDS_BIGENDIAN
-
-#define HOST_TO_LENDIAN_INT16(x)		((uint16_t) (x))
-#define HOST_TO_LENDIAN_INT32(x)		((uint32_t) (x))
-#define HOST_TO_LENDIAN_FLOAT32(x)		((float) (x))
-#define HOST_TO_LENDIAN_DOUBLE64(x)		((double) (x))
-
-#define LENDIAN_TO_HOST_INT16(x)		((uint16_t) (x))
-#define LENDIAN_TO_HOST_INT32(x)		((uint32_t) (x))
-#define LENDIAN_TO_HOST_FLOAT32(x)		((float) (x))
-#define LENDIAN_TO_HOST_DOUBLE64(x)		((double) (x))
-
-#else
-
-#define HOST_TO_LENDIAN_INT16(x)		_af_byteswap_int16(x)
-#define HOST_TO_LENDIAN_INT32(x)		_af_byteswap_int32(x)
-#define HOST_TO_LENDIAN_FLOAT32(x)		_af_byteswap_float32(x)
-#define HOST_TO_LENDIAN_DOUBLE64(x)		_af_byteswap_double64(x)
-
-#define LENDIAN_TO_HOST_INT16(x)		_af_byteswap_int16(x)
-#define LENDIAN_TO_HOST_INT32(x)		_af_byteswap_int32(x)
-#define LENDIAN_TO_HOST_FLOAT32(x)		_af_byteswap_float32(x)
-#define LENDIAN_TO_HOST_DOUBLE64(x)		_af_byteswap_double64(x)
-
-#endif
-
-#if WORDS_BIGENDIAN
-
-#define HOST_TO_BENDIAN_INT16(x)		((uint16_t) (x))
-#define HOST_TO_BENDIAN_INT32(x)		((uint32_t) (x))
-#define HOST_TO_BENDIAN_FLOAT32(x)		((float) (x))
-#define HOST_TO_BENDIAN_DOUBLE64(x)		((double) (x))
-
-#define BENDIAN_TO_HOST_INT16(x)		((uint16_t) (x))
-#define BENDIAN_TO_HOST_INT32(x)		((uint32_t) (x))
-#define BENDIAN_TO_HOST_FLOAT32(x)		((float) (x))
-#define BENDIAN_TO_HOST_DOUBLE64(x)		((double) (x))
-
-#else
-
-#define HOST_TO_BENDIAN_INT16(x)		_af_byteswap_int16(x)
-#define HOST_TO_BENDIAN_INT32(x)		_af_byteswap_int32(x)
-#define HOST_TO_BENDIAN_FLOAT32(x)		_af_byteswap_float32(x)
-#define HOST_TO_BENDIAN_DOUBLE64(x)		_af_byteswap_double64(x)
-
-#define BENDIAN_TO_HOST_INT16(x)		_af_byteswap_int16(x)
-#define BENDIAN_TO_HOST_INT32(x)		_af_byteswap_int32(x)
-#define BENDIAN_TO_HOST_FLOAT32(x)		_af_byteswap_float32(x)
-#define BENDIAN_TO_HOST_DOUBLE64(x)		_af_byteswap_double64(x)
-
 #endif
 
 inline uint16_t _af_byteswap_int16 (uint16_t x)
@@ -139,8 +80,6 @@ inline double _af_byteswap_float64 (double x)
 	return u.f;
 }
 
-#ifdef __cplusplus
-
 inline uint64_t byteswap(uint64_t value) { return _af_byteswap_int64(value); }
 inline int64_t byteswap(int64_t value) { return _af_byteswap_int64(value); }
 inline uint32_t byteswap(uint32_t value) { return _af_byteswap_int32(value); }
@@ -174,7 +113,5 @@ T hostToLittle(T value)
 {
 	return _AF_BYTEORDER_NATIVE == AF_BYTEORDER_LITTLEENDIAN ? value : byteswap(value);
 }
-
-#endif // __cplusplus
 
 #endif
