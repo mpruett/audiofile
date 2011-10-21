@@ -367,7 +367,7 @@ status NISTFile::readInit(AFfilesetup setup)
 	/* Read sample count. */
 	if (nist_header_read_int(header, "sample_count", &intval))
 	{
-		track->totalfframes = intval / track->f.channelCount;
+		track->totalfframes = intval;
 	}
 	else
 	{
@@ -438,7 +438,7 @@ status NISTFile::writeHeader()
 		"sample_coding -s%d %s\n"
 		"end_head\n",
 		track->f.channelCount,
-		(int) (track->totalfframes * track->f.channelCount),
+		(int) track->totalfframes,
 		(int) track->f.sampleRate,
 		(int) _af_format_sample_size(&track->f, false),
 		(int) _af_format_sample_size(&track->f, false), sample_byte_format(&track->f),

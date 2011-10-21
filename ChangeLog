@@ -1,5 +1,10 @@
 2011-10-20  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/NIST.cpp: Fix calculation of frame count in NIST
+	SPHERE sound files.
+
+2011-10-20  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/byteorder.h: Remove unused byte-swapping macros.
 
 2011-10-20  Michael Pruett <michael@68k.org>
