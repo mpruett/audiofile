@@ -41,7 +41,6 @@ public:
 private:
 	status writeSoundData();
 	status writeTerminator();
-	uint32_t soundDataSize();
 
 	AFfileoffset m_soundDataOffset;
 };

@@ -1218,8 +1218,7 @@ status WAVEFile::writeData()
 	fh->write("data", 4);
 	dataSizeOffset = fh->tell();
 
-	uint32_t chunkSize = (int) _af_format_frame_size(&track->f, false) *
-		track->totalfframes;
+	uint32_t chunkSize = track->data_size;
 
 	writeU32(&chunkSize);
 	track->fpos_first_frame = fh->tell();
@@ -1245,8 +1244,7 @@ status WAVEFile::update()
 			We call _af_format_frame_size to calculate the
 			frame size of normal PCM data or compressed data.
 		*/
-		dataLength = (uint32_t) track->totalfframes *
-			(int) _af_format_frame_size(&track->f, false);
+		dataLength = (uint32_t) track->data_size;
 		writeU32(&dataLength);
 
 		/* Update the length of the RIFF chunk. */

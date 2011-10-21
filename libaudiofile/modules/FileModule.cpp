@@ -36,12 +36,31 @@ FileModule::FileModule(Mode mode, Track *track, File *fh, bool canSeek) :
 
 ssize_t FileModule::read(void *data, size_t nbytes)
 {
-	return m_fh->read(data, nbytes);
+	ssize_t bytesRead = m_fh->read(data, nbytes);
+	if (bytesRead > 0)
+	{
+		m_track->fpos_next_frame += bytesRead;
+	}
+	else if (bytesRead < 0)
+	{
+		m_track->filemodhappy = false;
+	}
+	return bytesRead;
 }
 
 ssize_t FileModule::write(const void *data, size_t nbytes)
 {
-	return m_fh->write(data, nbytes);
+	ssize_t bytesWritten = m_fh->write(data, nbytes);
+	if (bytesWritten > 0)
+	{
+		m_track->fpos_next_frame += bytesWritten;
+		m_track->data_size += bytesWritten;
+	}
+	else if (bytesWritten < 0)
+	{
+		m_track->filemodhappy = false;
+	}
+	return bytesWritten;
 }
 
 off_t FileModule::tell()

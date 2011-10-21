@@ -344,7 +344,7 @@ status CAFFile::writeData(bool update)
 	int64_t dataLength = -1;
 	uint32_t editCount = 0;
 	if (update)
-		dataLength = audioDataLength() + 4;
+		dataLength = track->data_size + 4;
 
 	if (!writeTag(&data) ||
 		!writeS64(&dataLength) ||
@@ -353,19 +353,4 @@ status CAFFile::writeData(bool update)
 	if (track->fpos_first_frame == 0)
 		track->fpos_first_frame = fh->tell();
 	return AF_SUCCEED;
-}
-
-int64_t CAFFile::audioDataLength()
-{
-	Track *track = getTrack();
-
-	assert(track->f.compressionType == AF_COMPRESSION_NONE ||
-		track->f.compressionType == AF_COMPRESSION_G711_ULAW ||
-		track->f.compressionType == AF_COMPRESSION_G711_ALAW);
-
-	int frameSize = track->f.bytesPerFrame(false);
-	if (track->f.compressionType == AF_COMPRESSION_G711_ALAW ||
-		track->f.compressionType == AF_COMPRESSION_G711_ULAW)
-		frameSize = track->f.channelCount;
-	return frameSize * track->totalfframes;
 }

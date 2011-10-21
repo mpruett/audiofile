@@ -197,9 +197,6 @@ void IMA::runPull()
 
 	m_track->nextfframe += framesRead;
 
-	if (blocksRead > 0)
-		m_track->fpos_next_frame += blocksRead * m_blockAlign;
-
 	assert(tell() == m_track->fpos_next_frame);
 
 	/*

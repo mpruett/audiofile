@@ -51,8 +51,6 @@ private:
 
 	status writeDescription();
 	status writeData(bool update);
-
-	int64_t audioDataLength();
 };
 
 #endif

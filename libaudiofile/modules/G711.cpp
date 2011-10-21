@@ -179,7 +179,6 @@ void G711::runPush()
 
 	m_track->nextfframe += framesWritten;
 	m_track->totalfframes = m_track->nextfframe;
-	m_track->fpos_next_frame += (framesWritten>0) ? framesWritten*framesize : 0;
 
 	assert(!canSeek() || (tell() == m_track->fpos_next_frame));
 }
@@ -245,7 +244,6 @@ void G711::runPull()
 		framesToRead, framesRead));
 
 	m_track->nextfframe += framesRead;
-	m_track->fpos_next_frame += (framesRead>0) ? framesRead*framesize : 0;
 	assert(!canSeek() || (tell() == m_track->fpos_next_frame));
 
 	/*

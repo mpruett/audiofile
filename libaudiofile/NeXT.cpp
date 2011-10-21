@@ -312,8 +312,7 @@ status NeXTFile::writeHeader()
 		_af_error(AF_BAD_LSEEK, "bad seek");
 
 	uint32_t offset = track->fpos_first_frame;
-	int frameSize = _af_format_frame_size(&track->f, false);
-	uint32_t length = track->totalfframes * frameSize;
+	uint32_t length = track->data_size;
 	uint32_t encoding = nextencodingtype(&track->f);
 	uint32_t sampleRate = track->f.sampleRate;
 	uint32_t channelCount = track->f.channelCount;

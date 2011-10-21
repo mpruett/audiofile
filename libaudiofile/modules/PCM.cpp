@@ -142,7 +142,6 @@ void PCM::runPush()
 
 	m_track->nextfframe += n;
 	m_track->totalfframes = m_track->nextfframe;
-	m_track->fpos_next_frame += (n>0) ? n * m_bytesPerFrame : 0;
 	assert(!canSeek() || (tell() == m_track->fpos_next_frame));
 }
 
@@ -201,7 +200,6 @@ void PCM::runPull()
 		(intmax_t) framesToRead, (intmax_t) framesRead));
 
 	m_track->nextfframe += framesRead;
-	m_track->fpos_next_frame += (framesRead>0) ? framesRead * m_bytesPerFrame : 0;
 	assert(!canSeek() || (tell() == m_track->fpos_next_frame));
 
 	/*

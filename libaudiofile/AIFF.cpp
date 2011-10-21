@@ -975,10 +975,9 @@ status AIFFFile::writeSSND()
 	else
 		fh->seek(SSND_offset, File::SeekFromBeginning);
 
-	uint32_t chunkSize = (int) _af_format_frame_size(&track->f, false) *
-		track->totalfframes + 8;
-
 	fh->write("SSND", 4);
+
+	uint32_t chunkSize = track->data_size + 8;
 	writeU32(&chunkSize);
 
 	uint32_t zero = 0;

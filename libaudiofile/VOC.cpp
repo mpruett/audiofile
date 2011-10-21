@@ -337,7 +337,7 @@ status VOCFile::writeSoundData()
 		(track->f.isUnsigned() && track->f.sampleWidth == 8));
 
 	uint8_t blockType = kVOCSoundDataNew;
-	uint32_t blockSize = 12 + soundDataSize();
+	uint32_t blockSize = 12 + track->data_size;
 	uint32_t blockHeader = blockSize << 8 | blockType;
 	if (!writeU32(&blockHeader))
 		return AF_FAIL;
@@ -380,24 +380,9 @@ status VOCFile::writeSoundData()
 status VOCFile::writeTerminator()
 {
 	Track *track = getTrack();
-	fh->seek(track->fpos_first_frame + soundDataSize(), File::SeekFromBeginning);
+	fh->seek(track->fpos_first_frame + track->data_size, File::SeekFromBeginning);
 	uint8_t terminator = kVOCTerminator;
 	if (!writeU8(&terminator))
 		return AF_FAIL;
 	return AF_SUCCEED;
-}
-
-uint32_t VOCFile::soundDataSize()
-{
-	Track *track = getTrack();
-
-	assert(track->f.compressionType == AF_COMPRESSION_NONE ||
-		track->f.compressionType == AF_COMPRESSION_G711_ULAW ||
-		track->f.compressionType == AF_COMPRESSION_G711_ALAW);
-
-	int frameSize = track->f.bytesPerFrame(false);
-	if (track->f.compressionType == AF_COMPRESSION_G711_ALAW ||
-		track->f.compressionType == AF_COMPRESSION_G711_ULAW)
-		frameSize = track->f.channelCount;
-	return frameSize * track->totalfframes;
 }
