@@ -1,3 +1,8 @@
+2011-11-28  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/VOC.cpp: Fix initialization of byte order in
+	Creative Voice File format.
+
 2011-10-20  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/NIST.cpp: Fix calculation of frame count in NIST

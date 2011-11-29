@@ -24,6 +24,7 @@
 #include "File.h"
 #include "Track.h"
 #include "Setup.h"
+#include "byteorder.h"
 #include "util.h"
 
 #include <string.h>
@@ -125,6 +126,11 @@ AFfilesetup VOCFile::completeSetup(AFfilesetup setup)
 		_af_error(AF_BAD_BYTEORDER, "VOC supports only little-endian data");
 		track->f.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
 	}
+
+	if (track->f.compressionType == AF_COMPRESSION_NONE)
+		track->f.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
+	else
+		track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 
 	if (track->f.compressionType != AF_COMPRESSION_NONE &&
 		track->f.compressionType != AF_COMPRESSION_G711_ULAW &&
