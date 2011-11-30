@@ -1,3 +1,10 @@
+Changes for Audio File Library version 0.3.2:
+
+* Fix initialization of byte order in Creative Voice File format.
+* Fix calculation of frame count in NIST SPHERE sound files.
+* Remove duplicate definition of AFvirtualfile.
+* Don't treat compiler warnings as errors by default.
+
 Changes for Audio File Library version 0.3.1:
 
 * Fix installation of man pages.
