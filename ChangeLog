@@ -1,3 +1,8 @@
+2001-11-30  Thomas Klausner <wiz@NetBSD.org>
+
+	* configure.ac: Replace nonstandard '==' operator with '=' in test
+	expressions.
+
 2011-11-29  Michael Pruett <michael@68k.org>
 
 	* Release version 0.3.2 of the Audio File Library.

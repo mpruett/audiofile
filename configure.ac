@@ -57,9 +57,9 @@ AC_ARG_ENABLE(werror,
 	AS_HELP_STRING([--enable-werror], [treat compiler warnings as errors]),
 	[enable_werror=$enableval],
 	[enable_werror=no])
-AM_CONDITIONAL(ENABLE_WERROR, [test "$enable_werror" == "yes"])
+AM_CONDITIONAL(ENABLE_WERROR, [test "$enable_werror" = "yes"])
 
-AS_IF([test "$enable_werror" == "yes"],
+AS_IF([test "$enable_werror" = "yes"],
 	[WERROR_CFLAGS="-Werror"
 	AC_SUBST(WERROR_CFLAGS)])
 
@@ -67,9 +67,9 @@ AC_ARG_ENABLE(coverage,
 	AS_HELP_STRING([--enable-coverage], [enable code coverage]),
 	[enable_coverage=$enableval],
 	[enable_coverage=no])
-AM_CONDITIONAL(ENABLE_COVERAGE, [test "$enable_coverage" == "yes"])
+AM_CONDITIONAL(ENABLE_COVERAGE, [test "$enable_coverage" = "yes"])
 
-AS_IF([test "$enable_coverage" == "yes"],
+AS_IF([test "$enable_coverage" = "yes"],
 	[COVERAGE_CFLAGS="-fprofile-arcs -ftest-coverage"
 	COVERAGE_LIBS="-lgcov"
 	AC_SUBST(COVERAGE_CFLAGS)
@@ -88,9 +88,9 @@ AC_ARG_ENABLE(valgrind,
 	AS_HELP_STRING([--enable-valgrind], [enable testing with Valgrind]),
 	[enable_valgrind=$enableval],
 	[enable_valgrind=no])
-AM_CONDITIONAL(ENABLE_VALGRIND, [test "$enable_valgrind" == "yes"])
+AM_CONDITIONAL(ENABLE_VALGRIND, [test "$enable_valgrind" = "yes"])
 
-AS_IF([test "$enable_valgrind" == "yes"],
+AS_IF([test "$enable_valgrind" = "yes"],
 	[AC_PATH_PROG(VALGRIND, valgrind, :)
 	AC_SUBST(VALGRIND)
 	AS_IF([test "$VALGRIND" = :],
