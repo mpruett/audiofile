@@ -113,18 +113,9 @@ status AVRFile::readInit(AFfilesetup setup)
 	fh->read(reserved, 26);
 	fh->read(user, 64);
 
-	Track *track = _af_track_new();
+	Track *track = allocateTrack();
 	if (!track)
 		return AF_FAIL;
-
-	tracks = track;
-	trackCount = 1;
-
-	instruments = NULL;
-	instrumentCount = 0;
-
-	miscellaneous = NULL;
-	miscellaneousCount = 0;
 
 	/* Use only low-order three bytes of sample rate. */
 	track->f.sampleRate = rate & 0xffffff;

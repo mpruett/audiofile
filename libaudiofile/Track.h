@@ -26,6 +26,7 @@
 #define TRACK_H
 
 #include "AudioFormat.h"
+#include "Shared.h"
 #include "afinternal.h"
 
 class ModuleState;
@@ -51,6 +52,9 @@ struct TrackSetup
 
 struct Track
 {
+	Track();
+	~Track();
+
 	int	id;	/* usually AF_DEFAULT_TRACKID */
 
 	AudioFormat f, v;	/* file and virtual audio formats */
@@ -73,7 +77,7 @@ struct Track
 	AFframecount nextvframe;
 	AFfileoffset data_size;		/* trackBytes */
 
-	ModuleState *ms;
+	SharedPtr<ModuleState> ms;
 
 	double taper, dynamic_range;
 	bool ratecvt_filter_params_set;
@@ -85,6 +89,4 @@ struct Track
 	Marker *getMarker(int markerID);
 };
 
-Track *_af_track_new (void);
-
-#endif /* TRACK_H */
+#endif

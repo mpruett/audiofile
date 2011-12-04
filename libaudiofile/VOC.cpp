@@ -154,7 +154,7 @@ status VOCFile::readInit(AFfilesetup)
 	readU16(&version);
 	readU16(&checksum);
 
-	Track *track = _af_track_new();
+	Track *track = allocateTrack();
 	tracks = track;
 	trackCount = 1;
 

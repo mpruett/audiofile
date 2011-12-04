@@ -107,15 +107,6 @@ status NeXTFile::readInit(AFfilesetup setup)
 {
 	uint32_t id, offset, length, encoding, sampleRate, channelCount;
 
-	instruments = NULL;
-	instrumentCount = 0;
-
-	miscellaneous = NULL;
-	miscellaneousCount = 0;
-
-	tracks = NULL;	/* Allocate this later. */
-	trackCount = 1;
-
 	fh->seek(0, File::SeekFromBeginning);
 
 	fh->read(&id, 4);
@@ -133,11 +124,9 @@ status NeXTFile::readInit(AFfilesetup setup)
 		id, offset, length, encoding, sampleRate, channelCount);
 #endif
 
-	Track *track = _af_track_new();
+	Track *track = allocateTrack();
 	if (!track)
 		return AF_FAIL;
-
-	tracks = track;
 
 	track->f.byteOrder = AF_BYTEORDER_BIGENDIAN;
 

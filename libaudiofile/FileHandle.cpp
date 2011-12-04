@@ -1,5 +1,6 @@
 /*
 	Audio File Library
+	Copyright (C) 2000-2001, Silicon Graphics, Inc.
 	Copyright (C) 2010-2011, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
@@ -25,6 +26,7 @@
 #include "audiofile.h"
 #include "byteorder.h"
 #include <stdlib.h>
+#include <assert.h>
 
 #include "AIFF.h"
 #include "AVR.h"
@@ -41,6 +43,23 @@
 #include "Instrument.h"
 #include "Tag.h"
 #include "Track.h"
+#include "units.h"
+
+static void freeInstParams (AFPVu *values, int fileFormat)
+{
+	if (!values)
+		return;
+
+	int parameterCount = _af_units[fileFormat].instrumentParameterCount;
+
+	for (int i=0; i<parameterCount; i++)
+	{
+		if (_af_units[fileFormat].instrumentParameters[i].type == AU_PVTYPE_PTR)
+			free(values[i].v);
+	}
+
+	free(values);
+}
 
 _AFfilehandle *_AFfilehandle::create(int fileFormat)
 {
@@ -74,6 +93,7 @@ _AFfilehandle *_AFfilehandle::create(int fileFormat)
 
 _AFfilehandle::_AFfilehandle()
 {
+	valid = _AF_VALID_FILEHANDLE;
 	fh = NULL;
 	fileName = NULL;
 	trackCount = 0;
@@ -87,6 +107,49 @@ _AFfilehandle::_AFfilehandle()
 
 _AFfilehandle::~_AFfilehandle()
 {
+	valid = 0;
+
+	free(fileName);
+
+	delete [] tracks;
+	tracks = NULL;
+	trackCount = 0;
+
+	if (instruments)
+	{
+		for (int i=0; i<instrumentCount; i++)
+		{
+			free(instruments[i].loops);
+			instruments[i].loops = NULL;
+			instruments[i].loopCount = 0;
+
+			freeInstParams(instruments[i].values, fileFormat);
+			instruments[i].values = NULL;
+		}
+
+		free(instruments);
+		instruments = NULL;
+	}
+	instrumentCount = 0;
+
+	if (miscellaneous)
+	{
+		for (int i=0; i<miscellaneousCount; i++)
+			free(miscellaneous[i].buffer);
+		free(miscellaneous);
+		miscellaneous = NULL;
+	}
+	miscellaneousCount = 0;
+}
+
+Track *_AFfilehandle::allocateTrack()
+{
+	assert(!trackCount);
+	assert(!tracks);
+
+	trackCount = 1;
+	tracks = new Track[1];
+	return tracks;
 }
 
 Track *_AFfilehandle::getTrack(int trackID)

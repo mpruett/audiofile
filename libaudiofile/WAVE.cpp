@@ -717,14 +717,7 @@ status WAVEFile::readInit(AFfilesetup setup)
 	bool hasFrameCount = false;
 	bool hasINST = false;
 
-	instruments = NULL;
-	instrumentCount = 0;
-	miscellaneous = NULL;
-	miscellaneousCount = 0;
-
-	Track *track = _af_track_new();
-	tracks = track;
-	trackCount = 1;
+	Track *track = allocateTrack();
 
 	fh->seek(0, File::SeekFromBeginning);
 

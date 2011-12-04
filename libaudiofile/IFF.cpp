@@ -186,15 +186,8 @@ status IFFFile::readInit(AFfilesetup setup)
 	if (type != "FORM" || formtype != "8SVX")
 		return AF_FAIL;
 
-	instrumentCount = 0;
-	instruments = NULL;
-	miscellaneousCount = 0;
-	miscellaneous = NULL;
-
 	/* IFF/8SVX files have only one track. */
-	Track *track = _af_track_new();
-	trackCount = 1;
-	tracks = track;
+	Track *track = allocateTrack();
 
 	/* Set the index to include the form type ('8SVX' in this case). */
 	size_t index = 4;

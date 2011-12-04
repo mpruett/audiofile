@@ -23,6 +23,7 @@
 
 #include <sys/types.h>
 #include <string>
+#include "aupvlist.h"
 
 struct PCMInfo
 {
@@ -41,7 +42,7 @@ struct AudioFormat
 	int channelCount;		/* number of channels */
 
 	int compressionType;	/* AF_COMPRESSION_... */
-	void *compressionParams;	/* NULL if no compression */
+	AUpvlist compressionParams;	/* NULL if no compression */
 
 	bool packed : 1;
 

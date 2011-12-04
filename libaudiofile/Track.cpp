@@ -38,6 +38,7 @@
 #include "util.h"
 #include "Marker.h"
 #include "modules/Module.h"
+#include "modules/ModuleState.h"
 
 void afInitTrackIDs (AFfilesetup file, const int *trackids, int trackCount)
 {
@@ -57,36 +58,62 @@ int afGetTrackIDs (AFfilehandle file, int *trackids)
 	return 1;
 }
 
-Track *_af_track_new (void)
+Track::Track()
 {
-	Track *t = (Track *) _af_malloc(sizeof (Track));
+	id = AF_DEFAULT_TRACK;
 
-	t->id = AF_DEFAULT_TRACK;
+	f.compressionParams = NULL;
+	v.compressionParams = NULL;
 
-	t->f.compressionParams = NULL;
-	t->v.compressionParams = NULL;
+	channelMatrix = NULL;
 
-	t->channelMatrix = NULL;
+	markerCount = 0;
+	markers = NULL;
 
-	t->markerCount = 0;
-	t->markers = NULL;
+	hasAESData = false;
+	memset(aesData, 0, 24);
 
-	t->hasAESData = false;
-	memset(t->aesData, 0, 24);
+	totalfframes = 0;
+	nextfframe = 0;
+	frames2ignore = 0;
+	fpos_first_frame = 0;
+	fpos_next_frame = 0;
+	fpos_after_data = 0;
+	totalvframes = 0;
+	nextvframe = 0;
+	data_size = 0;
+}
 
-	t->totalfframes = 0;
-	t->nextfframe = 0;
-	t->frames2ignore = 0;
-	t->fpos_first_frame = 0;
-	t->fpos_next_frame = 0;
-	t->fpos_after_data = 0;
-	t->totalvframes = 0;
-	t->nextvframe = 0;
-	t->data_size = 0;
+Track::~Track()
+{
+	if (f.compressionParams)
+	{
+		AUpvfree(f.compressionParams);
+		f.compressionParams = NULL;
+	}
 
-	t->ms = NULL;
+	if (v.compressionParams)
+	{
+		AUpvfree(v.compressionParams);
+		v.compressionParams = NULL;
+	}
 
-	return t;
+	free(channelMatrix);
+	channelMatrix = NULL;
+
+	if (markers)
+	{
+		for (int j=0; j<markerCount; j++)
+		{
+			free(markers[j].name);
+			markers[j].name = NULL;
+			free(markers[j].comment);
+			markers[j].comment = NULL;
+		}
+
+		free(markers);
+		markers = NULL;
+	}
 }
 
 void Track::print()

@@ -86,8 +86,8 @@ status CAFFile::readInit(AFfilesetup setup)
 {
 	fh->seek(8, File::SeekFromBeginning);
 
-	trackCount = 1;
-	tracks = _af_track_new();
+	if (!allocateTrack())
+		return AF_FAIL;
 
 	off_t currentOffset = fh->tell();
 	off_t fileLength = fh->length();

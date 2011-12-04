@@ -70,6 +70,7 @@ public:
 	bool checkCanRead();
 	bool checkCanWrite();
 
+	Track *allocateTrack();
 	Track *getTrack(int trackID = AF_DEFAULT_TRACK);
 	Instrument *getInstrument(int instrumentID);
 	Miscellaneous *getMiscellaneous(int miscellaneousID);

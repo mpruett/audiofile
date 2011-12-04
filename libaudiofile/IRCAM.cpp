@@ -214,14 +214,6 @@ status IRCAMFile::readInit(AFfilesetup setup)
 {
 	float maxAmp = 1.0;
 
-	instruments = NULL;
-	instrumentCount = 0 ;
-	miscellaneous = NULL;
-	miscellaneousCount = 0;
-
-	tracks = NULL;
-	trackCount = 1;
-
 	fh->seek(0, File::SeekFromBeginning);
 
 	uint8_t magic[4];
@@ -261,11 +253,9 @@ status IRCAMFile::readInit(AFfilesetup setup)
 	uint32_t packMode;
 	readU32(&packMode);
 
-	Track *track = _af_track_new();
+	Track *track = allocateTrack();
 	if (!track)
 		return AF_FAIL;
-
-	tracks = track;
 
 	track->f.sampleRate = rate;
 	track->f.compressionType = AF_COMPRESSION_NONE;

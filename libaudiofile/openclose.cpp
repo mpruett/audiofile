@@ -44,8 +44,6 @@
 
 extern const _Unit _af_units[];
 
-static void freeFileHandle (AFfilehandle filehandle);
-static void freeInstParams (AFPVu *values, int fileFormat);
 static status _afOpenFile (int access, File *f, const char *filename,
 	AFfilehandle *file, AFfilesetup filesetup);
 
@@ -220,7 +218,6 @@ AFfilehandle afOpenFile (const char *filename, const char *mode, AFfilesetup set
 	AFfilehandle filehandle;
 	if (_afOpenFile(access, f, filename, &filehandle, setup) != AF_SUCCEED)
 	{
-		f->close();
 		delete f;
 	}
 
@@ -268,7 +265,6 @@ AFfilehandle afOpenVirtualFile (AFvirtualfile *vf, const char *mode,
 	AFfilehandle filehandle;
 	if (_afOpenFile(access, f, NULL, &filehandle, setup) != AF_SUCCEED)
 	{
-		f->close();
 		delete f;
 	}
 
@@ -348,7 +344,6 @@ static status _afOpenFile (int access, File *f, const char *filename,
 		return AF_FAIL;
 	}
 
-	filehandle->valid = _AF_VALID_FILEHANDLE;
 	filehandle->fh = f;
 	filehandle->access = access;
 	filehandle->seekok = f->canSeek();
@@ -364,7 +359,7 @@ static status _afOpenFile (int access, File *f, const char *filename,
 
 	if (result != AF_SUCCEED)
 	{
-		freeFileHandle(filehandle);
+		delete filehandle;
 		filehandle = AF_NULL_FILEHANDLE;
 		if (completesetup)
 			afFreeFileSetup(completesetup);
@@ -372,10 +367,7 @@ static status _afOpenFile (int access, File *f, const char *filename,
 	}
 
 	if (completesetup)
-	{
 		afFreeFileSetup(completesetup);
-		completesetup = NULL;
-	}
 
 	/*
 		Initialize virtual format.
@@ -405,7 +397,7 @@ static status _afOpenFile (int access, File *f, const char *filename,
 		track->ms = new ModuleState();
 		if (track->ms->init(filehandle, track) == AF_FAIL)
 		{
-			freeFileHandle(filehandle);
+			delete filehandle;
 			return AF_FAIL;
 		}
 	}
@@ -466,129 +458,7 @@ int afCloseFile (AFfilehandle file)
 		_af_error(AF_BAD_CLOSE, "close returned %d", err);
 
 	delete file->fh;
-
-	freeFileHandle(file);
+	delete file;
 
 	return 0;
-}
-
-static void freeFileHandle (AFfilehandle filehandle)
-{
-	int	fileFormat;
-	if (!filehandle || filehandle->valid != _AF_VALID_FILEHANDLE)
-	{
-		_af_error(AF_BAD_FILEHANDLE, "bad filehandle");
-		return;
-	}
-
-	filehandle->valid = 0;
-
-	if (filehandle->fileName != NULL)
-		free(filehandle->fileName);
-
-	fileFormat = filehandle->fileFormat;
-
-	if (filehandle->tracks)
-	{
-		for (int i=0; i<filehandle->trackCount; i++)
-		{
-			/* Free the compression parameters. */
-			if (filehandle->tracks[i].f.compressionParams)
-			{
-				AUpvfree((AUpvlist) filehandle->tracks[i].f.compressionParams);
-				filehandle->tracks[i].f.compressionParams = AU_NULL_PVLIST;
-			}
-
-			if (filehandle->tracks[i].v.compressionParams)
-			{
-				AUpvfree((AUpvlist) filehandle->tracks[i].v.compressionParams);
-				filehandle->tracks[i].v.compressionParams = AU_NULL_PVLIST;
-			}
-
-			/* Free the track's modules. */
-
-			delete filehandle->tracks[i].ms;
-			filehandle->tracks[i].ms = NULL;
-
-			if (filehandle->tracks[i].channelMatrix)
-			{
-				free(filehandle->tracks[i].channelMatrix);
-				filehandle->tracks[i].channelMatrix = NULL;
-			}
-
-			if (filehandle->tracks[i].markers)
-			{
-				int	j;
-				for (j=0; j<filehandle->tracks[i].markerCount; j++)
-				{
-					if (filehandle->tracks[i].markers[j].name)
-					{
-						free(filehandle->tracks[i].markers[j].name);
-						filehandle->tracks[i].markers[j].name = NULL;
-					}
-					if (filehandle->tracks[i].markers[j].comment)
-					{
-						free(filehandle->tracks[i].markers[j].comment);
-						filehandle->tracks[i].markers[j].comment = NULL;
-					}
-
-				}
-
-				free(filehandle->tracks[i].markers);
-				filehandle->tracks[i].markers = NULL;
-			}
-		}
-
-		free(filehandle->tracks);
-		filehandle->tracks = NULL;
-	}
-	filehandle->trackCount = 0;
-
-	if (filehandle->instruments)
-	{
-		for (int i=0; i<filehandle->instrumentCount; i++)
-		{
-			if (filehandle->instruments[i].loops)
-			{
-				free(filehandle->instruments[i].loops);
-				filehandle->instruments[i].loops = NULL;
-			}
-			filehandle->instruments[i].loopCount = 0;
-
-			if (filehandle->instruments[i].values)
-			{
-				freeInstParams(filehandle->instruments[i].values, fileFormat);
-				filehandle->instruments[i].values = NULL;
-			}
-		}
-		free(filehandle->instruments);
-		filehandle->instruments = NULL;
-	}
-	filehandle->instrumentCount = 0;
-
-	if (filehandle->miscellaneous)
-	{
-		for (int i=0; i<filehandle->miscellaneousCount; i++)
-			if (filehandle->miscellaneous[i].buffer)
-				free(filehandle->miscellaneous[i].buffer);
-		free(filehandle->miscellaneous);
-		filehandle->miscellaneous = NULL;
-	}
-	filehandle->miscellaneousCount = 0;
-
-	delete filehandle;
-}
-
-static void freeInstParams (AFPVu *values, int fileFormat)
-{
-	int	parameterCount = _af_units[fileFormat].instrumentParameterCount;
-
-	for (int i=0; i<parameterCount; i++)
-	{
-		if (_af_units[fileFormat].instrumentParameters[i].type == AU_PVTYPE_PTR)
-			if (values[i].v != NULL)
-				free(values[i].v);
-	}
-
-	free(values);
 }

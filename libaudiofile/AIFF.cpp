@@ -497,15 +497,8 @@ status AIFFFile::readInit(AFfilesetup setup)
 	printf("size: %d\n", size);
 #endif
 
-	instrumentCount = 0;
-	instruments = NULL;
-	miscellaneousCount = 0;
-	miscellaneous = NULL;
-
-	/* AIFF files have only one track. */
-	Track *track = _af_track_new();
-	trackCount = 1;
-	tracks = track;
+	if (!allocateTrack())
+		return AF_FAIL;
 
 	/* Include the offset of the form type. */
 	size_t index = 4;

@@ -568,8 +568,8 @@ status _af_filesetup_make_handle (AFfilesetup setup, AFfilehandle handle)
 		handle->tracks = NULL;
 	else
 	{
-		handle->tracks = (Track *) _af_calloc(handle->trackCount, sizeof (Track));
-		if (handle->tracks == NULL)
+		handle->tracks = new Track[handle->trackCount];
+		if (!handle->tracks)
 			return AF_FAIL;
 
 		for (int i=0; i<handle->trackCount; i++)
@@ -588,12 +588,10 @@ status _af_filesetup_make_handle (AFfilesetup setup, AFfilehandle handle)
 				track->markers = NULL;
 			else
 			{
-				int	j;
-
 				track->markers = _af_marker_new(track->markerCount);
 				if (track->markers == NULL)
 					return AF_FAIL;
-				for (j=0; j<track->markerCount; j++)
+				for (int j=0; j<track->markerCount; j++)
 				{
 					track->markers[j].id = tracksetup->markers[j].id;
 					track->markers[j].name =
@@ -610,8 +608,6 @@ status _af_filesetup_make_handle (AFfilesetup setup, AFfilehandle handle)
 			}
 
 			track->hasAESData = tracksetup->aesDataSet;
-
-			track->ms = NULL;
 		}
 	}
 
