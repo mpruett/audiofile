@@ -23,6 +23,9 @@ linuxtest_SOURCES = linuxtest.c
 osxplay_SOURCES = osxplay.c
 osxplay_LDFLAGS = -framework AudioUnit -framework CoreServices
 
+power_SOURCES = power.c
+power_LDFLAGS = $(LIBAUDIOFILES) -lm
+
 LDADD = $(LIBAUDIOFILE)
 
 DEPENDENCIES = $(LIBAUDIOFILE)
