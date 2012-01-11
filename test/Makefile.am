@@ -58,6 +58,9 @@ DEPENDENCIES = $(LIBAUDIOFILE)
 
 LIBGTEST = gtest/libgtest.la
 
+printmarkers_SOURCES = printmarkers.c
+printmarkers_LDADD = $(LIBAUDIOFILE) -lm
+
 sign_SOURCES = sign.cpp
 sign_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
