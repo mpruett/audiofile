@@ -1,3 +1,7 @@
+2012-01-10  Matthias Rampke <matthias@rampke.de>
+
+	* configure.ac: Add configure check for math library.
+
 2011-12-04  Michael Pruett <michael@68k.org>
 
 	* Refactor file handle and track creation and destruction.
