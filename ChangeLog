@@ -1,3 +1,11 @@
+2012-01-11  Michael Pruett <michael@68k.org>
+
+	* configure.ac: Update library's soname version.
+
+	Changing the definitions of AFframecount and AFfileoffset breaks
+	backwards binary compatibility and requires incrementing the
+	soname version.
+
 2012-01-11  Michael <kensington@astralcloak.net>
 
 	* examples/Makefile.am, test/Makefile.am: Link examples/power
