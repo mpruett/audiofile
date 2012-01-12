@@ -1,3 +1,7 @@
+2012-01-11  Matthias Rampke <matthias@rampke.de>
+
+	* libaudiofile/Makefile.am: Link against libm.
+
 2011-12-04  Michael Pruett <michael@68k.org>
 
 	* Refactor file handle and track creation and destruction.

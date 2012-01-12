@@ -35,7 +35,7 @@ libaudiofile_la_SOURCES = \
 	UUID.cpp UUID.h \
 	ScopedArray.h
 
-libaudiofile_la_LIBADD = modules/libmodules.la $(COVERAGE_LIBS)
+libaudiofile_la_LIBADD = modules/libmodules.la $(COVERAGE_LIBS) -lm
 
 libaudiofile_la_LDFLAGS = -version-info $(AUDIOFILE_VERSION_INFO) \
 	-no-undefined \
