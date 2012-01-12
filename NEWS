@@ -1,3 +1,8 @@
+Changes for Audio File Library version 0.3.3:
+
+* Update library's soname version.
+* Link against libm.
+
 Changes for Audio File Library version 0.3.2:
 
 * Fix initialization of byte order in Creative Voice File format.

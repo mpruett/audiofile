@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([audiofile], [0.3.2])
+AC_INIT([audiofile], [0.3.3])
 AC_CONFIG_SRCDIR([libaudiofile/AIFF.cpp])
 
 dnl Set libtool version information.

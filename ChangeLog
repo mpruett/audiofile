@@ -1,5 +1,9 @@
 2012-01-11  Michael Pruett <michael@68k.org>
 
+	* Release version 0.3.3 of the Audio File Library.
+
+2012-01-11  Michael Pruett <michael@68k.org>
+
 	* configure.ac: Update library's soname version.
 
 	Changing the definitions of AFframecount and AFfileoffset breaks
