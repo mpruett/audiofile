@@ -1,3 +1,8 @@
+2012-01-11  Michael <kensington@astralcloak.net>
+
+	* examples/Makefile.am, test/Makefile.am: Link examples/power
+	and test/printmarkers explicitly against libm.
+
 2012-01-11  Matthias Rampke <matthias@rampke.de>
 
 	* libaudiofile/Makefile.am: Link against libm.
