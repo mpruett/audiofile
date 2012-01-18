@@ -1,26 +1,33 @@
-#include <math.h>
-#include "extended.h"
-
-/*
- * C O N V E R T   T O	 I E E E   E X T E N D E D
- */
-
-/* Copyright (C) 1988-1991 Apple Computer, Inc.
+/* Copyright (C) 1989-1991 Apple Computer, Inc.
+ *
  * All rights reserved.
+ *
+ * Warranty Information
+ *  Even though Apple has reviewed this software, Apple makes no warranty
+ *  or representation, either express or implied, with respect to this
+ *  software, its quality, accuracy, merchantability, or fitness for a
+ *  particular purpose.  As a result, this software is provided "as is,"
+ *  and you, its user, are assuming the entire risk as to its quality
+ *  and accuracy.
+ *
+ * This code may be used and freely distributed as long as it includes
+ * this copyright notice and the above warranty information.
  *
  * Machine-independent I/O routines for IEEE floating-point numbers.
  *
  * NaN's and infinities are converted to HUGE_VAL or HUGE, which
- * happens to be infinity on IEEE machines.	 Unfortunately, it is
+ * happens to be infinity on IEEE machines.  Unfortunately, it is
  * impossible to preserve NaN's in a machine-independent way.
  * Infinities are, however, preserved on IEEE machines.
  *
  * These routines have been tested on the following machines:
- *    Apple Macintosh, MPW 3.1 C compiler
- *    Apple Macintosh, THINK C compiler
- *    Silicon Graphics IRIS, MIPS compiler
- *    Cray X/MP and Y/MP
- *    Digital Equipment VAX
+ *	Apple Macintosh, MPW 3.1 C compiler
+ *	Apple Macintosh, THINK C compiler
+ *	Silicon Graphics IRIS, MIPS compiler
+ *	Cray X/MP and Y/MP
+ *	Digital Equipment VAX
+ *	Sequent Balance (Multiprocesor 386)
+ *	NeXT
  *
  *
  * Implemented by Malcolm Slaney and Ken Turkowski.
@@ -36,9 +43,20 @@
  * NaN's, and denormalized numbers.
  */
 
+/****************************************************************
+ * Extended precision IEEE floating-point conversion routines.
+ * Extended is an 80-bit number as defined by Motorola,
+ * with a sign bit, 15 bits of exponent (offset 16383?),
+ * and a 64-bit mantissa, with no hidden bit.
+ ****************************************************************/
+
+#include "extended.h"
+
+#include <math.h>
+
 #ifndef HUGE_VAL
 #define HUGE_VAL HUGE
-#endif /*HUGE_VAL*/
+#endif
 
 #define FloatToUnsigned(f) ((unsigned long) (((long) (f - 2147483648.0)) + 2147483647L) + 1)
 
@@ -92,51 +110,7 @@ void _af_convert_to_ieee_extended (double num, unsigned char *bytes)
 	bytes[9] = loMant;
 }
 
-/*
- * C O N V E R T   F R O M	 I E E E   E X T E N D E D
- */
-
-/*
- * Copyright (C) 1988-1991 Apple Computer, Inc.
- * All rights reserved.
- *
- * Machine-independent I/O routines for IEEE floating-point numbers.
- *
- * NaN's and infinities are converted to HUGE_VAL or HUGE, which
- * happens to be infinity on IEEE machines.	 Unfortunately, it is
- * impossible to preserve NaN's in a machine-independent way.
- * Infinities are, however, preserved on IEEE machines.
- *
- * These routines have been tested on the following machines:
- *	  Apple Macintosh, MPW 3.1 C compiler
- *	  Apple Macintosh, THINK C compiler
- *	  Silicon Graphics IRIS, MIPS compiler
- *	  Cray X/MP and Y/MP
- *	  Digital Equipment VAX
- *
- *
- * Implemented by Malcolm Slaney and Ken Turkowski.
- *
- * Malcolm Slaney contributions during 1988-1990 include big- and little-
- * endian file I/O, conversion to and from Motorola's extended 80-bit
- * floating-point format, and conversions to and from IEEE single-
- * precision floating-point format.
- *
- * In 1991, Ken Turkowski implemented the conversions to and from
- * IEEE double-precision format, added more precision to the extended
- * conversions, and accommodated conversions involving +/- infinity,
- * NaN's, and denormalized numbers.
- */
-
-#ifndef HUGE_VAL
-# define HUGE_VAL HUGE
-#endif /*HUGE_VAL*/
-
-# define UnsignedToFloat(u) (((double) ((long) (u - 2147483647L - 1))) + 2147483648.0)
-
-/****************************************************************
- * Extended precision IEEE floating-point conversion routine.
- ****************************************************************/
+#define UnsignedToFloat(u) (((double) ((long) (u - 2147483647L - 1))) + 2147483648.0)
 
 double _af_convert_from_ieee_extended (const unsigned char *bytes)
 {
