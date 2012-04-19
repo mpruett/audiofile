@@ -25,13 +25,19 @@
 */
 
 #ifndef AUDIOFILE_VFS_H
-#define AUDIOFILE_VFS_H 1
+#define AUDIOFILE_VFS_H
 
 #include <audiofile.h>
 #include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
+#define AFAPI __attribute__((visibility("default")))
+#else
+#define AFAPI
 #endif
 
 struct _AFvirtualfile
@@ -46,8 +52,10 @@ struct _AFvirtualfile
 	void *closure;
 };
 
-AFvirtualfile *af_virtual_file_new (void);
-void af_virtual_file_destroy (AFvirtualfile *vfile);
+AFAPI AFvirtualfile *af_virtual_file_new (void);
+AFAPI void af_virtual_file_destroy (AFvirtualfile *vfile);
+
+#undef AFAPI
 
 #ifdef __cplusplus
 }

@@ -29,9 +29,14 @@
 #define AUPVLIST_H
 
 #ifdef __cplusplus
-extern "C"
-{
-#endif /* __cplusplus */
+extern "C" {
+#endif
+
+#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
+#define AFAPI __attribute__((visibility("default")))
+#else
+#define AFAPI
+#endif
 
 enum
 {
@@ -44,18 +49,20 @@ typedef struct _AUpvlist *AUpvlist;
 
 #define AU_NULL_PVLIST ((struct _AUpvlist *) 0)
 
-AUpvlist AUpvnew (int maxItems);
-int AUpvgetmaxitems (AUpvlist);
-int AUpvfree (AUpvlist);
-int AUpvsetparam (AUpvlist, int item, int param);
-int AUpvsetvaltype (AUpvlist, int item, int type);
-int AUpvsetval (AUpvlist, int item, void *val);
-int AUpvgetparam (AUpvlist, int item, int *param);
-int AUpvgetvaltype (AUpvlist, int item, int *type);
-int AUpvgetval (AUpvlist, int item, void *val);
+AFAPI AUpvlist AUpvnew (int maxItems);
+AFAPI int AUpvgetmaxitems (AUpvlist);
+AFAPI int AUpvfree (AUpvlist);
+AFAPI int AUpvsetparam (AUpvlist, int item, int param);
+AFAPI int AUpvsetvaltype (AUpvlist, int item, int type);
+AFAPI int AUpvsetval (AUpvlist, int item, void *val);
+AFAPI int AUpvgetparam (AUpvlist, int item, int *param);
+AFAPI int AUpvgetvaltype (AUpvlist, int item, int *type);
+AFAPI int AUpvgetval (AUpvlist, int item, void *val);
+
+#undef AFAPI
 
 #ifdef __cplusplus
 }
-#endif /* __cplusplus */
+#endif
 
 #endif /* AUPVLIST_H */
