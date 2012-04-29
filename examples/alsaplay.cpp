@@ -91,6 +91,7 @@ int main(int argc, char **argv)
 		}
 	}
 
+	snd_pcm_drain(handle);
 	snd_pcm_close(handle);
 	delete [] buffer;
 

@@ -1,3 +1,8 @@
+2012-04-29  Michael Pruett <michael@68k.org>
+
+	* examples/alsaplay.cpp: Update alsaplay to wait for samples to
+	finish playing before closing.
+
 2012-04-18  Michael Pruett <michael@68k.org>
 
 	* Use hidden visibility for internal symbols.
