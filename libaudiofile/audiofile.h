@@ -110,7 +110,7 @@ enum
 	AF_FILE_SOUNDDESIGNER2 = 8,	/* not implemented */
 	AF_FILE_AVR = 9,
 	AF_FILE_IFF_8SVX = 10,
-	AF_FILE_SAMPLEVISION = 11,	/* not implemented */
+	AF_FILE_SAMPLEVISION = 11,
 	AF_FILE_VOC = 12,
 	AF_FILE_NIST_SPHERE = 13,
 	AF_FILE_SOUNDFONT2 = 14,	/* not implemented */

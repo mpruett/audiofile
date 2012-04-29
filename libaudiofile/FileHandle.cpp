@@ -36,6 +36,7 @@
 #include "NeXT.h"
 #include "NIST.h"
 #include "Raw.h"
+#include "SampleVision.h"
 #include "VOC.h"
 #include "WAVE.h"
 
@@ -80,6 +81,8 @@ _AFfilehandle *_AFfilehandle::create(int fileFormat)
 			return new AVRFile();
 		case AF_FILE_IFF_8SVX:
 			return new IFFFile();
+		case AF_FILE_SAMPLEVISION:
+			return new SampleVisionFile();
 		case AF_FILE_VOC:
 			return new VOCFile();
 		case AF_FILE_NIST_SPHERE:

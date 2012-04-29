@@ -1,5 +1,9 @@
 2012-04-29  Michael Pruett <michael@68k.org>
 
+	* Add support for SampleVision format.
+
+2012-04-29  Michael Pruett <michael@68k.org>
+
 	* sfcommands/printinfo.c: Fix field width for sample rate when
 	printing short information.
 

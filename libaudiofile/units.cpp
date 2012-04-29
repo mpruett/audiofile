@@ -38,6 +38,7 @@
 #include "NeXT.h"
 #include "NIST.h"
 #include "Raw.h"
+#include "SampleVision.h"
 #include "VOC.h"
 #include "WAVE.h"
 
@@ -184,7 +185,17 @@ const _Unit _af_units[_AF_NUM_UNITS] =
 	{
 		AF_FILE_SAMPLEVISION,
 		"Sample Vision", "Sample Vision File Format", "smp",
-		false
+		true,
+		SampleVisionFile::completeSetup,
+		SampleVisionFile::recognize,
+		AF_SAMPFMT_TWOSCOMP, 16,
+		0,		// number of compression types
+		NULL,	// compression types
+		0,		// maximum marker count
+		0,		// maximum instrument count
+		0,		// maximum number of loops per instrument
+		0,		// number of instrument parameters
+		NULL	// instrument parameters
 	},
 	{
 		AF_FILE_VOC,
