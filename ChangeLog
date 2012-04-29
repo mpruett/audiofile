@@ -1,5 +1,10 @@
 2012-04-29  Michael Pruett <michael@68k.org>
 
+	* sfcommands/printinfo.c: Fix field width for sample rate when
+	printing short information.
+
+2012-04-29  Michael Pruett <michael@68k.org>
+
 	* examples/alsaplay.cpp: Update alsaplay to wait for samples to
 	finish playing before closing.
 

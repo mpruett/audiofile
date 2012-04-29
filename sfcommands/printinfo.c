@@ -202,7 +202,7 @@ bool printshortinfo (const char *filename)
 			compressionName = "unk";
 	}
 
-	printf("%8.2fs %7.2f %4s %2dch %2db %s %s\n",
+	printf("%8.2fs %8.2f %4s %2dch %2db %s %s\n",
 		duration,
 		sampleRate,
 		labelString,
