@@ -5,7 +5,6 @@ INCLUDES = -I$(top_srcdir)/libaudiofile
 check_PROGRAMS = \
 	error \
 	floatto24 \
-	transparency \
 	query2 \
 	testaupv \
 	writeraw \
@@ -36,15 +35,12 @@ check_PROGRAMS = \
 	aes \
 	channelmatrix
 
-EXTRA_DIST = transparency.sh
-
 if ENABLE_VALGRIND
 VALGRIND_FLAGS = --quiet --leak-check=full --show-reachable=yes --error-exitcode=1
 TESTS_ENVIRONMENT = $(top_builddir)/libtool --mode=execute $(VALGRIND) $(VALGRIND_FLAGS)
 endif
 
 TESTS = error writeraw writeulaw writealaw \
-	transparency.sh \
 	query2 sixteen-to-eight twentyfour twentyfour2 floatto24 \
 	testfloat testdouble testmarkers testchannelmatrix seek large loop \
 	sign inttofloat floattoint pcmmapping miscellaneous next pcmdata \
