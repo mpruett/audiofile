@@ -1,5 +1,10 @@
 2012-04-29  Michael Pruett <michael@68k.org>
 
+	* test/Makefile.am, test/pipe.cpp: Add test for reading and writing
+	with non-seekable file handles.
+
+2012-04-29  Michael Pruett <michael@68k.org>
+
 	* Add support for SampleVision format.
 
 2012-04-29  Michael Pruett <michael@68k.org>

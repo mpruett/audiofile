@@ -36,7 +36,7 @@ check_PROGRAMS = \
 	aes \
 	channelmatrix
 
-EXTRA_DIST = transparency.sh pipe.sh
+EXTRA_DIST = transparency.sh
 
 if ENABLE_VALGRIND
 VALGRIND_FLAGS = --quiet --leak-check=full --show-reachable=yes --error-exitcode=1
@@ -44,11 +44,11 @@ TESTS_ENVIRONMENT = $(top_builddir)/libtool --mode=execute $(VALGRIND) $(VALGRIN
 endif
 
 TESTS = error writeraw writeulaw writealaw \
-	transparency.sh pipe.sh \
+	transparency.sh \
 	query2 sixteen-to-eight twentyfour twentyfour2 floatto24 \
 	testfloat testdouble testmarkers testchannelmatrix seek large loop \
 	sign inttofloat floattoint pcmmapping miscellaneous next pcmdata \
-	virtualfile aes channelmatrix
+	virtualfile aes channelmatrix pipe
 
 LIBAUDIOFILE = $(top_builddir)/libaudiofile/libaudiofile.la
 
@@ -102,6 +102,9 @@ aes_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 channelmatrix_SOURCES = channelmatrix.cpp
 channelmatrix_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+pipe_SOURCES = pipe.cpp
+pipe_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 coverage-reset:
 	$(LCOV) --base-directory=@top_srcdir@ --directory @top_srcdir@/libaudiofile --zerocounters
