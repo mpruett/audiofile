@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 1998-2000, 2010-2011, Michael Pruett <michael@68k.org>
+	Copyright (C) 1998-2000, 2010-2012, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -33,7 +33,7 @@
 
 #define LIBAUDIOFILE_MAJOR_VERSION 0
 #define LIBAUDIOFILE_MINOR_VERSION 3
-#define LIBAUDIOFILE_MICRO_VERSION 3
+#define LIBAUDIOFILE_MICRO_VERSION 4
 
 #ifdef __cplusplus
 extern "C" {
