@@ -3,22 +3,23 @@ SUBDIRS = gtest
 INCLUDES = -I$(top_srcdir)/libaudiofile
 
 TESTS = \
-	aes \
-	channelmatrix \
-	error \
+	AES \
+	ChannelMatrix \
+	Error \
+	FloatToInt \
+	IntToFloat \
+	Large \
+	Loop \
+	Miscellaneous \
+	NeXT \
+	PCMData \
+	PCMMapping \
+	Pipe \
+	Seek \
+	Sign \
+	VirtualFile \
 	floatto24 \
-	floattoint \
-	inttofloat \
-	large \
-	loop \
-	miscellaneous \
-	next \
-	pcmdata \
-	pcmmapping \
-	pipe \
 	query2 \
-	seek \
-	sign \
 	sixteen-to-eight \
 	testchannelmatrix \
 	testdouble \
@@ -26,7 +27,6 @@ TESTS = \
 	testmarkers \
 	twentyfour \
 	twentyfour2 \
-	virtualfile \
 	writealaw \
 	writeraw \
 	writeulaw
@@ -51,53 +51,53 @@ DEPENDENCIES = $(LIBAUDIOFILE)
 
 LIBGTEST = gtest/libgtest.la
 
-aes_SOURCES = aes.cpp
-aes_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+AES_SOURCES = AES.cpp
+AES_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
-channelmatrix_SOURCES = channelmatrix.cpp
-channelmatrix_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+ChannelMatrix_SOURCES = ChannelMatrix.cpp
+ChannelMatrix_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
-error_SOURCES = error.cpp
-error_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+Error_SOURCES = Error.cpp
+Error_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
-floattoint_SOURCES = floattoint.cpp
-floattoint_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+FloatToInt_SOURCES = FloatToInt.cpp
+FloatToInt_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
-inttofloat_SOURCES = inttofloat.cpp
-inttofloat_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+IntToFloat_SOURCES = IntToFloat.cpp
+IntToFloat_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
-large_SOURCES = large.cpp
-large_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+Large_SOURCES = Large.cpp
+Large_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
-loop_SOURCES = loop.cpp
-loop_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+Loop_SOURCES = Loop.cpp
+Loop_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
-miscellaneous_SOURCES = miscellaneous.cpp
-miscellaneous_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+Miscellaneous_SOURCES = Miscellaneous.cpp
+Miscellaneous_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
-next_SOURCES = next.cpp
-next_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+NeXT_SOURCES = NeXT.cpp
+NeXT_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
-pcmdata_SOURCES = pcmdata.cpp
-pcmdata_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+PCMData_SOURCES = PCMData.cpp
+PCMData_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
-pcmmapping_SOURCES = pcmmapping.cpp
-pcmmapping_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+PCMMapping_SOURCES = PCMMapping.cpp
+PCMMapping_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
-pipe_SOURCES = pipe.cpp
-pipe_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+Pipe_SOURCES = Pipe.cpp
+Pipe_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+Seek_SOURCES = Seek.cpp
+Seek_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+Sign_SOURCES = Sign.cpp
+Sign_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+VirtualFile_SOURCES = VirtualFile.cpp
+VirtualFile_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 printmarkers_SOURCES = printmarkers.c
 printmarkers_LDADD = $(LIBAUDIOFILE) -lm
-
-seek_SOURCES = seek.cpp
-seek_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
-
-sign_SOURCES = sign.cpp
-sign_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
-
-virtualfile_SOURCES = virtualfile.cpp
-virtualfile_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 coverage-reset:
 	$(LCOV) --base-directory=@top_srcdir@ --directory @top_srcdir@/libaudiofile --zerocounters
