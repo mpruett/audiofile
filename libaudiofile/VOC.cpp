@@ -108,6 +108,13 @@ AFfilesetup VOCFile::completeSetup(AFfilesetup setup)
 	TrackSetup *track = &setup->tracks[0];
 	if (track->sampleFormatSet)
 	{
+		if (!track->f.isInteger())
+		{
+			_af_error(AF_BAD_SAMPFMT,
+				"VOC format supports only integer audio data");
+			return AF_NULL_FILESETUP;
+		}
+
 		if ((track->f.isSigned() && track->f.sampleWidth != 16) ||
 			(track->f.isUnsigned() && track->f.sampleWidth != 8))
 		{
