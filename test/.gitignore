@@ -3,6 +3,7 @@ ChannelMatrix
 Error
 FloatToInt
 IntToFloat
+InvalidSampleFormat
 Large
 Loop
 Miscellaneous
