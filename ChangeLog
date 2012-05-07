@@ -1,5 +1,9 @@
 2012-05-06  Michael Pruett <michael@68k.org>
 
+	* Update documentation to include support for Sample Vision.
+
+2012-05-06  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/VOC.cpp: Report an error when initializing a VOC file
 	with an invalid sample format.
 

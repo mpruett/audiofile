@@ -28,6 +28,7 @@ The following file formats are currently supported:
 * Berkeley/IRCAM/CARL Sound File
 * Audio Visual Research
 * Amiga IFF/8SVX
+* Sample Vision
 * Creative Voice File
 * NIST SPHERE
 * Core Audio Format
