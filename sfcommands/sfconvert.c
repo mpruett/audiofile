@@ -102,6 +102,8 @@ int main (int argc, char **argv)
 				outFileFormat = AF_FILE_NEXTSND;
 			else if (!strcmp(argv[i+1], "bics"))
 				outFileFormat = AF_FILE_BICSF;
+			else if (!strcmp(argv[i+1], "smp"))
+				outFileFormat = AF_FILE_SAMPLEVISION;
 			else if (!strcmp(argv[i+1], "voc"))
 				outFileFormat = AF_FILE_VOC;
 			else if (!strcmp(argv[i+1], "nist"))
@@ -254,6 +256,7 @@ void printusage (void)
 	printf("    next    NeXT/Sun Format\n");
 	printf("    wave    MS RIFF WAVE Format\n");
 	printf("    bics    Berkeley/IRCAM/CARL Sound File Format\n");
+	printf("    smp     Sample Vision Format\n");
 	printf("    voc     Creative Voice File\n");
 	printf("    nist    NIST SPHERE Format\n");
 	printf("    caf     Core Audio Format\n");

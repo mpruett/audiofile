@@ -1,5 +1,10 @@
 2012-05-06  Michael Pruett <michael@68k.org>
 
+	* docs/sfconvert.1.txt, sfcommands/sfconvert.c: Add support for
+	Sample Vision to sfconvert.
+
+2012-05-06  Michael Pruett <michael@68k.org>
+
 	* Update documentation to include support for Sample Vision.
 
 2012-05-06  Michael Pruett <michael@68k.org>

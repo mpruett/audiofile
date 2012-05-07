@@ -29,6 +29,7 @@ The following keywords specify the format of the output sound file:
     `next`::: NeXT/Sun .snd/.au Format
     `wave`::: MS RIFF WAVE
     `bicsf`::: Berkeley/IRCAM/CARL Sound File Format
+    `smp`::: Sample Vision Format
     `voc`::: Creative Voice File Format
     `nist`::: NIST SPHERE Format
     `caf`::: Core Audio Format
