@@ -1,3 +1,7 @@
+2012-05-10  Michael Pruett <michael@68k.org>
+
+	* docs/*: Update documentation.
+
 2012-05-06  Michael Pruett <michael@68k.org>
 
 	* docs/sfconvert.1.txt, sfcommands/sfconvert.c: Add support for

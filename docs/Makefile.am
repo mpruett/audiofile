@@ -4,8 +4,12 @@ DOCS_TXT_MAN1 = \
 
 DOCS_TXT_MAN3 = \
 	afCloseFile.3.txt \
-	afGetFrameSize.3.txt \
 	afGetFrameCount.3.txt \
+	afGetFrameSize.3.txt \
+	afInitAESChannelDataTo.3.txt \
+	afInitCompression.3.txt \
+	afInitFileFormat.3.txt \
+	afInitSampleFormat.3.txt \
 	afNewFileSetup.3.txt \
 	afOpenFile.3.txt \
 	afQuery.3.txt \
@@ -25,6 +29,10 @@ EXTRA_DIST = \
 DOCS_MAN1 = $(DOCS_TXT_MAN1:.txt=)
 DOCS_MAN3 = $(DOCS_TXT_MAN3:.txt=)
 DOCS_MAN3_EXTRA = \
+	afInitAESChannelData.3 \
+	afInitByteOrder.3 \
+	afInitChannels.3 \
+	afInitRate.3 \
 	afGetDataOffset.3 \
 	afGetTrackBytes.3 \
 	afQueryLong.3 \
