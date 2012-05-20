@@ -133,7 +133,7 @@ void RebufferModule::runPull()
 			assert(m_offset > 0 && m_offset <= m_numFrames);
 
 			memcpy(m_buffer.get() + m_offset * m_channelCount,
-				inBuffer + m_offset * m_channelCount,
+				inBuffer + (framesRequested + framesToPull) * m_channelCount,
 				sizeof (element_type) * (m_numFrames - m_offset) * m_channelCount);
 		}
 		else

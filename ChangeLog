@@ -1,5 +1,10 @@
 2012-05-20  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/modules/RebufferModule.cpp: Fix error in rebuffering
+	when pulling multiple blocks at once.
+
+2012-05-20  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/Makefile.am,
 	libaudiofile/modules/UT_RebufferModule.cpp: Add unit test for
 	rebuffer module.
