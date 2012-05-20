@@ -44,6 +44,17 @@ libaudiofile_la_LDFLAGS = -version-info $(AUDIOFILE_VERSION_INFO) \
 
 include_HEADERS = audiofile.h aupvlist.h af_vfs.h
 
+TESTS = UnitTests
+
+check_PROGRAMS = $(TESTS)
+
+LIBGTEST = ../gtest/libgtest.la
+
+UnitTests_SOURCES = modules/UT_RebufferModule.cpp
+UnitTests_LDADD = libaudiofile.la $(LIBGTEST)
+UnitTests_CPPFLAGS = -I$(top_srcdir)
+UnitTests_LDFLAGS = -static
+
 # GNU gcc
 # AM_CFLAGS = -Wall -g
 # SGI MIPSpro cc

@@ -36,7 +36,7 @@ coverage-report:
 	$(LCOV) --directory @top_srcdir@/libaudiofile \
 		--output-file @top_builddir@/lcov.info \
 		--remove @top_builddir@/lcov.info \
-		"/usr/include/*"
+		"/usr/include/*" "gtest/*" "*/UT_*"
 
 	$(mkdir_p) @top_builddir@/coverage
 	git_commit=`GIT_DIR=@top_srcdir@/.git git log -1 --pretty=format:%h 2>/dev/null`; \

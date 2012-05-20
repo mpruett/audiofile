@@ -1,5 +1,11 @@
 2012-05-20  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/Makefile.am,
+	libaudiofile/modules/UT_RebufferModule.cpp: Add unit test for
+	rebuffer module.
+
+2012-05-20  Michael Pruett <michael@68k.org>
+
 	* Move Google Test framework to top of source tree.
 
 2012-05-20  Michael Pruett <michael@68k.org>
