@@ -1,3 +1,7 @@
+2012-05-20  Michael Pruett <michael@68k.org>
+
+	* Reorganize code coverage build configuration.
+
 2012-05-10  Michael Pruett <michael@68k.org>
 
 	* docs/*: Update documentation.

@@ -102,30 +102,3 @@ VirtualFile_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 printmarkers_SOURCES = printmarkers.c
 printmarkers_LDADD = $(LIBAUDIOFILE) -lm
-
-coverage-reset:
-	$(LCOV) --base-directory=@top_srcdir@ --directory @top_srcdir@/libaudiofile --zerocounters
-
-coverage-report:
-	$(LCOV) --directory @top_srcdir@/libaudiofile \
-		--capture \
-		--output-file @top_builddir@/lcov.info
-
-	$(LCOV) --directory @top_srcdir@/libaudiofile \
-		--output-file @top_builddir@/lcov.info \
-		--remove @top_builddir@/lcov.info \
-		"/usr/include/*"
-
-	$(mkdir_p) @top_builddir@/test/coverage
-	git_commit=`GIT_DIR=@top_srcdir@/.git git log -1 --pretty=format:%h 2>/dev/null`; \
-	$(GENHTML) --title "@PACKAGE@ @VERSION@ $$git_commit" \
-		--output-directory @top_builddir@/test/coverage @top_builddir@/lcov.info
-	@echo
-	@echo 'lcov report can be found here:'
-	@echo 'file://@abs_top_builddir@/test/coverage/index.html'
-	@echo
-
-clean-local:
-	-rm -rf coverage
-
-.PHONY: coverage-report
