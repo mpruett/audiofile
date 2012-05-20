@@ -1,6 +1,4 @@
-SUBDIRS = gtest
-
-INCLUDES = -I$(top_srcdir)/libaudiofile
+INCLUDES = -I$(top_srcdir)/libaudiofile -I$(top_srcdir)
 
 TESTS = \
 	AES \
@@ -50,7 +48,7 @@ LDADD = $(LIBAUDIOFILE)
 
 DEPENDENCIES = $(LIBAUDIOFILE)
 
-LIBGTEST = gtest/libgtest.la
+LIBGTEST = ../gtest/libgtest.la
 
 AES_SOURCES = AES.cpp
 AES_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)

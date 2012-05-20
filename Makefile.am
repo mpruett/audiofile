@@ -1,7 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-SRC_SUBDIRS = libaudiofile sfcommands test examples
-SUBDIRS = $(SRC_SUBDIRS) docs
+SUBDIRS = gtest libaudiofile sfcommands test examples docs
 
 EXTRA_DIST = \
 	ACKNOWLEDGEMENTS \
