@@ -258,10 +258,10 @@ void MSADPCM::runPull()
 
 	/* Read the compressed frames. */
 	ssize_t bytesRead = read(m_inChunk->buffer, m_blockAlign * blockCount);
-	size_t blocksRead = bytesRead >= 0 ? bytesRead / m_blockAlign : 0;
+	int blocksRead = bytesRead >= 0 ? bytesRead / m_blockAlign : 0;
 
 	/* Decompress into m_outChunk. */
-	for (int i=0; i<blockCount; i++)
+	for (int i=0; i<blocksRead; i++)
 	{
 		decodeBlock(static_cast<const uint8_t *>(m_inChunk->buffer) + i * m_blockAlign,
 			static_cast<int16_t *>(m_outChunk->buffer) + i * m_framesPerBlock * m_track->f.channelCount);

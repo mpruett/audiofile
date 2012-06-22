@@ -711,11 +711,7 @@ status WAVEFile::readInit(AFfilesetup setup)
 
 	bool hasFormat = false;
 	bool hasData = false;
-	bool hasCue = false;
-	bool hasList = false;
-	bool hasPlayList = false;
 	bool hasFrameCount = false;
-	bool hasINST = false;
 
 	Track *track = allocateTrack();
 
@@ -789,28 +785,24 @@ status WAVEFile::readInit(AFfilesetup setup)
 		}
 		else if (chunkid == "cue ")
 		{
-			hasCue = true;
 			result = parseCues(chunkid, chunksize);
 			if (result == AF_FAIL)
 				return AF_FAIL;
 		}
 		else if (chunkid == "LIST" || chunkid == "list")
 		{
-			hasList = true;
 			result = parseList(chunkid, chunksize);
 			if (result == AF_FAIL)
 				return AF_FAIL;
 		}
 		else if (chunkid == "INST")
 		{
-			hasINST = true;
 			result = parseInstrument(chunkid, chunksize);
 			if (result == AF_FAIL)
 				return AF_FAIL;
 		}
 		else if (chunkid == "plst")
 		{
-			hasPlayList = true;
 			result = parsePlayList(chunkid, chunksize);
 			if (result == AF_FAIL)
 				return AF_FAIL;

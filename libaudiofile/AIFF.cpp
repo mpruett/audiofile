@@ -479,9 +479,6 @@ status AIFFFile::readInit(AFfilesetup setup)
 	bool hasCOMM = false;
 	bool hasFVER = false;
 	bool hasSSND = false;
-	bool hasMARK = false;
-	bool hasINST = false;
-	bool hasAESD = false;
 
 	fh->seek(0, File::SeekFromBeginning);
 
@@ -531,17 +528,14 @@ status AIFFFile::readInit(AFfilesetup setup)
 		}
 		else if (chunkid == "INST")
 		{
-			hasINST = true;
 			parseINST(chunkid, chunksize);
 		}
 		else if (chunkid == "MARK")
 		{
-			hasMARK = true;
 			parseMARK(chunkid, chunksize);
 		}
 		else if (chunkid == "AESD")
 		{
-			hasAESD = true;
 			parseAESD(chunkid, chunksize);
 		}
 		else if (chunkid == "NAME" ||
@@ -583,6 +577,11 @@ status AIFFFile::readInit(AFfilesetup setup)
 	if (!hasCOMM)
 	{
 		_af_error(AF_BAD_AIFF_COMM, "bad AIFF COMM chunk");
+	}
+
+	if (fileFormat == AF_FILE_AIFFC && !hasFVER)
+	{
+		_af_error(AF_BAD_HEADER, "FVER chunk is required in AIFF-C");
 	}
 
 	/* The file has been successfully parsed. */

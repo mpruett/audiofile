@@ -1,5 +1,11 @@
 2012-06-21  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/AIFF.cpp, libaudiofile/IFF.cpp,
+	libaudiofile/WAVE.cpp, libaudiofile/modules/MSADPCM.cpp:
+	Remove unused variables.
+
+2012-06-21  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/AVR.cpp, libaudiofile/Marker.cpp,
 	libaudiofile/NIST.cpp, libaudiofile/NeXT.cpp,
 	libaudiofile/Setup.cpp, libaudiofile/error.h,

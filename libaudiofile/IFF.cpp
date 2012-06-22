@@ -188,6 +188,8 @@ status IFFFile::readInit(AFfilesetup setup)
 
 	/* IFF/8SVX files have only one track. */
 	Track *track = allocateTrack();
+	if (!track)
+		return AF_FAIL;
 
 	/* Set the index to include the form type ('8SVX' in this case). */
 	size_t index = 4;
