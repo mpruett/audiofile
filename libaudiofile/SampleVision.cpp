@@ -78,7 +78,7 @@ bool SampleVisionFile::recognize(File *fh)
 {
 	fh->seek(0, File::SeekFromBeginning);
 	char magic[kSMPMagicLength];
-	if (fh->read(magic, kSMPMagicLength) != kSMPMagicLength)
+	if (fh->read(magic, kSMPMagicLength) != (ssize_t) kSMPMagicLength)
 		return false;
 	return !strncmp(magic, kSMPMagic, kSMPMagicLength);
 }
@@ -121,13 +121,13 @@ status SampleVisionFile::readInit(AFfilesetup)
 	fh->seek(0, File::SeekFromBeginning);
 
 	char magic[kSMPMagicLength];
-	if (fh->read(magic, kSMPMagicLength) != kSMPMagicLength)
+	if (fh->read(magic, kSMPMagicLength) != (ssize_t) kSMPMagicLength)
 		return AF_FAIL;
 	if (strncmp(magic, kSMPMagic, kSMPMagicLength) != 0)
 		return AF_FAIL;
 
 	char version[kSMPVersionLength];
-	if (fh->read(version, kSMPVersionLength) != kSMPVersionLength)
+	if (fh->read(version, kSMPVersionLength) != (ssize_t) kSMPVersionLength)
 		return AF_FAIL;
 	if (strncmp(version, kSMPVersion, kSMPVersionLength) != 0)
 		return AF_FAIL;

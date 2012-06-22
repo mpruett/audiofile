@@ -1,5 +1,10 @@
 2012-06-21  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/SampleVision.cpp: Fix comparisons between signed
+	and unsigned integers.
+
+2012-06-21  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/AIFF.cpp, libaudiofile/IFF.cpp,
 	libaudiofile/WAVE.cpp, libaudiofile/modules/MSADPCM.cpp:
 	Remove unused variables.
