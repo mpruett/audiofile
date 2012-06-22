@@ -188,7 +188,7 @@ AFfilesetup AVRFile::completeSetup(AFfilesetup setup)
 	/* For now we support only 8- and 16-bit samples. */
 	if (track->f.sampleWidth != 8 && track->f.sampleWidth != 16)
 	{
-		_af_error(AF_BAD_WIDTH, "invalid sample width %d for AVR file (only 8- and 16-bit sample widths are allowed)");
+		_af_error(AF_BAD_WIDTH, "invalid sample width %d for AVR file (only 8- and 16-bit sample widths are allowed)", track->f.sampleWidth);
 		return AF_NULL_FILESETUP;
 	}
 

@@ -25,7 +25,12 @@
 extern "C" {
 #endif
 
-void _af_error (int errorCode, const char *fmt, ...);
+#if !defined(__GNUC__) && !defined(__clang__) && !defined(__attribute__)
+#define __attribute__(x)
+#endif
+
+void _af_error (int errorCode, const char *fmt, ...)
+	__attribute__((format(printf, 2, 3)));
 
 #ifdef __cplusplus
 }

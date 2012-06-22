@@ -94,7 +94,8 @@ AFfilesetup NISTFile::completeSetup(AFfilesetup setup)
 			(track->f.sampleWidth < 1 || track->f.sampleWidth > 16))
 		{
 			_af_error(AF_BAD_WIDTH,
-				"invalid sample width %d bits for NIST SPHERE format");
+				"invalid sample width %d bits for NIST SPHERE format",
+				track->f.sampleWidth);
 			return AF_NULL_FILESETUP;
 		}
 		else if (track->f.sampleFormat == AF_SAMPFMT_UNSIGNED)

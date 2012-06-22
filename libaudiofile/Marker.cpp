@@ -185,7 +185,7 @@ char *afGetMarkComment (AFfilehandle file, int trackid, int markid)
 }
 
 void afSetMarkPosition (AFfilehandle file, int trackid, int markid,
-	AFframecount pos)
+	AFframecount position)
 {
 	if (!_af_filehandle_ok(file))
 		return;
@@ -201,13 +201,14 @@ void afSetMarkPosition (AFfilehandle file, int trackid, int markid,
 	if (!marker)
 		return;
 
-	if (pos < 0)
+	if (position < 0)
 	{
-		_af_error(AF_BAD_MARKPOS, "invalid marker position %d", pos);
-		pos = 0;
+		_af_error(AF_BAD_MARKPOS, "invalid marker position %jd",
+			static_cast<intmax_t>(position));
+		position = 0;
 	}
 
-	marker->position = pos;
+	marker->position = position;
 }
 
 int afGetMarkIDs (AFfilehandle file, int trackid, int markids[])

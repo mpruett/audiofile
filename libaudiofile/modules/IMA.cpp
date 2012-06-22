@@ -211,9 +211,9 @@ void IMA::runPull()
 		if (m_track->filemodhappy)
 		{
 			_af_error(AF_BAD_READ,
-				"file missing data -- read %d frames, should be %d",
-				m_track->nextfframe,
-				m_track->totalfframes);
+				"file missing data -- read %jd frames, should be %jd",
+				static_cast<intmax_t>(m_track->nextfframe),
+				static_cast<intmax_t>(m_track->totalfframes));
 			m_track->filemodhappy = false;
 		}
 	}

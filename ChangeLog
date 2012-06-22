@@ -1,5 +1,14 @@
 2012-06-21  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/AVR.cpp, libaudiofile/Marker.cpp,
+	libaudiofile/NIST.cpp, libaudiofile/NeXT.cpp,
+	libaudiofile/Setup.cpp, libaudiofile/error.h,
+	libaudiofile/modules/G711.cpp, libaudiofile/modules/IMA.cpp,
+	libaudiofile/modules/MSADPCM.cpp, libaudiofile/modules/PCM.cpp:
+	Fix conversion specifications in error messages.
+
+2012-06-21  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/modules/ModuleState.cpp,
 	libaudiofile/modules/RebufferModule.cpp,
 	libaudiofile/modules/RebufferModule.h

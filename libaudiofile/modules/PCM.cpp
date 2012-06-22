@@ -125,17 +125,17 @@ void PCM::runPush()
 			if (n < 0)
 				_af_error(AF_BAD_WRITE,
 					"unable to write data (%s) -- "
-					"wrote %d out of %d frames",
+					"wrote %jd out of %jd frames",
 					strerror(errno),
-					m_track->nextfframe + n,
-					m_track->nextfframe + frames2write);
+					static_cast<intmax_t>(m_track->nextfframe + n),
+					static_cast<intmax_t>(m_track->nextfframe + frames2write));
 			/* usual disk full error */
 			else
 				_af_error(AF_BAD_WRITE,
 					"unable to write data (disk full) -- "
-					"wrote %d out of %d frames",
-					m_track->nextfframe + n,
-					m_track->nextfframe + frames2write);
+					"wrote %jd out of %jd frames",
+					static_cast<intmax_t>(m_track->nextfframe + n),
+					static_cast<intmax_t>(m_track->nextfframe + frames2write));
 			m_track->filemodhappy = false;
 		}
 	}
@@ -214,10 +214,10 @@ void PCM::runPull()
 		if (m_track->filemodhappy)
 		{
 			_af_error(AF_BAD_READ,
-				"file missing data -- read %d frames, "
-				"should be %d",
-				m_track->nextfframe,
-				m_track->totalfframes);
+				"file missing data -- read %jd frames, "
+				"should be %jd",
+				static_cast<intmax_t>(m_track->nextfframe),
+				static_cast<intmax_t>(m_track->totalfframes));
 			m_track->filemodhappy = false;
 		}
 	}

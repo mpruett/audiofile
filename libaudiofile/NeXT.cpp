@@ -239,7 +239,7 @@ AFfilesetup NeXTFile::completeSetup(AFfilesetup setup)
 			track->f.sampleWidth != 24 &&
 			track->f.sampleWidth != 32)
 		{
-			_af_error(AF_BAD_WIDTH, "invalid sample width %d for NeXT file (only 8-, 16-, 24-, and 32-bit data are allowed)");
+			_af_error(AF_BAD_WIDTH, "invalid sample width %d for NeXT file (only 8-, 16-, 24-, and 32-bit data are allowed)", track->f.sampleWidth);
 			return AF_NULL_FILESETUP;
 		}
 	}

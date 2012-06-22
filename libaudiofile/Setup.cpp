@@ -396,7 +396,8 @@ void afInitDataOffset (AFfilesetup setup, int trackid, AFfileoffset offset)
 
 	if (offset < 0)
 	{
-		_af_error(AF_BAD_DATAOFFSET, "invalid data offset %d", offset);
+		_af_error(AF_BAD_DATAOFFSET, "invalid data offset %jd",
+			static_cast<intmax_t>(offset));
 		return;
 	}
 
@@ -418,7 +419,8 @@ void afInitFrameCount (AFfilesetup setup, int trackid, AFfileoffset count)
 
 	if (count < 0)
 	{
-		_af_error(AF_BAD_FRAMECNT, "invalid frame count %d", count);
+		_af_error(AF_BAD_FRAMECNT, "invalid frame count %jd",
+			static_cast<intmax_t>(count));
 		return;
 	}
 
