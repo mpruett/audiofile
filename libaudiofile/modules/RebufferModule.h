@@ -23,7 +23,6 @@
 #define REBUFFER_MODULE_H
 
 #include "Module.h"
-#include "ScopedArray.h"
 
 class RebufferModule : public Module
 {
@@ -34,7 +33,8 @@ public:
 		VariableToFixed
 	};
 
-	RebufferModule(Direction, int channelCount, int numFrames, bool multipleOf);
+	RebufferModule(Direction, int bytesPerFrame, int numFrames, bool multipleOf);
+	virtual ~RebufferModule();
 
 	virtual const char *name() const { return "rebuffer"; }
 
@@ -49,17 +49,15 @@ public:
 	virtual void sync2();
 
 private:
-	typedef int16_t element_type;
-
 	Direction m_direction;
-	int m_channelCount;
+	int m_bytesPerFrame;
 	int m_numFrames;
 	bool m_multipleOf; // buffer to multiple of m_numFrames
 	bool m_eof; // end of input stream reached
 	bool m_sentShortChunk; // end of input stream indicated
-	ScopedArray<element_type> m_buffer;
+	char *m_buffer;
 	int m_offset;
-	ScopedArray<element_type> m_savedBuffer;
+	char *m_savedBuffer;
 	int m_savedOffset;
 
 	void initFixedToVariable();

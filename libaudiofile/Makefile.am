@@ -33,8 +33,7 @@ libaudiofile_la_SOURCES = \
 	AudioFormat.cpp AudioFormat.h \
 	FileHandle.cpp FileHandle.h \
 	Tag.h \
-	UUID.cpp UUID.h \
-	ScopedArray.h
+	UUID.cpp UUID.h
 
 libaudiofile_la_LIBADD = modules/libmodules.la $(COVERAGE_LIBS) -lm
 

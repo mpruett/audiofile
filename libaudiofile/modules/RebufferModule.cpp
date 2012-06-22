@@ -26,13 +26,18 @@
 #include <assert.h>
 #include <string.h>
 
-RebufferModule::RebufferModule(Direction direction, int channelCount, int numFrames, bool multipleOf) :
+RebufferModule::RebufferModule(Direction direction, int bytesPerFrame,
+	int numFrames, bool multipleOf) :
 	m_direction(direction),
-	m_channelCount(channelCount),
+	m_bytesPerFrame(bytesPerFrame),
 	m_numFrames(numFrames),
 	m_multipleOf(multipleOf),
 	m_eof(false),
-	m_sentShortChunk(false)
+	m_sentShortChunk(false),
+	m_buffer(NULL),
+	m_offset(-1),
+	m_savedBuffer(NULL),
+	m_savedOffset(-1)
 {
 	if (m_direction == FixedToVariable)
 		initFixedToVariable();
@@ -40,17 +45,23 @@ RebufferModule::RebufferModule(Direction direction, int channelCount, int numFra
 		initVariableToFixed();
 }
 
+RebufferModule::~RebufferModule()
+{
+	delete [] m_buffer;
+	delete [] m_savedBuffer;
+}
+
 void RebufferModule::initFixedToVariable()
 {
 	m_offset = m_numFrames;
-	m_buffer.reset(new element_type[m_numFrames * m_channelCount]);
+	m_buffer = new char[m_numFrames * m_bytesPerFrame];
 }
 
 void RebufferModule::initVariableToFixed()
 {
 	m_offset = 0;
-	m_buffer.reset(new element_type[m_numFrames * m_channelCount]);
-	m_savedBuffer.reset(new element_type[m_numFrames * m_channelCount]);
+	m_buffer = new char[m_numFrames * m_bytesPerFrame];
+	m_savedBuffer = new char[m_numFrames * m_bytesPerFrame];
 }
 
 void RebufferModule::maxPull()
@@ -74,8 +85,8 @@ void RebufferModule::maxPush()
 void RebufferModule::runPull()
 {
 	int framesToPull = m_outChunk->frameCount;
-	const element_type *inBuffer = static_cast<const element_type *>(m_inChunk->buffer);
-	element_type *outBuffer = static_cast<element_type *>(m_outChunk->buffer);
+	const char *inBuffer = static_cast<const char *>(m_inChunk->buffer);
+	char *outBuffer = static_cast<char *>(m_outChunk->buffer);
 
 	assert(m_offset > 0 && m_offset <= m_numFrames);
 
@@ -89,9 +100,9 @@ void RebufferModule::runPull()
 	{
 		int buffered = m_numFrames - m_offset;
 		int n = std::min(framesToPull, buffered);
-		memcpy(outBuffer, m_buffer.get() + m_offset * m_channelCount,
-			sizeof (element_type) * n * m_channelCount);
-		outBuffer += buffered * m_channelCount;
+		memcpy(outBuffer, m_buffer + m_offset * m_bytesPerFrame,
+			n * m_bytesPerFrame);
+		outBuffer += buffered * m_bytesPerFrame;
 		framesToPull -= buffered;
 		m_offset += n;
 	}
@@ -101,7 +112,7 @@ void RebufferModule::runPull()
 	{
 		int framesRequested;
 		if (m_multipleOf)
-			/* Round framesToPush up to nearest multiple of m_numFrames */
+			// Round framesToPull up to nearest multiple of m_numFrames.
 			framesRequested = ((framesToPull - 1) / m_numFrames + 1) * m_numFrames;
 		else
 			framesRequested = m_numFrames;
@@ -116,9 +127,9 @@ void RebufferModule::runPull()
 			m_eof = true;
 
 		memcpy(outBuffer, inBuffer,
-			sizeof (element_type) * std::min(framesToPull, framesReceived) * m_channelCount);
+			std::min(framesToPull, framesReceived) * m_bytesPerFrame);
 
-		outBuffer += framesReceived * m_channelCount;
+		outBuffer += framesReceived * m_bytesPerFrame;
 		framesToPull -= framesReceived;
 
 		if (m_multipleOf)
@@ -132,9 +143,9 @@ void RebufferModule::runPull()
 
 			assert(m_offset > 0 && m_offset <= m_numFrames);
 
-			memcpy(m_buffer.get() + m_offset * m_channelCount,
-				inBuffer + (framesRequested + framesToPull) * m_channelCount,
-				sizeof (element_type) * (m_numFrames - m_offset) * m_channelCount);
+			memcpy(m_buffer + m_offset * m_bytesPerFrame,
+				inBuffer + (framesRequested + framesToPull) * m_bytesPerFrame,
+				(m_numFrames - m_offset) * m_bytesPerFrame);
 		}
 		else
 		{
@@ -167,16 +178,14 @@ void RebufferModule::reset1()
 
 void RebufferModule::reset2()
 {
-#ifdef DEBUG
 	assert(m_offset > 0 && m_offset <= m_numFrames);
-#endif
 }
 
 void RebufferModule::runPush()
 {
 	int framesToPush = m_inChunk->frameCount;
-	const element_type *inBuffer = static_cast<const element_type *>(m_inChunk->buffer);
-	element_type *outBuffer = static_cast<element_type *>(m_outChunk->buffer);
+	const char *inBuffer = static_cast<const char *>(m_inChunk->buffer);
+	char *outBuffer = static_cast<char *>(m_outChunk->buffer);
 
 	assert(m_offset >= 0 && m_offset < m_numFrames);
 
@@ -184,8 +193,7 @@ void RebufferModule::runPush()
 	if (m_offset + framesToPush >= m_numFrames)
 	{
 		if (m_offset > 0)
-			memcpy(m_outChunk->buffer, m_buffer.get(),
-				sizeof (element_type) * m_offset * m_channelCount);
+			memcpy(m_outChunk->buffer, m_buffer, m_offset * m_bytesPerFrame);
 
 		if (m_multipleOf)
 		{
@@ -193,13 +201,13 @@ void RebufferModule::runPush()
 			int n = ((m_offset + framesToPush) / m_numFrames) * m_numFrames;
 
 			assert(n > m_offset);
-			memcpy(outBuffer + m_offset * m_channelCount,
+			memcpy(outBuffer + m_offset * m_bytesPerFrame,
 				inBuffer,
-				sizeof (element_type) * (n - m_offset) * m_channelCount);
+				(n - m_offset) * m_bytesPerFrame);
 
 			push(n);
 
-			inBuffer += (n - m_offset) * m_channelCount;
+			inBuffer += (n - m_offset) * m_bytesPerFrame;
 			framesToPush -= n - m_offset;
 			assert(framesToPush >= 0);
 			m_offset = 0;
@@ -209,13 +217,13 @@ void RebufferModule::runPush()
 			while (m_offset + framesToPush >= m_numFrames)
 			{
 				int n = m_numFrames - m_offset;
-				memcpy(outBuffer + m_offset * m_channelCount,
+				memcpy(outBuffer + m_offset * m_bytesPerFrame,
 					inBuffer,
-					sizeof (element_type) * n * m_channelCount);
+					n * m_bytesPerFrame);
 
 				push(m_numFrames);
 
-				inBuffer += n * m_channelCount;
+				inBuffer += n * m_bytesPerFrame;
 				framesToPush -= n;
 				assert(framesToPush >= 0);
 				m_offset = 0;
@@ -230,9 +238,9 @@ void RebufferModule::runPush()
 	// Save remaining samples in buffer.
 	if (framesToPush > 0)
 	{
-		memcpy(m_buffer.get() + m_offset * m_channelCount,
+		memcpy(m_buffer + m_offset * m_bytesPerFrame,
 			inBuffer,
-			sizeof (element_type) * framesToPush * m_channelCount);
+			framesToPush * m_bytesPerFrame);
 		m_offset += framesToPush;
 	}
 
@@ -244,8 +252,7 @@ void RebufferModule::sync1()
 	assert(m_offset >= 0 && m_offset < m_numFrames);
 
 	// Save all the frames and the offset so we can restore our state later.
-	memcpy(m_savedBuffer.get(), m_buffer.get(),
-		sizeof (element_type) * m_numFrames * m_channelCount);
+	memcpy(m_savedBuffer, m_buffer, m_numFrames * m_bytesPerFrame);
 	m_savedOffset = m_offset;
 }
 
@@ -253,13 +260,11 @@ void RebufferModule::sync2()
 {
 	assert(m_offset >= 0 && m_offset < m_numFrames);
 
-	memcpy(m_outChunk->buffer, m_buffer.get(),
-		sizeof (element_type) * m_offset * m_channelCount);
+	memcpy(m_outChunk->buffer, m_buffer, m_offset * m_bytesPerFrame);
 
 	push(m_offset);
 
-	memcpy(m_buffer.get(), m_savedBuffer.get(),
-		sizeof (element_type) * m_numFrames * m_channelCount);
+	memcpy(m_buffer, m_savedBuffer, m_numFrames * m_bytesPerFrame);
 	m_offset = m_savedOffset;
 
 	assert(m_offset >= 0 && m_offset < m_numFrames);

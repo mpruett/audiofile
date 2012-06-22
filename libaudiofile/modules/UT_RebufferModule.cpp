@@ -131,8 +131,12 @@ static AudioFormat createAudioFormat(int channels)
 
 static void testFixedToVariable(bool multiple)
 {
+	const int channels = 2;
+	AudioFormat f = createAudioFormat(channels);
+
 	SharedPtr<RebufferModule> rebuffer =
-		new RebufferModule(RebufferModule::FixedToVariable, 2, 10, multiple);
+		new RebufferModule(RebufferModule::FixedToVariable, f.bytesPerFrame(),
+			10, multiple);
 
 	SharedPtr<TestSourceModule> source = new TestSourceModule();
 	rebuffer->setSource(source.get());
@@ -140,15 +144,12 @@ static void testFixedToVariable(bool multiple)
 	SharedPtr<Chunk> fixedChunk(new Chunk());
 	SharedPtr<Chunk> variableChunk(new Chunk());
 
-	const int channels = 2;
-	AudioFormat f = createAudioFormat(channels);
-
 	const int maxFrameCount = 50;
 	fixedChunk->f = f;
-	fixedChunk->allocate(channels * maxFrameCount * sizeof (int16_t));
+	fixedChunk->allocate(maxFrameCount * f.bytesPerFrame());
 
 	variableChunk->f = f;
-	variableChunk->allocate(channels * maxFrameCount * sizeof (int16_t));
+	variableChunk->allocate(maxFrameCount * f.bytesPerFrame());
 
 	rebuffer->setInChunk(fixedChunk.get());
 	rebuffer->setOutChunk(variableChunk.get());
@@ -204,23 +205,24 @@ TEST(RebufferModule, FixedToVariable_Multiple)
 
 static void testVariableToFixed(bool multiple)
 {
+	const int channels = 2;
+	AudioFormat f = createAudioFormat(channels);
+
 	SharedPtr<RebufferModule> rebuffer =
-		new RebufferModule(RebufferModule::VariableToFixed, 2, 10, multiple);
+		new RebufferModule(RebufferModule::VariableToFixed, f.bytesPerFrame(),
+			10, multiple);
 	SharedPtr<TestSinkModule> sink = new TestSinkModule();
 	rebuffer->setSink(sink.get());
 
 	SharedPtr<Chunk> variableChunk(new Chunk());
 	SharedPtr<Chunk> fixedChunk(new Chunk());
 
-	const int channels = 2;
-	AudioFormat f = createAudioFormat(channels);
-
 	const int maxFrameCount = 40;
 	variableChunk->f = f;
-	variableChunk->allocate(channels * maxFrameCount * sizeof (int16_t));
+	variableChunk->allocate(maxFrameCount * f.bytesPerFrame());
 
 	fixedChunk->f = f;
-	fixedChunk->allocate(channels * maxFrameCount * sizeof (int16_t));
+	fixedChunk->allocate(maxFrameCount * f.bytesPerFrame());
 
 	rebuffer->setInChunk(variableChunk.get());
 	rebuffer->setOutChunk(fixedChunk.get());

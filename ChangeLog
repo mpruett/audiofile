@@ -1,3 +1,11 @@
+2012-06-21  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/modules/ModuleState.cpp,
+	libaudiofile/modules/RebufferModule.cpp,
+	libaudiofile/modules/RebufferModule.h
+	libaudiofile/modules/UT_RebufferModule.cpp:
+	Refactor rebuffer module.
+
 2012-05-20  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/modules/RebufferModule.cpp: Fix error in rebuffering

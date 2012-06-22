@@ -77,7 +77,8 @@ status ModuleState::initFileModule(AFfilehandle file, Track *track)
 			file->access == _AF_WRITE_ACCESS ?
 				RebufferModule::VariableToFixed : RebufferModule::FixedToVariable;
 		m_fileRebufferModule = new RebufferModule(direction,
-			track->f.channelCount, chunkFrames, unit->multiple_of);
+			sizeof (int16_t) * track->f.channelCount, chunkFrames,
+			unit->multiple_of);
 	}
 
 	track->filemodhappy = true;
