@@ -1,8 +1,8 @@
 /*
 	Audio File Library
 
+	Copyright (C) 1998, 2011-2012, Michael Pruett <michael@68k.org>
 	Copyright (C) 2001, Silicon Graphics, Inc.
-	Copyright (C) 1998, Michael Pruett <michael@68k.org>
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License as
@@ -40,8 +40,6 @@
 #include <unistd.h>
 
 #include "printinfo.h"
-
-#define BUFFER_FRAME_COUNT 65536
 
 void printversion (void);
 void printusage (void);
@@ -218,10 +216,16 @@ int main (int argc, char **argv)
 	afSetVirtualSampleFormat(outFile, AF_DEFAULT_TRACK, sampleFormat,
 		sampleWidth);
 
-	copyaudiodata(inFile, outFile, AF_DEFAULT_TRACK);
+	bool success = copyaudiodata(inFile, outFile, AF_DEFAULT_TRACK);
 
 	afCloseFile(inFile);
 	afCloseFile(outFile);
+
+	if (!success)
+	{
+		unlink(outFileName);
+		return EXIT_FAILURE;
+	}
 
 	printfileinfo(inFileName);
 	putchar('\n');
@@ -279,47 +283,44 @@ bool copyaudiodata (AFfilehandle infile, AFfilehandle outfile, int trackid)
 {
 	int frameSize = afGetVirtualFrameSize(infile, trackid, 1);
 
-	void *buffer = malloc(BUFFER_FRAME_COUNT * frameSize);
+	const int kBufferFrameCount = 65536;
+	void *buffer = malloc(kBufferFrameCount * frameSize);
 
 	AFframecount totalFrames = afGetFrameCount(infile, AF_DEFAULT_TRACK);
 	AFframecount totalFramesWritten = 0;
 
-	bool ok = true, done = false;
+	bool success = true;
 
-	while (!done)
+	while (totalFramesWritten < totalFrames)
 	{
-		AFframecount framesToRead = BUFFER_FRAME_COUNT;
-		AFframecount framesRead, framesWritten;
+		AFframecount framesToRead = totalFrames - totalFramesWritten;
+		if (framesToRead > kBufferFrameCount)
+			framesToRead = kBufferFrameCount;
 
-		framesRead = afReadFrames(infile, trackid, buffer,
+		AFframecount framesRead = afReadFrames(infile, trackid, buffer,
 			framesToRead);
 
-		if (framesRead < 0)
+		if (framesRead < framesToRead)
 		{
 			fprintf(stderr, "Bad read of audio track data.\n");
-			ok = false;
-			done = true;
+			success = false;
+			break;
 		}
 
-		framesWritten = afWriteFrames(outfile, trackid, buffer,
+		AFframecount framesWritten = afWriteFrames(outfile, trackid, buffer,
 			framesRead);
 
-		if (framesWritten < 0)
+		if (framesWritten < framesRead)
 		{
 			fprintf(stderr, "Bad write of audio track data.\n");
-			ok = false;
-			done = true;
-		}
-		else
-		{
-			totalFramesWritten += framesWritten;
+			success = false;
+			break;
 		}
 
-		if (totalFramesWritten == totalFrames)
-			done = true;
+		totalFramesWritten += framesWritten;
 	}
 
 	free(buffer);
 
-	return ok;
+	return success;
 }

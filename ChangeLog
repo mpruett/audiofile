@@ -1,5 +1,9 @@
 2012-07-01  Michael Pruett <michael@68k.org>
 
+	* sfcommands/sfconvert.c: Improve error handling in sfconvert.
+
+2012-07-01  Michael Pruett <michael@68k.org>
+
 	* sfcommands/Makefile.am, sfcommands/sfconvert.c:
 	Clean up sfconvert.
 
