@@ -33,9 +33,11 @@
 #include <audiofile.h>
 #endif
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "printinfo.h"
 
@@ -44,25 +46,10 @@
 void printversion (void);
 void printusage (void);
 void usageerror (void);
-int copyaudiodata (AFfilehandle infile, AFfilehandle outfile, int trackid,
-	AFframecount totalFrameCount);
+bool copyaudiodata (AFfilehandle infile, AFfilehandle outfile, int trackid);
 
 int main (int argc, char **argv)
 {
-	int	i = 1;
-	char	*infilename, *outfilename;
-	int	fileFormat, outFileFormat = AF_FILE_UNKNOWN;
-
-	AFfilehandle	infile, outfile;
-	AFfilesetup	outfilesetup;
-	int		sampleFormat, sampleWidth, channelCount;
-	double		sampleRate;
-	int		outSampleFormat = -1, outSampleWidth = -1,
-			outChannelCount = -1;
-	double		outMaxAmp = 1.0;
-
-	AFframecount	totalFrames;
-
 	if (argc == 2)
 	{
 		if (!strcmp(argv[1], "--version") || !strcmp(argv[1], "-v"))
@@ -81,10 +68,15 @@ int main (int argc, char **argv)
 	if (argc < 3)
 		usageerror();
 
-	infilename = argv[1];
-	outfilename = argv[2];
+	const char *inFileName = argv[1];
+	const char *outFileName = argv[2];
 
-	i = 3;
+	int outFileFormat = AF_FILE_UNKNOWN;
+
+	int outSampleFormat = -1, outSampleWidth = -1, outChannelCount = -1;
+	double outMaxAmp = 1.0;
+
+	int i = 3;
 
 	while (i < argc)
 	{
@@ -92,6 +84,7 @@ int main (int argc, char **argv)
 		{
 			if (i + 1 >= argc)
 				usageerror();
+
 			if (!strcmp(argv[i+1], "aiff"))
 				outFileFormat = AF_FILE_AIFF;
 			else if (!strcmp(argv[i+1], "aifc"))
@@ -116,7 +109,7 @@ int main (int argc, char **argv)
 				exit(EXIT_FAILURE);
 			}
 
-			/* Increment for argument. */
+			// Increment for argument.
 			i++;
 		}
 		else if (!strcmp(argv[i], "channels"))
@@ -128,7 +121,7 @@ int main (int argc, char **argv)
 			if (outChannelCount < 1)
 				usageerror();
 
-			/* Increment for argument. */
+			// Increment for argument.
 			i++;
 		}
 		else if (!strcmp(argv[i], "float"))
@@ -140,7 +133,10 @@ int main (int argc, char **argv)
 			outSampleWidth = 32;
 			outMaxAmp = atof(argv[i+1]);
 
-			/* Increment for argument. */
+			// outMaxAmp is currently unused.
+			(void) outMaxAmp;
+
+			// Increment for argument.
 			i++;
 		}
 		else if (!strcmp(argv[i], "integer"))
@@ -159,7 +155,7 @@ int main (int argc, char **argv)
 			else
 				usageerror();
 
-			/* Increment for arguments. */
+			// Increment for arguments.
 			i += 2;
 		}
 		else
@@ -170,22 +166,22 @@ int main (int argc, char **argv)
 		i++;
 	}
 
-	infile = afOpenFile(infilename, "r", AF_NULL_FILESETUP);
-	if (infile == AF_NULL_FILEHANDLE)
+	AFfilehandle inFile = afOpenFile(inFileName, "r", AF_NULL_FILESETUP);
+	if (!inFile)
 	{
-		printf("Could not open file '%s' for reading.\n", infilename);
-		return 1;
+		printf("Could not open file '%s' for reading.\n", inFileName);
+		return EXIT_FAILURE;
 	}
 
-	/* Get audio format parameters from input file. */
-	fileFormat = afGetFileFormat(infile, NULL);
-	totalFrames = afGetFrameCount(infile, AF_DEFAULT_TRACK);
-	channelCount = afGetChannels(infile, AF_DEFAULT_TRACK);
-	sampleRate = afGetRate(infile, AF_DEFAULT_TRACK);
-	afGetSampleFormat(infile, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
+	// Get audio format parameters from input file.
+	int fileFormat = afGetFileFormat(inFile, NULL);
+	int channelCount = afGetChannels(inFile, AF_DEFAULT_TRACK);
+	double sampleRate = afGetRate(inFile, AF_DEFAULT_TRACK);
+	int sampleFormat, sampleWidth;
+	afGetSampleFormat(inFile, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
 
-	/* Initialize output audio format parameters. */
-	outfilesetup = afNewFileSetup();
+	// Initialize output audio format parameters.
+	AFfilesetup outFileSetup = afNewFileSetup();
 
 	if (outFileFormat == -1)
 		outFileFormat = fileFormat;
@@ -199,37 +195,37 @@ int main (int argc, char **argv)
 	if (outChannelCount == -1)
 		outChannelCount = channelCount;
 
-	afInitFileFormat(outfilesetup, outFileFormat);
-	afInitSampleFormat(outfilesetup, AF_DEFAULT_TRACK, outSampleFormat,
+	afInitFileFormat(outFileSetup, outFileFormat);
+	afInitSampleFormat(outFileSetup, AF_DEFAULT_TRACK, outSampleFormat,
 		outSampleWidth);
-	afInitChannels(outfilesetup, AF_DEFAULT_TRACK, outChannelCount);
-	afInitRate(outfilesetup, AF_DEFAULT_TRACK, sampleRate);
+	afInitChannels(outFileSetup, AF_DEFAULT_TRACK, outChannelCount);
+	afInitRate(outFileSetup, AF_DEFAULT_TRACK, sampleRate);
 
-	outfile = afOpenFile(outfilename, "w", outfilesetup);
-	if (outfile == AF_NULL_FILEHANDLE)
+	AFfilehandle outFile = afOpenFile(outFileName, "w", outFileSetup);
+	if (!outFile)
 	{
-		printf("Could not open file '%s' for writing.\n", outfilename);
-		return 1;
+		printf("Could not open file '%s' for writing.\n", outFileName);
+		return EXIT_FAILURE;
 	}
+
+	afFreeFileSetup(outFileSetup);
 
 	/*
 		Set the output file's virtual audio format parameters
 		to match the audio format parameters of the input file.
 	*/
-	afSetVirtualChannels(outfile, AF_DEFAULT_TRACK, channelCount);
-	afSetVirtualSampleFormat(outfile, AF_DEFAULT_TRACK, sampleFormat,
+	afSetVirtualChannels(outFile, AF_DEFAULT_TRACK, channelCount);
+	afSetVirtualSampleFormat(outFile, AF_DEFAULT_TRACK, sampleFormat,
 		sampleWidth);
 
-	afFreeFileSetup(outfilesetup);
+	copyaudiodata(inFile, outFile, AF_DEFAULT_TRACK);
 
-	copyaudiodata(infile, outfile, AF_DEFAULT_TRACK, totalFrames);
+	afCloseFile(inFile);
+	afCloseFile(outFile);
 
-	afCloseFile(infile);
-	afCloseFile(outfile);
-
-	printfileinfo(infilename);
+	printfileinfo(inFileName);
 	putchar('\n');
-	printfileinfo(outfilename);
+	printfileinfo(outFileName);
 
 	return EXIT_SUCCESS;
 }
@@ -279,22 +275,21 @@ void printversion (void)
 	assumes that the virtual sample formats of the two files
 	match.
 */
-int copyaudiodata (AFfilehandle infile, AFfilehandle outfile, int trackid,
-	AFframecount totalFrameCount)
+bool copyaudiodata (AFfilehandle infile, AFfilehandle outfile, int trackid)
 {
+	int frameSize = afGetVirtualFrameSize(infile, trackid, 1);
+
+	void *buffer = malloc(BUFFER_FRAME_COUNT * frameSize);
+
+	AFframecount totalFrames = afGetFrameCount(infile, AF_DEFAULT_TRACK);
 	AFframecount totalFramesWritten = 0;
-	void *buffer;
-	int frameSize;
+
 	bool ok = true, done = false;
-
-	frameSize = afGetVirtualFrameSize(infile, trackid, 1);
-
-	buffer = malloc(BUFFER_FRAME_COUNT * frameSize);
 
 	while (!done)
 	{
-		AFframecount	framesToRead = BUFFER_FRAME_COUNT;
-		AFframecount	framesRead, framesWritten;
+		AFframecount framesToRead = BUFFER_FRAME_COUNT;
+		AFframecount framesRead, framesWritten;
 
 		framesRead = afReadFrames(infile, trackid, buffer,
 			framesToRead);
@@ -320,7 +315,7 @@ int copyaudiodata (AFfilehandle infile, AFfilehandle outfile, int trackid,
 			totalFramesWritten += framesWritten;
 		}
 
-		if (totalFramesWritten == totalFrameCount)
+		if (totalFramesWritten == totalFrames)
 			done = true;
 	}
 

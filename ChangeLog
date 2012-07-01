@@ -1,5 +1,10 @@
 2012-07-01  Michael Pruett <michael@68k.org>
 
+	* sfcommands/Makefile.am, sfcommands/sfconvert.c:
+	Clean up sfconvert.
+
+2012-07-01  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/modules/FileModule.cpp,
 	libaudiofile/modules/FileModule.h,
 	libaudiofile/modules/G711.cpp,

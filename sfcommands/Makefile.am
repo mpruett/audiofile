@@ -9,3 +9,5 @@ sfinfo_SOURCES = sfinfo.c printinfo.c printinfo.h
 LDADD = $(top_builddir)/libaudiofile/libaudiofile.la
 
 DEPENDENCIES = $(top_builddir)/libaudiofile/libaudiofile.la
+
+AM_CFLAGS = -Wall $(WERROR_CFLAGS)
