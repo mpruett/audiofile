@@ -29,8 +29,6 @@
 #include "config.h"
 #include "IMA.h"
 
-#include <errno.h>
-#include <string.h>
 #include <assert.h>
 
 #include <audiofile.h>
@@ -204,19 +202,8 @@ void IMA::runPull()
 
 		Complain only if there should have been more frames in the file.
 	*/
-
-	if (m_track->totalfframes != -1 && framesRead != framesToRead)
-	{
-		/* Report error if we haven't already */
-		if (m_track->filemodhappy)
-		{
-			_af_error(AF_BAD_READ,
-				"file missing data -- read %jd frames, should be %jd",
-				static_cast<intmax_t>(m_track->nextfframe),
-				static_cast<intmax_t>(m_track->totalfframes));
-			m_track->filemodhappy = false;
-		}
-	}
+	if (framesRead != framesToRead)
+		reportReadError(framesRead, framesToRead);
 
 	m_outChunk->frameCount = framesRead;
 }

@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 2010, Michael Pruett <michael@68k.org>
+	Copyright (C) 2010-2012, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -41,6 +41,9 @@ private:
 
 protected:
 	Track *m_track;
+
+	void reportReadError(AFframecount framesRead, AFframecount framesRequested);
+	void reportWriteError(AFframecount framesWritten, AFframecount framesRequested);
 
 private:
 	File *m_fh;

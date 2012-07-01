@@ -26,9 +26,7 @@
 #include "config.h"
 #include "PCM.h"
 
-#include <errno.h>
 #include <assert.h>
-#include <string.h>
 #include <math.h>
 
 #include "FileModule.h"
@@ -117,28 +115,7 @@ void PCM::runPush()
 	CHNK(printf("writing %jd frames to pcm file\n", (intmax_t) frames2write));
 
 	if (n != frames2write)
-	{
-		/* Report error if we haven't already. */
-		if (m_track->filemodhappy)
-		{
-			/* I/O error */
-			if (n < 0)
-				_af_error(AF_BAD_WRITE,
-					"unable to write data (%s) -- "
-					"wrote %jd out of %jd frames",
-					strerror(errno),
-					static_cast<intmax_t>(m_track->nextfframe + n),
-					static_cast<intmax_t>(m_track->nextfframe + frames2write));
-			/* usual disk full error */
-			else
-				_af_error(AF_BAD_WRITE,
-					"unable to write data (disk full) -- "
-					"wrote %jd out of %jd frames",
-					static_cast<intmax_t>(m_track->nextfframe + n),
-					static_cast<intmax_t>(m_track->nextfframe + frames2write));
-			m_track->filemodhappy = false;
-		}
-	}
+		reportWriteError(n, frames2write);
 
 	m_track->nextfframe += n;
 	m_track->totalfframes = m_track->nextfframe;
@@ -209,18 +186,7 @@ void PCM::runPull()
 	*/
 
 	if (framesRead != framesToRead && m_track->totalfframes != -1)
-	{
-		/* Report error if we haven't already. */
-		if (m_track->filemodhappy)
-		{
-			_af_error(AF_BAD_READ,
-				"file missing data -- read %jd frames, "
-				"should be %jd",
-				static_cast<intmax_t>(m_track->nextfframe),
-				static_cast<intmax_t>(m_track->totalfframes));
-			m_track->filemodhappy = false;
-		}
-	}
+		reportReadError(framesRead, framesToRead);
 
 	m_outChunk->frameCount = framesRead;
 }

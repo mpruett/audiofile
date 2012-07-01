@@ -22,8 +22,6 @@
 #include "config.h"
 #include "G711.h"
 
-#include <errno.h>
-#include <string.h>
 #include <assert.h>
 
 #include "FileModule.h"
@@ -152,30 +150,7 @@ void G711::runPush()
 	CHNK(printf("writing %d frames to g711 file\n", framesToWrite));
 
 	if (framesWritten != framesToWrite)
-	{
-		/* report error if we haven't already */
-		if (m_track->filemodhappy)
-		{
-			/* i/o error */
-			if (framesWritten < 0)
-				_af_error(AF_BAD_WRITE,
-					"unable to write data (%s) -- "
-					"wrote %jd out of %jd frames",
-					strerror(errno),
-					static_cast<intmax_t>(m_track->nextfframe + framesWritten),
-					static_cast<intmax_t>(m_track->nextfframe + framesToWrite));
-
-			/* usual disk full error */
-			else
-				_af_error(AF_BAD_WRITE,
-					"unable to write data (disk full) -- "
-					"wrote %jd out of %jd frames",
-					static_cast<intmax_t>(m_track->nextfframe + framesWritten),
-					static_cast<intmax_t>(m_track->nextfframe + framesToWrite));
-
-			m_track->filemodhappy = false;
-		}
-	}
+		reportWriteError(framesWritten, framesToWrite);
 
 	m_track->nextfframe += framesWritten;
 	m_track->totalfframes = m_track->nextfframe;
@@ -253,17 +228,7 @@ void G711::runPull()
 	*/
 
 	if (m_track->totalfframes != -1 && framesRead != framesToRead)
-	{
-		/* Report error if we haven't already */
-		if (m_track->filemodhappy)
-		{
-			_af_error(AF_BAD_READ,
-				"file missing data -- read %jd frames, should be %jd",
-				static_cast<intmax_t>(m_track->nextfframe),
-				static_cast<intmax_t>(m_track->totalfframes));
-			m_track->filemodhappy = false;
-		}
-	}
+		reportReadError(framesRead, framesToRead);
 
 	m_outChunk->frameCount = framesRead;
 }

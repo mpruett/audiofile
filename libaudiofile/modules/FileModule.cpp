@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 2010, Michael Pruett <michael@68k.org>
+	Copyright (C) 2010-2012, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -24,6 +24,9 @@
 #include "File.h"
 #include "Track.h"
 
+#include <errno.h>
+#include <string.h>
+
 FileModule::FileModule(Mode mode, Track *track, File *fh, bool canSeek) :
 	m_mode(mode),
 	m_track(track),
@@ -41,10 +44,6 @@ ssize_t FileModule::read(void *data, size_t nbytes)
 	{
 		m_track->fpos_next_frame += bytesRead;
 	}
-	else if (bytesRead < 0)
-	{
-		m_track->filemodhappy = false;
-	}
 	return bytesRead;
 }
 
@@ -56,14 +55,53 @@ ssize_t FileModule::write(const void *data, size_t nbytes)
 		m_track->fpos_next_frame += bytesWritten;
 		m_track->data_size += bytesWritten;
 	}
-	else if (bytesWritten < 0)
-	{
-		m_track->filemodhappy = false;
-	}
 	return bytesWritten;
 }
 
 off_t FileModule::tell()
 {
 	return m_fh->tell();
+}
+
+void FileModule::reportReadError(AFframecount framesRead,
+	AFframecount framesToRead)
+{
+	// Report error if we haven't already.
+	if (!m_track->filemodhappy)
+		return;
+
+	_af_error(AF_BAD_READ,
+		"file missing data -- read %jd frames, should be %jd",
+		static_cast<intmax_t>(m_track->nextfframe),
+		static_cast<intmax_t>(m_track->totalfframes));
+	m_track->filemodhappy = false;
+}
+
+void FileModule::reportWriteError(AFframecount framesWritten,
+	AFframecount framesToWrite)
+{
+	// Report error if we haven't already.
+	if (!m_track->filemodhappy)
+		return;
+
+	if (framesWritten < 0)
+	{
+		// Signal I/O error.
+		_af_error(AF_BAD_WRITE,
+			"unable to write data (%s) -- wrote %jd out of %jd frames",
+			strerror(errno),
+			static_cast<intmax_t>(m_track->nextfframe),
+			static_cast<intmax_t>(m_track->nextfframe + framesToWrite));
+	}
+	else
+	{
+		// Signal disk full error.
+		_af_error(AF_BAD_WRITE,
+			"unable to write data (disk full) -- "
+			"wrote %jd out of %jd frames",
+			static_cast<intmax_t>(m_track->nextfframe + framesWritten),
+			static_cast<intmax_t>(m_track->nextfframe + framesToWrite));
+	}
+
+	m_track->filemodhappy = false;
 }
