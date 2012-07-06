@@ -64,7 +64,7 @@ private:
 	*/
 	AFframecount m_framesToIgnore;
 
-	int m_blockAlign, m_framesPerBlock;
+	int m_bytesPerPacket, m_framesPerPacket;
 
 	/* m_coefficients is an array of m_numCoefficients ADPCM coefficient pairs. */
 	int	m_numCoefficients;
@@ -130,7 +130,7 @@ int MSADPCM::decodeBlock (const uint8_t *encoded, int16_t *decoded)
 	int channelCount = m_track->f.channelCount;
 
 	/* Calculate the number of bytes needed for decoded data. */
-	int outputLength = m_framesPerBlock * sizeof (int16_t) * channelCount;
+	int outputLength = m_framesPerPacket * sizeof (int16_t) * channelCount;
 
 	state[0] = &decoderState[0];
 	if (channelCount == 2)
@@ -178,7 +178,7 @@ int MSADPCM::decodeBlock (const uint8_t *encoded, int16_t *decoded)
 		The first two samples have already been 'decoded' in
 		the block header.
 	*/
-	int samplesRemaining = (m_framesPerBlock - 2) * m_track->f.channelCount;
+	int samplesRemaining = (m_framesPerPacket - 2) * m_track->f.channelCount;
 
 	while (samplesRemaining > 0)
 	{
@@ -210,6 +210,8 @@ void MSADPCM::describe()
 MSADPCM::MSADPCM(Track *track, File *fh, bool canSeek) :
 	FileModule(Decompress, track, fh, canSeek)
 {
+	m_framesPerPacket = track->f.framesPerPacket;
+	m_bytesPerPacket = track->f.bytesPerPacket;
 }
 
 Module *MSADPCM::createDecompress(Track *track, File *fh,
@@ -219,7 +221,7 @@ Module *MSADPCM::createDecompress(Track *track, File *fh,
 
 	MSADPCM *msadpcm = new MSADPCM(track, fh, canSeek);
 
-	AUpvlist pv = (AUpvlist) track->f.compressionParams;
+	AUpvlist pv = track->f.compressionParams;
 	long l;
 	if (_af_pv_getlong(pv, _AF_MS_ADPCM_NUM_COEFFICIENTS, &l))
 		msadpcm->m_numCoefficients = l;
@@ -232,17 +234,7 @@ Module *MSADPCM::createDecompress(Track *track, File *fh,
 	else
 		_af_error(AF_BAD_CODEC_CONFIG, "coefficient array not set");
 
-	if (_af_pv_getlong(pv, _AF_FRAMES_PER_BLOCK, &l))
-		msadpcm->m_framesPerBlock = l;
-	else
-		_af_error(AF_BAD_CODEC_CONFIG, "samples per block not set");
-
-	if (_af_pv_getlong(pv, _AF_BLOCK_SIZE, &l))
-		msadpcm->m_blockAlign = l;
-	else
-		_af_error(AF_BAD_CODEC_CONFIG, "block size not set");
-
-	*chunkFrames = msadpcm->m_framesPerBlock;
+	*chunkFrames = msadpcm->m_framesPerPacket;
 
 	return msadpcm;
 }
@@ -252,20 +244,20 @@ void MSADPCM::runPull()
 	AFframecount framesToRead = m_outChunk->frameCount;
 	AFframecount framesRead = 0;
 
-	assert(m_outChunk->frameCount % m_framesPerBlock == 0);
-	int blockCount = m_outChunk->frameCount / m_framesPerBlock;
+	assert(m_outChunk->frameCount % m_framesPerPacket == 0);
+	int blockCount = m_outChunk->frameCount / m_framesPerPacket;
 
 	/* Read the compressed frames. */
-	ssize_t bytesRead = read(m_inChunk->buffer, m_blockAlign * blockCount);
-	int blocksRead = bytesRead >= 0 ? bytesRead / m_blockAlign : 0;
+	ssize_t bytesRead = read(m_inChunk->buffer, m_bytesPerPacket * blockCount);
+	int blocksRead = bytesRead >= 0 ? bytesRead / m_bytesPerPacket : 0;
 
 	/* Decompress into m_outChunk. */
 	for (int i=0; i<blocksRead; i++)
 	{
-		decodeBlock(static_cast<const uint8_t *>(m_inChunk->buffer) + i * m_blockAlign,
-			static_cast<int16_t *>(m_outChunk->buffer) + i * m_framesPerBlock * m_track->f.channelCount);
+		decodeBlock(static_cast<const uint8_t *>(m_inChunk->buffer) + i * m_bytesPerPacket,
+			static_cast<int16_t *>(m_outChunk->buffer) + i * m_framesPerPacket * m_track->f.channelCount);
 
-		framesRead += m_framesPerBlock;
+		framesRead += m_framesPerPacket;
 	}
 
 	m_track->nextfframe += framesRead;
@@ -281,8 +273,8 @@ void MSADPCM::runPull()
 void MSADPCM::reset1()
 {
 	AFframecount nextTrackFrame = m_track->nextfframe;
-	m_track->nextfframe = (nextTrackFrame / m_framesPerBlock) *
-		m_framesPerBlock;
+	m_track->nextfframe = (nextTrackFrame / m_framesPerPacket) *
+		m_framesPerPacket;
 
 	m_framesToIgnore = nextTrackFrame - m_track->nextfframe;
 	/* postroll = frames2ignore */
@@ -291,10 +283,10 @@ void MSADPCM::reset1()
 void MSADPCM::reset2()
 {
 	m_track->fpos_next_frame = m_track->fpos_first_frame +
-		m_blockAlign * (m_track->nextfframe / m_framesPerBlock);
+		m_bytesPerPacket * (m_track->nextfframe / m_framesPerPacket);
 	m_track->frames2ignore += m_framesToIgnore;
 
-	assert(m_track->nextfframe % m_framesPerBlock == 0);
+	assert(m_track->nextfframe % m_framesPerPacket == 0);
 }
 
 bool _af_ms_adpcm_format_ok (AudioFormat *f)

@@ -21,9 +21,10 @@
 #ifndef AUDIOFORMAT_H
 #define AUDIOFORMAT_H
 
+#include "aupvlist.h"
+
 #include <sys/types.h>
 #include <string>
-#include "aupvlist.h"
 
 struct PCMInfo
 {
@@ -45,6 +46,9 @@ struct AudioFormat
 	AUpvlist compressionParams;	/* NULL if no compression */
 
 	bool packed : 1;
+
+	size_t framesPerPacket;
+	size_t bytesPerPacket;
 
 	size_t bytesPerSample(bool stretch3to4) const;
 	size_t bytesPerFrame(bool stretch3to4) const;

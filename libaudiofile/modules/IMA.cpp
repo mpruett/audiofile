@@ -60,7 +60,7 @@ public:
 	virtual void reset2();
 
 private:
-	int m_blockAlign, m_framesPerBlock;
+	int m_bytesPerPacket, m_framesPerPacket;
 	AFframecount m_framesToIgnore;
 
 	IMA(Track *, File *fh, bool canSeek);
@@ -69,10 +69,12 @@ private:
 
 IMA::IMA(Track *track, File *fh, bool canSeek) :
 	FileModule(Decompress, track, fh, canSeek),
-	m_blockAlign(-1),
-	m_framesPerBlock(-1),
+	m_bytesPerPacket(-1),
+	m_framesPerPacket(-1),
 	m_framesToIgnore(-1)
 {
+	m_framesPerPacket = track->f.framesPerPacket;
+	m_bytesPerPacket = track->f.bytesPerPacket;
 }
 
 int IMA::decodeBlock (const uint8_t *encoded, int16_t *decoded)
@@ -93,9 +95,9 @@ int IMA::decodeBlock (const uint8_t *encoded, int16_t *decoded)
 		encoded += 4;
 	}
 
-	_af_adpcm_decoder(encoded, decoded, m_framesPerBlock - 1, channelCount, state);
+	_af_adpcm_decoder(encoded, decoded, m_framesPerPacket - 1, channelCount, state);
 
-	return m_framesPerBlock * channelCount * sizeof (int16_t);
+	return m_framesPerPacket * channelCount * sizeof (int16_t);
 }
 
 bool _af_ima_adpcm_format_ok (AudioFormat *f)
@@ -141,20 +143,7 @@ Module *IMA::createDecompress(Track *track, File *fh, bool canSeek,
 
 	IMA *ima = new IMA(track, fh, canSeek);
 
-	AUpvlist pv = (AUpvlist) track->f.compressionParams;
-
-	long l;
-	if (_af_pv_getlong(pv, _AF_FRAMES_PER_BLOCK, &l))
-		ima->m_framesPerBlock = l;
-	else
-		_af_error(AF_BAD_CODEC_CONFIG, "samples per block not set");
-
-	if (_af_pv_getlong(pv, _AF_BLOCK_SIZE, &l))
-		ima->m_blockAlign = l;
-	else
-		_af_error(AF_BAD_CODEC_CONFIG, "block size not set");
-
-	*chunkFrames = ima->m_framesPerBlock;
+	*chunkFrames = ima->m_framesPerPacket;
 
 	return ima;
 }
@@ -164,12 +153,12 @@ void IMA::runPull()
 	AFframecount framesToRead = m_outChunk->frameCount;
 	AFframecount framesRead = 0;
 
-	assert(m_outChunk->frameCount % m_framesPerBlock == 0);
-	int blockCount = m_outChunk->frameCount / m_framesPerBlock;
+	assert(m_outChunk->frameCount % m_framesPerPacket == 0);
+	int blockCount = m_outChunk->frameCount / m_framesPerPacket;
 
 	/* Read the compressed frames. */
-	ssize_t bytesRead = read(m_inChunk->buffer, m_blockAlign * blockCount);
-	ssize_t blocksRead = bytesRead >= 0 ? bytesRead / m_blockAlign : 0;
+	ssize_t bytesRead = read(m_inChunk->buffer, m_bytesPerPacket * blockCount);
+	ssize_t blocksRead = bytesRead >= 0 ? bytesRead / m_bytesPerPacket : 0;
 
 	/* This condition would indicate that the file is bad. */
 	if (blocksRead < 0)
@@ -187,10 +176,10 @@ void IMA::runPull()
 	/* Decompress into module->outc. */
 	for (int i=0; i<blockCount; i++)
 	{
-		decodeBlock(static_cast<const uint8_t *>(m_inChunk->buffer) + i * m_blockAlign,
-			static_cast<int16_t *>(m_outChunk->buffer) + i * m_framesPerBlock * m_track->f.channelCount);
+		decodeBlock(static_cast<const uint8_t *>(m_inChunk->buffer) + i * m_bytesPerPacket,
+			static_cast<int16_t *>(m_outChunk->buffer) + i * m_framesPerPacket * m_track->f.channelCount);
 
-		framesRead += m_framesPerBlock;
+		framesRead += m_framesPerPacket;
 	}
 
 	m_track->nextfframe += framesRead;
@@ -211,8 +200,8 @@ void IMA::runPull()
 void IMA::reset1()
 {
 	AFframecount nextTrackFrame = m_track->nextfframe;
-	m_track->nextfframe = (nextTrackFrame / m_framesPerBlock) *
-		m_framesPerBlock;
+	m_track->nextfframe = (nextTrackFrame / m_framesPerPacket) *
+		m_framesPerPacket;
 
 	m_framesToIgnore = nextTrackFrame - m_track->nextfframe;
 	/* postroll = frames2ignore */
@@ -221,10 +210,10 @@ void IMA::reset1()
 void IMA::reset2()
 {
 	m_track->fpos_next_frame = m_track->fpos_first_frame +
-		m_blockAlign * (m_track->nextfframe / m_framesPerBlock);
+		m_bytesPerPacket * (m_track->nextfframe / m_framesPerPacket);
 	m_track->frames2ignore += m_framesToIgnore;
 
-	assert(m_track->nextfframe % m_framesPerBlock == 0);
+	assert(m_track->nextfframe % m_framesPerPacket == 0);
 }
 
 Module *_af_ima_adpcm_init_decompress(Track *track, File *fh,

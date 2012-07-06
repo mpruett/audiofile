@@ -1,5 +1,14 @@
 2012-07-05  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/AudioFormat.h,
+	libaudiofile/WAVE.cpp,
+	libaudiofile/afinternal.h,
+	libaudiofile/modules/IMA.cpp,
+	libaudiofile/modules/MSADPCM.cpp:
+	Add framesPerPacket and bytesPerPacket fields to AudioFormat.
+
+2012-07-05  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/data.cpp, libaudiofile/modules/Module.h:
 	Fix mismatched deallocation of temporary buffer in afReadFrames.
 

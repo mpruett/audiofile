@@ -286,10 +286,13 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 			track->f.compressionType = AF_COMPRESSION_MS_ADPCM;
 			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 
+			track->f.framesPerPacket = samplesPerBlock;
+			track->f.bytesPerPacket = blockAlign;
+
 			/* Create the parameter list. */
 			long l;
 			void *v;
-			AUpvlist pv = AUpvnew(4);
+			AUpvlist pv = AUpvnew(2);
 			AUpvsetparam(pv, 0, _AF_MS_ADPCM_NUM_COEFFICIENTS);
 			AUpvsetvaltype(pv, 0, AU_PVTYPE_LONG);
 			l = numCoefficients;
@@ -299,16 +302,6 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 			AUpvsetvaltype(pv, 1, AU_PVTYPE_PTR);
 			v = msadpcmCoefficients;
 			AUpvsetval(pv, 1, &v);
-
-			AUpvsetparam(pv, 2, _AF_FRAMES_PER_BLOCK);
-			AUpvsetvaltype(pv, 2, AU_PVTYPE_LONG);
-			l = samplesPerBlock;
-			AUpvsetval(pv, 2, &l);
-
-			AUpvsetparam(pv, 3, _AF_BLOCK_SIZE);
-			AUpvsetvaltype(pv, 3, AU_PVTYPE_LONG);
-			l = blockAlign;
-			AUpvsetval(pv, 3, &l);
 
 			track->f.compressionParams = pv;
 		}
@@ -340,20 +333,8 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 			track->f.compressionType = AF_COMPRESSION_IMA;
 			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 
-			/* Create the parameter list. */
-			long l;
-			AUpvlist pv = AUpvnew(2);
-			AUpvsetparam(pv, 0, _AF_FRAMES_PER_BLOCK);
-			AUpvsetvaltype(pv, 0, AU_PVTYPE_LONG);
-			l = samplesPerBlock;
-			AUpvsetval(pv, 0, &l);
-
-			AUpvsetparam(pv, 1, _AF_BLOCK_SIZE);
-			AUpvsetvaltype(pv, 1, AU_PVTYPE_LONG);
-			l = blockAlign;
-			AUpvsetval(pv, 1, &l);
-
-			track->f.compressionParams = pv;
+			track->f.framesPerPacket = samplesPerBlock;
+			track->f.bytesPerPacket = blockAlign;
 		}
 		break;
 
