@@ -35,6 +35,7 @@ The following compression types are currently supported:
 `AF_COMPRESSION_G711_ULAW`:: CCITT G.711 mu-law encoding
 `AF_COMPRESSION_G711_ALAW`:: CCITT G.711 A-law encoding
 `AF_COMPRESSION_IMA`:: IMA ADPCM encoding
+`AF_COMPRESSION_MS_ADPCM`:: MS ADPCM encoding
 
 ERRORS
 ------

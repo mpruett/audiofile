@@ -314,6 +314,6 @@ const _CompressionUnit _af_compression[_AF_NUM_COMPRESSION] =
 		true,	/* needsRebuffer */
 		false,	/* multiple_of */
 		_af_ms_adpcm_format_ok,
-		NULL, _af_ms_adpcm_init_decompress
+		_af_ms_adpcm_init_compress, _af_ms_adpcm_init_decompress
 	}
 };

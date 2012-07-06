@@ -38,4 +38,7 @@ bool _af_ms_adpcm_format_ok (AudioFormat *f);
 Module *_af_ms_adpcm_init_decompress (Track *track, File *fh,
 	bool canSeek, bool headerless, AFframecount *chunkframes);
 
-#endif /* MSADPCM_H */
+Module *_af_ms_adpcm_init_compress (Track *track, File *fh,
+	bool canSeek, bool headerless, AFframecount *chunkframes);
+
+#endif

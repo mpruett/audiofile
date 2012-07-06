@@ -98,7 +98,8 @@ const int _af_wave_compression_types[_AF_WAVE_NUM_COMPTYPES] =
 {
 	AF_COMPRESSION_G711_ULAW,
 	AF_COMPRESSION_G711_ALAW,
-	AF_COMPRESSION_IMA
+	AF_COMPRESSION_IMA,
+	AF_COMPRESSION_MS_ADPCM
 };
 
 const InstParamInfo _af_wave_inst_params[_AF_WAVE_NUM_INSTPARAMS] =
@@ -157,6 +158,8 @@ WAVEFile::WAVEFile()
 	totalMiscellaneousSize = 0;
 	markOffset = 0;
 	dataSizeOffset = 0;
+
+	m_msadpcmNumCoefficients = 0;
 }
 
 status WAVEFile::parseFrameCount(const Tag &id, uint32_t size)
@@ -272,15 +275,12 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 			/* numCoefficients should be at least 7. */
 			assert(numCoefficients >= 7 && numCoefficients <= 255);
 
-			for (int i=0; i<numCoefficients; i++)
+			m_msadpcmNumCoefficients = numCoefficients;
+
+			for (int i=0; i<m_msadpcmNumCoefficients; i++)
 			{
-				int16_t a0, a1;
-
-				readS16(&a0);
-				readS16(&a1);
-
-				msadpcmCoefficients[i][0] = a0;
-				msadpcmCoefficients[i][1] = a1;
+				readS16(&m_msadpcmCoefficients[i][0]);
+				readS16(&m_msadpcmCoefficients[i][1]);
 			}
 
 			track->f.sampleWidth = 16;
@@ -291,18 +291,16 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 			track->f.framesPerPacket = samplesPerBlock;
 			track->f.bytesPerPacket = blockAlign;
 
-			/* Create the parameter list. */
-			long l;
-			void *v;
+			// Create the parameter list.
 			AUpvlist pv = AUpvnew(2);
 			AUpvsetparam(pv, 0, _AF_MS_ADPCM_NUM_COEFFICIENTS);
 			AUpvsetvaltype(pv, 0, AU_PVTYPE_LONG);
-			l = numCoefficients;
+			long l = m_msadpcmNumCoefficients;
 			AUpvsetval(pv, 0, &l);
 
 			AUpvsetparam(pv, 1, _AF_MS_ADPCM_COEFFICIENTS);
 			AUpvsetvaltype(pv, 1, AU_PVTYPE_PTR);
-			v = msadpcmCoefficients;
+			void *v = m_msadpcmCoefficients;
 			AUpvsetval(pv, 1, &v);
 
 			track->f.compressionParams = pv;
@@ -943,12 +941,12 @@ AFfilesetup WAVEFile::completeSetup(AFfilesetup setup)
 	if (track->f.compressionType != AF_COMPRESSION_NONE &&
 		track->f.compressionType != AF_COMPRESSION_G711_ULAW &&
 		track->f.compressionType != AF_COMPRESSION_G711_ALAW &&
-		track->f.compressionType != AF_COMPRESSION_IMA)
+		track->f.compressionType != AF_COMPRESSION_IMA &&
+		track->f.compressionType != AF_COMPRESSION_MS_ADPCM)
 	{
 		_af_error(AF_BAD_NOT_IMPLEMENTED, "compression format not supported in WAVE format");
 		return AF_NULL_FILESETUP;
 	}
-
 
 	if (track->byteOrderSet &&
 		track->f.byteOrder != AF_BYTEORDER_LITTLEENDIAN &&
@@ -1126,6 +1124,13 @@ status WAVEFile::writeFormat()
 			bitsPerSample = 4;
 			break;
 
+		case AF_COMPRESSION_MS_ADPCM:
+			chunkSize = 50;
+			formatTag = WAVE_FORMAT_ADPCM;
+			blockAlign = track->f.bytesPerPacket;
+			bitsPerSample = 4;
+			break;
+
 		default:
 			_af_error(AF_BAD_COMPTYPE, "bad compression type");
 			return AF_FAIL;
@@ -1142,7 +1147,8 @@ status WAVEFile::writeFormat()
 
 	averageBytesPerSecond =
 		track->f.sampleRate * _af_format_frame_size(&track->f, false);
-	if (track->f.compressionType == AF_COMPRESSION_IMA)
+	if (track->f.compressionType == AF_COMPRESSION_IMA ||
+		track->f.compressionType == AF_COMPRESSION_MS_ADPCM)
 		averageBytesPerSecond = track->f.sampleRate * track->f.bytesPerPacket /
 			track->f.framesPerPacket;
 	writeU32(&averageBytesPerSecond);
@@ -1163,6 +1169,22 @@ status WAVEFile::writeFormat()
 		writeU16(&extraByteCount);
 		uint16_t samplesPerBlock = track->f.framesPerPacket;
 		writeU16(&samplesPerBlock);
+	}
+	else if (track->f.compressionType == AF_COMPRESSION_MS_ADPCM)
+	{
+		uint16_t extraByteCount = 2 + 2 + m_msadpcmNumCoefficients * 4;
+		writeU16(&extraByteCount);
+		uint16_t samplesPerBlock = track->f.framesPerPacket;
+		writeU16(&samplesPerBlock);
+
+		uint16_t numCoefficients = m_msadpcmNumCoefficients;
+		writeU16(&numCoefficients);
+
+		for (int i=0; i<m_msadpcmNumCoefficients; i++)
+		{
+			writeS16(&m_msadpcmCoefficients[i][0]);
+			writeS16(&m_msadpcmCoefficients[i][1]);
+		}
 	}
 
 	return AF_SUCCEED;
@@ -1529,6 +1551,8 @@ void WAVEFile::initCompressionParams()
 	Track *track = getTrack();
 	if (track->f.compressionType == AF_COMPRESSION_IMA)
 		initIMACompressionParams();
+	else if (track->f.compressionType == AF_COMPRESSION_MS_ADPCM)
+		initMSADPCMCompressionParams();
 }
 
 void WAVEFile::initIMACompressionParams()
@@ -1543,6 +1567,40 @@ void WAVEFile::initIMACompressionParams()
 	AUpvsetvaltype(pv, 0, AU_PVTYPE_LONG);
 	long l = _AF_IMA_ADPCM_TYPE_WAVE;
 	AUpvsetval(pv, 0, &l);
+
+	track->f.compressionParams = pv;
+}
+
+void WAVEFile::initMSADPCMCompressionParams()
+{
+	const int16_t coefficients[7][2] =
+	{
+		{ 256, 0 },
+		{ 512, -256 },
+		{ 0, 0 },
+		{ 192, 64 },
+		{ 240, 0 },
+		{ 460, -208 },
+		{ 392, -232 }
+	};
+	memcpy(m_msadpcmCoefficients, coefficients, sizeof (int16_t) * 7 * 2);
+	m_msadpcmNumCoefficients = 7;
+
+	Track *track = getTrack();
+
+	track->f.framesPerPacket = 500;
+	track->f.bytesPerPacket = 256 * track->f.channelCount;
+
+	AUpvlist pv = AUpvnew(2);
+	AUpvsetparam(pv, 0, _AF_MS_ADPCM_NUM_COEFFICIENTS);
+	AUpvsetvaltype(pv, 0, AU_PVTYPE_LONG);
+	long l = m_msadpcmNumCoefficients;
+	AUpvsetval(pv, 0, &l);
+
+	AUpvsetparam(pv, 1, _AF_MS_ADPCM_COEFFICIENTS);
+	AUpvsetvaltype(pv, 1, AU_PVTYPE_PTR);
+	void *v = m_msadpcmCoefficients;
+	AUpvsetval(pv, 1, &v);
 
 	track->f.compressionParams = pv;
 }

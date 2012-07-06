@@ -35,7 +35,7 @@
 
 #define _AF_WAVE_NUM_INSTPARAMS 7
 extern const InstParamInfo _af_wave_inst_params[_AF_WAVE_NUM_INSTPARAMS];
-#define _AF_WAVE_NUM_COMPTYPES 3
+#define _AF_WAVE_NUM_COMPTYPES 4
 extern const int _af_wave_compression_types[_AF_WAVE_NUM_COMPTYPES];
 
 struct UUID;
@@ -73,7 +73,8 @@ private:
 		uint8_t, so we can safely limit msadpcmCoefficients to
 		be 256 coefficient pairs.
 	*/
-	int16_t		msadpcmCoefficients[256][2];
+	int m_msadpcmNumCoefficients;
+	int16_t m_msadpcmCoefficients[256][2];
 
 	status parseFrameCount(const Tag &type, uint32_t size);
 	status parseFormat(const Tag &type, uint32_t size);
@@ -96,6 +97,7 @@ private:
 
 	void initCompressionParams();
 	void initIMACompressionParams();
+	void initMSADPCMCompressionParams();
 };
 
 #endif

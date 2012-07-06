@@ -37,6 +37,10 @@ static const int kIMAFramesPerPacketWAVE = 505;
 static const int kIMAThresholdQT = 128;
 static const int kIMAThresholdWAVE = 16;
 
+static const int kMSADPCMBytesPerPacket = 256;
+static const int kMSADPCMFramesPerPacket = 500;
+static const int kMSADPCMThreshold = 16;
+
 static void testADPCM(int fileFormat, int compressionFormat, int channelCount,
 	int bytesPerPacket, int framesPerPacket, int frameCount, int threshold)
 {
@@ -136,6 +140,14 @@ TEST(IMA, WAVE)
 		testADPCM(AF_FILE_WAVE, AF_COMPRESSION_IMA, channelCount,
 			channelCount * kIMABytesPerPacketWAVE, kIMAFramesPerPacketWAVE,
 			50 * kIMAFramesPerPacketWAVE, kIMAThresholdWAVE);
+}
+
+TEST(MSADPCM, WAVE)
+{
+	for (int channelCount=1; channelCount<=2; channelCount++)
+		testADPCM(AF_FILE_WAVE, AF_COMPRESSION_MS_ADPCM, channelCount,
+			channelCount * kMSADPCMBytesPerPacket, kMSADPCMFramesPerPacket,
+			50 * kMSADPCMFramesPerPacket, kMSADPCMThreshold);
 }
 
 int main(int argc, char **argv)

@@ -1,6 +1,17 @@
 2012-07-05  Michael Pruett <michael@68k.org>
 
 	* docs/afInitCompression.3.txt,
+	libaudiofile/WAVE.cpp,
+	libaudiofile/WAVE.h,
+	libaudiofile/modules/MSADPCM.cpp,
+	libaudiofile/modules/MSADPCM.h,
+	libaudiofile/units.cpp,
+	test/ADPCM.cpp:
+	Implement Microsoft ADPCM encoding for WAVE files.
+
+2012-07-05  Michael Pruett <michael@68k.org>
+
+	* docs/afInitCompression.3.txt,
 	libaudiofile/AIFF.cpp,
 	libaudiofile/AIFF.h,
 	libaudiofile/CAF.cpp,
