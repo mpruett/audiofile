@@ -186,7 +186,7 @@ int afReadFrames (AFfilehandle file, int trackid, void *samples,
 		{
 			userc->frameCount = track->frames2ignore;
 			userc->allocate(track->frames2ignore * bytes_per_vframe);
-			if (userc->buffer == NULL)
+			if (!userc->buffer)
 				return 0;
 
 			firstmod->runPull();
@@ -197,8 +197,7 @@ int afReadFrames (AFfilehandle file, int trackid, void *samples,
 
 			track->frames2ignore = 0;
 
-			free(userc->buffer);
-			userc->buffer = NULL;
+			userc->deallocate();
 		}
 
 		/*

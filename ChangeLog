@@ -1,3 +1,8 @@
+2012-07-05  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/data.cpp, libaudiofile/modules/Module.h:
+	Fix mismatched deallocation of temporary buffer in afReadFrames.
+
 2012-07-01  Michael Pruett <michael@68k.org>
 
 	* sfcommands/sfconvert.c: Improve error handling in sfconvert.

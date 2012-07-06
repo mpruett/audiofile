@@ -50,16 +50,20 @@ public:
 	Chunk() : buffer(NULL), frameCount(0), ownsMemory(false) { }
 	~Chunk()
 	{
-		if (ownsMemory)
-			::operator delete(buffer);
-		buffer = NULL;
+		deallocate();
 	}
 	void allocate(size_t capacity)
 	{
-		if (ownsMemory)
-			::operator delete(buffer);
+		deallocate();
 		ownsMemory = true;
 		buffer = ::operator new(capacity);
+	}
+	void deallocate()
+	{
+		if (ownsMemory)
+			::operator delete(buffer);
+		ownsMemory = false;
+		buffer = NULL;
 	}
 };
 
