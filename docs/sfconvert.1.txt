@@ -17,10 +17,6 @@ OPTIONS
 -------
 The following keywords specify the format of the output sound file:
 
-`byteorder` 'e'::
-  Output byte order. 'e' may be either `big` or `little`.
-`channels` 'n'::
-  Number of output channels. 'n' is 1 for mono, and 2 for stereo.
 `format` 'f'::
   Output file format. 'f' must be one of the following:
 [horizontal]
@@ -33,6 +29,16 @@ The following keywords specify the format of the output sound file:
     `voc`::: Creative Voice File Format
     `nist`::: NIST SPHERE Format
     `caf`::: Core Audio Format
+`compression` 'c'::
+[horizontal]
+    `ulaw`::: G.711 mu-law
+    `alaw`::: G.711 A-law
+    `ima`::: IMA ADPCM
+    `msadpcm`::: Microsoft ADPCM
+`byteorder` 'e'::
+  Output byte order. 'e' may be either `big` or `little`.
+`channels` 'n'::
+  Number of output channels. 'n' is 1 for mono, and 2 for stereo.
 `integer` 'n' 's'::
   Convert to integer audio data. 'n' indicates the output sample width
   in bits. 's' specifies the sample format and may be either `2scomp`

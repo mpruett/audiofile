@@ -1,5 +1,10 @@
 2012-07-05  Michael Pruett <michael@68k.org>
 
+	* docs/sfconvert.1.txt, sfcommands/sfconvert.c:
+	Add support for compression to sfconvert.
+
+2012-07-05  Michael Pruett <michael@68k.org>
+
 	* docs/afInitCompression.3.txt,
 	libaudiofile/WAVE.cpp,
 	libaudiofile/WAVE.h,

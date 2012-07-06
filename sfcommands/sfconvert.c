@@ -70,8 +70,8 @@ int main (int argc, char **argv)
 	const char *outFileName = argv[2];
 
 	int outFileFormat = AF_FILE_UNKNOWN;
-
 	int outSampleFormat = -1, outSampleWidth = -1, outChannelCount = -1;
+	int outCompression = AF_COMPRESSION_NONE;
 	double outMaxAmp = 1.0;
 
 	int i = 3;
@@ -156,6 +156,29 @@ int main (int argc, char **argv)
 			// Increment for arguments.
 			i += 2;
 		}
+		else if (!strcmp(argv[i], "compression"))
+		{
+			if (i + 1 >= argc)
+				usageerror();
+
+			if (!strcmp(argv[i+1], "none"))
+				outCompression = AF_COMPRESSION_NONE;
+			else if (!strcmp(argv[i+1], "ulaw"))
+				outCompression = AF_COMPRESSION_G711_ULAW;
+			else if (!strcmp(argv[i+1], "alaw"))
+				outCompression = AF_COMPRESSION_G711_ALAW;
+			else if (!strcmp(argv[i+1], "ima"))
+				outCompression = AF_COMPRESSION_IMA;
+			else if (!strcmp(argv[i+1], "msadpcm"))
+				outCompression = AF_COMPRESSION_MS_ADPCM;
+			else
+			{
+				fprintf(stderr, "sfconvert: Unknown compression format %s.\n", argv[i+1]);
+				exit(EXIT_FAILURE);
+			}
+
+			i++;
+		}
 		else
 		{
 			printf("Unrecognized command %s\n", argv[i]);
@@ -194,6 +217,7 @@ int main (int argc, char **argv)
 		outChannelCount = channelCount;
 
 	afInitFileFormat(outFileSetup, outFileFormat);
+	afInitCompression(outFileSetup, AF_DEFAULT_TRACK, outCompression);
 	afInitSampleFormat(outFileSetup, AF_DEFAULT_TRACK, outSampleFormat,
 		outSampleWidth);
 	afInitChannels(outFileSetup, AF_DEFAULT_TRACK, outChannelCount);
@@ -240,16 +264,17 @@ void printusage (void)
 	printf("\n");
 
 	printf("Where keywords specify format of input or output soundfile:\n");
+	printf("    format f       file format f (see below)\n");
+	printf("    compression c  compression format c (see below)\n");
 	printf("    byteorder e    endian (e is big or little)\n");
 	printf("    channels n     n-channel file (1 or 2)\n");
-	printf("    format f       file format f (see below)\n");
 	printf("    integer n s    n-bit integer file, where s is one of\n");
 	printf("                       2scomp: 2's complement signed data\n");
 	printf("                       unsigned: unsigned data\n");
 	printf("    float m        floating point file, maxamp m (usually 1.0)\n");
 	printf("\n");
 
-	printf("Currently supported formats are:\n");
+	printf("Currently supported file formats are:\n");
 	printf("\n");
 	printf("    aiff    Audio Interchange File Format\n");
 	printf("    aifc    AIFF-C File Format\n");
@@ -260,6 +285,14 @@ void printusage (void)
 	printf("    voc     Creative Voice File\n");
 	printf("    nist    NIST SPHERE Format\n");
 	printf("    caf     Core Audio Format\n");
+	printf("\n");
+
+	printf("Currently supported compression formats are:\n");
+	printf("\n");
+	printf("    ulaw    G.711 u-law\n");
+	printf("    alaw    G.711 A-law\n");
+	printf("    ima     IMA ADPCM\n");
+	printf("    msadpcm MS ADPCM\n");
 	printf("\n");
 }
 
