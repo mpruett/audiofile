@@ -301,7 +301,7 @@ const _CompressionUnit _af_compression[_AF_NUM_COMPRESSION] =
 		true,	/* needsRebuffer */
 		false,	/* multiple_of */
 		_af_ima_adpcm_format_ok,
-		NULL, _af_ima_adpcm_init_decompress
+		_af_ima_adpcm_init_compress, _af_ima_adpcm_init_decompress
 	},
 	{
 		AF_COMPRESSION_MS_ADPCM,

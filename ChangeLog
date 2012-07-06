@@ -1,5 +1,23 @@
 2012-07-05  Michael Pruett <michael@68k.org>
 
+	* docs/afInitCompression.3.txt,
+	libaudiofile/AIFF.cpp,
+	libaudiofile/AIFF.h,
+	libaudiofile/CAF.cpp,
+	libaudiofile/CAF.h,
+	libaudiofile/WAVE.cpp,
+	libaudiofile/WAVE.h,
+	libaudiofile/afinternal.h,
+	libaudiofile/modules/IMA.cpp,
+	libaudiofile/modules/IMA.h,
+	libaudiofile/modules/Makefile.am,
+	libaudiofile/units.cpp,
+	test/ADPCM.cpp,
+	test/Makefile.am:
+	Implement IMA ADPCM encoding and decoding for AIFF-C, CAF, and WAVE files.
+
+2012-07-05  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/AudioFormat.h,
 	libaudiofile/WAVE.cpp,
 	libaudiofile/afinternal.h,

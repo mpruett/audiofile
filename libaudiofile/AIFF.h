@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 1998-2000, Michael Pruett <michael@68k.org>
+	Copyright (C) 1998-2000, 2003-2004, 2010-2012, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,7 +32,7 @@
 
 #define _AF_AIFF_NUM_INSTPARAMS 9
 extern const InstParamInfo _af_aiff_inst_params[_AF_AIFF_NUM_INSTPARAMS];
-#define _AF_AIFFC_NUM_COMPTYPES 2
+#define _AF_AIFFC_NUM_COMPTYPES 3
 extern const int _af_aiffc_compression_types[_AF_AIFFC_NUM_COMPTYPES];
 
 class AIFFFile : public _AFfilehandle
@@ -78,6 +78,9 @@ private:
 	status writeFVER();
 	status writeAESD();
 	status writeMiscellaneous();
+
+	void initCompressionParams();
+	void initIMACompressionParams();
 };
 
 #endif

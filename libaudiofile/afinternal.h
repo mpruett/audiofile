@@ -106,7 +106,10 @@ enum
 enum
 {
 	_AF_MS_ADPCM_NUM_COEFFICIENTS = 800,	/* type: long */
-	_AF_MS_ADPCM_COEFFICIENTS = 801		/* type: array of int16_t[2] */
+	_AF_MS_ADPCM_COEFFICIENTS = 801,		/* type: array of int16_t[2] */
+	_AF_IMA_ADPCM_TYPE = 810,
+	_AF_IMA_ADPCM_TYPE_WAVE = 1,
+	_AF_IMA_ADPCM_TYPE_QT = 2
 };
 
 /* NeXT/Sun sampling rate */

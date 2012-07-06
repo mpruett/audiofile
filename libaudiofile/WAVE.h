@@ -1,7 +1,8 @@
 /*
 	Audio File Library
-	Copyright (C) 1998, 2011, Michael Pruett <michael@68k.org>
-	Copyright (C) 2000, Silicon Graphics, Inc.
+	Copyright (C) 1998-2000, 2003, 2010-2012, Michael Pruett <michael@68k.org>
+	Copyright (C) 2002-2003, Davy Durham
+	Copyright (C) 2000-2001, Silicon Graphics, Inc.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -34,7 +35,7 @@
 
 #define _AF_WAVE_NUM_INSTPARAMS 7
 extern const InstParamInfo _af_wave_inst_params[_AF_WAVE_NUM_INSTPARAMS];
-#define _AF_WAVE_NUM_COMPTYPES 2
+#define _AF_WAVE_NUM_COMPTYPES 3
 extern const int _af_wave_compression_types[_AF_WAVE_NUM_COMPTYPES];
 
 struct UUID;
@@ -92,6 +93,9 @@ private:
 
 	bool readUUID(UUID *g);
 	bool writeUUID(const UUID *g);
+
+	void initCompressionParams();
+	void initIMACompressionParams();
 };
 
 #endif

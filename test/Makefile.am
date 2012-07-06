@@ -1,6 +1,7 @@
 INCLUDES = -I$(top_srcdir)/libaudiofile -I$(top_srcdir)
 
 TESTS = \
+	ADPCM \
 	AES \
 	ChannelMatrix \
 	Error \
@@ -49,6 +50,9 @@ LDADD = $(LIBAUDIOFILE)
 DEPENDENCIES = $(LIBAUDIOFILE)
 
 LIBGTEST = ../gtest/libgtest.la
+
+ADPCM_SOURCES = ADPCM.cpp
+ADPCM_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 AES_SOURCES = AES.cpp
 AES_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)

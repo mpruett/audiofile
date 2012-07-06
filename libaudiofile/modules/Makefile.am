@@ -5,7 +5,7 @@ INCLUDES = -I$(srcdir)/..
 libmodules_la_SOURCES = \
 	PCM.cpp PCM.h \
 	MSADPCM.cpp MSADPCM.h \
-	IMA.cpp IMA.h adpcm.c adpcm.h \
+	IMA.cpp IMA.h \
 	G711.cpp G711.h \
 	ModuleState.cpp ModuleState.h \
 	Module.cpp Module.h \

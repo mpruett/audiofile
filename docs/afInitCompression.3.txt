@@ -31,8 +31,10 @@ the specified compression.
 
 The following compression types are currently supported:
 
+`AF_COMPRESSION_NONE`:: no compression
 `AF_COMPRESSION_G711_ULAW`:: CCITT G.711 mu-law encoding
 `AF_COMPRESSION_G711_ALAW`:: CCITT G.711 A-law encoding
+`AF_COMPRESSION_IMA`:: IMA ADPCM encoding
 
 ERRORS
 ------

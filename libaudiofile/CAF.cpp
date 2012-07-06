@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 2011, Michael Pruett <michael@68k.org>
+	Copyright (C) 2011-2012, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -36,7 +36,8 @@
 const int _af_caf_compression_types[_AF_CAF_NUM_COMPTYPES] =
 {
 	AF_COMPRESSION_G711_ULAW,
-	AF_COMPRESSION_G711_ALAW
+	AF_COMPRESSION_G711_ALAW,
+	AF_COMPRESSION_IMA
 };
 
 enum
@@ -132,6 +133,8 @@ status CAFFile::writeInit(AFfilesetup setup)
 	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
 		return AF_FAIL;
 
+	initCompressionParams();
+
 	Tag caff("caff");
 	if (!writeTag(&caff)) return AF_FAIL;
 	const uint8_t versionAndFlags[4] = { 0, 1, 0, 0 };
@@ -180,12 +183,20 @@ AFfilesetup CAFFile::completeSetup(AFfilesetup setup)
 
 	if (track->f.compressionType != AF_COMPRESSION_NONE &&
 		track->f.compressionType != AF_COMPRESSION_G711_ULAW &&
-		track->f.compressionType != AF_COMPRESSION_G711_ALAW)
+		track->f.compressionType != AF_COMPRESSION_G711_ALAW &&
+		track->f.compressionType != AF_COMPRESSION_IMA)
 	{
 		_af_error(AF_BAD_COMPTYPE,
 			"compression format %d not supported in CAF file",
 			track->f.compressionType);
 		return AF_NULL_FILESETUP;
+	}
+
+	if (track->f.compressionType == AF_COMPRESSION_IMA)
+	{
+		track->f.sampleWidth = 16;
+		track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
+		track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 	}
 
 	return _af_filesetup_copy(setup, &caf_default_filesetup, true);
@@ -255,6 +266,14 @@ status CAFFile::parseDescription(const Tag &, int64_t)
 		_af_set_sample_format(&track->f, AF_SAMPFMT_TWOSCOMP, 16);
 		return AF_SUCCEED;
 	}
+	else if (formatID == "ima4")
+	{
+		track->f.compressionType = AF_COMPRESSION_IMA;
+		track->f.byteOrder = _AF_BYTEORDER_NATIVE;
+		_af_set_sample_format(&track->f, AF_SAMPFMT_TWOSCOMP, 16);
+		initIMACompressionParams();
+		return AF_SUCCEED;
+	}
 	else
 	{
 		_af_error(AF_BAD_NOT_IMPLEMENTED, "Compression type %s not supported",
@@ -275,13 +294,21 @@ status CAFFile::parseData(const Tag &tag, int64_t length)
 	else
 		track->data_size = length - 4;
 	track->fpos_first_frame = fh->tell();
+
 	int bytesPerFrame = track->f.bytesPerFrame(false);
 	if (track->f.compressionType == AF_COMPRESSION_G711_ULAW ||
 		track->f.compressionType == AF_COMPRESSION_G711_ALAW)
 	{
 		bytesPerFrame = track->f.channelCount;
 	}
-	track->totalfframes = track->data_size / bytesPerFrame;
+
+	if (track->f.compressionType == AF_COMPRESSION_NONE ||
+		track->f.compressionType == AF_COMPRESSION_G711_ULAW ||
+		track->f.compressionType == AF_COMPRESSION_G711_ALAW)
+		track->totalfframes = track->data_size / bytesPerFrame;
+	else if (track->f.compressionType == AF_COMPRESSION_IMA)
+		track->totalfframes = (track->data_size / m_bytesPerPacket) * m_framesPerPacket;
+
 	return AF_SUCCEED;
 }
 
@@ -316,6 +343,14 @@ status CAFFile::writeDescription()
 		formatFlags = 0;
 		bytesPerPacket = channelsPerFrame;
 		bitsPerChannel = 8;
+	}
+	else if (track->f.compressionType == AF_COMPRESSION_IMA)
+	{
+		formatID = "ima4";
+		formatFlags = 0;
+		bytesPerPacket = track->f.bytesPerPacket;
+		framesPerPacket = track->f.framesPerPacket;
+		bitsPerChannel = 16;
 	}
 
 	if (!writeTag(&desc) ||
@@ -353,4 +388,27 @@ status CAFFile::writeData(bool update)
 	if (track->fpos_first_frame == 0)
 		track->fpos_first_frame = fh->tell();
 	return AF_SUCCEED;
+}
+
+void CAFFile::initCompressionParams()
+{
+	Track *track = getTrack();
+	if (track->f.compressionType == AF_COMPRESSION_IMA)
+		initIMACompressionParams();
+}
+
+void CAFFile::initIMACompressionParams()
+{
+	Track *track = getTrack();
+
+	track->f.bytesPerPacket = 34 * track->f.channelCount;
+	track->f.framesPerPacket = 64;
+
+	AUpvlist pv = AUpvnew(1);
+	AUpvsetparam(pv, 0, _AF_IMA_ADPCM_TYPE);
+	AUpvsetvaltype(pv, 0, AU_PVTYPE_LONG);
+	long l = _AF_IMA_ADPCM_TYPE_QT;
+	AUpvsetval(pv, 0, &l);
+
+	track->f.compressionParams = pv;
 }

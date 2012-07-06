@@ -1,7 +1,8 @@
 /*
 	Audio File Library
-	Copyright (C) 1998-2000, Michael Pruett <michael@68k.org>
-	Copyright (C) 2000-2001, Silicon Graphics, Inc.
+	Copyright (C) 1998-2000, 2003-2004, 2010-2012, Michael Pruett <michael@68k.org>
+	Copyright (C) 2002-2003, Davy Durham
+	Copyright (C) 2000-2002, Silicon Graphics, Inc.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -96,7 +97,8 @@ enum
 const int _af_wave_compression_types[_AF_WAVE_NUM_COMPTYPES] =
 {
 	AF_COMPRESSION_G711_ULAW,
-	AF_COMPRESSION_G711_ALAW
+	AF_COMPRESSION_G711_ALAW,
+	AF_COMPRESSION_IMA
 };
 
 const InstParamInfo _af_wave_inst_params[_AF_WAVE_NUM_INSTPARAMS] =
@@ -332,6 +334,8 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
 			track->f.compressionType = AF_COMPRESSION_IMA;
 			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
+
+			initIMACompressionParams();
 
 			track->f.framesPerPacket = samplesPerBlock;
 			track->f.bytesPerPacket = blockAlign;
@@ -938,11 +942,13 @@ AFfilesetup WAVEFile::completeSetup(AFfilesetup setup)
 
 	if (track->f.compressionType != AF_COMPRESSION_NONE &&
 		track->f.compressionType != AF_COMPRESSION_G711_ULAW &&
-		track->f.compressionType != AF_COMPRESSION_G711_ALAW)
+		track->f.compressionType != AF_COMPRESSION_G711_ALAW &&
+		track->f.compressionType != AF_COMPRESSION_IMA)
 	{
 		_af_error(AF_BAD_NOT_IMPLEMENTED, "compression format not supported in WAVE format");
 		return AF_NULL_FILESETUP;
 	}
+
 
 	if (track->byteOrderSet &&
 		track->f.byteOrder != AF_BYTEORDER_LITTLEENDIAN &&
@@ -1113,6 +1119,13 @@ status WAVEFile::writeFormat()
 			bitsPerSample = 8;
 			break;
 
+		case AF_COMPRESSION_IMA:
+			chunkSize = 20;
+			formatTag = WAVE_FORMAT_DVI_ADPCM;
+			blockAlign = track->f.bytesPerPacket;
+			bitsPerSample = 4;
+			break;
+
 		default:
 			_af_error(AF_BAD_COMPTYPE, "bad compression type");
 			return AF_FAIL;
@@ -1129,9 +1142,11 @@ status WAVEFile::writeFormat()
 
 	averageBytesPerSecond =
 		track->f.sampleRate * _af_format_frame_size(&track->f, false);
+	if (track->f.compressionType == AF_COMPRESSION_IMA)
+		averageBytesPerSecond = track->f.sampleRate * track->f.bytesPerPacket /
+			track->f.framesPerPacket;
 	writeU32(&averageBytesPerSecond);
 
-	blockAlign = _af_format_frame_size(&track->f, false);
 	writeU16(&blockAlign);
 
 	writeU16(&bitsPerSample);
@@ -1141,6 +1156,13 @@ status WAVEFile::writeFormat()
 	{
 		uint16_t zero = 0;
 		writeU16(&zero);
+	}
+	else if (track->f.compressionType == AF_COMPRESSION_IMA)
+	{
+		uint16_t extraByteCount = 2;
+		writeU16(&extraByteCount);
+		uint16_t samplesPerBlock = track->f.framesPerPacket;
+		writeU16(&samplesPerBlock);
 	}
 
 	return AF_SUCCEED;
@@ -1200,20 +1222,15 @@ status WAVEFile::update()
 	{
 		uint32_t dataLength, fileLength;
 
-		/* Update the frame count chunk if present. */
+		// Update the frame count chunk if present.
 		writeFrameCount();
 
-		/* Update the length of the data chunk. */
+		// Update the length of the data chunk.
 		fh->seek(dataSizeOffset, File::SeekFromBeginning);
-
-		/*
-			We call _af_format_frame_size to calculate the
-			frame size of normal PCM data or compressed data.
-		*/
 		dataLength = (uint32_t) track->data_size;
 		writeU32(&dataLength);
 
-		/* Update the length of the RIFF chunk. */
+		// Update the length of the RIFF chunk.
 		fileLength = (uint32_t) fh->length();
 		fileLength -= 8;
 
@@ -1228,7 +1245,7 @@ status WAVEFile::update()
 	*/
 	writeMiscellaneous();
 
-	/* Write the new positions; the size of the data will be unchanged. */
+	// Write the new positions; the size of the data will be unchanged.
 	writeCues();
 
 	return AF_SUCCEED;
@@ -1481,6 +1498,8 @@ status WAVEFile::writeInit(AFfilesetup setup)
 	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
 		return AF_FAIL;
 
+	initCompressionParams();
+
 	fh->seek(0, File::SeekFromBeginning);
 	fh->write("RIFF", 4);
 	fh->write(&zero, 4);
@@ -1503,4 +1522,27 @@ bool WAVEFile::readUUID(UUID *u)
 bool WAVEFile::writeUUID(const UUID *u)
 {
 	return fh->write(u->data, 16) == 16;
+}
+
+void WAVEFile::initCompressionParams()
+{
+	Track *track = getTrack();
+	if (track->f.compressionType == AF_COMPRESSION_IMA)
+		initIMACompressionParams();
+}
+
+void WAVEFile::initIMACompressionParams()
+{
+	Track *track = getTrack();
+
+	track->f.framesPerPacket = 505;
+	track->f.bytesPerPacket = 256 * track->f.channelCount;
+
+	AUpvlist pv = AUpvnew(1);
+	AUpvsetparam(pv, 0, _AF_IMA_ADPCM_TYPE);
+	AUpvsetvaltype(pv, 0, AU_PVTYPE_LONG);
+	long l = _AF_IMA_ADPCM_TYPE_WAVE;
+	AUpvsetval(pv, 0, &l);
+
+	track->f.compressionParams = pv;
 }

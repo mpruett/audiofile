@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 1998-2000, 2003, Michael Pruett <michael@68k.org>
+	Copyright (C) 1998-2000, 2003-2004, 2010-2012, Michael Pruett <michael@68k.org>
 	Copyright (C) 2000-2001, Silicon Graphics, Inc.
 
 	This library is free software; you can redistribute it and/or
@@ -61,7 +61,8 @@ const InstParamInfo _af_aiff_inst_params[_AF_AIFF_NUM_INSTPARAMS] =
 const int _af_aiffc_compression_types[_AF_AIFFC_NUM_COMPTYPES] =
 {
 	AF_COMPRESSION_G711_ULAW,
-	AF_COMPRESSION_G711_ALAW
+	AF_COMPRESSION_G711_ALAW,
+	AF_COMPRESSION_IMA
 };
 
 static _AFfilesetup aiff_default_filesetup =
@@ -423,6 +424,17 @@ status AIFFFile::parseCOMM(const Tag &type, size_t size)
 			track->f.compressionType = AF_COMPRESSION_NONE;
 			track->f.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
 		}
+		else if (compressionID == "ima4")
+		{
+			track->f.sampleWidth = 16;
+			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
+			track->f.compressionType = AF_COMPRESSION_IMA;
+			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
+
+			initIMACompressionParams();
+
+			track->totalfframes *= 64;
+		}
 		else
 		{
 			_af_error(AF_BAD_NOT_IMPLEMENTED, "AIFF-C compression type '%s' not currently supported",
@@ -450,10 +462,6 @@ status AIFFFile::parseSSND(const Tag &type, size_t size)
 	readU32(&offset);
 	readU32(&blockSize);
 
-	/*
-		This seems like a reasonable way to calculate the number of
-		bytes in an SSND chunk.
-	*/
 	track->data_size = size - 8 - offset;
 
 #ifdef DEBUG
@@ -466,8 +474,6 @@ status AIFFFile::parseSSND(const Tag &type, size_t size)
 #ifdef DEBUG
 	printf("data start: %d\n", track->fpos_first_frame);
 #endif
-
-	/* Sound data follows. */
 
 	return AF_SUCCEED;
 }
@@ -664,7 +670,14 @@ AFfilesetup AIFFFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	/* XXXmpruett handle compression here */
+	if (track->f.compressionType != AF_COMPRESSION_NONE &&
+		track->f.compressionType != AF_COMPRESSION_G711_ULAW &&
+		track->f.compressionType != AF_COMPRESSION_G711_ALAW &&
+		track->f.compressionType != AF_COMPRESSION_IMA)
+	{
+		_af_error(AF_BAD_NOT_IMPLEMENTED, "compression format not supported in AIFF-C");
+		return AF_NULL_FILESETUP;
+	}
 
 	if (track->byteOrderSet &&
 		track->f.byteOrder != AF_BYTEORDER_BIGENDIAN &&
@@ -774,6 +787,8 @@ status AIFFFile::writeInit(AFfilesetup setup)
 
 	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
 		return AF_FAIL;
+
+	initCompressionParams();
 
 	fh->write("FORM", 4);
 	writeU32(&fileSize);
@@ -885,6 +900,11 @@ status AIFFFile::writeCOMM()
 			compressionTag = "alaw";
 			strcpy(compressionName, "CCITT G.711 A-law");
 		}
+		else if (track->f.compressionType == AF_COMPRESSION_IMA)
+		{
+			compressionTag = "ima4";
+			strcpy(compressionName, "IMA 4:1 compression");
+		}
 	}
 
 	fh->write("COMM", 4);
@@ -909,6 +929,8 @@ status AIFFFile::writeCOMM()
 
 	/* number of sample frames, 4 bytes */
 	uint32_t frameCount = track->totalfframes;
+	if (track->f.compressionType == AF_COMPRESSION_IMA)
+		frameCount = track->totalfframes / track->f.framesPerPacket;
 	writeU32(&frameCount);
 
 	/* sample size, 2 bytes */
@@ -1181,4 +1203,27 @@ status AIFFFile::writeMiscellaneous()
 	}
 
 	return AF_SUCCEED;
+}
+
+void AIFFFile::initCompressionParams()
+{
+	Track *track = getTrack();
+	if (track->f.compressionType == AF_COMPRESSION_IMA)
+		initIMACompressionParams();
+}
+
+void AIFFFile::initIMACompressionParams()
+{
+	Track *track = getTrack();
+
+	track->f.bytesPerPacket = 34 * track->f.channelCount;
+	track->f.framesPerPacket = 64;
+
+	AUpvlist pv = AUpvnew(1);
+	AUpvsetparam(pv, 0, _AF_IMA_ADPCM_TYPE);
+	AUpvsetvaltype(pv, 0, AU_PVTYPE_LONG);
+	long l = _AF_IMA_ADPCM_TYPE_QT;
+	AUpvsetval(pv, 0, &l);
+
+	track->f.compressionParams = pv;
 }
