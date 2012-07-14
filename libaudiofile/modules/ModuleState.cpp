@@ -52,8 +52,8 @@ status ModuleState::initFileModule(AFfilehandle file, Track *track)
 	int compressionIndex = _af_compression_index_from_id(track->f.compressionType);
 	const _CompressionUnit *unit = &_af_compression[compressionIndex];
 
-	if (file->seekok &&
-		file->fh->seek(track->fpos_first_frame, File::SeekFromBeginning) !=
+	if (file->m_seekok &&
+		file->m_fh->seek(track->fpos_first_frame, File::SeekFromBeginning) !=
 			track->fpos_first_frame)
 	{
 		_af_error(AF_BAD_LSEEK, "unable to position file handle at beginning of sound data");
@@ -61,12 +61,12 @@ status ModuleState::initFileModule(AFfilehandle file, Track *track)
 	}
 
 	AFframecount chunkFrames;
-	if (file->access == _AF_READ_ACCESS)
-		m_fileModule = unit->initdecompress(track, file->fh, file->seekok,
-			file->fileFormat == AF_FILE_RAWDATA, &chunkFrames);
+	if (file->m_access == _AF_READ_ACCESS)
+		m_fileModule = unit->initdecompress(track, file->m_fh, file->m_seekok,
+			file->m_fileFormat == AF_FILE_RAWDATA, &chunkFrames);
 	else
-		m_fileModule = unit->initcompress(track, file->fh, file->seekok,
-			file->fileFormat == AF_FILE_RAWDATA, &chunkFrames);
+		m_fileModule = unit->initcompress(track, file->m_fh, file->m_seekok,
+			file->m_fileFormat == AF_FILE_RAWDATA, &chunkFrames);
 
 	if (unit->needsRebuffer)
 	{
@@ -74,7 +74,7 @@ status ModuleState::initFileModule(AFfilehandle file, Track *track)
 		assert(unit->nativeSampleWidth == 16);
 
 		RebufferModule::Direction direction =
-			file->access == _AF_WRITE_ACCESS ?
+			file->m_access == _AF_WRITE_ACCESS ?
 				RebufferModule::VariableToFixed : RebufferModule::FixedToVariable;
 		m_fileRebufferModule = new RebufferModule(direction,
 			sizeof (int16_t) * track->f.channelCount, chunkFrames,
@@ -97,7 +97,7 @@ status ModuleState::init(AFfilehandle file, Track *track)
 status ModuleState::setup(AFfilehandle file, Track *track)
 {
 	AFframecount fframepos = llrint(track->nextvframe * track->f.sampleRate / track->v.sampleRate);
-	bool isReading = file->access == _AF_READ_ACCESS;
+	bool isReading = file->m_access == _AF_READ_ACCESS;
 
 	if (!track->v.isUncompressed())
 	{
@@ -282,7 +282,7 @@ static bool isTrivialIntClip(const AudioFormat &format, FormatCode code)
 
 status ModuleState::arrange(AFfilehandle file, Track *track)
 {
-	bool isReading = file->access == _AF_READ_ACCESS;
+	bool isReading = file->m_access == _AF_READ_ACCESS;
 	AudioFormat in, out;
 	FormatCode infc, outfc;
 	if (isReading)

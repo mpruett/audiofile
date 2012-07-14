@@ -154,7 +154,7 @@ AFfilesetup VOCFile::completeSetup(AFfilesetup setup)
 
 status VOCFile::readInit(AFfilesetup)
 {
-	fh->seek(20, File::SeekFromBeginning);
+	m_fh->seek(20, File::SeekFromBeginning);
 
 	uint16_t dataOffset, version, checksum;
 	readU16(&dataOffset);
@@ -162,14 +162,12 @@ status VOCFile::readInit(AFfilesetup)
 	readU16(&checksum);
 
 	Track *track = allocateTrack();
-	tracks = track;
-	trackCount = 1;
 
 	bool hasExtendedInfo = false;
 	bool foundSoundData = false;
 
-	off_t position = fh->tell();
-	off_t fileLength = fh->length();
+	off_t position = m_fh->tell();
+	off_t fileLength = m_fh->length();
 	while (position < fileLength)
 	{
 		uint32_t blockHeader;
@@ -218,8 +216,8 @@ status VOCFile::readInit(AFfilesetup)
 				track->f.sampleRate = 1000000 / (256 - frequencyDivisor);
 			}
 
-			track->fpos_first_frame = fh->tell();
-			track->data_size = fh->length() - 1 - track->fpos_first_frame;
+			track->fpos_first_frame = m_fh->tell();
+			track->data_size = m_fh->length() - 1 - track->fpos_first_frame;
 			track->totalfframes = track->data_size /
 				track->f.bytesPerFrame(false);
 		}
@@ -265,7 +263,7 @@ status VOCFile::readInit(AFfilesetup)
 			readU16(&format);
 			readU32(&pad);
 
-			track->fpos_first_frame = fh->tell();
+			track->fpos_first_frame = m_fh->tell();
 			track->data_size = blockSize - 12;
 			uint32_t bytesPerSample = (bitsPerSample + 7) / 8;
 			track->totalfframes = track->data_size /
@@ -308,7 +306,7 @@ status VOCFile::readInit(AFfilesetup)
 
 		position += 4 + blockSize;
 
-		fh->seek(position, File::SeekFromBeginning);
+		m_fh->seek(position, File::SeekFromBeginning);
 	}
 
 	return AF_SUCCEED;
@@ -319,7 +317,7 @@ status VOCFile::writeInit(AFfilesetup setup)
 	if (initFromSetup(setup) == AF_FAIL)
 		return AF_FAIL;
 
-	fh->write(kVOCMagic, kVOCMagicLength);
+	m_fh->write(kVOCMagic, kVOCMagicLength);
 	uint16_t dataOffset = 0x001a;
 	uint16_t version = 0x0114;
 	uint16_t checksum = 0x1234 + ~version;
@@ -340,9 +338,9 @@ status VOCFile::update()
 status VOCFile::writeSoundData()
 {
 	if (m_soundDataOffset == -1)
-		m_soundDataOffset = fh->tell();
+		m_soundDataOffset = m_fh->tell();
 	else
-		fh->seek(m_soundDataOffset, File::SeekFromBeginning);
+		m_fh->seek(m_soundDataOffset, File::SeekFromBeginning);
 
 	Track *track = getTrack();
 
@@ -385,7 +383,7 @@ status VOCFile::writeSoundData()
 		return AF_FAIL;
 
 	if (track->fpos_first_frame == 0)
-		track->fpos_first_frame = fh->tell();
+		track->fpos_first_frame = m_fh->tell();
 
 	return AF_SUCCEED;
 }
@@ -393,7 +391,7 @@ status VOCFile::writeSoundData()
 status VOCFile::writeTerminator()
 {
 	Track *track = getTrack();
-	fh->seek(track->fpos_first_frame + track->data_size, File::SeekFromBeginning);
+	m_fh->seek(track->fpos_first_frame + track->data_size, File::SeekFromBeginning);
 	uint8_t terminator = kVOCTerminator;
 	if (!writeU8(&terminator))
 		return AF_FAIL;

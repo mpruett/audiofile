@@ -34,25 +34,25 @@ struct _AFfilehandle
 {
 	static _AFfilehandle *create(int fileFormat);
 
-	int valid;	// _AF_VALID_FILEHANDLE
-	int access;	// _AF_READ_ACCESS or _AF_WRITE_ACCESS
+	int m_valid;	// _AF_VALID_FILEHANDLE
+	int m_access;	// _AF_READ_ACCESS or _AF_WRITE_ACCESS
 
-	bool seekok;
+	bool m_seekok;
 
-	File *fh;
+	File *m_fh;
 
-	char *fileName;
+	char *m_fileName;
 
-	int fileFormat;
+	int m_fileFormat;
 
-	int trackCount;
-	Track *tracks;
+	int m_trackCount;
+	Track *m_tracks;
 
-	int instrumentCount;
-	Instrument *instruments;
+	int m_instrumentCount;
+	Instrument *m_instruments;
 
-	int miscellaneousCount;
-	Miscellaneous *miscellaneous;
+	int m_miscellaneousCount;
+	Miscellaneous *m_miscellaneous;
 
 private:
 	int m_formatByteOrder;

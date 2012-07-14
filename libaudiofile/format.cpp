@@ -294,7 +294,7 @@ int afGetFileFormat (AFfilehandle file, int *version)
 	if (version != NULL)
 		*version = file->getVersion();
 
-	return file->fileFormat;
+	return file->m_fileFormat;
 }
 
 int afSetVirtualChannels (AFfilehandle file, int trackid, int channelCount)

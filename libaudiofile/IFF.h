@@ -42,9 +42,9 @@ public:
 	status update();
 
 private:
-	AFfileoffset	miscellaneousPosition;
-	AFfileoffset	VHDR_offset;
-	AFfileoffset	BODY_offset;
+	AFfileoffset m_miscellaneousPosition;
+	AFfileoffset m_VHDR_offset;
+	AFfileoffset m_BODY_offset;
 
 	status parseMiscellaneous(const Tag &type, size_t size);
 	status parseVHDR(const Tag &type, size_t size);

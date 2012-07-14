@@ -56,17 +56,10 @@ public:
 	bool isInstrumentParameterValid(AUpvlist, int);
 
 private:
-	AFfileoffset	factOffset;	/* start of fact (frame count) chunk */
-	AFfileoffset	miscellaneousStartOffset;
-	AFfileoffset	totalMiscellaneousSize;
-	AFfileoffset	markOffset;
-	AFfileoffset	dataSizeOffset;
-
-	/*
-		The following information is specified in the format
-		chunk and is for use with compressed data formats.
-	*/
-	uint32_t	blockAlign, samplesPerBlock;
+	AFfileoffset m_factOffset;	// start of fact (frame count) chunk
+	AFfileoffset m_miscellaneousOffset;
+	AFfileoffset m_markOffset;
+	AFfileoffset m_dataSizeOffset;
 
 	/*
 		The index into the coefficient array is of type

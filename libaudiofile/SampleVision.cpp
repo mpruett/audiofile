@@ -118,16 +118,16 @@ AFfilesetup SampleVisionFile::completeSetup(AFfilesetup setup)
 
 status SampleVisionFile::readInit(AFfilesetup)
 {
-	fh->seek(0, File::SeekFromBeginning);
+	m_fh->seek(0, File::SeekFromBeginning);
 
 	char magic[kSMPMagicLength];
-	if (fh->read(magic, kSMPMagicLength) != (ssize_t) kSMPMagicLength)
+	if (m_fh->read(magic, kSMPMagicLength) != (ssize_t) kSMPMagicLength)
 		return AF_FAIL;
 	if (strncmp(magic, kSMPMagic, kSMPMagicLength) != 0)
 		return AF_FAIL;
 
 	char version[kSMPVersionLength];
-	if (fh->read(version, kSMPVersionLength) != (ssize_t) kSMPVersionLength)
+	if (m_fh->read(version, kSMPVersionLength) != (ssize_t) kSMPVersionLength)
 		return AF_FAIL;
 	if (strncmp(version, kSMPVersion, kSMPVersionLength) != 0)
 		return AF_FAIL;
@@ -135,14 +135,14 @@ status SampleVisionFile::readInit(AFfilesetup)
 	Track *track = allocateTrack();
 
 	char name[kSMPNameLength + 1];
-	fh->read(name, kSMPNameLength);
+	m_fh->read(name, kSMPNameLength);
 	name[kSMPNameLength] = '\0';
 	trimTrailingSpaces(name);
 	if (strlen(name) > 0)
 		addMiscellaneous(AF_MISC_NAME, name);
 
 	char comment[kSMPCommentLength + 1];
-	fh->read(comment, kSMPCommentLength);
+	m_fh->read(comment, kSMPCommentLength);
 	comment[kSMPCommentLength] = '\0';
 	trimTrailingSpaces(comment);
 	if (strlen(comment) > 0)
@@ -151,10 +151,10 @@ status SampleVisionFile::readInit(AFfilesetup)
 	uint32_t frameCount;
 	readU32(&frameCount);
 	track->totalfframes = frameCount;
-	track->fpos_first_frame = fh->tell();
+	track->fpos_first_frame = m_fh->tell();
 	track->data_size = 2 * frameCount;
 
-	fh->seek(track->data_size, File::SeekFromCurrent);
+	m_fh->seek(track->data_size, File::SeekFromCurrent);
 
 	uint16_t reserved;
 	readU16(&reserved);
@@ -201,7 +201,7 @@ status SampleVisionFile::parseMarkers()
 	for (int i=0; i<8; i++)
 	{
 		char name[kSMPMarkerNameLength + 1];
-		fh->read(name, kSMPMarkerNameLength);
+		m_fh->read(name, kSMPMarkerNameLength);
 		name[kSMPMarkerNameLength] = '\0';
 		uint32_t position;
 		readU32(&position);
@@ -211,12 +211,12 @@ status SampleVisionFile::parseMarkers()
 
 void SampleVisionFile::addMiscellaneous(int type, const char *data)
 {
-	miscellaneousCount++;
-	miscellaneous = (Miscellaneous *) _af_realloc(miscellaneous,
-		miscellaneousCount * sizeof (Miscellaneous));
+	m_miscellaneousCount++;
+	m_miscellaneous = (Miscellaneous *) _af_realloc(m_miscellaneous,
+		m_miscellaneousCount * sizeof (Miscellaneous));
 
-	Miscellaneous &m = miscellaneous[miscellaneousCount - 1];
-	m.id = miscellaneousCount;
+	Miscellaneous &m = m_miscellaneous[m_miscellaneousCount - 1];
+	m.id = m_miscellaneousCount;
 	m.type = type;
 	m.size = strlen(data);
 	m.position = 0;
@@ -229,29 +229,29 @@ status SampleVisionFile::writeInit(AFfilesetup setup)
 	if (initFromSetup(setup) == AF_FAIL)
 		return AF_FAIL;
 
-	fh->write(kSMPMagic, kSMPMagicLength);
-	fh->write(kSMPVersion, kSMPVersionLength);
+	m_fh->write(kSMPMagic, kSMPMagicLength);
+	m_fh->write(kSMPVersion, kSMPVersionLength);
 
 	char name[kSMPNameLength + 1];
 	char comment[kSMPCommentLength + 1];
 	memset(name, ' ', kSMPNameLength);
 	memset(comment, ' ', kSMPCommentLength);
-	fh->write(name, kSMPNameLength);
-	fh->write(comment, kSMPCommentLength);
+	m_fh->write(name, kSMPNameLength);
+	m_fh->write(comment, kSMPCommentLength);
 
 	uint32_t frameCount = 0;
-	m_frameCountOffset = fh->tell();
+	m_frameCountOffset = m_fh->tell();
 	writeU32(&frameCount);
 
 	Track *track = getTrack();
-	track->fpos_first_frame = fh->tell();
+	track->fpos_first_frame = m_fh->tell();
 
 	return AF_SUCCEED;
 }
 
 status SampleVisionFile::update()
 {
-	fh->seek(m_frameCountOffset, File::SeekFromBeginning);
+	m_fh->seek(m_frameCountOffset, File::SeekFromBeginning);
 	Track *track = getTrack();
 	uint32_t frameCount = track->totalfframes;
 	writeU32(&frameCount);
@@ -263,7 +263,7 @@ status SampleVisionFile::writeTrailer()
 {
 	Track *track = getTrack();
 
-	fh->seek(track->fpos_after_data, File::SeekFromBeginning);
+	m_fh->seek(track->fpos_after_data, File::SeekFromBeginning);
 
 	uint16_t reserved = 0;
 	writeU16(&reserved);
@@ -305,7 +305,7 @@ status SampleVisionFile::writeMarkers()
 		char name[kSMPMarkerNameLength + 1];
 		memset(name, ' ', kSMPMarkerNameLength);
 		name[kSMPMarkerNameLength] = '\0';
-		fh->write(name, kSMPMarkerNameLength);
+		m_fh->write(name, kSMPMarkerNameLength);
 		uint32_t position = kSMPInvalidSamplePosition;
 		writeU32(&position);
 	}

@@ -76,9 +76,9 @@ IFFFile::IFFFile()
 {
 	setFormatByteOrder(AF_BYTEORDER_BIGENDIAN);
 
-	miscellaneousPosition = 0;
-	VHDR_offset = 0;
-	BODY_offset = 0;
+	m_miscellaneousPosition = 0;
+	m_VHDR_offset = 0;
+	m_BODY_offset = 0;
 }
 
 /*
@@ -96,9 +96,9 @@ status IFFFile::parseMiscellaneous(const Tag &type, size_t size)
 	if (size == 0)
 		return AF_FAIL;
 
-	miscellaneousCount++;
-	miscellaneous = (Miscellaneous *) _af_realloc(miscellaneous,
-		miscellaneousCount * sizeof (Miscellaneous));
+	m_miscellaneousCount++;
+	m_miscellaneous = (Miscellaneous *) _af_realloc(m_miscellaneous,
+		m_miscellaneousCount * sizeof (Miscellaneous));
 
 	if (type == "NAME")
 		misctype = AF_MISC_NAME;
@@ -109,12 +109,12 @@ status IFFFile::parseMiscellaneous(const Tag &type, size_t size)
 	else if (type == "ANNO")
 		misctype = AF_MISC_ANNO;
 
-	miscellaneous[miscellaneousCount - 1].id = miscellaneousCount;
-	miscellaneous[miscellaneousCount - 1].type = misctype;
-	miscellaneous[miscellaneousCount - 1].size = size;
-	miscellaneous[miscellaneousCount - 1].position = 0;
-	miscellaneous[miscellaneousCount - 1].buffer = _af_malloc(size);
-	fh->read(miscellaneous[miscellaneousCount - 1].buffer, size);
+	m_miscellaneous[m_miscellaneousCount - 1].id = m_miscellaneousCount;
+	m_miscellaneous[m_miscellaneousCount - 1].type = misctype;
+	m_miscellaneous[m_miscellaneousCount - 1].size = size;
+	m_miscellaneous[m_miscellaneousCount - 1].position = 0;
+	m_miscellaneous[m_miscellaneousCount - 1].buffer = _af_malloc(size);
+	m_fh->read(m_miscellaneous[m_miscellaneousCount - 1].buffer, size);
 
 	return AF_SUCCEED;
 }
@@ -166,14 +166,14 @@ status IFFFile::parseBODY(const Tag &type, size_t size)
 	track->data_size = size;
 
 	/* Sound data follows. */
-	track->fpos_first_frame = fh->tell();
+	track->fpos_first_frame = m_fh->tell();
 
 	return AF_SUCCEED;
 }
 
 status IFFFile::readInit(AFfilesetup setup)
 {
-	fh->seek(0, File::SeekFromBeginning);
+	m_fh->seek(0, File::SeekFromBeginning);
 
 	Tag type;
 	uint32_t size;
@@ -232,7 +232,7 @@ status IFFFile::readInit(AFfilesetup setup)
 			index++;
 
 		/* Set the seek position to the beginning of the next chunk. */
-		fh->seek(index + 8, File::SeekFromBeginning);
+		m_fh->seek(index + 8, File::SeekFromBeginning);
 	}
 
 	/* The file has been successfully parsed. */
@@ -311,10 +311,10 @@ status IFFFile::writeInit(AFfilesetup setup)
 
 	uint32_t fileSize = 0;
 
-	fh->write("FORM", 4);
+	m_fh->write("FORM", 4);
 	writeU32(&fileSize);
 
-	fh->write("8SVX", 4);
+	m_fh->write("8SVX", 4);
 
 	writeVHDR();
 	writeMiscellaneous();
@@ -332,11 +332,11 @@ status IFFFile::update()
 	writeBODY();
 
 	/* Get the length of the file. */
-	length = fh->length();
+	length = m_fh->length();
 	length -= 8;
 
 	/* Set the length of the FORM chunk. */
-	fh->seek(4, File::SeekFromBeginning);
+	m_fh->seek(4, File::SeekFromBeginning);
 	writeU32(&length);
 
 	return AF_SUCCEED;
@@ -354,14 +354,14 @@ status IFFFile::writeVHDR()
 		If VHDR_offset hasn't been set yet, set it to the
 		current offset.
 	*/
-	if (VHDR_offset == 0)
-		VHDR_offset = fh->tell();
+	if (m_VHDR_offset == 0)
+		m_VHDR_offset = m_fh->tell();
 	else
-		fh->seek(VHDR_offset, File::SeekFromBeginning);
+		m_fh->seek(m_VHDR_offset, File::SeekFromBeginning);
 
 	Track *track = getTrack();
 
-	fh->write("VHDR", 4);
+	m_fh->write("VHDR", 4);
 
 	chunkSize = 20;
 	writeU32(&chunkSize);
@@ -398,12 +398,12 @@ status IFFFile::writeBODY()
 
 	Track *track = getTrack();
 
-	if (BODY_offset == 0)
-		BODY_offset = fh->tell();
+	if (m_BODY_offset == 0)
+		m_BODY_offset = m_fh->tell();
 	else
-		fh->seek(BODY_offset, File::SeekFromBeginning);
+		m_fh->seek(m_BODY_offset, File::SeekFromBeginning);
 
-	fh->write("BODY", 4);
+	m_fh->write("BODY", 4);
 
 	/*
 		IFF/8SVX supports only one channel, so the number of
@@ -414,13 +414,13 @@ status IFFFile::writeBODY()
 	writeU32(&chunkSize);
 
 	if (track->fpos_first_frame == 0)
-		track->fpos_first_frame = fh->tell();
+		track->fpos_first_frame = m_fh->tell();
 
 	/* Add a pad byte to the end of the chunk if the chunk size is odd. */
 	if ((chunkSize % 2) == 1)
 	{
 		uint8_t zero = 0;
-		fh->seek(BODY_offset + 8 + chunkSize, File::SeekFromBeginning);
+		m_fh->seek(m_BODY_offset + 8 + chunkSize, File::SeekFromBeginning);
 		writeU8(&zero);
 	}
 
@@ -433,14 +433,14 @@ status IFFFile::writeBODY()
 */
 status IFFFile::writeMiscellaneous()
 {
-	if (miscellaneousPosition == 0)
-		miscellaneousPosition = fh->tell();
+	if (m_miscellaneousPosition == 0)
+		m_miscellaneousPosition = m_fh->tell();
 	else
-		fh->seek(miscellaneousPosition, File::SeekFromBeginning);
+		m_fh->seek(m_miscellaneousPosition, File::SeekFromBeginning);
 
-	for (int i=0; i<miscellaneousCount; i++)
+	for (int i=0; i<m_miscellaneousCount; i++)
 	{
-		Miscellaneous *misc = &miscellaneous[i];
+		Miscellaneous *misc = &m_miscellaneous[i];
 		Tag chunkType;
 		uint32_t chunkSize;
 		uint8_t padByte = 0;
@@ -468,9 +468,9 @@ status IFFFile::writeMiscellaneous()
 			for now.
 		*/
 		if (misc->buffer != NULL)
-			fh->write(misc->buffer, misc->size);
+			m_fh->write(misc->buffer, misc->size);
 		else
-			fh->seek(misc->size, File::SeekFromCurrent);
+			m_fh->seek(misc->size, File::SeekFromCurrent);
 
 		if (misc->size % 2 != 0)
 			writeU8(&padByte);

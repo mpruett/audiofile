@@ -98,70 +98,70 @@ _AFfilehandle *_AFfilehandle::create(int fileFormat)
 
 _AFfilehandle::_AFfilehandle()
 {
-	valid = _AF_VALID_FILEHANDLE;
-	fh = NULL;
-	fileName = NULL;
-	trackCount = 0;
-	tracks = NULL;
-	instrumentCount = 0;
-	instruments = NULL;
-	miscellaneousCount = 0;
-	miscellaneous = NULL;
+	m_valid = _AF_VALID_FILEHANDLE;
+	m_fh = NULL;
+	m_fileName = NULL;
+	m_trackCount = 0;
+	m_tracks = NULL;
+	m_instrumentCount = 0;
+	m_instruments = NULL;
+	m_miscellaneousCount = 0;
+	m_miscellaneous = NULL;
 	m_formatByteOrder = 0;
 }
 
 _AFfilehandle::~_AFfilehandle()
 {
-	valid = 0;
+	m_valid = 0;
 
-	free(fileName);
+	free(m_fileName);
 
-	delete [] tracks;
-	tracks = NULL;
-	trackCount = 0;
+	delete [] m_tracks;
+	m_tracks = NULL;
+	m_trackCount = 0;
 
-	if (instruments)
+	if (m_instruments)
 	{
-		for (int i=0; i<instrumentCount; i++)
+		for (int i=0; i<m_instrumentCount; i++)
 		{
-			free(instruments[i].loops);
-			instruments[i].loops = NULL;
-			instruments[i].loopCount = 0;
+			free(m_instruments[i].loops);
+			m_instruments[i].loops = NULL;
+			m_instruments[i].loopCount = 0;
 
-			freeInstParams(instruments[i].values, fileFormat);
-			instruments[i].values = NULL;
+			freeInstParams(m_instruments[i].values, m_fileFormat);
+			m_instruments[i].values = NULL;
 		}
 
-		free(instruments);
-		instruments = NULL;
+		free(m_instruments);
+		m_instruments = NULL;
 	}
-	instrumentCount = 0;
+	m_instrumentCount = 0;
 
-	if (miscellaneous)
+	if (m_miscellaneous)
 	{
-		for (int i=0; i<miscellaneousCount; i++)
-			free(miscellaneous[i].buffer);
-		free(miscellaneous);
-		miscellaneous = NULL;
+		for (int i=0; i<m_miscellaneousCount; i++)
+			free(m_miscellaneous[i].buffer);
+		free(m_miscellaneous);
+		m_miscellaneous = NULL;
 	}
-	miscellaneousCount = 0;
+	m_miscellaneousCount = 0;
 }
 
 Track *_AFfilehandle::allocateTrack()
 {
-	assert(!trackCount);
-	assert(!tracks);
+	assert(!m_trackCount);
+	assert(!m_tracks);
 
-	trackCount = 1;
-	tracks = new Track[1];
-	return tracks;
+	m_trackCount = 1;
+	m_tracks = new Track[1];
+	return m_tracks;
 }
 
 Track *_AFfilehandle::getTrack(int trackID)
 {
-	for (int i=0; i<trackCount; i++)
-		if (tracks[i].id == trackID)
-			return &tracks[i];
+	for (int i=0; i<m_trackCount; i++)
+		if (m_tracks[i].id == trackID)
+			return &m_tracks[i];
 
 	_af_error(AF_BAD_TRACKID, "bad track id %d", trackID);
 
@@ -170,7 +170,7 @@ Track *_AFfilehandle::getTrack(int trackID)
 
 bool _AFfilehandle::checkCanRead()
 {
-	if (access != _AF_READ_ACCESS)
+	if (m_access != _AF_READ_ACCESS)
 	{
 		_af_error(AF_BAD_NOREADACC, "file not opened for read access");
 		return false;
@@ -181,7 +181,7 @@ bool _AFfilehandle::checkCanRead()
 
 bool _AFfilehandle::checkCanWrite()
 {
-	if (access != _AF_WRITE_ACCESS)
+	if (m_access != _AF_WRITE_ACCESS)
 	{
 		_af_error(AF_BAD_NOWRITEACC, "file not opened for write access");
 		return false;
@@ -192,9 +192,9 @@ bool _AFfilehandle::checkCanWrite()
 
 Instrument *_AFfilehandle::getInstrument(int instrumentID)
 {
-	for (int i = 0; i < instrumentCount; i++)
-		if (instruments[i].id == instrumentID)
-			return &instruments[i];
+	for (int i = 0; i < m_instrumentCount; i++)
+		if (m_instruments[i].id == instrumentID)
+			return &m_instruments[i];
 
 	_af_error(AF_BAD_INSTID, "invalid instrument id %d", instrumentID);
 	return NULL;
@@ -202,10 +202,10 @@ Instrument *_AFfilehandle::getInstrument(int instrumentID)
 
 Miscellaneous *_AFfilehandle::getMiscellaneous(int miscellaneousID)
 {
-	for (int i=0; i<miscellaneousCount; i++)
+	for (int i=0; i<m_miscellaneousCount; i++)
 	{
-		if (miscellaneous[i].id == miscellaneousID)
-			return &miscellaneous[i];
+		if (m_miscellaneous[i].id == miscellaneousID)
+			return &m_miscellaneous[i];
 	}
 
 	_af_error(AF_BAD_MISCID, "bad miscellaneous id %d", miscellaneousID);
@@ -226,19 +226,19 @@ status _AFfilehandle::initFromSetup(AFfilesetup setup)
 
 status _AFfilehandle::copyTracksFromSetup(AFfilesetup setup)
 {
-	if ((trackCount = setup->trackCount) == 0)
+	if ((m_trackCount = setup->trackCount) == 0)
 	{
-		tracks = NULL;
+		m_tracks = NULL;
 		return AF_SUCCEED;
 	}
 
-	tracks = new Track[trackCount];
-	if (!tracks)
+	m_tracks = new Track[m_trackCount];
+	if (!m_tracks)
 		return AF_FAIL;
 
-	for (int i=0; i<trackCount; i++)
+	for (int i=0; i<m_trackCount; i++)
 	{
-		Track *track = &tracks[i];
+		Track *track = &m_tracks[i];
 		TrackSetup *trackSetup = &setup->tracks[i];
 
 		track->id = trackSetup->id;
@@ -255,36 +255,36 @@ status _AFfilehandle::copyTracksFromSetup(AFfilesetup setup)
 
 status _AFfilehandle::copyInstrumentsFromSetup(AFfilesetup setup)
 {
-	if ((instrumentCount = setup->instrumentCount) == 0)
+	if ((m_instrumentCount = setup->instrumentCount) == 0)
 	{
-		instruments = NULL;
+		m_instruments = NULL;
 		return AF_SUCCEED;
 	}
 
-	instruments = static_cast<Instrument *>(_af_calloc(instrumentCount,
+	m_instruments = static_cast<Instrument *>(_af_calloc(m_instrumentCount,
 		sizeof (Instrument)));
-	if (!instruments)
+	if (!m_instruments)
 		return AF_FAIL;
 
-	for (int i=0; i<instrumentCount; i++)
+	for (int i=0; i<m_instrumentCount; i++)
 	{
-		instruments[i].id = setup->instruments[i].id;
+		m_instruments[i].id = setup->instruments[i].id;
 
 		// Copy loops.
-		if ((instruments[i].loopCount = setup->instruments[i].loopCount) == 0)
+		if ((m_instruments[i].loopCount = setup->instruments[i].loopCount) == 0)
 		{
-			instruments[i].loops = NULL;
+			m_instruments[i].loops = NULL;
 		}
 		else
 		{
-			instruments[i].loops =
-				static_cast<Loop *>(_af_calloc(instruments[i].loopCount,
+			m_instruments[i].loops =
+				static_cast<Loop *>(_af_calloc(m_instruments[i].loopCount,
 					sizeof (Loop)));
-			if (!instruments[i].loops)
+			if (!m_instruments[i].loops)
 				return AF_FAIL;
-			for (int j=0; j<instruments[i].loopCount; j++)
+			for (int j=0; j<m_instruments[i].loopCount; j++)
 			{
-				Loop *loop = &instruments[i].loops[j];
+				Loop *loop = &m_instruments[i].loops[j];
 				loop->id = setup->instruments[i].loops[j].id;
 				loop->mode = AF_LOOP_MODE_NOLOOP;
 				loop->count = 0;
@@ -298,17 +298,17 @@ status _AFfilehandle::copyInstrumentsFromSetup(AFfilesetup setup)
 		// Copy instrument parameters.
 		if ((instParamCount = _af_units[setup->fileFormat].instrumentParameterCount) == 0)
 		{
-			instruments[i].values = NULL;
+			m_instruments[i].values = NULL;
 		}
 		else
 		{
-			instruments[i].values =
+			m_instruments[i].values =
 				static_cast<AFPVu *>(_af_calloc(instParamCount, sizeof (AFPVu)));
-			if (!instruments[i].values)
+			if (!m_instruments[i].values)
 				return AF_FAIL;
 			for (int j=0; j<instParamCount; j++)
 			{
-				instruments[i].values[j] = _af_units[setup->fileFormat].instrumentParameters[j].defaultValue;
+				m_instruments[i].values[j] = _af_units[setup->fileFormat].instrumentParameters[j].defaultValue;
 			}
 		}
 	}
@@ -318,24 +318,24 @@ status _AFfilehandle::copyInstrumentsFromSetup(AFfilesetup setup)
 
 status _AFfilehandle::copyMiscellaneousFromSetup(AFfilesetup setup)
 {
-	if ((miscellaneousCount = setup->miscellaneousCount) == 0)
+	if ((m_miscellaneousCount = setup->miscellaneousCount) == 0)
 	{
-		miscellaneous = NULL;
+		m_miscellaneous = NULL;
 		return AF_SUCCEED;
 	}
 
-	miscellaneous = static_cast<Miscellaneous *>(_af_calloc(miscellaneousCount,
+	m_miscellaneous = static_cast<Miscellaneous *>(_af_calloc(m_miscellaneousCount,
 		sizeof (Miscellaneous)));
-	if (!miscellaneous)
+	if (!m_miscellaneous)
 		return AF_FAIL;
 
-	for (int i=0; i<miscellaneousCount; i++)
+	for (int i=0; i<m_miscellaneousCount; i++)
 	{
-		miscellaneous[i].id = setup->miscellaneous[i].id;
-		miscellaneous[i].type = setup->miscellaneous[i].type;
-		miscellaneous[i].size = setup->miscellaneous[i].size;
-		miscellaneous[i].position = 0;
-		miscellaneous[i].buffer = NULL;
+		m_miscellaneous[i].id = setup->miscellaneous[i].id;
+		m_miscellaneous[i].type = setup->miscellaneous[i].type;
+		m_miscellaneous[i].size = setup->miscellaneous[i].size;
+		m_miscellaneous[i].position = 0;
+		m_miscellaneous[i].buffer = NULL;
 	}
 
 	return AF_SUCCEED;
@@ -378,96 +378,96 @@ static bool writeSwap(File *f, const T *value, int order)
 	return writeValue(f, &t);
 }
 
-bool _AFfilehandle::readU8(uint8_t *v) { return readValue(fh, v); }
-bool _AFfilehandle::readS8(int8_t *v) { return readValue(fh, v); }
+bool _AFfilehandle::readU8(uint8_t *v) { return readValue(m_fh, v); }
+bool _AFfilehandle::readS8(int8_t *v) { return readValue(m_fh, v); }
 
 bool _AFfilehandle::readU16(uint16_t *v)
 {
-	return readSwap(fh, v, m_formatByteOrder);
+	return readSwap(m_fh, v, m_formatByteOrder);
 }
 
 bool _AFfilehandle::readS16(int16_t *v)
 {
-	return readSwap(fh, v, m_formatByteOrder);
+	return readSwap(m_fh, v, m_formatByteOrder);
 }
 
 bool _AFfilehandle::readU32(uint32_t *v)
 {
-	return readSwap(fh, v, m_formatByteOrder);
+	return readSwap(m_fh, v, m_formatByteOrder);
 }
 
 bool _AFfilehandle::readS32(int32_t *v)
 {
-	return readSwap(fh, v, m_formatByteOrder);
+	return readSwap(m_fh, v, m_formatByteOrder);
 }
 
 bool _AFfilehandle::readU64(uint64_t *v)
 {
-	return readSwap(fh, v, m_formatByteOrder);
+	return readSwap(m_fh, v, m_formatByteOrder);
 }
 
 bool _AFfilehandle::readS64(int64_t *v)
 {
-	return readSwap(fh, v, m_formatByteOrder);
+	return readSwap(m_fh, v, m_formatByteOrder);
 }
 
 bool _AFfilehandle::readFloat(float *v)
 {
-	return readSwap(fh, v, m_formatByteOrder);
+	return readSwap(m_fh, v, m_formatByteOrder);
 }
 
 bool _AFfilehandle::readDouble(double *v)
 {
-	return readSwap(fh, v, m_formatByteOrder);
+	return readSwap(m_fh, v, m_formatByteOrder);
 }
 
-bool _AFfilehandle::writeU8(const uint8_t *v) { return writeValue(fh, v); }
-bool _AFfilehandle::writeS8(const int8_t *v) { return writeValue(fh, v); }
+bool _AFfilehandle::writeU8(const uint8_t *v) { return writeValue(m_fh, v); }
+bool _AFfilehandle::writeS8(const int8_t *v) { return writeValue(m_fh, v); }
 
 bool _AFfilehandle::writeU16(const uint16_t *v)
 {
-	return writeSwap(fh, v, m_formatByteOrder);
+	return writeSwap(m_fh, v, m_formatByteOrder);
 }
 
 bool _AFfilehandle::writeS16(const int16_t *v)
 {
-	return writeSwap(fh, v, m_formatByteOrder);
+	return writeSwap(m_fh, v, m_formatByteOrder);
 }
 
 bool _AFfilehandle::writeU32(const uint32_t *v)
 {
-	return writeSwap(fh, v, m_formatByteOrder);
+	return writeSwap(m_fh, v, m_formatByteOrder);
 }
 
 bool _AFfilehandle::writeS32(const int32_t *v)
 {
-	return writeSwap(fh, v, m_formatByteOrder);
+	return writeSwap(m_fh, v, m_formatByteOrder);
 }
 
 bool _AFfilehandle::writeU64(const uint64_t *v)
 {
-	return writeSwap(fh, v, m_formatByteOrder);
+	return writeSwap(m_fh, v, m_formatByteOrder);
 }
 
 bool _AFfilehandle::writeS64(const int64_t *v)
 {
-	return writeSwap(fh, v, m_formatByteOrder);
+	return writeSwap(m_fh, v, m_formatByteOrder);
 }
 
 bool _AFfilehandle::writeFloat(const float *v)
 {
-	return writeSwap(fh, v, m_formatByteOrder);
+	return writeSwap(m_fh, v, m_formatByteOrder);
 }
 
 bool _AFfilehandle::writeDouble(const double *v)
 {
-	return writeSwap(fh, v, m_formatByteOrder);
+	return writeSwap(m_fh, v, m_formatByteOrder);
 }
 
 bool _AFfilehandle::readTag(Tag *t)
 {
 	uint32_t v;
-	if (fh->read(&v, sizeof (v)) == sizeof (v))
+	if (m_fh->read(&v, sizeof (v)) == sizeof (v))
 	{
 		*t = Tag(v);
 		return true;
@@ -478,5 +478,5 @@ bool _AFfilehandle::readTag(Tag *t)
 bool _AFfilehandle::writeTag(const Tag *t)
 {
 	uint32_t v = t->value();
-	return fh->write(&v, sizeof (v)) == sizeof (v);
+	return m_fh->write(&v, sizeof (v)) == sizeof (v);
 }

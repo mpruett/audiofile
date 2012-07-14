@@ -214,10 +214,10 @@ status IRCAMFile::readInit(AFfilesetup setup)
 {
 	float maxAmp = 1.0;
 
-	fh->seek(0, File::SeekFromBeginning);
+	m_fh->seek(0, File::SeekFromBeginning);
 
 	uint8_t magic[4];
-	if (fh->read(magic, 4) != 4)
+	if (m_fh->read(magic, 4) != 4)
 	{
 		_af_error(AF_BAD_READ, "Could not read BICSF file header");
 		return AF_FAIL;
@@ -328,7 +328,7 @@ status IRCAMFile::readInit(AFfilesetup setup)
 	if (track->f.sampleFormat == AF_SAMPFMT_FLOAT)
 		track->f.pcm.slope = maxAmp;
 
-	track->data_size = fh->length() - SIZEOF_BSD_HEADER;
+	track->data_size = m_fh->length() - SIZEOF_BSD_HEADER;
 
 	/*
 		Only uncompressed data formats are supported for IRCAM
@@ -353,7 +353,7 @@ status IRCAMFile::writeInit(AFfilesetup setup)
 
 	uint32_t dataOffset = SIZEOF_BSD_HEADER;
 
-	Track *track = &tracks[0];
+	Track *track = getTrack();
 	track->totalfframes = 0;
 	track->fpos_first_frame = dataOffset;
 	track->nextfframe = 0;
@@ -420,8 +420,8 @@ status IRCAMFile::writeInit(AFfilesetup setup)
 		return AF_FAIL;
 	}
 
-	fh->seek(0, File::SeekFromBeginning);
-	fh->write(magic, 4);
+	m_fh->seek(0, File::SeekFromBeginning);
+	m_fh->write(magic, 4);
 	writeFloat(&rate);
 	writeU32(&channels);
 	writeU32(&packMode);
@@ -429,7 +429,7 @@ status IRCAMFile::writeInit(AFfilesetup setup)
 	/* Zero the entire description block. */
 	uint8_t zeros[SIZEOF_BSD_HEADER];
 	memset(zeros, 0, SIZEOF_BSD_HEADER);
-	fh->write(zeros, SIZEOF_BSD_HEADER - 4*4);
+	m_fh->write(zeros, SIZEOF_BSD_HEADER - 4*4);
 
 	return AF_SUCCEED;
 }

@@ -107,9 +107,9 @@ status NeXTFile::readInit(AFfilesetup setup)
 {
 	uint32_t id, offset, length, encoding, sampleRate, channelCount;
 
-	fh->seek(0, File::SeekFromBeginning);
+	m_fh->seek(0, File::SeekFromBeginning);
 
-	fh->read(&id, 4);
+	m_fh->read(&id, 4);
 	assert(!memcmp(&id, ".snd", 4));
 
 	readU32(&offset);
@@ -135,7 +135,7 @@ status NeXTFile::readInit(AFfilesetup setup)
 
 	track->fpos_first_frame = offset;
 
-	off_t lengthAvailable = fh->length() - offset;
+	off_t lengthAvailable = m_fh->length() - offset;
 	if (length == _AU_LENGTH_UNSPECIFIED || static_cast<off_t>(length) > lengthAvailable)
 		length = lengthAvailable;
 
@@ -297,7 +297,7 @@ status NeXTFile::writeHeader()
 {
 	Track *track = getTrack();
 
-	if (fh->seek(0, File::SeekFromBeginning) != 0)
+	if (m_fh->seek(0, File::SeekFromBeginning) != 0)
 		_af_error(AF_BAD_LSEEK, "bad seek");
 
 	uint32_t offset = track->fpos_first_frame;
@@ -306,7 +306,7 @@ status NeXTFile::writeHeader()
 	uint32_t sampleRate = track->f.sampleRate;
 	uint32_t channelCount = track->f.channelCount;
 
-	fh->write(".snd", 4);
+	m_fh->write(".snd", 4);
 	writeU32(&offset);
 	writeU32(&length);
 	writeU32(&encoding);
@@ -350,12 +350,6 @@ status NeXTFile::writeInit(AFfilesetup setup)
 {
 	if (initFromSetup(setup) == AF_FAIL)
 		return AF_FAIL;
-
-	if (miscellaneousCount > 0)
-	{
-		_af_error(AF_BAD_NUMMISC, "NeXT format supports no miscellaneous chunks");
-		return AF_FAIL;
-	}
 
 	writeHeader();
 

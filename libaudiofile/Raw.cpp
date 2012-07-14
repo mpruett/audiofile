@@ -85,7 +85,7 @@ status RawFile::readInit(AFfilesetup filesetup)
 	}
 	else
 	{
-		AFfileoffset filesize = fh->length();
+		AFfileoffset filesize = m_fh->length();
 		if (filesize == -1)
 			track->totalfframes = -1;
 		else

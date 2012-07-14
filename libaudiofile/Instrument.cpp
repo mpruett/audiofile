@@ -102,10 +102,10 @@ int afGetInstIDs (AFfilehandle file, int *instids)
 		return -1;
 
 	if (instids)
-		for (int i=0; i < file->instrumentCount; i++)
-			instids[i] = file->instruments[i].id;
+		for (int i=0; i < file->m_instrumentCount; i++)
+			instids[i] = file->m_instruments[i].id;
 
-	return file->instrumentCount;
+	return file->m_instrumentCount;
 }
 
 /*
@@ -134,7 +134,7 @@ void _af_instparam_set (AFfilehandle file, int instid, AUpvlist pvlist, int npv)
 		AUpvgetparam(pvlist, i, &param);
 
 		int j;
-		if ((j = _af_instparam_index_from_id(file->fileFormat, param)) == -1)
+		if ((j = _af_instparam_index_from_id(file->m_fileFormat, param)) == -1)
 			/* no parameter with that id; ignore */
 			continue;
 
@@ -142,7 +142,7 @@ void _af_instparam_set (AFfilehandle file, int instid, AUpvlist pvlist, int npv)
 			/* bad parameter value; ignore */
 			continue;
 
-		int	type = _af_units[file->fileFormat].instrumentParameters[j].type;
+		int	type = _af_units[file->m_fileFormat].instrumentParameters[j].type;
 
 		switch (type)
 		{
@@ -202,11 +202,11 @@ void _af_instparam_get (AFfilehandle file, int instid, AUpvlist pvlist, int npv,
 		AUpvgetparam(pvlist, i, &param);
 
 		int j;
-		if ((j = _af_instparam_index_from_id(file->fileFormat, param)) == -1)
+		if ((j = _af_instparam_index_from_id(file->m_fileFormat, param)) == -1)
 			/* no parameter with that id; ignore */
 			continue;
 
-		int type = _af_units[file->fileFormat].instrumentParameters[j].type;
+		int type = _af_units[file->m_fileFormat].instrumentParameters[j].type;
 
 		/*
 			forceLong is true when this routine called by

@@ -148,9 +148,9 @@ void _af_print_audioformat (AudioFormat *fmt)
 
 void _af_print_tracks (AFfilehandle filehandle)
 {
-	for (int i=0; i<filehandle->trackCount; i++)
+	for (int i=0; i<filehandle->m_trackCount; i++)
 	{
-		Track *track = &filehandle->tracks[i];
+		Track *track = &filehandle->m_tracks[i];
 		printf("track %d\n", i);
 		printf(" id %d\n", track->id);
 		printf(" sample format\n");
@@ -190,27 +190,27 @@ void _af_print_filehandle (AFfilehandle filehandle)
 {
 	printf("file handle: 0x%p\n", filehandle);
 
-	if (filehandle->valid == _AF_VALID_FILEHANDLE)
+	if (filehandle->m_valid == _AF_VALID_FILEHANDLE)
 		printf("valid\n");
 	else
 		printf("invalid!\n");
 
 	printf(" access: ");
-	if (filehandle->access == _AF_READ_ACCESS)
+	if (filehandle->m_access == _AF_READ_ACCESS)
 		putchar('r');
 	else
 		putchar('w');
 
-	printf(" fileFormat: %d\n", filehandle->fileFormat);
+	printf(" fileFormat: %d\n", filehandle->m_fileFormat);
 
-	printf(" instrument count: %d\n", filehandle->instrumentCount);
-	printf(" instruments: 0x%p\n", filehandle->instruments);
+	printf(" instrument count: %d\n", filehandle->m_instrumentCount);
+	printf(" instruments: 0x%p\n", filehandle->m_instruments);
 
-	printf(" miscellaneous count: %d\n", filehandle->miscellaneousCount);
-	printf(" miscellaneous: 0x%p\n", filehandle->miscellaneous);
+	printf(" miscellaneous count: %d\n", filehandle->m_miscellaneousCount);
+	printf(" miscellaneous: 0x%p\n", filehandle->m_miscellaneous);
 
-	printf(" trackCount: %d\n", filehandle->trackCount);
-	printf(" tracks: 0x%p\n", filehandle->tracks);
+	printf(" trackCount: %d\n", filehandle->m_trackCount);
+	printf(" tracks: 0x%p\n", filehandle->m_tracks);
 	_af_print_tracks(filehandle);
 }
 

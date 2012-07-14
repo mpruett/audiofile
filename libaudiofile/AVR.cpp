@@ -82,9 +82,9 @@ status AVRFile::readInit(AFfilesetup setup)
 	char		reserved[26];
 	char		user[64];
 
-	fh->seek(0, File::SeekFromBeginning);
+	m_fh->seek(0, File::SeekFromBeginning);
 
-	if (fh->read(&magic, 4) != 4)
+	if (m_fh->read(&magic, 4) != 4)
 	{
 		_af_error(AF_BAD_READ, "could not read AVR file header");
 		return AF_FAIL;
@@ -97,7 +97,7 @@ status AVRFile::readInit(AFfilesetup setup)
 	}
 
 	/* Read name. */
-	fh->read(name, 8);
+	m_fh->read(name, 8);
 
 	readU16(&mono);
 	readU16(&resolution);
@@ -110,8 +110,8 @@ status AVRFile::readInit(AFfilesetup setup)
 	readU32(&loopStart);
 	readU32(&loopEnd);
 
-	fh->read(reserved, 26);
-	fh->read(user, 64);
+	m_fh->read(reserved, 26);
+	m_fh->read(user, 64);
 
 	Track *track = allocateTrack();
 	if (!track)
@@ -155,7 +155,7 @@ status AVRFile::readInit(AFfilesetup setup)
 
 	_af_set_sample_format(&track->f, track->f.sampleFormat, track->f.sampleWidth);
 
-	track->fpos_first_frame = fh->tell();
+	track->fpos_first_frame = m_fh->tell();
 	track->totalfframes = size;
 	track->data_size = track->totalfframes * track->f.bytesPerFrame(false);
 	track->nextfframe = 0;
@@ -246,7 +246,7 @@ status AVRFile::update()
 	Track *track = getTrack();
 
 	/* Seek to the position of the size field. */
-	fh->seek(26, File::SeekFromBeginning);
+	m_fh->seek(26, File::SeekFromBeginning);
 
 	size = track->totalfframes;
 
@@ -276,7 +276,7 @@ status AVRFile::writeInit(AFfilesetup setup)
 	if (initFromSetup(setup) == AF_FAIL)
 		return AF_FAIL;
 
-	if (fh->seek(0, File::SeekFromBeginning) != 0)
+	if (m_fh->seek(0, File::SeekFromBeginning) != 0)
 	{
 		_af_error(AF_BAD_LSEEK, "bad seek");
 		return AF_FAIL;
@@ -290,11 +290,11 @@ status AVRFile::writeInit(AFfilesetup setup)
 	char reserved[26];
 	char user[64];
 
-	fh->write("2BIT", 4);
+	m_fh->write("2BIT", 4);
 	memset(name, 0, 8);
-	if (fileName != NULL)
-		strncpy(name, af_basename(fileName), 8);
-	fh->write(name, 8);
+	if (m_fileName != NULL)
+		strncpy(name, af_basename(m_fileName), 8);
+	m_fh->write(name, 8);
 
 	if (track->f.channelCount == 1)
 		mono = 0x0;
@@ -330,13 +330,13 @@ status AVRFile::writeInit(AFfilesetup setup)
 	writeU32(&loopEnd);
 
 	memset(reserved, 0, 26);
-	fh->write(reserved, 26);
+	m_fh->write(reserved, 26);
 
 	memset(user, 0, 64);
-	fh->write(user, 64);
+	m_fh->write(user, 64);
 
 	if (track->fpos_first_frame == 0)
-		track->fpos_first_frame = fh->tell();
+		track->fpos_first_frame = m_fh->tell();
 
 	return AF_SUCCEED;
 }

@@ -78,13 +78,13 @@ int afGetMiscIDs (AFfilehandle file, int *ids)
 
 	if (ids != NULL)
 	{
-		for (int i=0; i<file->miscellaneousCount; i++)
+		for (int i=0; i<file->m_miscellaneousCount; i++)
 		{
-			ids[i] = file->miscellaneous[i].id;
+			ids[i] = file->m_miscellaneous[i].id;
 		}
 	}
 
-	return file->miscellaneousCount;
+	return file->m_miscellaneousCount;
 }
 
 void afInitMiscType (AFfilesetup setup, int miscellaneousid, int type)

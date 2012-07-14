@@ -55,13 +55,13 @@ public:
 	virtual bool isInstrumentParameterValid(AUpvlist, int);
 
 private:
-	AFfileoffset	miscellaneousPosition;
-	AFfileoffset	FVER_offset;
-	AFfileoffset	COMM_offset;
-	AFfileoffset	MARK_offset;
-	AFfileoffset	INST_offset;
-	AFfileoffset	AESD_offset;
-	AFfileoffset	SSND_offset;
+	AFfileoffset m_miscellaneousPosition;
+	AFfileoffset m_FVER_offset;
+	AFfileoffset m_COMM_offset;
+	AFfileoffset m_MARK_offset;
+	AFfileoffset m_INST_offset;
+	AFfileoffset m_AESD_offset;
+	AFfileoffset m_SSND_offset;
 
 	status parseFVER(const Tag &type, size_t size);
 	status parseAESD(const Tag &type, size_t size);

@@ -153,11 +153,10 @@ WAVEFile::WAVEFile()
 {
 	setFormatByteOrder(AF_BYTEORDER_LITTLEENDIAN);
 
-	factOffset = 0;
-	miscellaneousStartOffset = 0;
-	totalMiscellaneousSize = 0;
-	markOffset = 0;
-	dataSizeOffset = 0;
+	m_factOffset = 0;
+	m_miscellaneousOffset = 0;
+	m_markOffset = 0;
+	m_dataSizeOffset = 0;
 
 	m_msadpcmNumCoefficients = 0;
 }
@@ -439,7 +438,7 @@ status WAVEFile::parseData(const Tag &id, uint32_t size)
 
 	Track *track = getTrack();
 
-	track->fpos_first_frame = fh->tell();
+	track->fpos_first_frame = m_fh->tell();
 	track->data_size = size;
 
 	return AF_SUCCEED;
@@ -452,8 +451,8 @@ status WAVEFile::parsePlayList(const Tag &id, uint32_t size)
 
 	if (segmentCount == 0)
 	{
-		instrumentCount = 0;
-		instruments = NULL;
+		m_instrumentCount = 0;
+		m_instruments = NULL;
 		return AF_SUCCEED;
 	}
 
@@ -519,9 +518,9 @@ status WAVEFile::parseADTLSubChunk(const Tag &id, uint32_t size)
 {
 	Track *track = getTrack();
 
-	AFfileoffset endPos = fh->tell() + size;
+	AFfileoffset endPos = m_fh->tell() + size;
 
-	while (fh->tell() < endPos)
+	while (m_fh->tell() < endPos)
 	{
 		Tag chunkID;
 		uint32_t chunkSize;
@@ -536,7 +535,7 @@ status WAVEFile::parseADTLSubChunk(const Tag &id, uint32_t size)
 			char *p = (char *) _af_malloc(length);
 
 			readU32(&id);
-			fh->read(p, length);
+			m_fh->read(p, length);
 
 			Marker *marker = track->getMarker(id);
 
@@ -563,12 +562,12 @@ status WAVEFile::parseADTLSubChunk(const Tag &id, uint32_t size)
 				at the end of the chunk.
 			*/
 			if ((chunkSize % 2) != 0)
-				fh->seek(1, File::SeekFromCurrent);
+				m_fh->seek(1, File::SeekFromCurrent);
 		}
 		else
 		{
 			/* If chunkSize is odd, skip an extra byte. */
-			fh->seek(chunkSize + (chunkSize % 2), File::SeekFromCurrent);
+			m_fh->seek(chunkSize + (chunkSize % 2), File::SeekFromCurrent);
 		}
 	}
 	return AF_SUCCEED;
@@ -577,9 +576,9 @@ status WAVEFile::parseADTLSubChunk(const Tag &id, uint32_t size)
 /* Parse an INFO sub-chunk within a LIST chunk. */
 status WAVEFile::parseINFOSubChunk(const Tag &id, uint32_t size)
 {
-	AFfileoffset endPos = fh->tell() + size;
+	AFfileoffset endPos = m_fh->tell() + size;
 
-	while (fh->tell() < endPos)
+	while (m_fh->tell() < endPos)
 	{
 		int misctype = AF_MISC_UNRECOGNIZED;
 		Tag miscid;
@@ -605,25 +604,25 @@ status WAVEFile::parseINFOSubChunk(const Tag &id, uint32_t size)
 		{
 			char *string = (char *) _af_malloc(miscsize);
 
-			fh->read(string, miscsize);
+			m_fh->read(string, miscsize);
 
-			miscellaneousCount++;
-			miscellaneous = (Miscellaneous *) _af_realloc(miscellaneous, sizeof (Miscellaneous) * miscellaneousCount);
+			m_miscellaneousCount++;
+			m_miscellaneous = (Miscellaneous *) _af_realloc(m_miscellaneous, sizeof (Miscellaneous) * m_miscellaneousCount);
 
-			miscellaneous[miscellaneousCount-1].id = miscellaneousCount;
-			miscellaneous[miscellaneousCount-1].type = misctype;
-			miscellaneous[miscellaneousCount-1].size = miscsize;
-			miscellaneous[miscellaneousCount-1].position = 0;
-			miscellaneous[miscellaneousCount-1].buffer = string;
+			m_miscellaneous[m_miscellaneousCount-1].id = m_miscellaneousCount;
+			m_miscellaneous[m_miscellaneousCount-1].type = misctype;
+			m_miscellaneous[m_miscellaneousCount-1].size = miscsize;
+			m_miscellaneous[m_miscellaneousCount-1].position = 0;
+			m_miscellaneous[m_miscellaneousCount-1].buffer = string;
 		}
 		else
 		{
-			fh->seek(miscsize, File::SeekFromCurrent);
+			m_fh->seek(miscsize, File::SeekFromCurrent);
 		}
 
 		/* Make the current position an even number of bytes.  */
 		if (miscsize % 2 != 0)
-			fh->seek(1, File::SeekFromCurrent);
+			m_fh->seek(1, File::SeekFromCurrent);
 	}
 	return AF_SUCCEED;
 }
@@ -647,7 +646,7 @@ status WAVEFile::parseList(const Tag &id, uint32_t size)
 	else
 	{
 		/* Skip unhandled sub-chunks. */
-		fh->seek(size, File::SeekFromCurrent);
+		m_fh->seek(size, File::SeekFromCurrent);
 		return AF_SUCCEED;
 	}
 	return AF_SUCCEED;
@@ -698,7 +697,7 @@ status WAVEFile::readInit(AFfilesetup setup)
 
 	Track *track = allocateTrack();
 
-	fh->seek(0, File::SeekFromBeginning);
+	m_fh->seek(0, File::SeekFromBeginning);
 
 	readTag(&type);
 	readU32(&size);
@@ -797,7 +796,7 @@ status WAVEFile::readInit(AFfilesetup setup)
 		if ((index % 2) != 0)
 			index++;
 
-		fh->seek(index + 8, File::SeekFromBeginning);
+		m_fh->seek(index + 8, File::SeekFromBeginning);
 	}
 
 	/* The format chunk and the data chunk are required. */
@@ -1074,7 +1073,7 @@ status WAVEFile::writeFormat()
 
 	Track *track = getTrack();
 
-	fh->write("fmt ", 4);
+	m_fh->write("fmt ", 4);
 
 	switch (track->f.compressionType)
 	{
@@ -1207,12 +1206,12 @@ status WAVEFile::writeFrameCount()
 		If the offset for the fact chunk hasn't been set yet,
 		set it to the file's current position.
 	*/
-	if (factOffset == 0)
-		factOffset = fh->tell();
+	if (m_factOffset == 0)
+		m_factOffset = m_fh->tell();
 	else
-		fh->seek(factOffset, File::SeekFromBeginning);
+		m_fh->seek(m_factOffset, File::SeekFromBeginning);
 
-	fh->write("fact", 4);
+	m_fh->write("fact", 4);
 	writeU32(&factSize);
 
 	totalFrameCount = track->totalfframes;
@@ -1225,13 +1224,13 @@ status WAVEFile::writeData()
 {
 	Track *track = getTrack();
 
-	fh->write("data", 4);
-	dataSizeOffset = fh->tell();
+	m_fh->write("data", 4);
+	m_dataSizeOffset = m_fh->tell();
 
 	uint32_t chunkSize = track->data_size;
 
 	writeU32(&chunkSize);
-	track->fpos_first_frame = fh->tell();
+	track->fpos_first_frame = m_fh->tell();
 
 	return AF_SUCCEED;
 }
@@ -1248,15 +1247,15 @@ status WAVEFile::update()
 		writeFrameCount();
 
 		// Update the length of the data chunk.
-		fh->seek(dataSizeOffset, File::SeekFromBeginning);
+		m_fh->seek(m_dataSizeOffset, File::SeekFromBeginning);
 		dataLength = (uint32_t) track->data_size;
 		writeU32(&dataLength);
 
 		// Update the length of the RIFF chunk.
-		fileLength = (uint32_t) fh->length();
+		fileLength = (uint32_t) m_fh->length();
 		fileLength -= 8;
 
-		fh->seek(4, File::SeekFromBeginning);
+		m_fh->seek(4, File::SeekFromBeginning);
 		writeU32(&fileLength);
 	}
 
@@ -1296,7 +1295,7 @@ static bool misc_type_to_wave (int misctype, Tag *miscid)
 
 status WAVEFile::writeMiscellaneous()
 {
-	if (miscellaneousCount != 0)
+	if (m_miscellaneousCount != 0)
 	{
 		uint32_t	miscellaneousBytes;
 		uint32_t 	chunkSize;
@@ -1305,31 +1304,29 @@ status WAVEFile::writeMiscellaneous()
 		miscellaneousBytes = 12;
 
 		/* Then calculate the size of the whole INFO chunk. */
-		for (int i=0; i<miscellaneousCount; i++)
+		for (int i=0; i<m_miscellaneousCount; i++)
 		{
 			Tag miscid;
 
 			// Skip miscellaneous data of an unsupported type.
-			if (!misc_type_to_wave(miscellaneous[i].type, &miscid))
+			if (!misc_type_to_wave(m_miscellaneous[i].type, &miscid))
 				continue;
 
 			// Account for miscellaneous type and size.
 			miscellaneousBytes += 8;
-			miscellaneousBytes += miscellaneous[i].size;
+			miscellaneousBytes += m_miscellaneous[i].size;
 
 			// Add a pad byte if necessary.
-			if (miscellaneous[i].size % 2 != 0)
+			if (m_miscellaneous[i].size % 2 != 0)
 				miscellaneousBytes++;
 
 			assert(miscellaneousBytes % 2 == 0);
 		}
 
-		if (miscellaneousStartOffset == 0)
-			miscellaneousStartOffset = fh->tell();
+		if (m_miscellaneousOffset == 0)
+			m_miscellaneousOffset = m_fh->tell();
 		else
-			fh->seek(miscellaneousStartOffset, File::SeekFromBeginning);
-
-		totalMiscellaneousSize = miscellaneousBytes;
+			m_fh->seek(m_miscellaneousOffset, File::SeekFromBeginning);
 
 		/*
 			Write the data.  On the first call to this
@@ -1341,46 +1338,46 @@ status WAVEFile::writeMiscellaneous()
 		*/
 
 		/* Write 'LIST'. */
-		fh->write("LIST", 4);
+		m_fh->write("LIST", 4);
 
 		/* Write the size of the following chunk. */
 		chunkSize = miscellaneousBytes-8;
 		writeU32(&chunkSize);
 
 		/* Write 'INFO'. */
-		fh->write("INFO", 4);
+		m_fh->write("INFO", 4);
 
 		/* Write each miscellaneous chunk. */
-		for (int i=0; i<miscellaneousCount; i++)
+		for (int i=0; i<m_miscellaneousCount; i++)
 		{
-			uint32_t miscsize = miscellaneous[i].size;
+			uint32_t miscsize = m_miscellaneous[i].size;
 			Tag miscid;
 
 			// Skip miscellaneous data of an unsupported type.
-			if (!misc_type_to_wave(miscellaneous[i].type, &miscid))
+			if (!misc_type_to_wave(m_miscellaneous[i].type, &miscid))
 				continue;
 
 			writeTag(&miscid);
 			writeU32(&miscsize);
-			if (miscellaneous[i].buffer != NULL)
+			if (m_miscellaneous[i].buffer != NULL)
 			{
 				uint8_t	zero = 0;
 
-				fh->write(miscellaneous[i].buffer, miscellaneous[i].size);
+				m_fh->write(m_miscellaneous[i].buffer, m_miscellaneous[i].size);
 
 				// Pad if necessary.
-				if ((miscellaneous[i].size%2) != 0)
+				if ((m_miscellaneous[i].size%2) != 0)
 					writeU8(&zero);
 			}
 			else
 			{
 				int	size;
-				size = miscellaneous[i].size;
+				size = m_miscellaneous[i].size;
 
 				// Pad if necessary.
 				if ((size % 2) != 0)
 					size++;
-				fh->seek(size, File::SeekFromCurrent);
+				m_fh->seek(size, File::SeekFromCurrent);
 			}
 		}
 	}
@@ -1397,12 +1394,12 @@ status WAVEFile::writeCues()
 	if (markCount == 0)
 		return AF_SUCCEED;
 
-	if (markOffset == 0)
-		markOffset = fh->tell();
+	if (m_markOffset == 0)
+		m_markOffset = m_fh->tell();
 	else
-		fh->seek(markOffset, File::SeekFromBeginning);
+		m_fh->seek(m_markOffset, File::SeekFromBeginning);
 
-	fh->write("cue ", 4);
+	m_fh->write("cue ", 4);
 
 	/*
 		The cue chunk consists of 4 bytes for the number of cue points
@@ -1431,7 +1428,7 @@ status WAVEFile::writeCues()
 		writeU32(&position);
 
 		/* For now the RIFF id is always the first data chunk. */
-		fh->write("data", 4);
+		m_fh->write("data", 4);
 
 		/*
 			For an uncompressed WAVE file which contains
@@ -1439,10 +1436,10 @@ status WAVEFile::writeCues()
 			are zero.
 		*/
 		chunkStart = 0;
-		fh->write(&chunkStart, sizeof (uint32_t));
+		m_fh->write(&chunkStart, sizeof (uint32_t));
 
 		blockStart = 0;
-		fh->write(&blockStart, sizeof (uint32_t));
+		m_fh->write(&blockStart, sizeof (uint32_t));
 
 		markposition = afGetMarkPosition(this, AF_DEFAULT_TRACK, markids[i]);
 
@@ -1477,9 +1474,9 @@ status WAVEFile::writeCues()
 			((strlen(name) + 1) % 2);
 	}
 
-	fh->write("LIST", 4);
+	m_fh->write("LIST", 4);
 	writeU32(&listChunkSize);
-	fh->write("adtl", 4);
+	m_fh->write("adtl", 4);
 
 	for (int i=0; i<markCount; i++)
 	{
@@ -1492,10 +1489,10 @@ status WAVEFile::writeCues()
 		labelSize = 4+(strlen(name)+1) + ((strlen(name) + 1) % 2);
 		cuePointID = markids[i];
 
-		fh->write("labl", 4);
+		m_fh->write("labl", 4);
 		writeU32(&labelSize);
 		writeU32(&cuePointID);
-		fh->write(name, strlen(name) + 1);
+		m_fh->write(name, strlen(name) + 1);
 		/*
 			If the name plus the size byte comprises an odd
 			length, add another byte to make the string an
@@ -1522,10 +1519,10 @@ status WAVEFile::writeInit(AFfilesetup setup)
 
 	uint32_t zero = 0;
 
-	fh->seek(0, File::SeekFromBeginning);
-	fh->write("RIFF", 4);
-	fh->write(&zero, 4);
-	fh->write("WAVE", 4);
+	m_fh->seek(0, File::SeekFromBeginning);
+	m_fh->write("RIFF", 4);
+	m_fh->write(&zero, 4);
+	m_fh->write("WAVE", 4);
 
 	writeMiscellaneous();
 	writeCues();
@@ -1538,12 +1535,12 @@ status WAVEFile::writeInit(AFfilesetup setup)
 
 bool WAVEFile::readUUID(UUID *u)
 {
-	return fh->read(u->data, 16) == 16;
+	return m_fh->read(u->data, 16) == 16;
 }
 
 bool WAVEFile::writeUUID(const UUID *u)
 {
-	return fh->write(u->data, 16) == 16;
+	return m_fh->write(u->data, 16) == 16;
 }
 
 void WAVEFile::initCompressionParams()

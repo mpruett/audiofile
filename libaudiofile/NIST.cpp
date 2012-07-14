@@ -207,9 +207,9 @@ status NISTFile::readInit(AFfilesetup setup)
 	char strval[NIST_SPHERE_MAX_FIELD_LENGTH];
 	int sample_n_bytes;
 
-	fh->seek(0, File::SeekFromBeginning);
+	m_fh->seek(0, File::SeekFromBeginning);
 
-	if (fh->read(header, NIST_SPHERE_HEADER_LENGTH) != NIST_SPHERE_HEADER_LENGTH)
+	if (m_fh->read(header, NIST_SPHERE_HEADER_LENGTH) != NIST_SPHERE_HEADER_LENGTH)
 	{
 		_af_error(AF_BAD_READ, "Could not read NIST SPHERE file header");
 		return AF_FAIL;
@@ -374,7 +374,7 @@ status NISTFile::readInit(AFfilesetup setup)
 	}
 
 	track->fpos_first_frame = NIST_SPHERE_HEADER_LENGTH;
-	track->data_size = fh->length() - NIST_SPHERE_HEADER_LENGTH;
+	track->data_size = m_fh->length() - NIST_SPHERE_HEADER_LENGTH;
 	track->nextfframe = 0;
 	track->fpos_next_frame = track->fpos_first_frame;
 
@@ -441,7 +441,7 @@ status NISTFile::writeHeader()
 	if (printed < NIST_SPHERE_HEADER_LENGTH)
 		memset(header + printed, ' ', NIST_SPHERE_HEADER_LENGTH - printed);
 
-	return fh->write(header, NIST_SPHERE_HEADER_LENGTH) == NIST_SPHERE_HEADER_LENGTH ? AF_SUCCEED : AF_FAIL;
+	return m_fh->write(header, NIST_SPHERE_HEADER_LENGTH) == NIST_SPHERE_HEADER_LENGTH ? AF_SUCCEED : AF_FAIL;
 }
 
 status NISTFile::writeInit(AFfilesetup setup)
@@ -456,7 +456,7 @@ status NISTFile::writeInit(AFfilesetup setup)
 	track->nextfframe = 0;
 	track->fpos_next_frame = track->fpos_first_frame;
 
-	fh->seek(0, File::SeekFromBeginning);
+	m_fh->seek(0, File::SeekFromBeginning);
 	writeHeader();
 
 	return AF_SUCCEED;
@@ -464,7 +464,7 @@ status NISTFile::writeInit(AFfilesetup setup)
 
 status NISTFile::update()
 {
-	fh->seek(0, File::SeekFromBeginning);
+	m_fh->seek(0, File::SeekFromBeginning);
 	writeHeader();
 
 	return AF_SUCCEED;

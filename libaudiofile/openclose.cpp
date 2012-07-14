@@ -344,14 +344,14 @@ static status _afOpenFile (int access, File *f, const char *filename,
 		return AF_FAIL;
 	}
 
-	filehandle->fh = f;
-	filehandle->access = access;
-	filehandle->seekok = f->canSeek();
+	filehandle->m_fh = f;
+	filehandle->m_access = access;
+	filehandle->m_seekok = f->canSeek();
 	if (filename != NULL)
-		filehandle->fileName = strdup(filename);
+		filehandle->m_fileName = strdup(filename);
 	else
-		filehandle->fileName = NULL;
-	filehandle->fileFormat = fileFormat;
+		filehandle->m_fileName = NULL;
+	filehandle->m_fileFormat = fileFormat;
 
 	status result = access == _AF_READ_ACCESS ?
 		filehandle->readInit(completesetup) :
@@ -372,9 +372,9 @@ static status _afOpenFile (int access, File *f, const char *filename,
 	/*
 		Initialize virtual format.
 	*/
-	for (int t=0; t<filehandle->trackCount; t++)
+	for (int t=0; t<filehandle->m_trackCount; t++)
 	{
-		Track *track = &filehandle->tracks[t];
+		Track *track = &filehandle->m_tracks[t];
 
 		track->v = track->f;
 
@@ -412,12 +412,12 @@ int afSyncFile (AFfilehandle handle)
 	if (!_af_filehandle_ok(handle))
 		return -1;
 
-	if (handle->access == _AF_WRITE_ACCESS)
+	if (handle->m_access == _AF_WRITE_ACCESS)
 	{
 		/* Finish writes on all tracks. */
-		for (int trackno = 0; trackno < handle->trackCount; trackno++)
+		for (int trackno = 0; trackno < handle->m_trackCount; trackno++)
 		{
-			Track *track = &handle->tracks[trackno];
+			Track *track = &handle->m_tracks[trackno];
 
 			if (track->ms->isDirty() && track->ms->setup(handle, track) == AF_FAIL)
 				return -1;
@@ -430,14 +430,14 @@ int afSyncFile (AFfilehandle handle)
 		if (handle->update() != AF_SUCCEED)
 			return AF_FAIL;
 	}
-	else if (handle->access == _AF_READ_ACCESS)
+	else if (handle->m_access == _AF_READ_ACCESS)
 	{
 		/* Do nothing. */
 	}
 	else
 	{
 		_af_error(AF_BAD_ACCMODE, "unrecognized access mode %d",
-			handle->access);
+			handle->m_access);
 		return AF_FAIL;
 	}
 
@@ -453,11 +453,11 @@ int afCloseFile (AFfilehandle file)
 
 	afSyncFile(file);
 
-	err = file->fh->close();
+	err = file->m_fh->close();
 	if (err < 0)
 		_af_error(AF_BAD_CLOSE, "close returned %d", err);
 
-	delete file->fh;
+	delete file->m_fh;
 	delete file;
 
 	return 0;

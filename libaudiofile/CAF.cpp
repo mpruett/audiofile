@@ -85,13 +85,13 @@ bool CAFFile::recognize(File *file)
 
 status CAFFile::readInit(AFfilesetup setup)
 {
-	fh->seek(8, File::SeekFromBeginning);
+	m_fh->seek(8, File::SeekFromBeginning);
 
 	if (!allocateTrack())
 		return AF_FAIL;
 
-	off_t currentOffset = fh->tell();
-	off_t fileLength = fh->length();
+	off_t currentOffset = m_fh->tell();
+	off_t fileLength = m_fh->length();
 
 	while (currentOffset < fileLength)
 	{
@@ -121,7 +121,7 @@ status CAFFile::readInit(AFfilesetup setup)
 				return AF_FAIL;
 		}
 
-		currentOffset = fh->seek(currentOffset + chunkLength,
+		currentOffset = m_fh->seek(currentOffset + chunkLength,
 			File::SeekFromBeginning);
 	}
 
@@ -138,7 +138,7 @@ status CAFFile::writeInit(AFfilesetup setup)
 	Tag caff("caff");
 	if (!writeTag(&caff)) return AF_FAIL;
 	const uint8_t versionAndFlags[4] = { 0, 1, 0, 0 };
-	if (fh->write(versionAndFlags, 4) != 4) return AF_FAIL;
+	if (m_fh->write(versionAndFlags, 4) != 4) return AF_FAIL;
 
 	if (writeDescription() == AF_FAIL)
 		return AF_FAIL;
@@ -290,10 +290,10 @@ status CAFFile::parseData(const Tag &tag, int64_t length)
 
 	Track *track = getTrack();
 	if (length == -1)
-		track->data_size = fh->length() - fh->tell();
+		track->data_size = m_fh->length() - m_fh->tell();
 	else
 		track->data_size = length - 4;
-	track->fpos_first_frame = fh->tell();
+	track->fpos_first_frame = m_fh->tell();
 
 	int bytesPerFrame = track->f.bytesPerFrame(false);
 	if (track->f.compressionType == AF_COMPRESSION_G711_ULAW ||
@@ -371,9 +371,9 @@ status CAFFile::writeData(bool update)
 	Track *track = getTrack();
 
 	if (m_dataOffset == -1)
-		m_dataOffset = fh->tell();
+		m_dataOffset = m_fh->tell();
 	else
-		fh->seek(m_dataOffset, File::SeekFromBeginning);
+		m_fh->seek(m_dataOffset, File::SeekFromBeginning);
 
 	Tag data("data");
 	int64_t dataLength = -1;
@@ -386,7 +386,7 @@ status CAFFile::writeData(bool update)
 		!writeU32(&editCount))
 		return AF_FAIL;
 	if (track->fpos_first_frame == 0)
-		track->fpos_first_frame = fh->tell();
+		track->fpos_first_frame = m_fh->tell();
 	return AF_SUCCEED;
 }
 
