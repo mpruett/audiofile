@@ -366,7 +366,7 @@ status AIFFFile::parseCOMM(const Tag &type, size_t size)
 	track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
 	track->f.byteOrder = AF_BYTEORDER_BIGENDIAN;
 
-	if (m_fileFormat == AF_FILE_AIFFC)
+	if (isAIFFC())
 	{
 		Tag compressionID;
 		/* Pascal strings are at most 255 bytes long. */
@@ -585,7 +585,7 @@ status AIFFFile::readInit(AFfilesetup setup)
 		_af_error(AF_BAD_AIFF_COMM, "bad AIFF COMM chunk");
 	}
 
-	if (m_fileFormat == AF_FILE_AIFFC && !hasFVER)
+	if (isAIFFC() && !hasFVER)
 	{
 		_af_error(AF_BAD_HEADER, "FVER chunk is required in AIFF-C");
 	}
@@ -773,7 +773,7 @@ bool AIFFFile::isInstrumentParameterValid(AUpvlist list, int i)
 
 int AIFFFile::getVersion()
 {
-	if (m_fileFormat == AF_FILE_AIFFC)
+	if (isAIFFC())
 		return AIFC_VERSION_1;
 	return 0;
 }
@@ -789,12 +789,12 @@ status AIFFFile::writeInit(AFfilesetup setup)
 	m_fh->write("FORM", 4);
 	writeU32(&fileSize);
 
-	if (m_fileFormat == AF_FILE_AIFF)
-		m_fh->write("AIFF", 4);
-	else if (m_fileFormat == AF_FILE_AIFFC)
+	if (isAIFFC())
 		m_fh->write("AIFC", 4);
+	else
+		m_fh->write("AIFF", 4);
 
-	if (m_fileFormat == AF_FILE_AIFFC)
+	if (isAIFFC())
 		writeFVER();
 
 	writeCOMM();
@@ -821,7 +821,7 @@ status AIFFFile::update()
 	m_fh->seek(4, File::SeekFromBeginning);
 	writeU32(&length);
 
-	if (m_fileFormat == AF_FILE_AIFFC)
+	if (isAIFFC())
 		writeFVER();
 
 	writeCOMM();
@@ -836,8 +836,6 @@ status AIFFFile::update()
 
 status AIFFFile::writeCOMM()
 {
-	bool isAIFFC = m_fileFormat == AF_FILE_AIFFC;
-
 	/*
 		If COMM_offset hasn't been set yet, set it to the
 		current offset.
@@ -853,7 +851,7 @@ status AIFFFile::writeCOMM()
 	/* Pascal strings can occupy only 255 bytes (+ a size byte). */
 	char compressionName[256];
 
-	if (isAIFFC)
+	if (isAIFFC())
 	{
 		if (track->f.compressionType == AF_COMPRESSION_NONE)
 		{
@@ -913,7 +911,7 @@ status AIFFFile::writeCOMM()
 		include the pad byte in the chunk's size.
 	*/
 	uint32_t chunkSize;
-	if (isAIFFC)
+	if (isAIFFC())
 		chunkSize = 22 + strlen(compressionName) + 1;
 	else
 		chunkSize = 18;
@@ -938,7 +936,7 @@ status AIFFFile::writeCOMM()
 	_af_convert_to_ieee_extended(track->f.sampleRate, sampleRate);
 	m_fh->write(sampleRate, 10);
 
-	if (isAIFFC)
+	if (isAIFFC())
 	{
 		writeTag(&compressionTag);
 		af_write_pstring(compressionName, m_fh);
@@ -1124,7 +1122,7 @@ status AIFFFile::writeFVER()
 {
 	uint32_t chunkSize, timeStamp;
 
-	assert(m_fileFormat == AF_FILE_AIFFC);
+	assert(isAIFFC());
 
 	if (m_FVER_offset == 0)
 		m_FVER_offset = m_fh->tell();

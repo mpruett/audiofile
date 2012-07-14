@@ -1,5 +1,10 @@
 2012-07-14  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/AIFF.cpp, libaudiofile/AIFF.h:
+	Refactor discrimination between AIFF and AIFF-C.
+
+2012-07-14  Michael Pruett <michael@68k.org>
+
 	* Prefix member variables with 'm_'.
 
 2012-07-14  Michael Pruett <michael@68k.org>

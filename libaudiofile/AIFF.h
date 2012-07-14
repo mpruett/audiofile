@@ -81,6 +81,8 @@ private:
 
 	void initCompressionParams();
 	void initIMACompressionParams();
+
+	bool isAIFFC() const { return m_fileFormat == AF_FILE_AIFFC; }
 };
 
 #endif
