@@ -1515,12 +1515,12 @@ status WAVEFile::writeCues()
 
 status WAVEFile::writeInit(AFfilesetup setup)
 {
-	uint32_t	zero = 0;
-
-	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
+	if (initFromSetup(setup) == AF_FAIL)
 		return AF_FAIL;
 
 	initCompressionParams();
+
+	uint32_t zero = 0;
 
 	fh->seek(0, File::SeekFromBeginning);
 	fh->write("RIFF", 4);

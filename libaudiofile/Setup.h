@@ -57,7 +57,6 @@ void _af_setup_free_tracks (AFfilesetup setup);
 void _af_setup_free_instruments (AFfilesetup setup);
 AFfilesetup _af_filesetup_copy (AFfilesetup setup, AFfilesetup defaultSetup,
         bool copyMarks);
-status _af_filesetup_make_handle (AFfilesetup setup, AFfilehandle handle);
 
 InstrumentSetup *_af_instsetup_new (int count);
 

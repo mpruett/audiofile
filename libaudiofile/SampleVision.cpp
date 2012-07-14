@@ -226,7 +226,7 @@ void SampleVisionFile::addMiscellaneous(int type, const char *data)
 
 status SampleVisionFile::writeInit(AFfilesetup setup)
 {
-	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
+	if (initFromSetup(setup) == AF_FAIL)
 		return AF_FAIL;
 
 	fh->write(kSMPMagic, kSMPMagicLength);

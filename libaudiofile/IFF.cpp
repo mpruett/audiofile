@@ -306,10 +306,10 @@ AFfilesetup IFFFile::completeSetup(AFfilesetup setup)
 
 status IFFFile::writeInit(AFfilesetup setup)
 {
-	uint32_t fileSize = 0;
-
-	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
+	if (initFromSetup(setup) == AF_FAIL)
 		return AF_FAIL;
+
+	uint32_t fileSize = 0;
 
 	fh->write("FORM", 4);
 	writeU32(&fileSize);

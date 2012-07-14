@@ -57,8 +57,11 @@ struct _AFfilehandle
 private:
 	int m_formatByteOrder;
 
+	status copyTracksFromSetup(AFfilesetup setup);
+	status copyInstrumentsFromSetup(AFfilesetup setup);
+	status copyMiscellaneousFromSetup(AFfilesetup setup);
+
 public:
-	_AFfilehandle();
 	virtual ~_AFfilehandle();
 
 	virtual int getVersion() { return 0; }
@@ -76,6 +79,10 @@ public:
 	Miscellaneous *getMiscellaneous(int miscellaneousID);
 
 protected:
+	_AFfilehandle();
+
+	status initFromSetup(AFfilesetup setup);
+
 	void setFormatByteOrder(int byteOrder) { m_formatByteOrder = byteOrder; }
 
 	bool readU8(uint8_t *);

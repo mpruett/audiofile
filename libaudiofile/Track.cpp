@@ -140,3 +140,31 @@ Marker *Track::getMarker(int markerID)
 
 	return NULL;
 }
+
+status Track::copyMarkers(TrackSetup *setup)
+{
+	if ((markerCount = setup->markerCount) == 0)
+	{
+		markers = NULL;
+		return AF_SUCCEED;
+	}
+
+	markers = _af_marker_new(markerCount);
+	if (!markers)
+		return AF_FAIL;
+
+	for (int i=0; i<markerCount; i++)
+	{
+		markers[i].id = setup->markers[i].id;
+		markers[i].name = _af_strdup(setup->markers[i].name);
+		if (!markers[i].name)
+			return AF_FAIL;
+
+		markers[i].comment = _af_strdup(setup->markers[i].comment);
+		if (!markers[i].comment)
+			return AF_FAIL;
+		markers[i].position = 0;
+	}
+
+	return AF_SUCCEED;
+}

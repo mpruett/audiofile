@@ -780,16 +780,12 @@ int AIFFFile::getVersion()
 
 status AIFFFile::writeInit(AFfilesetup setup)
 {
-	uint32_t fileSize = 0;
-
-	assert(fileFormat == AF_FILE_AIFF ||
-		fileFormat == AF_FILE_AIFFC);
-
-	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
+	if (initFromSetup(setup) == AF_FAIL)
 		return AF_FAIL;
 
 	initCompressionParams();
 
+	uint32_t fileSize = 0;
 	fh->write("FORM", 4);
 	writeU32(&fileSize);
 

@@ -446,14 +446,11 @@ status NISTFile::writeHeader()
 
 status NISTFile::writeInit(AFfilesetup setup)
 {
-	Track		*track;
-
-	assert(fileFormat == AF_FILE_NIST_SPHERE);
-
-	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
+	if (initFromSetup(setup) == AF_FAIL)
 		return AF_FAIL;
 
-	track = &tracks[0];
+	Track *track = getTrack();
+
 	track->totalfframes = 0;
 	track->fpos_first_frame = NIST_SPHERE_HEADER_LENGTH;
 	track->nextfframe = 0;

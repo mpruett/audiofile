@@ -273,22 +273,22 @@ static char *af_basename (char *filename)
 
 status AVRFile::writeInit(AFfilesetup setup)
 {
-	char		name[8];
-	uint16_t	mono, resolution, sign, loop, midi;
-	uint32_t	rate, size, loopStart, loopEnd;
-	char		reserved[26];
-	char		user[64];
-
-	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
+	if (initFromSetup(setup) == AF_FAIL)
 		return AF_FAIL;
-
-	Track *track = getTrack();
 
 	if (fh->seek(0, File::SeekFromBeginning) != 0)
 	{
 		_af_error(AF_BAD_LSEEK, "bad seek");
 		return AF_FAIL;
 	}
+
+	Track *track = getTrack();
+
+	char name[8];
+	uint16_t mono, resolution, sign, loop, midi;
+	uint32_t rate, size, loopStart, loopEnd;
+	char reserved[26];
+	char user[64];
 
 	fh->write("2BIT", 4);
 	memset(name, 0, 8);

@@ -61,18 +61,16 @@ bool RawFile::recognize(File *fh)
 
 status RawFile::readInit(AFfilesetup filesetup)
 {
-	Track	*track;
-
-	if (filesetup == NULL)
+	if (!filesetup)
 	{
-		_af_error(AF_BAD_FILEHANDLE, "a valid AFfilesetup is required for reading raw data");
+		_af_error(AF_BAD_FILESETUP, "a valid AFfilesetup is required for reading raw data");
 		return AF_FAIL;
 	}
 
-	if (_af_filesetup_make_handle(filesetup, this) == AF_FAIL)
+	if (initFromSetup(filesetup) == AF_FAIL)
 		return AF_FAIL;
 
-	track = &tracks[0];
+	Track *track = getTrack();
 
 	/* Set the track's data offset. */
 	if (filesetup->tracks[0].dataOffsetSet)
@@ -110,12 +108,11 @@ status RawFile::readInit(AFfilesetup filesetup)
 
 status RawFile::writeInit(AFfilesetup filesetup)
 {
-	Track	*track;
-
-	if (_af_filesetup_make_handle(filesetup, this) == AF_FAIL)
+	if (initFromSetup(filesetup) == AF_FAIL)
 		return AF_FAIL;
 
-	track = &tracks[0];
+	Track *track = getTrack();
+
 	track->totalfframes = 0;
 	if (filesetup->tracks[0].dataOffsetSet)
 		track->fpos_first_frame = filesetup->tracks[0].dataOffset;

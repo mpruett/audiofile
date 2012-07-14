@@ -87,6 +87,7 @@ struct Track
 	void print();
 
 	Marker *getMarker(int markerID);
+	status copyMarkers(TrackSetup *setup);
 };
 
 #endif

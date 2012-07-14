@@ -1,7 +1,7 @@
 /*
 	Audio File Library
+	Copyright (C) 2010-2012, Michael Pruett <michael@68k.org>
 	Copyright (C) 2000-2001, Silicon Graphics, Inc.
-	Copyright (C) 2010-2011, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -42,9 +42,11 @@
 
 #include "File.h"
 #include "Instrument.h"
+#include "Setup.h"
 #include "Tag.h"
 #include "Track.h"
 #include "units.h"
+#include "util.h"
 
 static void freeInstParams (AFPVu *values, int fileFormat)
 {
@@ -209,6 +211,134 @@ Miscellaneous *_AFfilehandle::getMiscellaneous(int miscellaneousID)
 	_af_error(AF_BAD_MISCID, "bad miscellaneous id %d", miscellaneousID);
 
 	return NULL;
+}
+
+status _AFfilehandle::initFromSetup(AFfilesetup setup)
+{
+	if (copyTracksFromSetup(setup) == AF_FAIL)
+		return AF_FAIL;
+	if (copyInstrumentsFromSetup(setup) == AF_FAIL)
+		return AF_FAIL;
+	if (copyMiscellaneousFromSetup(setup) == AF_FAIL)
+		return AF_FAIL;
+	return AF_SUCCEED;
+}
+
+status _AFfilehandle::copyTracksFromSetup(AFfilesetup setup)
+{
+	if ((trackCount = setup->trackCount) == 0)
+	{
+		tracks = NULL;
+		return AF_SUCCEED;
+	}
+
+	tracks = new Track[trackCount];
+	if (!tracks)
+		return AF_FAIL;
+
+	for (int i=0; i<trackCount; i++)
+	{
+		Track *track = &tracks[i];
+		TrackSetup *trackSetup = &setup->tracks[i];
+
+		track->id = trackSetup->id;
+		track->f = trackSetup->f;
+
+		if (track->copyMarkers(trackSetup) == AF_FAIL)
+			return AF_FAIL;
+
+		track->hasAESData = trackSetup->aesDataSet;
+	}
+
+	return AF_SUCCEED;
+}
+
+status _AFfilehandle::copyInstrumentsFromSetup(AFfilesetup setup)
+{
+	if ((instrumentCount = setup->instrumentCount) == 0)
+	{
+		instruments = NULL;
+		return AF_SUCCEED;
+	}
+
+	instruments = static_cast<Instrument *>(_af_calloc(instrumentCount,
+		sizeof (Instrument)));
+	if (!instruments)
+		return AF_FAIL;
+
+	for (int i=0; i<instrumentCount; i++)
+	{
+		instruments[i].id = setup->instruments[i].id;
+
+		// Copy loops.
+		if ((instruments[i].loopCount = setup->instruments[i].loopCount) == 0)
+		{
+			instruments[i].loops = NULL;
+		}
+		else
+		{
+			instruments[i].loops =
+				static_cast<Loop *>(_af_calloc(instruments[i].loopCount,
+					sizeof (Loop)));
+			if (!instruments[i].loops)
+				return AF_FAIL;
+			for (int j=0; j<instruments[i].loopCount; j++)
+			{
+				Loop *loop = &instruments[i].loops[j];
+				loop->id = setup->instruments[i].loops[j].id;
+				loop->mode = AF_LOOP_MODE_NOLOOP;
+				loop->count = 0;
+				loop->trackid = AF_DEFAULT_TRACK;
+				loop->beginMarker = 2*j + 1;
+				loop->endMarker = 2*j + 2;
+			}
+		}
+
+		int instParamCount;
+		// Copy instrument parameters.
+		if ((instParamCount = _af_units[setup->fileFormat].instrumentParameterCount) == 0)
+		{
+			instruments[i].values = NULL;
+		}
+		else
+		{
+			instruments[i].values =
+				static_cast<AFPVu *>(_af_calloc(instParamCount, sizeof (AFPVu)));
+			if (!instruments[i].values)
+				return AF_FAIL;
+			for (int j=0; j<instParamCount; j++)
+			{
+				instruments[i].values[j] = _af_units[setup->fileFormat].instrumentParameters[j].defaultValue;
+			}
+		}
+	}
+
+	return AF_SUCCEED;
+}
+
+status _AFfilehandle::copyMiscellaneousFromSetup(AFfilesetup setup)
+{
+	if ((miscellaneousCount = setup->miscellaneousCount) == 0)
+	{
+		miscellaneous = NULL;
+		return AF_SUCCEED;
+	}
+
+	miscellaneous = static_cast<Miscellaneous *>(_af_calloc(miscellaneousCount,
+		sizeof (Miscellaneous)));
+	if (!miscellaneous)
+		return AF_FAIL;
+
+	for (int i=0; i<miscellaneousCount; i++)
+	{
+		miscellaneous[i].id = setup->miscellaneous[i].id;
+		miscellaneous[i].type = setup->miscellaneous[i].type;
+		miscellaneous[i].size = setup->miscellaneous[i].size;
+		miscellaneous[i].position = 0;
+		miscellaneous[i].buffer = NULL;
+	}
+
+	return AF_SUCCEED;
 }
 
 template <typename T>

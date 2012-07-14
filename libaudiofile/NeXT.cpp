@@ -348,7 +348,7 @@ static uint32_t nextencodingtype (AudioFormat *format)
 
 status NeXTFile::writeInit(AFfilesetup setup)
 {
-	if (_af_filesetup_make_handle(setup, this) == AF_FAIL)
+	if (initFromSetup(setup) == AF_FAIL)
 		return AF_FAIL;
 
 	if (miscellaneousCount > 0)
