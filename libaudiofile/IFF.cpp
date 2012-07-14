@@ -43,7 +43,7 @@
 #include "byteorder.h"
 #include "util.h"
 
-static _AFfilesetup iff_default_filesetup =
+static const _AFfilesetup iffDefaultFileSetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_IFF_8SVX,	/* fileFormat */
@@ -301,7 +301,7 @@ AFfilesetup IFFFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	return _af_filesetup_copy(setup, &iff_default_filesetup, true);
+	return _af_filesetup_copy(setup, &iffDefaultFileSetup, true);
 }
 
 status IFFFile::writeInit(AFfilesetup setup)

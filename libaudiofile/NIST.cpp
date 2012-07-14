@@ -44,7 +44,7 @@
 #define NIST_SPHERE_HEADER_LENGTH 1024
 #define NIST_SPHERE_MAX_FIELD_LENGTH 80
 
-static _AFfilesetup nist_default_filesetup =
+static const _AFfilesetup nistDefaultFileSetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_NIST_SPHERE,	/* fileFormat */
@@ -163,7 +163,7 @@ AFfilesetup NISTFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	return _af_filesetup_copy(setup, &nist_default_filesetup, true);
+	return _af_filesetup_copy(setup, &nistDefaultFileSetup, true);
 }
 
 static bool nist_header_read_int (const char *header, const char *key, int *val)

@@ -39,7 +39,7 @@ static const uint32_t kSMPInvalidSamplePosition = 0xffffffffu;
 
 static const uint8_t kSMPMIDIUnityPlaybackNote = 60;
 
-static _AFfilesetup sSampleVisionDefaultFileSetup =
+static const _AFfilesetup sSampleVisionDefaultFileSetup =
 {
 	_AF_VALID_FILESETUP,
 	AF_FILE_SAMPLEVISION,

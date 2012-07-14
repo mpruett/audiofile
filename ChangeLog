@@ -1,5 +1,9 @@
 2012-07-14  Michael Pruett <michael@68k.org>
 
+	* Mark default file setup structures as constant.
+
+2012-07-14  Michael Pruett <michael@68k.org>
+
 	* Refactor file handle initialization.
 
 2012-07-05  Michael Pruett <michael@68k.org>

@@ -76,7 +76,7 @@ static const uint8_t ircam_vax_le_magic[4] = {0x64, 0xa3, 0x01, 0x00},
 	ircam_next_be_magic[4] = {0x64, 0xa3, 0x04, 0x00},
 	ircam_next_le_magic[4] = {0x00, 0x04, 0xa3, 0x64};
 
-static _AFfilesetup ircam_default_filesetup =
+static const _AFfilesetup ircam_default_filesetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_IRCAM,		/* fileFormat */

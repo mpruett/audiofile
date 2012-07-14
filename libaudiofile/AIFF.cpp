@@ -65,7 +65,7 @@ const int _af_aiffc_compression_types[_AF_AIFFC_NUM_COMPTYPES] =
 	AF_COMPRESSION_IMA
 };
 
-static _AFfilesetup aiff_default_filesetup =
+static const _AFfilesetup aiffDefaultFileSetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_AIFF,		/* fileFormat */
@@ -724,7 +724,7 @@ AFfilesetup AIFFFile::completeSetup(AFfilesetup setup)
 		}
 	}
 
-	return _af_filesetup_copy(setup, &aiff_default_filesetup, true);
+	return _af_filesetup_copy(setup, &aiffDefaultFileSetup, true);
 }
 
 bool AIFFFile::isInstrumentParameterValid(AUpvlist list, int i)

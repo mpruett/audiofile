@@ -65,13 +65,7 @@ enum
 	kVOCFormatCreativeADPCM4_16 = 0x200,
 };
 
-VOCFile::VOCFile() :
-	m_soundDataOffset(-1)
-{
-	setFormatByteOrder(AF_BYTEORDER_LITTLEENDIAN);
-}
-
-static _AFfilesetup _af_voc_default_filesetup =
+static const _AFfilesetup vocDefaultFileSetup =
 {
 	_AF_VALID_FILESETUP,	// valid
 	AF_FILE_VOC,			// fileFormat
@@ -85,6 +79,12 @@ static _AFfilesetup _af_voc_default_filesetup =
 	0,		// miscellaneousCount
 	NULL	// miscellaneous
 };
+
+VOCFile::VOCFile() :
+	m_soundDataOffset(-1)
+{
+	setFormatByteOrder(AF_BYTEORDER_LITTLEENDIAN);
+}
 
 bool VOCFile::recognize(File *f)
 {
@@ -149,7 +149,7 @@ AFfilesetup VOCFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	return _af_filesetup_copy(setup, &_af_voc_default_filesetup, true);
+	return _af_filesetup_copy(setup, &vocDefaultFileSetup, true);
 }
 
 status VOCFile::readInit(AFfilesetup)

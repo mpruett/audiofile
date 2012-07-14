@@ -41,7 +41,7 @@
 #include "byteorder.h"
 #include "util.h"
 
-static _AFfilesetup avr_default_filesetup =
+static const _AFfilesetup avrDefaultFileSetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_AVR,		/* fileFormat */
@@ -236,7 +236,7 @@ AFfilesetup AVRFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	return _af_filesetup_copy(setup, &avr_default_filesetup, false);
+	return _af_filesetup_copy(setup, &avrDefaultFileSetup, false);
 }
 
 status AVRFile::update()

@@ -33,12 +33,13 @@
 #include "Marker.h"
 #include "Track.h"
 #include "afinternal.h"
+#include "byteorder.h"
 #include "audiofile.h"
 #include "pcm.h"
 #include "units.h"
 #include "util.h"
 
-const _AFfilesetup _af_default_file_setup =
+static const _AFfilesetup _af_default_file_setup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 #if WORDS_BIGENDIAN
@@ -57,7 +58,7 @@ const _AFfilesetup _af_default_file_setup =
 	NULL		/* miscellaneous */
 };
 
-const InstrumentSetup _af_default_instrumentsetup =
+static const InstrumentSetup _af_default_instrumentsetup =
 {
 	0,		/* id */
 	2,		/* loopCount */
@@ -65,18 +66,14 @@ const InstrumentSetup _af_default_instrumentsetup =
 	false		/* loopSet */
 };
 
-const TrackSetup _af_default_tracksetup =
+static const TrackSetup _af_default_tracksetup =
 {
 	0,
 	{
 		44100.0,
 		AF_SAMPFMT_TWOSCOMP,
 		16,
-#if WORDS_BIGENDIAN
-		AF_BYTEORDER_BIGENDIAN,
-#else
-		AF_BYTEORDER_LITTLEENDIAN,
-#endif
+		_AF_BYTEORDER_NATIVE,
 		{ SLOPE_INT16, 0, MIN_INT16, MAX_INT16 },
 		2,
 		AF_COMPRESSION_NONE,
@@ -440,8 +437,8 @@ void afInitFrameCount (AFfilesetup setup, int trackid, AFfileoffset count)
 	} \
 }
 
-AFfilesetup _af_filesetup_copy (AFfilesetup setup, AFfilesetup defaultSetup,
-	bool copyMarks)
+AFfilesetup _af_filesetup_copy (const _AFfilesetup *setup,
+	const _AFfilesetup *defaultSetup, bool copyMarks)
 {
 	AFfilesetup newsetup;
 	int instrumentCount, miscellaneousCount, trackCount;

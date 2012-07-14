@@ -33,19 +33,19 @@
 #include "Track.h"
 #include "util.h"
 
-static _AFfilesetup raw_default_filesetup =
+static const _AFfilesetup rawDefaultFileSetup =
 {
-	_AF_VALID_FILESETUP,	/* valid */
-	AF_FILE_RAWDATA,	/* fileFormat */
-	true,			/* trackSet */
-	true,			/* instrumentSet */
-	true,			/* miscellaneousSet */
-	1,			/* trackCount */
-	NULL,			/* tracks */
-	0,			/* instrumentCount */
-	NULL,			/* instruments */
-	0,			/* miscellaneousCount */
-	NULL			/* miscellaneous */
+	_AF_VALID_FILESETUP,	// valid
+	AF_FILE_RAWDATA,		// fileFormat
+	true,	// trackSet
+	true,	// instrumentSet
+	true,	// miscellaneousSet
+	1,		// trackCount
+	NULL,	// tracks
+	0,		// instrumentCount
+	NULL,	// instruments
+	0,		// miscellaneousCount
+	NULL	// miscellaneous
 };
 
 const int _af_raw_compression_types[_AF_RAW_NUM_COMPTYPES] =
@@ -169,7 +169,7 @@ AFfilesetup RawFile::completeSetup(AFfilesetup setup)
 	}
 
 	newSetup = (_AFfilesetup *) _af_malloc(sizeof (_AFfilesetup));
-	*newSetup = raw_default_filesetup;
+	*newSetup = rawDefaultFileSetup;
 
 	newSetup->tracks = (TrackSetup *) _af_malloc(sizeof (TrackSetup));
 	newSetup->tracks[0] = setup->tracks[0];

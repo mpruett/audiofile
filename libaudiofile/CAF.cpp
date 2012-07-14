@@ -46,7 +46,7 @@ enum
 	kCAFLinearPCMFormatFlagIsLittleEndian = (1L << 1)
 };
 
-static _AFfilesetup caf_default_filesetup =
+static const _AFfilesetup cafDefaultFileSetup =
 {
 	_AF_VALID_FILESETUP,	// valid
 	AF_FILE_CAF,			// fileFormat
@@ -199,7 +199,7 @@ AFfilesetup CAFFile::completeSetup(AFfilesetup setup)
 		track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 	}
 
-	return _af_filesetup_copy(setup, &caf_default_filesetup, true);
+	return _af_filesetup_copy(setup, &cafDefaultFileSetup, true);
 }
 
 status CAFFile::update()

@@ -48,7 +48,7 @@ const int _af_next_compression_types[_AF_NEXT_NUM_COMPTYPES] =
 	AF_COMPRESSION_G711_ALAW
 };
 
-static _AFfilesetup next_default_filesetup =
+static const _AFfilesetup nextDefaultFileSetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_NEXTSND,	/* fileFormat */
@@ -282,7 +282,7 @@ AFfilesetup NeXTFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	return _af_filesetup_copy(setup, &next_default_filesetup, false);
+	return _af_filesetup_copy(setup, &nextDefaultFileSetup, false);
 }
 
 static uint32_t nextencodingtype (AudioFormat *format);

@@ -49,14 +49,12 @@ struct _AFfilesetup
 	MiscellaneousSetup *getMiscellaneous(int miscellaneousID);
 };
 
-AFfilesetup _af_filesetup_copy (AFfilesetup setup, AFfilesetup defaultSetup,
-        bool copyMarks);
-
 void _af_setup_free_markers (AFfilesetup setup, int trackno);
 void _af_setup_free_tracks (AFfilesetup setup);
 void _af_setup_free_instruments (AFfilesetup setup);
-AFfilesetup _af_filesetup_copy (AFfilesetup setup, AFfilesetup defaultSetup,
-        bool copyMarks);
+
+AFfilesetup _af_filesetup_copy (const _AFfilesetup *setup,
+	const _AFfilesetup *defaultSetup, bool copyMarks);
 
 InstrumentSetup *_af_instsetup_new (int count);
 

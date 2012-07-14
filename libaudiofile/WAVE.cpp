@@ -113,7 +113,7 @@ const InstParamInfo _af_wave_inst_params[_AF_WAVE_NUM_INSTPARAMS] =
 	{ AF_INST_NUMDBS_GAIN, AU_PVTYPE_LONG, "Gain in dB", {0} }
 };
 
-static _AFfilesetup wave_default_filesetup =
+static const _AFfilesetup waveDefaultFileSetup =
 {
 	_AF_VALID_FILESETUP,	/* valid */
 	AF_FILE_WAVE,		/* fileFormat */
@@ -1010,7 +1010,7 @@ AFfilesetup WAVEFile::completeSetup(AFfilesetup setup)
 	/*
 		Allocate an AFfilesetup and make all the unset fields correct.
 	*/
-	AFfilesetup	newsetup = _af_filesetup_copy(setup, &wave_default_filesetup, false);
+	AFfilesetup	newsetup = _af_filesetup_copy(setup, &waveDefaultFileSetup, false);
 
 	/* Make sure we do not copy loops if they are not specified in setup. */
 	if (setup->instrumentSet && setup->instrumentCount > 0 &&
