@@ -4,6 +4,7 @@ ChannelMatrix
 Error
 FloatToInt
 IntToFloat
+InvalidCompressionFormat
 InvalidSampleFormat
 Large
 Loop

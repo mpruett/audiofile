@@ -7,6 +7,7 @@ TESTS = \
 	Error \
 	FloatToInt \
 	IntToFloat \
+	InvalidCompressionFormat \
 	InvalidSampleFormat \
 	Large \
 	Loop \
@@ -68,6 +69,9 @@ FloatToInt_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 IntToFloat_SOURCES = IntToFloat.cpp
 IntToFloat_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+InvalidCompressionFormat_SOURCES = InvalidCompressionFormat.cpp
+InvalidCompressionFormat_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 InvalidSampleFormat_SOURCES = InvalidSampleFormat.cpp
 InvalidSampleFormat_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
