@@ -87,6 +87,7 @@ void afInitCompression (AFfilesetup setup, int trackid, int compression)
 	if (!findCompression(compression))
 		return;
 
+	track->compressionSet = true;
 	track->f.compressionType = compression;
 }
 

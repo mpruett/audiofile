@@ -1,5 +1,10 @@
 2012-07-14  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/SampleVision.cpp, libaudiofile/compression.cpp:
+	Report an error when initializing a file with an invalid compression format.
+
+2012-07-14  Michael Pruett <michael@68k.org>
+
 	* test/InvalidCompressionFormat.cpp, test/Makefile.am:
 	Add test for creating audio files with invalid compression formats.
 

@@ -113,6 +113,12 @@ AFfilesetup SampleVisionFile::completeSetup(AFfilesetup setup)
 
 	track->f.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
 
+	if (track->compressionSet && !track->f.isUncompressed())
+	{
+		_af_error(AF_BAD_COMPTYPE, "SampleVision does not support compressed audio data");
+		return AF_NULL_FILESETUP;
+	}
+
 	return _af_filesetup_copy(setup, &sSampleVisionDefaultFileSetup, true);
 }
 
