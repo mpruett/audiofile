@@ -1,3 +1,9 @@
+2012-07-21  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/modules/RebufferModule.cpp,
+	libaudiofile/modules/UT_RebufferModule.cpp:
+	Fix error in rebuffer module when buffering after pulling a short chunk.
+
 2012-07-14  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/SampleVision.cpp, libaudiofile/compression.cpp:

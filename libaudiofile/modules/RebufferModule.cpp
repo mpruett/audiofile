@@ -144,7 +144,7 @@ void RebufferModule::runPull()
 			assert(m_offset > 0 && m_offset <= m_numFrames);
 
 			memcpy(m_buffer + m_offset * m_bytesPerFrame,
-				inBuffer + (framesRequested + framesToPull) * m_bytesPerFrame,
+				inBuffer + (framesReceived + framesToPull) * m_bytesPerFrame,
 				(m_numFrames - m_offset) * m_bytesPerFrame);
 		}
 		else

@@ -203,6 +203,75 @@ TEST(RebufferModule, FixedToVariable_Multiple)
 	testFixedToVariable(true);
 }
 
+/*
+	Make a request to the rebuffer module which is large enough
+	to pull the final short chunk from the test source but which
+	doesn't consume all the frames of that chunk.
+
+	Verify that a subsequent request to the rebuffer module correctly
+	produces the remaining frames of that chunk.
+*/
+static void testBufferingAfterShortChunk(bool multiple)
+{
+	const int channels = 2;
+	AudioFormat f = createAudioFormat(channels);
+
+	SharedPtr<RebufferModule> rebuffer =
+		new RebufferModule(RebufferModule::FixedToVariable, f.bytesPerFrame(),
+			10, multiple);
+
+	SharedPtr<TestSourceModule> source = new TestSourceModule();
+	rebuffer->setSource(source.get());
+
+	SharedPtr<Chunk> fixedChunk(new Chunk());
+	SharedPtr<Chunk> variableChunk(new Chunk());
+
+	const int maxFrameCount = 30;
+	fixedChunk->f = f;
+	fixedChunk->allocate(maxFrameCount * f.bytesPerFrame());
+
+	variableChunk->f = f;
+	variableChunk->allocate(maxFrameCount * f.bytesPerFrame());
+
+	rebuffer->setInChunk(fixedChunk.get());
+	rebuffer->setOutChunk(variableChunk.get());
+
+	source->setOutChunk(fixedChunk.get());
+
+	// Initialize source to contain 23 frames.
+	source->setFrameCount(23);
+
+	// Request 21 frames from rebuffer module.
+	variableChunk->frameCount = 21;
+	source->setExpectedRequestLength(multiple ? 30 : 10);
+	rebuffer->runPull();
+	// Check that all 23 frames have been pulled from source module.
+	EXPECT_EQ(23u, source->startFrame());
+	// Check that rebuffer module has fulfilled request of 21 frames.
+	EXPECT_EQ(21u, variableChunk->frameCount);
+	// Validate output data.
+	validateChunkData(*variableChunk, 0);
+
+	// Request 5 frames from rebuffer module.
+	variableChunk->frameCount = 5;
+	source->setExpectedRequestLength(-1);
+	rebuffer->runPull();
+	// Check that rebuffer module has delivered remaining 2 frames.
+	EXPECT_EQ(2u, variableChunk->frameCount);
+	// Validate output data.
+	validateChunkData(*variableChunk, 21);
+}
+
+TEST(RebufferModule, FixedToVariable_BufferingAfterShortChunk)
+{
+	testBufferingAfterShortChunk(false);
+}
+
+TEST(RebufferModule, FixedToVariable_BufferingAfterShortChunk_Multiple)
+{
+	testBufferingAfterShortChunk(true);
+}
+
 static void testVariableToFixed(bool multiple)
 {
 	const int channels = 2;
