@@ -36,12 +36,6 @@
 #include "compression.h"
 #include "util.h"
 
-#ifdef DEBUG
-#define CHNK(X) (X)
-#else
-#define CHNK(X)
-#endif
-
 bool _af_pcm_format_ok (AudioFormat *f)
 {
 	assert(!isnan(f->pcm.slope));
@@ -112,8 +106,6 @@ void PCM::runPush()
 	ssize_t bytesWritten = write(m_inChunk->buffer, m_bytesPerFrame * frames2write);
 	n = bytesWritten >= 0 ? bytesWritten / m_bytesPerFrame : 0;
 
-	CHNK(printf("writing %jd frames to pcm file\n", (intmax_t) frames2write));
-
 	if (n != frames2write)
 		reportWriteError(n, frames2write);
 
@@ -172,9 +164,6 @@ void PCM::runPull()
 
 	ssize_t bytesRead = read(m_outChunk->buffer, m_bytesPerFrame * framesToRead);
 	AFframecount framesRead = bytesRead >= 0 ? bytesRead / m_bytesPerFrame : 0;
-
-	CHNK(printf("reading %jd frames from pcm file (got %jd)\n",
-		(intmax_t) framesToRead, (intmax_t) framesRead));
 
 	m_track->nextfframe += framesRead;
 	assert(!canSeek() || (tell() == m_track->fpos_next_frame));

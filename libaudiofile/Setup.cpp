@@ -447,14 +447,6 @@ AFfilesetup _af_filesetup_copy (const _AFfilesetup *setup,
 	if (newsetup == AF_NULL_FILESETUP)
 		return AF_NULL_FILESETUP;
 
-#ifdef DEBUG
-	printf("default: trackset=%d instset=%d miscset=%d\n",
-		defaultSetup->trackSet, defaultSetup->instrumentSet,
-		defaultSetup->miscellaneousSet);
-	printf("setup: trackset=%d instset=%d miscset=%d\n",
-		setup->trackSet, setup->instrumentSet, setup->miscellaneousSet);
-#endif
-
 	*newsetup = *defaultSetup;
 
 	newsetup->tracks = NULL;

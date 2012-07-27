@@ -1,3 +1,11 @@
+2012-07-26  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/AIFF.cpp, libaudiofile/NeXT.cpp,
+	libaudiofile/Setup.cpp, libaudiofile/WAVE.cpp,
+	libaudiofile/format.cpp, libaudiofile/modules/G711.cpp,
+	libaudiofile/modules/IMA.cpp, libaudiofile/modules/PCM.cpp:
+	Remove unnecessary debugging print statements.
+
 2012-07-21  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/modules/RebufferModule.cpp,

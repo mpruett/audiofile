@@ -31,7 +31,6 @@
 
 #include <assert.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -229,13 +228,6 @@ status AIFFFile::parseINST(const Tag &type, size_t size)
 	readU8(&highVelocity);
 	readS16(&gain);
 
-#ifdef DEBUG
-	printf("baseNote/detune/lowNote/highNote/lowVelocity/highVelocity/gain:"
-		" %d %d %d %d %d %d %d\n",
-		baseNote, detune, lowNote, highNote, lowVelocity, highVelocity,
-		gain);
-#endif
-
 	instrument->values[0].l = baseNote;
 	instrument->values[1].l = detune;
 	instrument->values[2].l = lowVelocity;
@@ -254,14 +246,6 @@ status AIFFFile::parseINST(const Tag &type, size_t size)
 	readU16(&releaseLoopPlayMode);
 	readU16(&releaseLoopBegin);
 	readU16(&releaseLoopEnd);
-
-#ifdef DEBUG
-	printf("sustain loop: mode %d, begin %d, end %d\n",
-		sustainLoopPlayMode, sustainLoopBegin, sustainLoopEnd);
-
-	printf("release loop: mode %d, begin %d, end %d\n",
-		releaseLoopPlayMode, releaseLoopBegin, releaseLoopEnd);
-#endif
 
 	instrument->loops[0].id = 1;
 	instrument->loops[0].mode = sustainLoopPlayMode;
@@ -308,13 +292,6 @@ status AIFFFile::parseMARK(const Tag &type, size_t size)
 		m_fh->read(markerName, sizeByte);
 
 		markerName[sizeByte] = '\0';
-
-#ifdef DEBUG
-		printf("marker id: %d, position: %d, name: %s\n",
-			markerID, markerPosition, markerName);
-
-		printf("size byte: %d\n", sizeByte);
-#endif
 
 		/*
 			If sizeByte is even, then 1+sizeByte (the length
@@ -464,16 +441,7 @@ status AIFFFile::parseSSND(const Tag &type, size_t size)
 
 	track->data_size = size - 8 - offset;
 
-#ifdef DEBUG
-	printf("offset: %d\n", offset);
-	printf("block size: %d\n", blockSize);
-#endif
-
 	track->fpos_first_frame = m_fh->tell() + offset;
-
-#ifdef DEBUG
-	printf("data start: %d\n", track->fpos_first_frame);
-#endif
 
 	return AF_SUCCEED;
 }
@@ -496,10 +464,6 @@ status AIFFFile::readInit(AFfilesetup setup)
 		(memcmp(&formtype, "AIFF", 4) && memcmp(&formtype, "AIFC", 4)))
 		return AF_FAIL;
 
-#ifdef DEBUG
-	printf("size: %d\n", size);
-#endif
-
 	if (!allocateTrack())
 		return AF_FAIL;
 
@@ -511,16 +475,8 @@ status AIFFFile::readInit(AFfilesetup setup)
 		uint32_t chunksize = 0;
 		status result = AF_SUCCEED;
 
-#ifdef DEBUG
-		printf("index: %d\n", index);
-#endif
 		readTag(&chunkid);
 		readU32(&chunksize);
-
-#ifdef DEBUG
-		printf("%s", chunkid.name().c_str());
-		printf(" size: %d\n", chunksize);
-#endif
 
 		if (chunkid == "COMM")
 		{
@@ -809,10 +765,6 @@ status AIFFFile::writeInit(AFfilesetup setup)
 
 status AIFFFile::update()
 {
-#ifdef DEBUG
-	printf("_af_aiff_update called.\n");
-#endif
-
 	/* Get the length of the file. */
 	uint32_t length = m_fh->length();
 	length -= 8;
@@ -1102,11 +1054,6 @@ status AIFFFile::writeMARK()
 	chunkEndPosition = m_fh->tell();
 	length = chunkEndPosition - chunkStartPosition;
 
-#ifdef DEBUG
-	printf(" end: %d\n", chunkEndPosition);
-	printf(" length: %d\n", length);
-#endif
-
 	m_fh->seek(chunkStartPosition - 4, File::SeekFromBeginning);
 
 	writeU32(&length);
@@ -1157,10 +1104,6 @@ status AIFFFile::writeMiscellaneous()
 		Tag chunkType;
 		uint32_t chunkSize;
 		uint8_t padByte = 0;
-
-#ifdef DEBUG
-		printf("WriteMiscellaneous: %d, type %d\n", i, misc->type);
-#endif
 
 		switch (misc->type)
 		{

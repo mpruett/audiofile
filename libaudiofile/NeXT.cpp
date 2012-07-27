@@ -30,7 +30,6 @@
 
 #include <assert.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -118,12 +117,6 @@ status NeXTFile::readInit(AFfilesetup setup)
 	readU32(&sampleRate);
 	readU32(&channelCount);
 
-#ifdef DEBUG
-	printf("id, offset, length, encoding, sampleRate, channelCount:\n"
-		" %d %d %d %d %d %d\n",
-		id, offset, length, encoding, sampleRate, channelCount);
-#endif
-
 	Track *track = allocateTrack();
 	if (!track)
 		return AF_FAIL;
@@ -193,12 +186,6 @@ status NeXTFile::readInit(AFfilesetup setup)
 	int frameSize = _af_format_frame_size(&track->f, false);
 	track->totalfframes = length / frameSize;
 
-#ifdef DEBUG
-	printf("_af_next_read_init\n");
-	_af_print_filehandle(file);
-#endif
-
-	/* The file has been parsed successfully. */
 	return AF_SUCCEED;
 }
 

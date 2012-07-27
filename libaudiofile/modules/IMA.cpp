@@ -27,7 +27,6 @@
 #include "IMA.h"
 
 #include <assert.h>
-#include <stdio.h>
 
 #include <audiofile.h>
 

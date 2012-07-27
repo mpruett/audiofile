@@ -35,8 +35,6 @@
 
 #include "../g711.h"
 
-#define CHNK(X)
-
 static void ulaw2linear_buf (const uint8_t *ulaw, int16_t *linear, int nsamples)
 {
 	for (int i=0; i < nsamples; i++)
@@ -147,8 +145,6 @@ void G711::runPush()
 	ssize_t bytesWritten = write(m_outChunk->buffer, framesize * framesToWrite);
 	AFframecount framesWritten = bytesWritten >= 0 ? bytesWritten / framesize : 0;
 
-	CHNK(printf("writing %d frames to g711 file\n", framesToWrite));
-
 	if (framesWritten != framesToWrite)
 		reportWriteError(framesWritten, framesToWrite);
 
@@ -214,9 +210,6 @@ void G711::runPull()
 	else
 		alaw2linear_buf(static_cast<const uint8_t *>(m_inChunk->buffer),
 			static_cast<int16_t *>(m_outChunk->buffer), samplesToRead);
-
-	CHNK(printf("reading %d frames from g711 file (got %d)\n",
-		framesToRead, framesRead));
 
 	m_track->nextfframe += framesRead;
 	assert(!canSeek() || (tell() == m_track->fpos_next_frame));

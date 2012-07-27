@@ -33,7 +33,6 @@
 #include <assert.h>
 #include <math.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -434,8 +433,6 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 
 status WAVEFile::parseData(const Tag &id, uint32_t size)
 {
-	assert(id == "data");
-
 	Track *track = getTrack();
 
 	track->fpos_first_frame = m_fh->tell();
@@ -706,10 +703,6 @@ status WAVEFile::readInit(AFfilesetup setup)
 	assert(type == "RIFF");
 	assert(formtype == "WAVE");
 
-#ifdef DEBUG
-	printf("size: %d\n", size);
-#endif
-
 	/* Include the offset of the form type. */
 	index += 4;
 
@@ -719,15 +712,8 @@ status WAVEFile::readInit(AFfilesetup setup)
 		uint32_t chunksize = 0;
 		status result;
 
-#ifdef DEBUG
-		printf("index: %d\n", index);
-#endif
 		readTag(&chunkid);
 		readU32(&chunksize);
-
-#ifdef DEBUG
-		printf("%s size: %d\n", chunkid.name().c_str(), chunksize);
-#endif
 
 		if (chunkid == "fmt ")
 		{
