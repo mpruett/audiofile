@@ -132,15 +132,13 @@ void _af_print_audioformat (AudioFormat *fmt)
 
 	/* compression */
 	{
-		int idx = _af_compression_index_from_id(fmt->compressionType);
-		if (idx < 0)
-		{
+		const CompressionUnit *unit = _af_compression_unit_from_id(fmt->compressionType);
+		if (!unit)
 			printf("%dcompression?", fmt->compressionType);
-		}
 		else if (fmt->compressionType == AF_COMPRESSION_NONE)
 			printf("pcm");
 		else
-			printf("%s", _af_compression[idx].label);
+			printf("%s", unit->label);
 	}
 
 	printf(" }");

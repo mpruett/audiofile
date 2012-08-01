@@ -26,7 +26,8 @@
 #ifndef COMPRESSION_H
 #define COMPRESSION_H
 
-/* Provide an index into _af_compression given a compression id. */
-int _af_compression_index_from_id (int compressionid);
+struct CompressionUnit;
+
+const CompressionUnit *_af_compression_unit_from_id (int compressionid);
 
 #endif

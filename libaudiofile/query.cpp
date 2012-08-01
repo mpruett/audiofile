@@ -412,50 +412,53 @@ AUpvlist _afQueryMarker (int arg1, int arg2, int arg3, int arg4)
 /* ARGSUSED0 */
 AUpvlist _afQueryCompression (int arg1, int arg2, int arg3, int arg4)
 {
-	int	count, i, index;
-	int	*buf;
+	const CompressionUnit *unit = NULL;
 
 	switch (arg1)
 	{
 		case AF_QUERY_ID_COUNT:
-			count = 0;
-			for (i = 0; i < _AF_NUM_COMPRESSION; i++)
+		{
+			int count = 0;
+			for (int i = 0; i < _AF_NUM_COMPRESSION; i++)
 				if (_af_compression[i].implemented)
 					count++;
 			return _af_pv_long(count);
+		}
 
 		case AF_QUERY_IDS:
-			buf = (int *) _af_calloc(_AF_NUM_COMPRESSION, sizeof (int));
+		{
+			int *buf = (int *) _af_calloc(_AF_NUM_COMPRESSION, sizeof (int));
 			if (!buf)
 				return AU_NULL_PVLIST;
 
-			count = 0;
-			for (i = 0; i < _AF_NUM_COMPRESSION; i++)
+			int count = 0;
+			for (int i = 0; i < _AF_NUM_COMPRESSION; i++)
 			{
 				if (_af_compression[i].implemented)
 					buf[count++] = _af_compression[i].compressionID;
 			}
 			return _af_pv_pointer(buf);
+		}
 
 		case AF_QUERY_NATIVE_SAMPFMT:
-			index = _af_compression_index_from_id(arg2);
-			return _af_pv_long(_af_compression[index].nativeSampleFormat);
+			unit = _af_compression_unit_from_id(arg2);
+			return _af_pv_long(unit->nativeSampleFormat);
 
 		case AF_QUERY_NATIVE_SAMPWIDTH:
-			index = _af_compression_index_from_id(arg2);
-			return _af_pv_long(_af_compression[index].nativeSampleWidth);
+			unit = _af_compression_unit_from_id(arg2);
+			return _af_pv_long(unit->nativeSampleWidth);
 
 		case AF_QUERY_LABEL:
-			index = _af_compression_index_from_id(arg2);
-			return _af_pv_pointer(const_cast<char *>(_af_compression[index].label));
+			unit = _af_compression_unit_from_id(arg2);
+			return _af_pv_pointer(const_cast<char *>(unit->label));
 
 		case AF_QUERY_NAME:
-			index = _af_compression_index_from_id(arg2);
-			return _af_pv_pointer(const_cast<char *>(_af_compression[index].shortname));
+			unit = _af_compression_unit_from_id(arg2);
+			return _af_pv_pointer(const_cast<char *>(unit->shortname));
 
 		case AF_QUERY_DESC:
-			index = _af_compression_index_from_id(arg2);
-			return _af_pv_pointer(const_cast<char *>(_af_compression[index].name));
+			unit = _af_compression_unit_from_id(arg2);
+			return _af_pv_pointer(const_cast<char *>(unit->name));
 	}
 
 	_af_error(AF_BAD_QUERY, "unrecognized query selector %d\n", arg1);

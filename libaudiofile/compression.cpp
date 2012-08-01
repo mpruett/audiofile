@@ -37,27 +37,13 @@
 #include "units.h"
 #include "util.h"
 
-int _af_compression_index_from_id (int compressionid)
+const CompressionUnit *_af_compression_unit_from_id (int compressionid)
 {
 	for (int i=0; i<_AF_NUM_COMPRESSION; i++)
-	{
 		if (_af_compression[i].compressionID == compressionid)
-			return i;
-	}
+			return &_af_compression[i];
 
 	_af_error(AF_BAD_COMPTYPE, "compression type %d not available", compressionid);
-
-	return -1;
-}
-
-static const CompressionUnit *findCompression (int compressionid)
-{
-	int	compressionno;
-
-	compressionno = _af_compression_index_from_id(compressionid);
-	if (compressionno != -1)
-		return &_af_compression[compressionno];
-
 	return NULL;
 }
 
@@ -82,7 +68,7 @@ void afInitCompression (AFfilesetup setup, int trackid, int compression)
 	if (!track)
 		return;
 
-	if (!findCompression(compression))
+	if (!_af_compression_unit_from_id(compression))
 		return;
 
 	track->compressionSet = true;

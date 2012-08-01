@@ -147,10 +147,10 @@ std::string AudioFormat::description() const
 
 	if (isCompressed())
 	{
-		int compressionIndex = _af_compression_index_from_id(compressionType);
-		assert(compressionIndex >= 0);
+		const CompressionUnit *unit = _af_compression_unit_from_id(compressionType);
+		assert(unit);
 		d += "compression: ";
-		d += _af_compression[compressionIndex].label;
+		d += unit->label;
 	}
 
 	return d;

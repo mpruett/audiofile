@@ -1,5 +1,13 @@
 2012-07-31  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/AudioFormat.cpp, libaudiofile/compression.cpp,
+	libaudiofile/compression.h, libaudiofile/debug.cpp,
+	libaudiofile/modules/ModuleState.cpp, libaudiofile/query.cpp,
+	libaudiofile/util.cpp:
+	Refactor accessing compression units by compression type.
+
+2012-07-31  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/compression.cpp, libaudiofile/format.cpp,
 	libaudiofile/modules/ModuleState.cpp, libaudiofile/openclose.cpp,
 	libaudiofile/query.cpp, libaudiofile/units.cpp,

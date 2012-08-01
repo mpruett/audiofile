@@ -285,11 +285,8 @@ int _af_format_sample_size_uncompressed (const AudioFormat *format, bool stretch
 
 float _af_format_sample_size (const AudioFormat *fmt, bool stretch3to4)
 {
-	int	compressionIndex;
-	float	squishFactor;
-
-	compressionIndex = _af_compression_index_from_id(fmt->compressionType);
-	squishFactor = _af_compression[compressionIndex].squishFactor;
+	const CompressionUnit *unit = _af_compression_unit_from_id(fmt->compressionType);
+	float squishFactor = unit->squishFactor;
 
 	return _af_format_sample_size_uncompressed(fmt, stretch3to4) /
 		squishFactor;
@@ -303,11 +300,8 @@ int _af_format_frame_size_uncompressed (const AudioFormat *fmt, bool stretch3to4
 
 float _af_format_frame_size (const AudioFormat *fmt, bool stretch3to4)
 {
-	int	compressionIndex;
-	float	squishFactor;
-
-	compressionIndex = _af_compression_index_from_id(fmt->compressionType);
-	squishFactor = _af_compression[compressionIndex].squishFactor;
+	const CompressionUnit *unit = _af_compression_unit_from_id(fmt->compressionType);
+	float squishFactor = unit->squishFactor;
 
 	return _af_format_frame_size_uncompressed(fmt, stretch3to4) /
 		squishFactor;
