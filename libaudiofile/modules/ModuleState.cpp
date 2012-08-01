@@ -50,7 +50,7 @@ ModuleState::~ModuleState()
 status ModuleState::initFileModule(AFfilehandle file, Track *track)
 {
 	int compressionIndex = _af_compression_index_from_id(track->f.compressionType);
-	const _CompressionUnit *unit = &_af_compression[compressionIndex];
+	const CompressionUnit *unit = &_af_compression[compressionIndex];
 
 	if (file->m_seekok &&
 		file->m_fh->seek(track->fpos_first_frame, File::SeekFromBeginning) !=

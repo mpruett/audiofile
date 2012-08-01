@@ -21,7 +21,7 @@
 /*
 	units.h
 
-	This file defines the internal _Unit and _CompressionUnit
+	This file defines the internal Unit and CompressionUnit
 	structures for the Audio File Library.
 */
 
@@ -34,7 +34,7 @@
 class Module;
 struct AudioFormat;
 
-struct _Unit
+struct Unit
 {
 	int	fileFormat;	/* AF_FILEFMT_... */
 	const char *name;		/* a 2-3 word name of the file format */
@@ -60,7 +60,7 @@ struct _Unit
 	const InstParamInfo *instrumentParameters;
 };
 
-struct _CompressionUnit
+struct CompressionUnit
 {
 	int	compressionID;	/* AF_COMPRESSION_... */
 	bool implemented;
@@ -83,7 +83,7 @@ struct _CompressionUnit
 #define _AF_NUM_UNITS 16
 #define _AF_NUM_COMPRESSION 5
 
-extern const _Unit _af_units[_AF_NUM_UNITS];
-extern const _CompressionUnit _af_compression[_AF_NUM_COMPRESSION];
+extern const Unit _af_units[_AF_NUM_UNITS];
+extern const CompressionUnit _af_compression[_AF_NUM_COMPRESSION];
 
 #endif /* UNIT_H */

@@ -1,5 +1,13 @@
 2012-07-31  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/compression.cpp, libaudiofile/format.cpp,
+	libaudiofile/modules/ModuleState.cpp, libaudiofile/openclose.cpp,
+	libaudiofile/query.cpp, libaudiofile/units.cpp,
+	libaudiofile/units.h:
+	Remove leading underscores from _Unit and _CompressionUnit types.
+
+2012-07-31  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/modules/ModuleState.cpp:
 	Improve error handling in ModuleState::arrange().
 

@@ -42,8 +42,6 @@
 #include "units.h"
 #include "util.h"
 
-extern const _Unit _af_units[];
-
 static status _afOpenFile (int access, File *f, const char *filename,
 	AFfilehandle *file, AFfilesetup filesetup);
 

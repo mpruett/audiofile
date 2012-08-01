@@ -49,7 +49,7 @@
 #include "modules/IMA.h"
 #include "modules/MSADPCM.h"
 
-const _Unit _af_units[_AF_NUM_UNITS] =
+const Unit _af_units[_AF_NUM_UNITS] =
 {
 	{
 		AF_FILE_RAWDATA,
@@ -249,7 +249,7 @@ const _Unit _af_units[_AF_NUM_UNITS] =
 	}
 };
 
-const _CompressionUnit _af_compression[_AF_NUM_COMPRESSION] =
+const CompressionUnit _af_compression[_AF_NUM_COMPRESSION] =
 {
 	{
 		AF_COMPRESSION_NONE,

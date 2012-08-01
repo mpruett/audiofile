@@ -37,8 +37,6 @@
 #include "units.h"
 #include "util.h"
 
-extern const _CompressionUnit _af_compression[];
-
 int _af_compression_index_from_id (int compressionid)
 {
 	for (int i=0; i<_AF_NUM_COMPRESSION; i++)
@@ -52,7 +50,7 @@ int _af_compression_index_from_id (int compressionid)
 	return -1;
 }
 
-static const _CompressionUnit *findCompression (int compressionid)
+static const CompressionUnit *findCompression (int compressionid)
 {
 	int	compressionno;
 
