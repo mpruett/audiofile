@@ -287,7 +287,7 @@ void afInitFileFormat (AFfilesetup setup, int filefmt)
 	if (!_af_filesetup_ok(setup))
 		return;
 
-	if (filefmt < 0 || filefmt > _AF_NUM_UNITS)
+	if (filefmt < 0 || filefmt >= _AF_NUM_UNITS)
 	{
 		_af_error(AF_BAD_FILEFMT, "unrecognized file format %d",
 			filefmt);

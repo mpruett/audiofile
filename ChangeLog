@@ -1,5 +1,10 @@
 2012-07-31  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/Setup.cpp:
+	Fix array overrun in afInitFileFormat().
+
+2012-07-31  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/query.cpp, test/Makefile.am, test/Query.cpp:
 	Fix handling of queries for unimplemented compression formats.
 
