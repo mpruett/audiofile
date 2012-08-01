@@ -137,7 +137,7 @@ AUpvlist _afQueryFileFormat (int arg1, int arg2, int arg3, int arg4)
 
 		case AF_QUERY_IMPLEMENTED:
 			if (arg2 < 0 || arg2 >= _AF_NUM_UNITS)
-				return AU_NULL_PVLIST;
+				return _af_pv_long(0);
 			return _af_pv_long(_af_units[arg2].implemented);
 
 		/* The following select on arg3. */
@@ -440,24 +440,40 @@ AUpvlist _afQueryCompression (int arg1, int arg2, int arg3, int arg4)
 			return _af_pv_pointer(buf);
 		}
 
+		case AF_QUERY_IMPLEMENTED:
+			unit = _af_compression_unit_from_id(arg2);
+			if (!unit)
+				return _af_pv_long(0);
+			return _af_pv_long(unit->implemented);
+
 		case AF_QUERY_NATIVE_SAMPFMT:
 			unit = _af_compression_unit_from_id(arg2);
+			if (!unit)
+				return AU_NULL_PVLIST;
 			return _af_pv_long(unit->nativeSampleFormat);
 
 		case AF_QUERY_NATIVE_SAMPWIDTH:
 			unit = _af_compression_unit_from_id(arg2);
+			if (!unit)
+				return AU_NULL_PVLIST;
 			return _af_pv_long(unit->nativeSampleWidth);
 
 		case AF_QUERY_LABEL:
 			unit = _af_compression_unit_from_id(arg2);
+			if (!unit)
+				return AU_NULL_PVLIST;
 			return _af_pv_pointer(const_cast<char *>(unit->label));
 
 		case AF_QUERY_NAME:
 			unit = _af_compression_unit_from_id(arg2);
+			if (!unit)
+				return AU_NULL_PVLIST;
 			return _af_pv_pointer(const_cast<char *>(unit->shortname));
 
 		case AF_QUERY_DESC:
 			unit = _af_compression_unit_from_id(arg2);
+			if (!unit)
+				return AU_NULL_PVLIST;
 			return _af_pv_pointer(const_cast<char *>(unit->name));
 	}
 
