@@ -1,3 +1,8 @@
+2012-07-31  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/modules/ModuleState.cpp:
+	Improve error handling in ModuleState::arrange().
+
 2012-07-26  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/AIFF.cpp, libaudiofile/NeXT.cpp,

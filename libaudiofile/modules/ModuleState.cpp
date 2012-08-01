@@ -284,7 +284,6 @@ status ModuleState::arrange(AFfilehandle file, Track *track)
 {
 	bool isReading = file->m_access == _AF_READ_ACCESS;
 	AudioFormat in, out;
-	FormatCode infc, outfc;
 	if (isReading)
 	{
 		in = track->f;
@@ -296,8 +295,10 @@ status ModuleState::arrange(AFfilehandle file, Track *track)
 		out = track->f;
 	}
 
-	infc = getFormatCode(in);
-	outfc = getFormatCode(out);
+	FormatCode infc = getFormatCode(in);
+	FormatCode outfc = getFormatCode(out);
+	if (infc == kUndefined || outfc == kUndefined)
+		return AF_FAIL;
 
 	m_chunks.clear();
 	m_chunks.push_back(new Chunk());
