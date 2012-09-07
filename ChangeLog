@@ -1,3 +1,18 @@
+2012-09-06  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/AIFF.cpp,
+	libaudiofile/AIFF.h,
+	libaudiofile/CAF.cpp,
+	libaudiofile/SampleVision.cpp,
+	libaudiofile/VOC.cpp,
+	libaudiofile/WAVE.cpp,
+	libaudiofile/WAVE.h,
+	libaudiofile/util.cpp,
+	libaudiofile/util.h,
+	test/Makefile.am,
+	test/Marker.cpp:
+	Refactor marker writing. Record marker comments in WAVE files.
+
 2012-07-31  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/Setup.cpp:

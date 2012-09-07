@@ -199,6 +199,12 @@ AFfilesetup CAFFile::completeSetup(AFfilesetup setup)
 		track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 	}
 
+	if (track->markersSet && track->markerCount)
+	{
+		_af_error(AF_BAD_NOT_IMPLEMENTED, "CAF does not yet support markers");
+		return AF_NULL_FILESETUP;
+	}
+
 	return _af_filesetup_copy(setup, &cafDefaultFileSetup, true);
 }
 

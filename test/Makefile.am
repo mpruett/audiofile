@@ -11,6 +11,7 @@ TESTS = \
 	InvalidSampleFormat \
 	Large \
 	Loop \
+	Marker \
 	Miscellaneous \
 	NeXT \
 	PCMData \
@@ -82,6 +83,9 @@ Large_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 Loop_SOURCES = Loop.cpp
 Loop_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+Marker_SOURCES = Marker.cpp
+Marker_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 Miscellaneous_SOURCES = Miscellaneous.cpp
 Miscellaneous_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)

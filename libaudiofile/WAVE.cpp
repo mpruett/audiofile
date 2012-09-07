@@ -1,8 +1,8 @@
 /*
 	Audio File Library
 	Copyright (C) 1998-2000, 2003-2004, 2010-2012, Michael Pruett <michael@68k.org>
-	Copyright (C) 2002-2003, Davy Durham
 	Copyright (C) 2000-2002, Silicon Graphics, Inc.
+	Copyright (C) 2002-2003, Davy Durham
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -1373,11 +1373,9 @@ status WAVEFile::writeMiscellaneous()
 
 status WAVEFile::writeCues()
 {
-	int *markids, markCount;
-	uint32_t numCues, cueChunkSize, listChunkSize;
+	Track *track = getTrack();
 
-	markCount = afGetMarkIDs(this, AF_DEFAULT_TRACK, NULL);
-	if (markCount == 0)
+	if (!track->markerCount)
 		return AF_SUCCEED;
 
 	if (m_markOffset == 0)
@@ -1385,115 +1383,113 @@ status WAVEFile::writeCues()
 	else
 		m_fh->seek(m_markOffset, File::SeekFromBeginning);
 
-	m_fh->write("cue ", 4);
+	Tag cue("cue ");
+	writeTag(&cue);
 
 	/*
 		The cue chunk consists of 4 bytes for the number of cue points
 		followed by 24 bytes for each cue point record.
 	*/
-	cueChunkSize = 4 + markCount * 24;
+	uint32_t cueChunkSize = 4 + track->markerCount * 24;
 	writeU32(&cueChunkSize);
-	numCues = markCount;
+	uint32_t numCues = track->markerCount;
 	writeU32(&numCues);
 
-	markids = (int *) _af_calloc(markCount, sizeof (int));
-	assert(markids != NULL);
-	afGetMarkIDs(this, AF_DEFAULT_TRACK, markids);
-
-	/* Write each marker to the file. */
-	for (int i=0; i < markCount; i++)
+	// Write each marker to the file.
+	for (int i=0; i<track->markerCount; i++)
 	{
-		uint32_t	identifier, position, chunkStart, blockStart;
-		uint32_t	sampleOffset;
-		AFframecount	markposition;
-
-		identifier = markids[i];
+		uint32_t identifier = track->markers[i].id;
 		writeU32(&identifier);
 
-		position = i;
+		uint32_t position = i;
 		writeU32(&position);
 
-		/* For now the RIFF id is always the first data chunk. */
-		m_fh->write("data", 4);
+		Tag data("data");
+		writeTag(&data);
 
 		/*
-			For an uncompressed WAVE file which contains
-			only one data chunk, chunkStart and blockStart
-			are zero.
+			For an uncompressed WAVE file which contains only one data chunk,
+			chunkStart and blockStart are zero.
 		*/
-		chunkStart = 0;
-		m_fh->write(&chunkStart, sizeof (uint32_t));
+		uint32_t chunkStart = 0;
+		writeU32(&chunkStart);
 
-		blockStart = 0;
-		m_fh->write(&blockStart, sizeof (uint32_t));
+		uint32_t blockStart = 0;
+		writeU32(&blockStart);
 
-		markposition = afGetMarkPosition(this, AF_DEFAULT_TRACK, markids[i]);
-
-		/* Sample offsets are stored in the WAVE file as frames. */
-		sampleOffset = markposition;
+		AFframecount markPosition = track->markers[i].position;
+		uint32_t sampleOffset = markPosition;
 		writeU32(&sampleOffset);
 	}
 
-	/*
-		Now write the cue names which is in a master list chunk
-		with a subchunk for each cue's name.
-	*/
-
-	listChunkSize = 4;
-	for (int i=0; i<markCount; i++)
+	// Now write the cue names and comments within a master list chunk.
+	uint32_t listChunkSize = 4;
+	for (int i=0; i<track->markerCount; i++)
 	{
-		const char *name;
-
-		name = afGetMarkName(this, AF_DEFAULT_TRACK, markids[i]);
+		const char *name = track->markers[i].name;
+		const char *comment = track->markers[i].comment;
 
 		/*
-			Each label chunk consists of 4 bytes for the
-			"labl" chunk ID, 4 bytes for the chunk data
-			size, 4 bytes for the cue point ID, and then
-			the length of the label as a Pascal-style string.
+			Each 'labl' or 'note' chunk consists of 4 bytes for the chunk ID,
+			4 bytes for the chunk data size, 4 bytes for the cue point ID,
+			and then the length of the label as a null-terminated string.
 
-			In all, this is 12 bytes plus the length of the
-			string, its size byte, and a trailing pad byte
-			if the length of the chunk is otherwise odd.
+			In all, this is 12 bytes plus the length of the string, its null
+			termination byte, and a trailing pad byte if the length of the
+			chunk is otherwise odd.
 		*/
-		listChunkSize += 12 + (strlen(name) + 1) +
-			((strlen(name) + 1) % 2);
+		listChunkSize += 12 + zStringLength(name);
+		listChunkSize += 12 + zStringLength(comment);
 	}
 
-	m_fh->write("LIST", 4);
+	Tag list("LIST");
+	writeTag(&list);
 	writeU32(&listChunkSize);
-	m_fh->write("adtl", 4);
+	Tag adtl("adtl");
+	writeTag(&adtl);
 
-	for (int i=0; i<markCount; i++)
+	for (int i=0; i<track->markerCount; i++)
 	{
-		const char	*name;
-		uint32_t	labelSize, cuePointID;
+		uint32_t cuePointID = track->markers[i].id;
 
-		name = afGetMarkName(this, AF_DEFAULT_TRACK, markids[i]);
-
-		/* Make labelSize even if it is not already. */
-		labelSize = 4+(strlen(name)+1) + ((strlen(name) + 1) % 2);
-		cuePointID = markids[i];
-
-		m_fh->write("labl", 4);
+		const char *name = track->markers[i].name;
+		uint32_t labelSize = 4 + zStringLength(name);
+		Tag lablTag("labl");
+		writeTag(&lablTag);
 		writeU32(&labelSize);
 		writeU32(&cuePointID);
-		m_fh->write(name, strlen(name) + 1);
-		/*
-			If the name plus the size byte comprises an odd
-			length, add another byte to make the string an
-			even length.
-		*/
-		if (((strlen(name) + 1) % 2) != 0)
-		{
-			uint8_t	zero=0;
-			writeU8(&zero);
-		}
+		writeZString(name);
+
+		const char *comment = track->markers[i].comment;
+		uint32_t noteSize = 4 + zStringLength(comment);
+		Tag noteTag("note");
+		writeTag(&noteTag);
+		writeU32(&noteSize);
+		writeU32(&cuePointID);
+		writeZString(comment);
 	}
 
-	free(markids);
-
 	return AF_SUCCEED;
+}
+
+bool WAVEFile::writeZString(const char *s)
+{
+	ssize_t lengthPlusNull = strlen(s) + 1;
+	if (m_fh->write(s, lengthPlusNull) != lengthPlusNull)
+		return false;
+	if (lengthPlusNull & 1)
+	{
+		uint8_t zero = 0;
+		if (!writeU8(&zero))
+			return false;
+	}
+	return true;
+}
+
+size_t WAVEFile::zStringLength(const char *s)
+{
+	size_t lengthPlusNull = strlen(s) + 1;
+	return lengthPlusNull + (lengthPlusNull & 1);
 }
 
 status WAVEFile::writeInit(AFfilesetup setup)

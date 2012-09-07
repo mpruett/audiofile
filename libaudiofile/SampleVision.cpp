@@ -119,6 +119,12 @@ AFfilesetup SampleVisionFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
+	if (track->markersSet && track->markerCount)
+	{
+		_af_error(AF_BAD_NUMMARKS, "SampleVision does not support markers");
+		return AF_NULL_FILESETUP;
+	}
+
 	return _af_filesetup_copy(setup, &sSampleVisionDefaultFileSetup, true);
 }
 

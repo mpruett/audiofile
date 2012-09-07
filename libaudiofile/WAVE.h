@@ -88,6 +88,9 @@ private:
 	bool readUUID(UUID *g);
 	bool writeUUID(const UUID *g);
 
+	bool writeZString(const char *);
+	size_t zStringLength(const char *);
+
 	void initCompressionParams();
 	void initIMACompressionParams();
 	void initMSADPCMCompressionParams();

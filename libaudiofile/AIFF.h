@@ -83,6 +83,9 @@ private:
 	void initIMACompressionParams();
 
 	bool isAIFFC() const { return m_fileFormat == AF_FILE_AIFFC; }
+
+	bool readPString(char s[256]);
+	bool writePString(const char *);
 };
 
 #endif

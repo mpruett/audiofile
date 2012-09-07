@@ -61,7 +61,4 @@ int _af_format_sample_size_uncompressed (const AudioFormat *format, bool stretch
 
 status _af_set_sample_format (AudioFormat *f, int sampleFormat, int sampleWidth);
 
-status af_read_pstring (char value[256], File *);
-status af_write_pstring (const char *value, File *);
-
 #endif

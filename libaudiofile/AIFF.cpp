@@ -346,13 +346,13 @@ status AIFFFile::parseCOMM(const Tag &type, size_t size)
 	if (isAIFFC())
 	{
 		Tag compressionID;
-		/* Pascal strings are at most 255 bytes long. */
+		// Pascal strings are at most 255 bytes long.
 		char compressionName[256];
 
 		readTag(&compressionID);
 
-		/* Read the Pascal-style string containing the name. */
-		af_read_pstring(compressionName, m_fh);
+		// Read the Pascal-style string containing the name.
+		readPString(compressionName);
 
 		if (compressionID == "NONE" || compressionID == "twos")
 		{
@@ -891,7 +891,7 @@ status AIFFFile::writeCOMM()
 	if (isAIFFC())
 	{
 		writeTag(&compressionTag);
-		af_write_pstring(compressionName, m_fh);
+		writePString(compressionName);
 	}
 
 	return AF_SUCCEED;
@@ -1011,8 +1011,8 @@ status AIFFFile::writeINST()
 
 status AIFFFile::writeMARK()
 {
-	uint16_t numMarkers = afGetMarkIDs(this, AF_DEFAULT_TRACK, NULL);
-	if (numMarkers == 0)
+	Track *track = getTrack();
+	if (!track->markerCount)
 		return AF_SUCCEED;
 
 	if (m_MARK_offset == 0)
@@ -1020,38 +1020,33 @@ status AIFFFile::writeMARK()
 	else
 		m_fh->seek(m_MARK_offset, File::SeekFromBeginning);
 
-	AFfileoffset chunkStartPosition, chunkEndPosition;
+	Tag markTag("MARK");
 	uint32_t length = 0;
 
-	m_fh->write("MARK", 4);
+	writeTag(&markTag);
 	writeU32(&length);
 
-	chunkStartPosition = m_fh->tell();
+	AFfileoffset chunkStartPosition = m_fh->tell();
 
-	int *markids = (int *) _af_calloc(numMarkers, sizeof (int));
-	assert(markids);
-	afGetMarkIDs(this, AF_DEFAULT_TRACK, markids);
-
+	uint16_t numMarkers = track->markerCount;
 	writeU16(&numMarkers);
 
 	for (unsigned i=0; i<numMarkers; i++)
 	{
-		uint16_t id = markids[i];
+		uint16_t id = track->markers[i].id;
 		writeU16(&id);
 
-		uint32_t position = afGetMarkPosition(this, AF_DEFAULT_TRACK, markids[i]);
+		uint32_t position = track->markers[i].position;
 		writeU32(&position);
 
-		const char *name = afGetMarkName(this, AF_DEFAULT_TRACK, markids[i]);
+		const char *name = track->markers[i].name;
 		assert(name);
 
-		/* Write the name as a Pascal-style string. */
-		af_write_pstring(name, m_fh);
+		// Write the name as a Pascal-style string.
+		writePString(name);
 	}
 
-	free(markids);
-
-	chunkEndPosition = m_fh->tell();
+	AFfileoffset chunkEndPosition = m_fh->tell();
 	length = chunkEndPosition - chunkStartPosition;
 
 	m_fh->seek(chunkStartPosition - 4, File::SeekFromBeginning);
@@ -1163,4 +1158,40 @@ void AIFFFile::initIMACompressionParams()
 	AUpvsetval(pv, 0, &l);
 
 	track->f.compressionParams = pv;
+}
+
+// Read a Pascal-style string.
+bool AIFFFile::readPString(char s[256])
+{
+	uint8_t length;
+	if (m_fh->read(&length, 1) != 1)
+		return false;
+	if (m_fh->read(s, length) != static_cast<ssize_t>(length))
+		return false;
+	s[length] = '\0';
+	return true;
+}
+
+// Write a Pascal-style string.
+bool AIFFFile::writePString(const char *s)
+{
+	size_t length = strlen(s);
+	if (length > 255)
+		return false;
+	uint8_t sizeByte = static_cast<uint8_t>(length);
+	if (m_fh->write(&sizeByte, 1) != 1)
+		return false;
+	if (m_fh->write(s, length) != (ssize_t) length)
+		return false;
+	/*
+		Add a pad byte if the length of the Pascal-style string
+		(including the size byte) is odd.
+	*/
+	if ((length % 2) == 0)
+	{
+		uint8_t zero = 0;
+		if (m_fh->write(&zero, 1) != 1)
+			return false;
+	}
+	return true;
 }
