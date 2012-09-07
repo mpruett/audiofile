@@ -1,5 +1,10 @@
 2012-09-06  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/Makefile.am, libaudiofile/modules/Makefile.am:
+	Reorganize build.
+
+2012-09-06  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/AIFF.cpp,
 	libaudiofile/AIFF.h,
 	libaudiofile/CAF.cpp,

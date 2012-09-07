@@ -3,15 +3,24 @@ noinst_LTLIBRARIES = libmodules.la
 INCLUDES = -I$(srcdir)/..
 
 libmodules_la_SOURCES = \
-	PCM.cpp PCM.h \
-	MSADPCM.cpp MSADPCM.h \
-	IMA.cpp IMA.h \
-	G711.cpp G711.h \
-	ModuleState.cpp ModuleState.h \
-	Module.cpp Module.h \
-	SimpleModule.cpp SimpleModule.h \
-	RebufferModule.cpp RebufferModule.h \
-	FileModule.cpp FileModule.h
+	FileModule.cpp \
+	FileModule.h \
+	G711.cpp \
+	G711.h \
+	IMA.cpp \
+	IMA.h \
+	Module.cpp \
+	Module.h \
+	ModuleState.cpp \
+	ModuleState.h \
+	MSADPCM.cpp \
+	MSADPCM.h \
+	PCM.cpp \
+	PCM.h \
+	RebufferModule.cpp \
+	RebufferModule.h \
+	SimpleModule.cpp \
+	SimpleModule.h
 
 # GNU gcc
 # AM_CFLAGS = -Wall -g
