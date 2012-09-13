@@ -265,6 +265,18 @@ status IRCAMFile::readInit(AFfilesetup setup)
 	else
 		track->f.byteOrder = AF_BYTEORDER_BIGENDIAN;
 
+	if (channels != 1 && channels != 2 && channels != 4)
+	{
+		_af_error(AF_BAD_FILEFMT,
+			"invalid channel count (%d) for BICSF format (1, 2, or 4 only)",
+			channels);
+		return AF_FAIL;
+	}
+
+	track->f.channelCount = channels;
+
+	track->f.framesPerPacket = 1;
+
 	switch (packMode)
 	{
 		case SF_CHAR:
@@ -297,12 +309,14 @@ status IRCAMFile::readInit(AFfilesetup setup)
 			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
 			track->f.sampleWidth = 16;
+			track->f.bytesPerPacket = channels;
 			break;
 		case SF_ULAW:
 			track->f.compressionType = AF_COMPRESSION_G711_ULAW;
 			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
 			track->f.sampleWidth = 16;
+			track->f.bytesPerPacket = channels;
 			break;
 		default:
 			_af_error(AF_BAD_NOT_IMPLEMENTED,
@@ -310,14 +324,8 @@ status IRCAMFile::readInit(AFfilesetup setup)
 			return AF_FAIL;
 	}
 
-	track->f.channelCount = channels;
-	if (channels != 1 && channels != 2 && channels != 4)
-	{
-		_af_error(AF_BAD_FILEFMT, "invalid channel count (%d) "
-			"for BICSF format (1, 2, or 4 only)",
-			channels);
-		return AF_FAIL;
-	}
+	if (track->f.isUncompressed())
+		track->f.computeBytesPerPacketPCM();
 
 	if (_af_set_sample_format(&track->f, track->f.sampleFormat,
 		track->f.sampleWidth) == AF_FAIL)
@@ -329,14 +337,7 @@ status IRCAMFile::readInit(AFfilesetup setup)
 		track->f.pcm.slope = maxAmp;
 
 	track->data_size = m_fh->length() - SIZEOF_BSD_HEADER;
-
-	/*
-		Only uncompressed data formats are supported for IRCAM
-		files right now.  The following line would need to be
-		changed if compressed data formats were supported.
-	*/
-	track->totalfframes = track->data_size /
-		(int) _af_format_frame_size(&track->f, false);
+	track->computeTotalFileFrames();
 
 	track->fpos_first_frame = SIZEOF_BSD_HEADER;
 	track->nextfframe = 0;

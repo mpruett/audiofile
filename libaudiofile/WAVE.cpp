@@ -193,6 +193,7 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 
 	/* Default to uncompressed audio data. */
 	track->f.compressionType = AF_COMPRESSION_NONE;
+	track->f.framesPerPacket = 1;
 
 	switch (formatTag)
 	{
@@ -224,6 +225,7 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
 			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 			track->f.compressionType = AF_COMPRESSION_G711_ULAW;
+			track->f.bytesPerPacket = track->f.channelCount;
 			break;
 
 		case WAVE_FORMAT_ALAW:
@@ -232,6 +234,7 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
 			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 			track->f.compressionType = AF_COMPRESSION_G711_ALAW;
+			track->f.bytesPerPacket = track->f.channelCount;
 			break;
 
 		case WAVE_FORMAT_IEEE_FLOAT:
@@ -393,6 +396,7 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 				track->f.sampleWidth = 16;
 				track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
 				track->f.byteOrder = _AF_BYTEORDER_NATIVE;
+				track->f.bytesPerPacket = channelCount;
 			}
 			else
 			{
@@ -425,6 +429,9 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 			return AF_FAIL;
 			break;
 	}
+
+	if (track->f.isUncompressed())
+		track->f.computeBytesPerPacketPCM();
 
 	_af_set_sample_format(&track->f, track->f.sampleFormat, track->f.sampleWidth);
 
@@ -792,26 +799,23 @@ status WAVEFile::readInit(AFfilesetup setup)
 	}
 
 	/*
-		At this point we know that the file has a format chunk
-		and a data chunk, so we can assume that track->f and
-		track->data_size have been initialized.
+		At this point we know that the file has a format chunk and a
+		data chunk, so we can assume that track->f and track->data_size
+		have been initialized.
 	*/
 	if (!hasFrameCount)
 	{
-		track->totalfframes = track->data_size /
-			(int) _af_format_frame_size(&track->f, false);
+		if (track->f.bytesPerPacket && track->f.framesPerPacket)
+		{
+			track->computeTotalFileFrames();
+		}
+		else
+		{
+			_af_error(AF_BAD_HEADER, "Frame count required but not found");
+			return AF_FAIL;
+		}
 	}
 
-	if (track->f.compressionType != AF_COMPRESSION_NONE &&
-		(track->f.compressionType == AF_COMPRESSION_G711_ULAW ||
-		track->f.compressionType == AF_COMPRESSION_G711_ALAW))
-	{
-		track->totalfframes = track->data_size / track->f.channelCount;
-	}
-
-	/*
-		A return value of AF_SUCCEED indicates successful parsing.
-	*/
 	return AF_SUCCEED;
 }
 

@@ -1,3 +1,22 @@
+2012-09-12  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/AIFF.cpp,
+	libaudiofile/AVR.cpp,
+	libaudiofile/AudioFormat.cpp,
+	libaudiofile/AudioFormat.h,
+	libaudiofile/CAF.cpp,
+	libaudiofile/CAF.h,
+	libaudiofile/IFF.cpp,
+	libaudiofile/IRCAM.cpp,
+	libaudiofile/NIST.cpp,
+	libaudiofile/NeXT.cpp,
+	libaudiofile/SampleVision.cpp,
+	libaudiofile/Track.cpp,
+	libaudiofile/Track.h,
+	libaudiofile/VOC.cpp,
+	libaudiofile/WAVE.cpp:
+	Refactor calculation of frame count from audio data size.
+
 2012-09-06  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/Makefile.am, libaudiofile/modules/Makefile.am:

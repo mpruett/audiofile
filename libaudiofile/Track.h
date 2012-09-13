@@ -88,6 +88,8 @@ struct Track
 
 	Marker *getMarker(int markerID);
 	status copyMarkers(TrackSetup *setup);
+
+	void computeTotalFileFrames();
 };
 
 #endif

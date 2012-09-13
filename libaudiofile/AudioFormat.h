@@ -61,6 +61,9 @@ struct AudioFormat
 	bool isCompressed() const;
 	bool isUncompressed() const;
 	bool isPacked() const { return packed; }
+
+	void computeBytesPerPacketPCM();
+
 	std::string description() const;
 };
 

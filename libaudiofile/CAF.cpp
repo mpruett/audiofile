@@ -220,13 +220,15 @@ status CAFFile::parseDescription(const Tag &, int64_t)
 	double sampleRate;
 	Tag formatID;
 	uint32_t formatFlags;
+	uint32_t bytesPerPacket;
+	uint32_t framesPerPacket;
 	uint32_t channelsPerFrame;
 	uint32_t bitsPerChannel;
 	if (!readDouble(&sampleRate) ||
 		!readTag(&formatID) ||
 		!readU32(&formatFlags) ||
-		!readU32(&m_bytesPerPacket) ||
-		!readU32(&m_framesPerPacket) ||
+		!readU32(&bytesPerPacket) ||
+		!readU32(&framesPerPacket) ||
 		!readU32(&channelsPerFrame) ||
 		!readU32(&bitsPerChannel))
 		return AF_FAIL;
@@ -235,6 +237,8 @@ status CAFFile::parseDescription(const Tag &, int64_t)
 	track->f.channelCount = channelsPerFrame;
 	track->f.sampleWidth = bitsPerChannel;
 	track->f.sampleRate = sampleRate;
+	track->f.framesPerPacket = 1;
+
 	if (formatID == "lpcm")
 	{
 		track->f.compressionType = AF_COMPRESSION_NONE;
@@ -256,6 +260,7 @@ status CAFFile::parseDescription(const Tag &, int64_t)
 			AF_BYTEORDER_LITTLEENDIAN : AF_BYTEORDER_BIGENDIAN;
 
 		_af_set_sample_format(&track->f, track->f.sampleFormat, track->f.sampleWidth);
+		track->f.computeBytesPerPacketPCM();
 		return AF_SUCCEED;
 	}
 	else if (formatID == "ulaw")
@@ -263,6 +268,7 @@ status CAFFile::parseDescription(const Tag &, int64_t)
 		track->f.compressionType = AF_COMPRESSION_G711_ULAW;
 		track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 		_af_set_sample_format(&track->f, AF_SAMPFMT_TWOSCOMP, 16);
+		track->f.bytesPerPacket = channelsPerFrame;
 		return AF_SUCCEED;
 	}
 	else if (formatID == "alaw")
@@ -270,6 +276,7 @@ status CAFFile::parseDescription(const Tag &, int64_t)
 		track->f.compressionType = AF_COMPRESSION_G711_ALAW;
 		track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 		_af_set_sample_format(&track->f, AF_SAMPFMT_TWOSCOMP, 16);
+		track->f.bytesPerPacket = channelsPerFrame;
 		return AF_SUCCEED;
 	}
 	else if (formatID == "ima4")
@@ -301,19 +308,7 @@ status CAFFile::parseData(const Tag &tag, int64_t length)
 		track->data_size = length - 4;
 	track->fpos_first_frame = m_fh->tell();
 
-	int bytesPerFrame = track->f.bytesPerFrame(false);
-	if (track->f.compressionType == AF_COMPRESSION_G711_ULAW ||
-		track->f.compressionType == AF_COMPRESSION_G711_ALAW)
-	{
-		bytesPerFrame = track->f.channelCount;
-	}
-
-	if (track->f.compressionType == AF_COMPRESSION_NONE ||
-		track->f.compressionType == AF_COMPRESSION_G711_ULAW ||
-		track->f.compressionType == AF_COMPRESSION_G711_ALAW)
-		track->totalfframes = track->data_size / bytesPerFrame;
-	else if (track->f.compressionType == AF_COMPRESSION_IMA)
-		track->totalfframes = (track->data_size / m_bytesPerPacket) * m_framesPerPacket;
+	track->computeTotalFileFrames();
 
 	return AF_SUCCEED;
 }

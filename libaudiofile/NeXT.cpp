@@ -122,6 +122,9 @@ status NeXTFile::readInit(AFfilesetup setup)
 		return AF_FAIL;
 
 	track->f.byteOrder = AF_BYTEORDER_BIGENDIAN;
+	track->f.sampleRate = sampleRate;
+	track->f.channelCount = channelCount;
+	track->f.framesPerPacket = 1;
 
 	/* Override the compression type later if necessary. */
 	track->f.compressionType = AF_COMPRESSION_NONE;
@@ -140,11 +143,13 @@ status NeXTFile::readInit(AFfilesetup setup)
 			track->f.sampleWidth = 16;
 			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
 			track->f.compressionType = AF_COMPRESSION_G711_ULAW;
+			track->f.bytesPerPacket = track->f.channelCount;
 			break;
 		case _AU_FORMAT_ALAW_8:
 			track->f.sampleWidth = 16;
 			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
 			track->f.compressionType = AF_COMPRESSION_G711_ALAW;
+			track->f.bytesPerPacket = track->f.channelCount;
 			break;
 		case _AU_FORMAT_LINEAR_8:
 			track->f.sampleWidth = 8;
@@ -179,12 +184,12 @@ status NeXTFile::readInit(AFfilesetup setup)
 			return AF_FAIL;
 	}
 
+	if (track->f.isUncompressed())
+		track->f.computeBytesPerPacketPCM();
+
 	_af_set_sample_format(&track->f, track->f.sampleFormat, track->f.sampleWidth);
 
-	track->f.sampleRate = sampleRate;
-	track->f.channelCount = channelCount;
-	int frameSize = _af_format_frame_size(&track->f, false);
-	track->totalfframes = length / frameSize;
+	track->computeTotalFileFrames();
 
 	return AF_SUCCEED;
 }

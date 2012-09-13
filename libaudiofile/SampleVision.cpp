@@ -189,6 +189,8 @@ status SampleVisionFile::readInit(AFfilesetup)
 	track->f.sampleRate = sampleRate;
 	track->f.channelCount = 1;
 	track->f.compressionType = AF_COMPRESSION_NONE;
+	track->f.framesPerPacket = 1;
+	track->f.computeBytesPerPacketPCM();
 
 	return AF_SUCCEED;
 }

@@ -44,7 +44,6 @@ public:
 
 private:
 	AFfileoffset m_dataOffset;
-	uint32_t m_bytesPerPacket, m_framesPerPacket;
 
 	status parseDescription(const Tag &, int64_t);
 	status parseData(const Tag &, int64_t);

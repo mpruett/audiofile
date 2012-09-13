@@ -343,6 +343,8 @@ status AIFFFile::parseCOMM(const Tag &type, size_t size)
 	track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
 	track->f.byteOrder = AF_BYTEORDER_BIGENDIAN;
 
+	track->f.framesPerPacket = 1;
+
 	if (isAIFFC())
 	{
 		Tag compressionID;
@@ -379,10 +381,12 @@ status AIFFFile::parseCOMM(const Tag &type, size_t size)
 		else if (compressionID == "ulaw" || compressionID == "ULAW")
 		{
 			track->f.compressionType = AF_COMPRESSION_G711_ULAW;
+			track->f.bytesPerPacket = track->f.channelCount;
 		}
 		else if (compressionID == "alaw" || compressionID == "ALAW")
 		{
 			track->f.compressionType = AF_COMPRESSION_G711_ALAW;
+			track->f.bytesPerPacket = track->f.channelCount;
 		}
 		else if (compressionID == "fl32" || compressionID == "FL32")
 		{
@@ -419,6 +423,9 @@ status AIFFFile::parseCOMM(const Tag &type, size_t size)
 			return AF_FAIL;
 		}
 	}
+
+	if (track->f.isUncompressed())
+		track->f.computeBytesPerPacketPCM();
 
 	_af_set_sample_format(&track->f, track->f.sampleFormat, track->f.sampleWidth);
 

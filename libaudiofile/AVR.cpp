@@ -153,6 +153,9 @@ status AVRFile::readInit(AFfilesetup setup)
 
 	track->f.compressionType = AF_COMPRESSION_NONE;
 
+	track->f.framesPerPacket = 1;
+	track->f.computeBytesPerPacketPCM();
+
 	_af_set_sample_format(&track->f, track->f.sampleFormat, track->f.sampleWidth);
 
 	track->fpos_first_frame = m_fh->tell();

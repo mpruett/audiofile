@@ -168,3 +168,10 @@ status Track::copyMarkers(TrackSetup *setup)
 
 	return AF_SUCCEED;
 }
+
+void Track::computeTotalFileFrames()
+{
+	assert(f.bytesPerPacket);
+	assert(f.framesPerPacket);
+	totalfframes = (data_size / f.bytesPerPacket) * f.framesPerPacket;
+}
