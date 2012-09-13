@@ -196,11 +196,21 @@ status VOCFile::readInit(AFfilesetup)
 			readU8(&frequencyDivisor);
 			readU8(&codec);
 
+			if (!hasExtendedInfo)
+			{
+				track->f.channelCount = 1;
+				track->f.sampleRate = 1000000 / (256 - frequencyDivisor);
+			}
+
 			track->f.compressionType = AF_COMPRESSION_NONE;
 			track->f.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
+			track->f.framesPerPacket = 1;
 
 			if (codec == kVOCFormatU8)
+			{
 				_af_set_sample_format(&track->f, AF_SAMPFMT_UNSIGNED, 8);
+				track->f.computeBytesPerPacketPCM();
+			}
 			else if (codec == kVOCFormatCreativeADPCM4_8 ||
 				codec == kVOCFormatCreativeADPCM3_8 ||
 				codec == kVOCFormatCreativeADPCM2_8)
@@ -216,16 +226,9 @@ status VOCFile::readInit(AFfilesetup)
 				return AF_FAIL;
 			}
 
-			if (!hasExtendedInfo)
-			{
-				track->f.channelCount = 1;
-				track->f.sampleRate = 1000000 / (256 - frequencyDivisor);
-			}
-
 			track->fpos_first_frame = m_fh->tell();
 			track->data_size = m_fh->length() - 1 - track->fpos_first_frame;
-			track->totalfframes = track->data_size /
-				track->f.bytesPerFrame(false);
+			track->computeTotalFileFrames();
 		}
 		else if (blockType == kVOCExtendedInfo)
 		{
@@ -271,26 +274,33 @@ status VOCFile::readInit(AFfilesetup)
 
 			track->fpos_first_frame = m_fh->tell();
 			track->data_size = blockSize - 12;
-			uint32_t bytesPerSample = (bitsPerSample + 7) / 8;
-			track->totalfframes = track->data_size /
-				(channels * bytesPerSample);
 
 			track->f.compressionType = AF_COMPRESSION_NONE;
 			track->f.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
 			track->f.sampleRate = sampleRate;
 			track->f.channelCount = channels;
+			track->f.framesPerPacket = 1;
+
 			if (format == kVOCFormatU8)
+			{
 				_af_set_sample_format(&track->f, AF_SAMPFMT_UNSIGNED, 8);
+				track->f.computeBytesPerPacketPCM();
+			}
 			else if (format == kVOCFormatS16)
+			{
 				_af_set_sample_format(&track->f, AF_SAMPFMT_TWOSCOMP, 16);
+				track->f.computeBytesPerPacketPCM();
+			}
 			else if (format == kVOCFormatAlaw)
 			{
 				track->f.compressionType = AF_COMPRESSION_G711_ALAW;
+				track->f.bytesPerPacket = track->f.channelCount;
 				_af_set_sample_format(&track->f, AF_SAMPFMT_TWOSCOMP, 16);
 			}
 			else if (format == kVOCFormatUlaw)
 			{
 				track->f.compressionType = AF_COMPRESSION_G711_ULAW;
+				track->f.bytesPerPacket = track->f.channelCount;
 				_af_set_sample_format(&track->f, AF_SAMPFMT_TWOSCOMP, 16);
 			}
 			else if (format == kVOCFormatCreativeADPCM4_8 ||
@@ -308,6 +318,8 @@ status VOCFile::readInit(AFfilesetup)
 					"VOC file contains unrecognized codec type %d", format);
 				return AF_FAIL;
 			}
+
+			track->computeTotalFileFrames();
 		}
 
 		position += 4 + blockSize;

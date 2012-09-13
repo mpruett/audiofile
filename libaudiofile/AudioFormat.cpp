@@ -95,6 +95,13 @@ bool AudioFormat::isUncompressed() const
 	return compressionType == AF_COMPRESSION_NONE;
 }
 
+void AudioFormat::computeBytesPerPacketPCM()
+{
+	assert(isUncompressed());
+	int bytesPerSample = (sampleWidth + 7) / 8;
+	bytesPerPacket = bytesPerSample * channelCount;
+}
+
 std::string AudioFormat::description() const
 {
 	std::string d;

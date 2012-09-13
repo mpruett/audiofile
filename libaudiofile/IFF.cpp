@@ -148,6 +148,9 @@ status IFFFile::parseVHDR(const Tag &type, size_t size)
 	track->f.byteOrder = AF_BYTEORDER_BIGENDIAN;
 	track->f.channelCount = 1;
 
+	track->f.framesPerPacket = 1;
+	track->f.computeBytesPerPacketPCM();
+
 	_af_set_sample_format(&track->f, track->f.sampleFormat, track->f.sampleWidth);
 
 	return AF_SUCCEED;

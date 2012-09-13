@@ -227,12 +227,31 @@ status NISTFile::readInit(AFfilesetup setup)
 	if (!track)
 		return AF_FAIL;
 
-	/* Read number of bytes per sample. */
+	// Read channel count.
+	if (nist_header_read_int(header, "channel_count", &intval))
+	{
+		if (intval < 1)
+		{
+			_af_error(AF_BAD_CHANNELS, "invalid number of channels %d",
+				intval);
+			return AF_FAIL;
+		}
+		track->f.channelCount = intval;
+	}
+	else
+	{
+		_af_error(AF_BAD_HEADER, "number of channels not specified");
+		return AF_FAIL;
+	}
+
+	// Read number of bytes per sample.
 	if (!nist_header_read_int(header, "sample_n_bytes", &sample_n_bytes))
 	{
 		_af_error(AF_BAD_HEADER, "bytes per sample not specified");
 		return AF_FAIL;
 	}
+
+	track->f.framesPerPacket = 1;
 
 	/*
 		Since some older NIST SPHERE files lack a sample_coding
@@ -244,11 +263,13 @@ status NISTFile::readInit(AFfilesetup setup)
 	{
 		track->f.compressionType = AF_COMPRESSION_G711_ULAW;
 		track->f.sampleWidth = 16;
+		track->f.bytesPerPacket = track->f.channelCount;
 	}
 	else
 	{
 		track->f.compressionType = AF_COMPRESSION_NONE;
 		track->f.sampleWidth = sample_n_bytes * 8;
+		track->f.computeBytesPerPacketPCM();
 	}
 
 	if (nist_header_read_string(header, "sample_coding", &intval, strval))
@@ -273,24 +294,7 @@ status NISTFile::readInit(AFfilesetup setup)
 		}
 	}
 
-	/* Read channel count. */
-	if (nist_header_read_int(header, "channel_count", &intval))
-	{
-		if (intval < 1)
-		{
-			_af_error(AF_BAD_CHANNELS, "invalid number of channels %d",
-				intval);
-			return AF_FAIL;
-		}
-		track->f.channelCount = intval;
-	}
-	else
-	{
-		_af_error(AF_BAD_HEADER, "number of channels not specified");
-		return AF_FAIL;
-	}
-
-	/* Read string representing byte order. */
+	// Read string representing byte order.
 	if (nist_header_read_string(header, "sample_byte_format", &intval, strval))
 	{
 		if (intval > 1)
@@ -317,7 +321,7 @@ status NISTFile::readInit(AFfilesetup setup)
 		}
 	}
 
-	/* Read significant bits per sample. */
+	// Read significant bits per sample.
 	if (nist_header_read_int(header, "sample_sig_bits", &intval))
 	{
 		if (intval < 1 || intval > 32)
@@ -340,7 +344,7 @@ status NISTFile::readInit(AFfilesetup setup)
 		}
 	}
 
-	/* Read sample rate. */
+	// Read sample rate.
 	if (nist_header_read_int(header, "sample_rate", &intval))
 	{
 		if (intval <= 0)
@@ -356,7 +360,7 @@ status NISTFile::readInit(AFfilesetup setup)
 		return AF_FAIL;
 	}
 
-	/* Read sample count. */
+	// Read sample count.
 	if (nist_header_read_int(header, "sample_count", &intval))
 	{
 		track->totalfframes = intval;
