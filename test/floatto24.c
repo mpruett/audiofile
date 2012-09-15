@@ -36,8 +36,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
-#define TEST_FILE "/tmp/test.sf"
+#define TEST_FILE "/tmp/test.sfXXXXXX"
+char *real_test_file;
 
 /*
 	When converted to samples with width 24 bits, the samples
@@ -85,7 +87,10 @@ int main (int argc, char **argv)
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_FLOAT, 32);
 
-	AFfilehandle file = afOpenFile(TEST_FILE, "w", setup);
+	real_test_file = malloc(sizeof(TEST_FILE));
+	strcpy(real_test_file, TEST_FILE);
+	int tmp = mkstemp(real_test_file);
+	AFfilehandle file = afOpenFile(real_test_file, "w", setup);
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		printf("could not open file for writing\n");
@@ -109,7 +114,7 @@ int main (int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	file = afOpenFile(TEST_FILE, "r", AF_NULL_FILESETUP);
+	file = afOpenFile(real_test_file, "r", AF_NULL_FILESETUP);
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		fprintf(stderr, "Could not open file for writing.\n");
@@ -173,7 +178,7 @@ int main (int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	unlink(TEST_FILE);
+	unlink(real_test_file);
 
 	exit(EXIT_SUCCESS);
 }

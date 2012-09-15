@@ -37,7 +37,7 @@
 #include <gtest/gtest.h>
 #include <audiofile.h>
 
-static const char *kTestFileName = "/tmp/test.aiff";
+static char kTestFileName[] = "/tmp/test.aiffXXXXXX";
 
 TEST(Seek, Seek)
 {
@@ -105,6 +105,7 @@ TEST(Seek, Seek)
 
 int main (int argc, char **argv)
 {
+	int tmp = mkstemp(kTestFileName);
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
 }

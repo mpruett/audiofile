@@ -50,7 +50,7 @@ const Miscellaneous kMiscellaneous[] =
 
 const int kNumMiscellaneous = sizeof (kMiscellaneous) / sizeof (Miscellaneous);
 
-const char kTestFileName[] = "/tmp/test";
+char kTestFileName[] = "/tmp/testXXXXXX";
 
 void writeMiscellaneous(int fileFormat)
 {
@@ -143,6 +143,7 @@ TEST(Miscellaneous, IFF_8SVX)
 
 int main(int argc, char **argv)
 {
+	int tmp = mkstemp(kTestFileName);
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
 }

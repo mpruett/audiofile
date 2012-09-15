@@ -40,13 +40,14 @@ class FloatToIntTest : public testing::Test
 protected:
 	virtual void SetUp()
 	{
+		int tmp = mkstemp(FloatToIntTest::kTestFileName);
 	}
 	virtual void TearDown()
 	{
 		::unlink(kTestFileName);
 	}
 
-	static const char *kTestFileName;
+	static char kTestFileName[];
 
 	static AFfilehandle createTestFile(int sampleWidth)
 	{
@@ -67,7 +68,7 @@ protected:
 	}
 };
 
-const char *FloatToIntTest::kTestFileName = "/tmp/test.aiff";
+char FloatToIntTest::kTestFileName[] = "/tmp/test.aiffXXXXXX";
 
 static const int8_t kMinInt8 = std::numeric_limits<int8_t>::min();
 static const int8_t kMaxInt8 = std::numeric_limits<int8_t>::max();

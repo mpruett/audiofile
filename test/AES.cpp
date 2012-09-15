@@ -34,7 +34,7 @@
 #include <string.h>
 #include <unistd.h>
 
-static const char *kTestFileName = "/tmp/test.aiff";
+static char kTestFileName[] = "/tmp/test.aiffXXXXXX";
 
 TEST(AES, AIFF)
 {
@@ -68,6 +68,7 @@ TEST(AES, AIFF)
 
 int main(int argc, char **argv)
 {
+	int tmp = mkstemp(kTestFileName);
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
 }

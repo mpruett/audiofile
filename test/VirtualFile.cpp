@@ -97,7 +97,7 @@ static AFvirtualfile *vf_create(FILE *fp)
 	return vf;
 }
 
-static const char *kTestFileName = "/tmp/aftest";
+static char kTestFileName[] = "/tmp/aftestXXXXXX";
 
 TEST(VirtualFile, ReadVirtual)
 {
@@ -173,6 +173,7 @@ TEST(VirtualFile, WriteVirtual)
 
 int main(int argc, char **argv)
 {
+	int tmp = mkstemp(kTestFileName);
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
 }

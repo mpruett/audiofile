@@ -43,7 +43,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-static const char *kTestFileName = "/tmp/audiofile-test";
+static char kTestFileName[] = "/tmp/audiofile-testXXXXXX";
 
 void testLargeFile(int fileFormat)
 {
@@ -143,6 +143,7 @@ TEST(Large, CAF)
 
 int main (int argc, char **argv)
 {
+	int tmp = mkstemp(kTestFileName);
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
 }

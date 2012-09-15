@@ -51,7 +51,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define TEST_FILE "/tmp/test.alaw"
+#define TEST_FILE "/tmp/test.alawXXXXXX"
+char *real_test_file;
 
 #define FRAME_COUNT 16
 #define SAMPLE_COUNT FRAME_COUNT
@@ -61,7 +62,7 @@ void testalaw (int fileFormat);
 void cleanup (void)
 {
 #ifndef DEBUG
-	unlink(TEST_FILE);
+	unlink(real_test_file);
 #endif
 }
 
@@ -111,7 +112,10 @@ void testalaw (int fileFormat)
 	afInitFileFormat(setup, fileFormat);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 
-	file = afOpenFile(TEST_FILE, "w", setup);
+	real_test_file = malloc(sizeof(TEST_FILE));
+	strcpy(real_test_file, TEST_FILE);
+	int tmp = mkstemp(real_test_file);
+	file = afOpenFile(real_test_file, "w", setup);
 	afFreeFileSetup(setup);
 
 	ensure(afGetCompression(file, AF_DEFAULT_TRACK) ==
@@ -128,7 +132,7 @@ void testalaw (int fileFormat)
 	afCloseFile(file);
 
 	/* Open the file for reading and verify the data. */
-	file = afOpenFile(TEST_FILE, "r", NULL);
+	file = afOpenFile(real_test_file, "r", NULL);
 	ensure(file != AF_NULL_FILEHANDLE, "unable to open file for reading");
 
 	ensure(afGetFileFormat(file, NULL) == fileFormat,

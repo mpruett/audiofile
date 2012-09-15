@@ -40,7 +40,7 @@
 #include <unistd.h>
 #include <climits>
 
-static const char *kTestFileName = "/tmp/testaf";
+static char kTestFileName[] = "/tmp/testafXXXXXX";
 
 template <typename T, int kSampleFormat, int kBitsPerSample>
 void runTest(int fileFormat)
@@ -187,6 +187,7 @@ TEST(CAF, Double) { testFloat64(AF_FILE_CAF); }
 
 int main (int argc, char **argv)
 {
+	int tmp = mkstemp(kTestFileName);
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
 }
