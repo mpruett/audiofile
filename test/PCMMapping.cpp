@@ -38,13 +38,14 @@ class PCMMappingTest : public testing::Test
 protected:
 	virtual void SetUp()
 	{
+		int tmp = mkstemp(PCMMappingTest::kTestFileName);
 	}
 	virtual void TearDown()
 	{
 		::unlink(kTestFileName);
 	}
 
-	static const char *kTestFileName;
+	static char kTestFileName[];
 
 	static AFfilehandle createTestFile(int sampleFormat, int sampleWidth)
 	{
@@ -63,7 +64,7 @@ protected:
 	}
 };
 
-const char *PCMMappingTest::kTestFileName = "/tmp/test.aiff";
+char PCMMappingTest::kTestFileName[] = "/tmp/test.aiffXXXXXX";
 
 TEST_F(PCMMappingTest, Float)
 {

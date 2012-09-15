@@ -30,14 +30,15 @@
 
 #include <audiofile.h>
 
-#define TEST_FILE "/tmp/markers.test"
+#define TEST_FILE "/tmp/markers.testXXXXXX"
+char *real_test_file;
 
 #define FRAME_COUNT 200
 
 void cleanup (void)
 {
 #ifndef DEBUG
-	unlink(TEST_FILE);
+	unlink(real_test_file);
 #endif
 }
 
@@ -76,7 +77,10 @@ int testmarkers (int fileformat)
 	afInitMarkName(setup, AF_DEFAULT_TRACK, markids[2], marknames[2]);
 	afInitMarkName(setup, AF_DEFAULT_TRACK, markids[3], marknames[3]);
 
-	file = afOpenFile(TEST_FILE, "w", setup);
+	real_test_file = malloc(sizeof(TEST_FILE));
+	strcpy(real_test_file, TEST_FILE);
+	int tmp = mkstemp(real_test_file);
+	file = afOpenFile(real_test_file, "w", setup);
 	ensure(file != AF_NULL_FILEHANDLE, "Could not open file for writing");
 
 	afFreeFileSetup(setup);
@@ -91,7 +95,7 @@ int testmarkers (int fileformat)
 
 	afCloseFile(file);
 
-	file = afOpenFile(TEST_FILE, "r", NULL);
+	file = afOpenFile(real_test_file, "r", NULL);
 	ensure(file != AF_NULL_FILEHANDLE, "Could not open file for reading");
 
 	readmarkcount = afGetMarkIDs(file, AF_DEFAULT_TRACK, NULL);

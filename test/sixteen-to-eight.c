@@ -38,7 +38,8 @@
 
 #include <audiofile.h>
 
-#define TEST_FILE "/tmp/test.wave"
+#define TEST_FILE "/tmp/test.waveXXXXXX"
+char *real_test_file;
 
 int main (int argc, char **argv)
 {
@@ -57,7 +58,10 @@ int main (int argc, char **argv)
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_UNSIGNED, 8);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 
-	file = afOpenFile(TEST_FILE, "w", setup);
+	real_test_file = malloc(sizeof(TEST_FILE));
+	strcpy(real_test_file, TEST_FILE);
+	int tmp = mkstemp(real_test_file);
+	file = afOpenFile(real_test_file, "w", setup);
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		fprintf(stderr, "could not open file for writing\n");
@@ -72,7 +76,7 @@ int main (int argc, char **argv)
 
 	afCloseFile(file);
 
-	file = afOpenFile(TEST_FILE, "r", AF_NULL_FILESETUP);
+	file = afOpenFile(real_test_file, "r", AF_NULL_FILESETUP);
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		fprintf(stderr, "could not open file for reading\n");
@@ -105,7 +109,7 @@ int main (int argc, char **argv)
 	}
 
 	afCloseFile(file);
-	unlink(TEST_FILE);
+	unlink(real_test_file);
 
 	exit(EXIT_SUCCESS);
 }

@@ -38,7 +38,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-const char *kTestFileName = "/tmp/test.aiff";
+char kTestFileName[] = "/tmp/test.aiffXXXXXX";
 
 TEST(Loop, AIFF)
 {
@@ -131,6 +131,7 @@ TEST(Loop, AIFF)
 
 int main(int argc, char **argv)
 {
+	int tmp = mkstemp(kTestFileName);
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
 }

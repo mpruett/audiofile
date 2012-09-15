@@ -42,12 +42,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define TEST_FILE "/tmp/test.raw"
+#define TEST_FILE "/tmp/test.rawXXXXXX"
+char *real_test_file;
 
 void cleanup (void)
 {
 #ifndef DEBUG
-	unlink(TEST_FILE);
+	unlink(real_test_file);
 #endif
 }
 
@@ -82,7 +83,10 @@ int main (int argc, char **argv)
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, 16);
 
-	file = afOpenFile(TEST_FILE, "w", setup);
+	real_test_file = malloc(sizeof(TEST_FILE));
+	strcpy(real_test_file, TEST_FILE);
+	int tmp = mkstemp(real_test_file);
+	file = afOpenFile(real_test_file, "w", setup);
 	ensure(file != AF_NULL_FILEHANDLE, "unable to open file for writing");
 
 	framesWritten = afWriteFrames(file, AF_DEFAULT_TRACK, samples, 8);
@@ -91,7 +95,7 @@ int main (int argc, char **argv)
 
 	ensure(afCloseFile(file) == 0, "error closing file");
 
-	file = afOpenFile(TEST_FILE, "r", setup);
+	file = afOpenFile(real_test_file, "r", setup);
 	ensure(file != AF_NULL_FILEHANDLE, "unable to open file for reading");
 	afFreeFileSetup(setup);
 

@@ -36,7 +36,8 @@
 
 #include <audiofile.h>
 
-#define TEST_FILE "/tmp/test.double"
+#define TEST_FILE "/tmp/test.doubleXXXXXX"
+char *real_test_file;
 
 const double samples[] =
 	{1.0, 0.6, -0.3, 0.95, 0.2, -0.6, 0.9, 0.4, -0.22, 0.125, 0.1, -0.4};
@@ -46,7 +47,7 @@ void testdouble (int fileFormat);
 
 void cleanup (void)
 {
-	unlink(TEST_FILE);
+	unlink(real_test_file);
 }
 
 void ensure (int condition, const char *message)
@@ -94,7 +95,10 @@ void testdouble (int fileFormat)
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_DOUBLE, 64);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 2);
 
-	file = afOpenFile(TEST_FILE, "w", setup);
+	real_test_file = malloc(sizeof(TEST_FILE));
+	strcpy(real_test_file, TEST_FILE);
+	int tmp = mkstemp(real_test_file);
+	file = afOpenFile(real_test_file, "w", setup);
 	ensure(file != AF_NULL_FILEHANDLE, "could not open file for writing");
 
 	afFreeFileSetup(setup);
@@ -105,7 +109,7 @@ void testdouble (int fileFormat)
 
 	ensure(afCloseFile(file) == 0, "error closing file");
 
-	file = afOpenFile(TEST_FILE, "r", AF_NULL_FILESETUP);
+	file = afOpenFile(real_test_file, "r", AF_NULL_FILESETUP);
 	ensure(file != AF_NULL_FILEHANDLE, "could not open file for reading");
 
 	ensure(afGetChannels(file, AF_DEFAULT_TRACK) == 2,

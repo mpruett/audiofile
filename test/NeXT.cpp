@@ -77,7 +77,7 @@ const char kDataTruncated[] =
 const int16_t kFrames[] = { 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 };
 const int kFrameCount = sizeof (kFrames) / sizeof (kFrames[0]);
 
-const char *kTestFileName = "/tmp/test.au";
+char kTestFileName[] = "/tmp/test.auXXXXXX";
 
 TEST(NeXT, UnspecifiedLength)
 {
@@ -147,6 +147,7 @@ TEST(NeXT, Truncated)
 
 int main(int argc, char **argv)
 {
+	int tmp = mkstemp(kTestFileName);
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
 }

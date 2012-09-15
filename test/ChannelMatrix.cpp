@@ -30,7 +30,7 @@
 #include <audiofile.h>
 #include <gtest/gtest.h>
 
-const char *kTestFileName = "/tmp/test.aiff";
+char kTestFileName[] = "/tmp/test.aiffXXXXXX";
 
 template <typename T>
 void testChannelMatrixReading(int sampleFormat, int sampleWidth)
@@ -213,6 +213,7 @@ TEST(ChannelMatrix, WriteDouble)
 
 int main(int argc, char **argv)
 {
+	int tmp = mkstemp(kTestFileName);
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
 }
