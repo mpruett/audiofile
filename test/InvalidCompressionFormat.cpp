@@ -24,17 +24,22 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-static const char *kTestFileName = "/tmp/testaf";
+#include "TestUtilities.h"
 
 void runTest(int fileFormat, int compressionFormat)
 {
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("InvalidCompressionFormat", &testFileName));
+
 	AFfilesetup setup = afNewFileSetup();
 	afInitFileFormat(setup, fileFormat);
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, 16);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 	afInitCompression(setup, AF_DEFAULT_TRACK, compressionFormat);
-	ASSERT_TRUE(afOpenFile(kTestFileName, "w", setup) == AF_NULL_FILEHANDLE);
+	ASSERT_TRUE(afOpenFile(testFileName.c_str(), "w", setup) == AF_NULL_FILEHANDLE);
 	afFreeFileSetup(setup);
+
+	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
 TEST(AIFF, mulaw) { runTest(AF_FILE_AIFF, AF_COMPRESSION_G711_ULAW); }

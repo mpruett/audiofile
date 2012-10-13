@@ -30,13 +30,16 @@
 #include <config.h>
 #endif
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include <audiofile.h>
 
-#define TEST_FILE "/tmp/test.float"
+#include "TestUtilities.h"
+
+static char sTestFileName[PATH_MAX];
 
 const float samples[] =
 	{1.0, 0.6, -0.3, 0.95, 0.2, -0.6, 0.9, 0.4, -0.22, 0.125, 0.1, -0.4};
@@ -46,7 +49,7 @@ void testfloat (int fileFormat);
 
 void cleanup (void)
 {
-	unlink(TEST_FILE);
+	unlink(sTestFileName);
 }
 
 void ensure (int condition, const char *message)
@@ -94,7 +97,9 @@ void testfloat (int fileFormat)
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_FLOAT, 32);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 2);
 
-	file = afOpenFile(TEST_FILE, "w", setup);
+	ensure(createTemporaryFile("testfloat", sTestFileName),
+		"could not create temporary file");
+	file = afOpenFile(sTestFileName, "w", setup);
 	ensure(file != AF_NULL_FILEHANDLE, "could not open file for writing");
 
 	afFreeFileSetup(setup);
@@ -105,7 +110,7 @@ void testfloat (int fileFormat)
 
 	ensure(afCloseFile(file) == 0, "error closing file");
 
-	file = afOpenFile(TEST_FILE, "r", AF_NULL_FILESETUP);
+	file = afOpenFile(sTestFileName, "r", AF_NULL_FILESETUP);
 	ensure(file != AF_NULL_FILEHANDLE, "could not open file for reading");
 
 	ensure(afGetChannels(file, AF_DEFAULT_TRACK) == 2,

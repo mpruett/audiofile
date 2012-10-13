@@ -1,3 +1,12 @@
+2012-10-13  Michael Pruett <michael@68k.org>
+
+	* test/*:
+	Use unique filenames for temporary files in tests.
+
+	Thanks to Giovanni Mascellani for pointing out this problem.
+
+	http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=687405
+
 2012-09-12  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/AIFF.cpp,

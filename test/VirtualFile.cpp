@@ -38,6 +38,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "TestUtilities.h"
+
 TEST(VirtualFile, Basic)
 {
 	ASSERT_GE(sizeof (off_t), 8) << "Size of off_t must be at least 8 bytes.";
@@ -97,15 +99,16 @@ static AFvirtualfile *vf_create(FILE *fp)
 	return vf;
 }
 
-static const char *kTestFileName = "/tmp/aftest";
-
 TEST(VirtualFile, ReadVirtual)
 {
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("VirtualFile", &testFileName));
+
 	AFfilesetup setup = afNewFileSetup();
 	afInitFileFormat(setup, AF_FILE_AIFF);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 
-	AFfilehandle file = afOpenFile(kTestFileName, "w", setup);
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
 	ASSERT_TRUE(file) << "Could not open virtual file";
 
 	afFreeFileSetup(setup);
@@ -117,7 +120,7 @@ TEST(VirtualFile, ReadVirtual)
 
 	ASSERT_EQ(afCloseFile(file), 0) << "Error closing virtual file";
 
-	FILE *fp = fopen(kTestFileName, "r");
+	FILE *fp = fopen(testFileName.c_str(), "r");
 	AFvirtualfile *vf = vf_create(fp);
 
 	file = afOpenVirtualFile(vf, "r", NULL);
@@ -132,12 +135,15 @@ TEST(VirtualFile, ReadVirtual)
 
 	ASSERT_EQ(afCloseFile(file), 0) << "Error closing file";
 
-	::unlink(kTestFileName);
+	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
 TEST(VirtualFile, WriteVirtual)
 {
-	FILE *fp = fopen(kTestFileName, "w");
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("VirtualFile", &testFileName));
+
+	FILE *fp = fopen(testFileName.c_str(), "w");
 	AFvirtualfile *vf = vf_create(fp);
 
 	AFfilesetup setup = afNewFileSetup();
@@ -156,7 +162,7 @@ TEST(VirtualFile, WriteVirtual)
 
 	ASSERT_EQ(afCloseFile(file), 0) << "Error closing virtual file";
 
-	file = afOpenFile(kTestFileName, "r", NULL);
+	file = afOpenFile(testFileName.c_str(), "r", NULL);
 	ASSERT_TRUE(file) << "Could not open file";
 
 	int16_t readSamples[numSamples];
@@ -168,7 +174,7 @@ TEST(VirtualFile, WriteVirtual)
 
 	ASSERT_EQ(afCloseFile(file), 0) << "Error closing file";
 
-	::unlink(kTestFileName);
+	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
 int main(int argc, char **argv)

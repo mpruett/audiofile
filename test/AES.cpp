@@ -34,15 +34,18 @@
 #include <string.h>
 #include <unistd.h>
 
-static const char *kTestFileName = "/tmp/test.aiff";
+#include "TestUtilities.h"
 
 TEST(AES, AIFF)
 {
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("AES", &testFileName));
+
 	AFfilesetup setup = afNewFileSetup();
 	afInitFileFormat(setup, AF_FILE_AIFF);
 	afInitAESChannelDataTo(setup, AF_DEFAULT_TRACK, true);
 
-	AFfilehandle file = afOpenFile(kTestFileName, "w", setup);
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
 	ASSERT_TRUE(file);
 
 	afFreeFileSetup(setup);
@@ -54,7 +57,7 @@ TEST(AES, AIFF)
 
 	afCloseFile(file);
 
-	file = afOpenFile(kTestFileName, "r", NULL);
+	file = afOpenFile(testFileName.c_str(), "r", NULL);
 	ASSERT_TRUE(file);
 
 	unsigned char readAESData[24];
@@ -63,7 +66,7 @@ TEST(AES, AIFF)
 
 	afCloseFile(file);
 
-	::unlink(kTestFileName);
+	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
 int main(int argc, char **argv)

@@ -33,37 +33,39 @@
 #include <stdint.h>
 #include <unistd.h>
 
+#include "TestUtilities.h"
+
 class PCMMappingTest : public testing::Test
 {
 protected:
 	virtual void SetUp()
 	{
+		ASSERT_TRUE(createTemporaryFile("PCMMapping", &m_testFileName));
 	}
 	virtual void TearDown()
 	{
-		::unlink(kTestFileName);
+		::unlink(m_testFileName.c_str());
 	}
 
-	static const char *kTestFileName;
-
-	static AFfilehandle createTestFile(int sampleFormat, int sampleWidth)
+	AFfilehandle createTestFile(int sampleFormat, int sampleWidth)
 	{
 		AFfilesetup setup = afNewFileSetup();
 		afInitFileFormat(setup, AF_FILE_AIFFC);
 		afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 		afInitSampleFormat(setup, AF_DEFAULT_TRACK, sampleFormat, sampleWidth);
-		AFfilehandle file = afOpenFile(kTestFileName, "w", setup);
+		AFfilehandle file = afOpenFile(m_testFileName.c_str(), "w", setup);
 		afFreeFileSetup(setup);
 		return file;
 	}
-	static AFfilehandle openTestFile()
+	AFfilehandle openTestFile()
 	{
-		AFfilehandle file = afOpenFile(kTestFileName, "r", AF_NULL_FILESETUP);
+		AFfilehandle file = afOpenFile(m_testFileName.c_str(), "r", AF_NULL_FILESETUP);
 		return file;
 	}
-};
 
-const char *PCMMappingTest::kTestFileName = "/tmp/test.aiff";
+private:
+	std::string m_testFileName;
+};
 
 TEST_F(PCMMappingTest, Float)
 {

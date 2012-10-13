@@ -37,11 +37,15 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <string>
 
-const char *kTestFileName = "/tmp/test.aiff";
+#include "TestUtilities.h"
 
 TEST(Loop, AIFF)
 {
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("Loop", &testFileName));
+
 	AFfilesetup setup = afNewFileSetup();
 	afInitFileFormat(setup, AF_FILE_AIFF);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
@@ -64,7 +68,7 @@ TEST(Loop, AIFF)
 	int loopIDs[] = {1, 2};
 	afInitLoopIDs(setup, AF_DEFAULT_INST, loopIDs, 2);
 
-	AFfilehandle file = afOpenFile(kTestFileName, "w", setup);
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
 	ASSERT_TRUE(file) << "Could not open test file for writing";
 	afFreeFileSetup(setup);
 
@@ -84,7 +88,7 @@ TEST(Loop, AIFF)
 
 	afCloseFile(file);
 
-	file = afOpenFile(kTestFileName, "r", NULL);
+	file = afOpenFile(testFileName.c_str(), "r", NULL);
 	ASSERT_TRUE(file) << "Could not open test file for reading";
 
 	ASSERT_EQ(afGetLoopIDs(file, AF_DEFAULT_INST, NULL), 2);
@@ -126,7 +130,7 @@ TEST(Loop, AIFF)
 
 	afCloseFile(file);
 
-	::unlink(kTestFileName);
+	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
 int main(int argc, char **argv)

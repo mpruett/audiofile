@@ -39,19 +39,22 @@
 #include <audiofile.h>
 #include <gtest/gtest.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string>
 
-static const char *kTestFileName = "/tmp/audiofile-test";
+#include "TestUtilities.h"
 
 void testLargeFile(int fileFormat)
 {
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("ChannelMatrix", &testFileName));
+
 	AFfilesetup setup = afNewFileSetup();
 	afInitFileFormat(setup, fileFormat);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, 16);
-	AFfilehandle file = afOpenFile(kTestFileName, "w", setup);
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
 	afFreeFileSetup(setup);
 	ASSERT_TRUE(file) << "Could not open file for writing";
 
@@ -75,7 +78,7 @@ void testLargeFile(int fileFormat)
 		"Incorrect frame count for file";
 	afCloseFile(file);
 
-	file = afOpenFile(kTestFileName, "r", AF_NULL_FILESETUP);
+	file = afOpenFile(testFileName.c_str(), "r", AF_NULL_FILESETUP);
 	ASSERT_TRUE(file) << "Could not open file for reading";
 	ASSERT_EQ(afGetFrameCount(file, AF_DEFAULT_TRACK), frameCount) <<
 		"Incorrect frame count for file opened for reading";
@@ -103,7 +106,7 @@ void testLargeFile(int fileFormat)
 	}
 	delete [] data;
 	afCloseFile(file);
-	::unlink(kTestFileName);
+	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
 TEST(Large, AIFF)

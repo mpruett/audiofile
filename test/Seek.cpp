@@ -31,16 +31,19 @@
 	This program tests seeking within an audio file.
 */
 
+#include <audiofile.h>
+#include <gtest/gtest.h>
 #include <stdlib.h>
+#include <string>
 #include <unistd.h>
 
-#include <gtest/gtest.h>
-#include <audiofile.h>
-
-static const char *kTestFileName = "/tmp/test.aiff";
+#include "TestUtilities.h"
 
 TEST(Seek, Seek)
 {
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("Seek", &testFileName));
+
 	const int kFrameCount = 2000;
 	const int kPadFrameCount = kFrameCount + 5;
 	const int kDataLength = kFrameCount * sizeof (int16_t);
@@ -54,7 +57,7 @@ TEST(Seek, Seek)
 	afInitFileFormat(setup, AF_FILE_AIFF);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 
-	AFfilehandle file = afOpenFile(kTestFileName, "w", setup);
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
 	ASSERT_TRUE(file) << "could not open file for writing";
 
 	afFreeFileSetup(setup);
@@ -73,7 +76,7 @@ TEST(Seek, Seek)
 
 	afCloseFile(file);
 
-	file = afOpenFile(kTestFileName, "r", AF_NULL_FILESETUP);
+	file = afOpenFile(testFileName.c_str(), "r", AF_NULL_FILESETUP);
 	ASSERT_TRUE(file) << "Could not open file for reading";
 
 	/*
@@ -100,7 +103,7 @@ TEST(Seek, Seek)
 
 	afCloseFile(file);
 
-	unlink(kTestFileName);
+	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
 int main (int argc, char **argv)

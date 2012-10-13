@@ -37,17 +37,18 @@
 #include <audiofile.h>
 #endif
 
+#include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-#define TEST_FILE "/tmp/test.raw"
+static char sTestFileName[PATH_MAX];
 
 void cleanup (void)
 {
 #ifndef DEBUG
-	unlink(TEST_FILE);
+	unlink(sTestFileName);
 #endif
 }
 
@@ -82,7 +83,9 @@ int main (int argc, char **argv)
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, 16);
 
-	file = afOpenFile(TEST_FILE, "w", setup);
+	ensure(createTemporaryFile("writeraw", sTestFileName),
+		"could not create temporary file");
+	file = afOpenFile(sTestFileName, "w", setup);
 	ensure(file != AF_NULL_FILEHANDLE, "unable to open file for writing");
 
 	framesWritten = afWriteFrames(file, AF_DEFAULT_TRACK, samples, 8);
@@ -91,7 +94,7 @@ int main (int argc, char **argv)
 
 	ensure(afCloseFile(file) == 0, "error closing file");
 
-	file = afOpenFile(TEST_FILE, "r", setup);
+	file = afOpenFile(sTestFileName, "r", setup);
 	ensure(file != AF_NULL_FILEHANDLE, "unable to open file for reading");
 	afFreeFileSetup(setup);
 

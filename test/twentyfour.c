@@ -32,6 +32,7 @@
 #endif
 
 #include <assert.h>
+#include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,7 +41,8 @@
 
 #include <audiofile.h>
 
-#define TEST_FILE "/tmp/test.aiff"
+#include "TestUtilities.h"
+
 #define FRAME_COUNT 6
 
 int main (int argc, char **argv)
@@ -70,7 +72,14 @@ int main (int argc, char **argv)
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, 24);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 
-	file = afOpenFile(TEST_FILE, "w", setup);
+	char testFileName[PATH_MAX];
+	if (!createTemporaryFile("twentyfour", testFileName))
+	{
+		fprintf(stderr, "could not create temporary file\n");
+		exit(EXIT_FAILURE);
+	}
+
+	file = afOpenFile(testFileName, "w", setup);
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		fprintf(stderr, "could not open file for writing\n");
@@ -84,7 +93,7 @@ int main (int argc, char **argv)
 
 	afCloseFile(file);
 
-	file = afOpenFile(TEST_FILE, "r", AF_NULL_FILESETUP);
+	file = afOpenFile(testFileName, "r", AF_NULL_FILESETUP);
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		fprintf(stderr, "could not open file for reading\n");
@@ -230,7 +239,7 @@ int main (int argc, char **argv)
 		fprintf(stderr, "Error closing file.\n");
 		exit(EXIT_FAILURE);
 	}
-	unlink(TEST_FILE);
+	unlink(testFileName);
 
 	exit(EXIT_SUCCESS);
 }
