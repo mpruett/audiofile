@@ -46,12 +46,15 @@
 #include <audiofile.h>
 #endif
 
+#include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-#define TEST_FILE "/tmp/test.ulaw"
+#include "TestUtilities.h"
+
+static char sTestFileName[PATH_MAX];
 
 #define FRAME_COUNT 16
 #define SAMPLE_COUNT FRAME_COUNT
@@ -61,7 +64,7 @@ void testulaw (int fileFormat);
 void cleanup (void)
 {
 #ifndef DEBUG
-	unlink(TEST_FILE);
+	unlink(sTestFileName);
 #endif
 }
 
@@ -111,7 +114,9 @@ void testulaw (int fileFormat)
 	afInitFileFormat(setup, fileFormat);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 
-	file = afOpenFile(TEST_FILE, "w", setup);
+	ensure(createTemporaryFile("writeulaw", sTestFileName),
+		"could not create temporary file");
+	file = afOpenFile(sTestFileName, "w", setup);
 	afFreeFileSetup(setup);
 
 	ensure(afGetCompression(file, AF_DEFAULT_TRACK) ==
@@ -128,7 +133,7 @@ void testulaw (int fileFormat)
 	afCloseFile(file);
 
 	/* Open the file for reading and verify the data. */
-	file = afOpenFile(TEST_FILE, "r", NULL);
+	file = afOpenFile(sTestFileName, "r", NULL);
 	ensure(file != AF_NULL_FILEHANDLE, "unable to open file for reading");
 
 	ensure(afGetFileFormat(file, NULL) == fileFormat,

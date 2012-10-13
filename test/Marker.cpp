@@ -23,10 +23,13 @@
 #include <stdint.h>
 #include <unistd.h>
 
-const char *kTestFileName = "/tmp/test.aiff";
+#include "TestUtilities.h"
 
 static void testMarkers(int fileFormat, bool supportsComments)
 {
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("Marker", &testFileName));
+
 	AFfilesetup setup = afNewFileSetup();
 	afInitFileFormat(setup, fileFormat);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
@@ -58,7 +61,7 @@ static void testMarkers(int fileFormat, bool supportsComments)
 	for (int i=0; i<numMarkers; i++)
 		afInitMarkComment(setup, AF_DEFAULT_TRACK, markerIDs[i], markerComments[i]);
 
-	AFfilehandle file = afOpenFile(kTestFileName, "w", setup);
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
 	ASSERT_TRUE(file) << "Could not open test file for writing";
 	afFreeFileSetup(setup);
 
@@ -73,7 +76,7 @@ static void testMarkers(int fileFormat, bool supportsComments)
 
 	ASSERT_EQ(afCloseFile(file), 0);
 
-	file = afOpenFile(kTestFileName, "r", NULL);
+	file = afOpenFile(testFileName.c_str(), "r", NULL);
 	ASSERT_TRUE(file) << "Could not open test file for reading";
 	EXPECT_EQ(afGetFileFormat(file, NULL), fileFormat);
 
@@ -101,7 +104,7 @@ static void testMarkers(int fileFormat, bool supportsComments)
 
 	ASSERT_EQ(afCloseFile(file), 0);
 
-	ASSERT_EQ(::unlink(kTestFileName), 0);
+	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
 TEST(Marker, AIFF)
@@ -121,6 +124,9 @@ TEST(Marker, WAVE)
 
 static void testUnsupported(int fileFormat)
 {
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("Marker", &testFileName));
+
 	AFerrfunc errorHandler = afSetErrorHandler(NULL);
 
 	AFfilesetup setup = afNewFileSetup();
@@ -137,11 +143,13 @@ static void testUnsupported(int fileFormat)
 	for (int i=0; i<numMarkers; i++)
 		afInitMarkComment(setup, AF_DEFAULT_TRACK, markerIDs[i], markerComments[i]);
 
-	AFfilehandle file = afOpenFile(kTestFileName, "w", setup);
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
 	ASSERT_FALSE(file) << "Did not expect opening test file for writing to succeed";
 	afFreeFileSetup(setup);
 
 	afSetErrorHandler(errorHandler);
+
+	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
 TEST(Unsupported, Raw) { testUnsupported(AF_FILE_RAWDATA); }

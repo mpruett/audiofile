@@ -26,7 +26,7 @@
 #include <cstdlib>
 #include <unistd.h>
 
-static const char *kTestFileName = "/tmp/adpcm-test";
+#include "TestUtilities.h"
 
 static const int kIMABytesPerPacketQT = 34;
 static const int kIMABytesPerPacketWAVE = 256;
@@ -44,11 +44,14 @@ static const int kMSADPCMThreshold = 16;
 static void testADPCM(int fileFormat, int compressionFormat, int channelCount,
 	int bytesPerPacket, int framesPerPacket, int frameCount, int threshold)
 {
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("ADPCM", &testFileName));
+
 	AFfilesetup setup = afNewFileSetup();
 	afInitFileFormat(setup, fileFormat);
 	afInitChannels(setup, AF_DEFAULT_TRACK, channelCount);
 	afInitCompression(setup, AF_DEFAULT_TRACK, compressionFormat);
-	AFfilehandle file = afOpenFile(kTestFileName, "w", setup);
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
 	ASSERT_TRUE(file);
 	afFreeFileSetup(setup);
 
@@ -62,7 +65,7 @@ static void testADPCM(int fileFormat, int compressionFormat, int channelCount,
 
 	ASSERT_EQ(afCloseFile(file), 0);
 
-	file = afOpenFile(kTestFileName, "r", AF_NULL_FILESETUP);
+	file = afOpenFile(testFileName.c_str(), "r", AF_NULL_FILESETUP);
 	ASSERT_TRUE(file);
 	ASSERT_EQ(afGetCompression(file, AF_DEFAULT_TRACK), compressionFormat);
 	ASSERT_EQ(afGetFrameCount(file, AF_DEFAULT_TRACK), frameCount);
@@ -115,7 +118,7 @@ static void testADPCM(int fileFormat, int compressionFormat, int channelCount,
 	delete [] readData;
 	delete [] offsetReadData;
 
-	::unlink(kTestFileName);
+	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
 TEST(IMA, CAF)

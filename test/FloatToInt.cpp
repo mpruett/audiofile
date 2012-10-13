@@ -29,45 +29,47 @@
 
 #include <gtest/gtest.h>
 #include <audiofile.h>
-#include <stdio.h>
+#include <limits>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string>
 #include <unistd.h>
-#include <limits>
+
+#include "TestUtilities.h"
 
 class FloatToIntTest : public testing::Test
 {
 protected:
 	virtual void SetUp()
 	{
+		ASSERT_TRUE(createTemporaryFile("FloatToInt", &m_testFileName));
 	}
 	virtual void TearDown()
 	{
-		::unlink(kTestFileName);
+		ASSERT_EQ(::unlink(m_testFileName.c_str()), 0);
 	}
 
-	static const char *kTestFileName;
-
-	static AFfilehandle createTestFile(int sampleWidth)
+	AFfilehandle createTestFile(int sampleWidth)
 	{
 		AFfilesetup setup = afNewFileSetup();
 		afInitFileFormat(setup, AF_FILE_AIFFC);
 		afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 		afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, sampleWidth);
-		AFfilehandle file = afOpenFile(kTestFileName, "w", setup);
+		AFfilehandle file = afOpenFile(m_testFileName.c_str(), "w", setup);
 		afSetVirtualSampleFormat(file, AF_DEFAULT_TRACK, AF_SAMPFMT_FLOAT, 32);
 		afFreeFileSetup(setup);
 		return file;
 	}
-	static AFfilehandle openTestFile(int sampleWidth)
+	AFfilehandle openTestFile(int sampleWidth)
 	{
-		AFfilehandle file = afOpenFile(kTestFileName, "r", AF_NULL_FILESETUP);
+		AFfilehandle file = afOpenFile(m_testFileName.c_str(), "r", AF_NULL_FILESETUP);
 		afSetVirtualSampleFormat(file, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, sampleWidth);
 		return file;
 	}
-};
 
-const char *FloatToIntTest::kTestFileName = "/tmp/test.aiff";
+private:
+	std::string m_testFileName;
+};
 
 static const int8_t kMinInt8 = std::numeric_limits<int8_t>::min();
 static const int8_t kMaxInt8 = std::numeric_limits<int8_t>::max();

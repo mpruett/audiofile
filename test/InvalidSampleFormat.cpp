@@ -33,16 +33,21 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-static const char *kTestFileName = "/tmp/testaf";
+#include "TestUtilities.h"
 
 void runTest(int fileFormat, int sampleFormat, int sampleWidth)
 {
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("InvalidSampleFormat", &testFileName));
+
 	AFfilesetup setup = afNewFileSetup();
 	afInitFileFormat(setup, fileFormat);
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, sampleFormat, sampleWidth);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
-	ASSERT_TRUE(afOpenFile(kTestFileName, "w", setup) == AF_NULL_FILEHANDLE);
+	ASSERT_TRUE(afOpenFile(testFileName.c_str(), "w", setup) == AF_NULL_FILEHANDLE);
 	afFreeFileSetup(setup);
+
+	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
 void testInt8(int fileFormat)

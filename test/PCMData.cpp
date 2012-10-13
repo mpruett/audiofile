@@ -33,18 +33,21 @@
 */
 
 #include <audiofile.h>
+#include <climits>
 #include <gtest/gtest.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <string>
 #include <unistd.h>
-#include <climits>
 
-static const char *kTestFileName = "/tmp/testaf";
+#include "TestUtilities.h"
 
 template <typename T, int kSampleFormat, int kBitsPerSample>
 void runTest(int fileFormat)
 {
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("PCMData", &testFileName));
+
 	T samples[] =
 	{
 		2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47,
@@ -57,7 +60,7 @@ void runTest(int fileFormat)
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, kSampleFormat, kBitsPerSample);
 
-	AFfilehandle file = afOpenFile(kTestFileName, "w", setup);
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
 	ASSERT_TRUE(file) << "Could not open file for writing";
 
 	afFreeFileSetup(setup);
@@ -68,7 +71,7 @@ void runTest(int fileFormat)
 
 	ASSERT_EQ(afCloseFile(file), 0) << "Error closing file";
 
-	file = afOpenFile(kTestFileName, "r", NULL);
+	file = afOpenFile(testFileName.c_str(), "r", NULL);
 	ASSERT_TRUE(file) << "Could not open file for reading";
 
 	ASSERT_EQ(afGetFileFormat(file, NULL), fileFormat) <<
@@ -95,7 +98,7 @@ void runTest(int fileFormat)
 
 	ASSERT_EQ(afCloseFile(file), 0) << "Error closing file";
 
-	::unlink(kTestFileName);
+	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
 void testInt8(int fileFormat)

@@ -33,6 +33,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <string>
+
+#include "TestUtilities.h"
 
 const char kDataUnspecifiedLength[] =
 {
@@ -77,16 +80,17 @@ const char kDataTruncated[] =
 const int16_t kFrames[] = { 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 };
 const int kFrameCount = sizeof (kFrames) / sizeof (kFrames[0]);
 
-const char *kTestFileName = "/tmp/test.au";
-
 TEST(NeXT, UnspecifiedLength)
 {
-	int fd = ::open(kTestFileName, O_RDWR | O_CREAT | O_TRUNC, 0644);
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("NeXT", &testFileName));
+
+	int fd = ::open(testFileName.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0644);
 	ASSERT_GT(fd, -1);
 	ASSERT_EQ(::write(fd, kDataUnspecifiedLength, sizeof (kDataUnspecifiedLength)), sizeof (kDataUnspecifiedLength));
 	::close(fd);
 
-	AFfilehandle file = afOpenFile(kTestFileName, "r", NULL);
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "r", NULL);
 	EXPECT_TRUE(file);
 
 	int sampleFormat, sampleWidth;
@@ -108,19 +112,22 @@ TEST(NeXT, UnspecifiedLength)
 
 	afCloseFile(file);
 
-	::unlink(kTestFileName);
+	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
 TEST(NeXT, Truncated)
 {
-	int fd = ::open(kTestFileName, O_RDWR | O_CREAT | O_TRUNC, 0644);
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("NeXT", &testFileName));
+
+	int fd = ::open(testFileName.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0644);
 	ASSERT_GT(fd, -1);
 	const size_t truncatedSize = sizeof (kDataTruncated) - 4;
 	const int truncatedFrameCount = kFrameCount - 2;
 	ASSERT_EQ(::write(fd, kDataTruncated, truncatedSize), truncatedSize);
 	::close(fd);
 
-	AFfilehandle file = afOpenFile(kTestFileName, "r", NULL);
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "r", NULL);
 	EXPECT_TRUE(file);
 
 	int sampleFormat, sampleWidth;
@@ -142,7 +149,7 @@ TEST(NeXT, Truncated)
 
 	afCloseFile(file);
 
-	::unlink(kTestFileName);
+	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
 int main(int argc, char **argv)

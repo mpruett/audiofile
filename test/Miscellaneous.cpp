@@ -35,6 +35,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "TestUtilities.h"
+
 struct Miscellaneous
 {
 	int id;
@@ -50,9 +52,7 @@ const Miscellaneous kMiscellaneous[] =
 
 const int kNumMiscellaneous = sizeof (kMiscellaneous) / sizeof (Miscellaneous);
 
-const char kTestFileName[] = "/tmp/test";
-
-void writeMiscellaneous(int fileFormat)
+void writeMiscellaneous(int fileFormat, const std::string &testFileName)
 {
 	AFfilesetup setup = afNewFileSetup();
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
@@ -68,7 +68,7 @@ void writeMiscellaneous(int fileFormat)
 		afInitMiscSize(setup, kMiscellaneous[i].id, strlen(kMiscellaneous[i].data));
 	}
 
-	AFfilehandle file = afOpenFile(kTestFileName, "w", setup);
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
 	ASSERT_TRUE(file);
 	afFreeFileSetup(setup);
 	int result;
@@ -85,9 +85,9 @@ void writeMiscellaneous(int fileFormat)
 	afCloseFile(file);
 }
 
-void readMiscellaneous()
+void readMiscellaneous(const std::string &testFileName)
 {
-	AFfilehandle file = afOpenFile(kTestFileName, "r", NULL);
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "r", NULL);
 	ASSERT_TRUE(file);
 	int count = afGetMiscIDs(file, NULL);
 	EXPECT_EQ(count, kNumMiscellaneous);
@@ -115,30 +115,38 @@ void readMiscellaneous()
 
 TEST(Miscellaneous, AIFF)
 {
-	writeMiscellaneous(AF_FILE_AIFF);
-	readMiscellaneous();
-	::unlink(kTestFileName);
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("Miscellaneous", &testFileName));
+	writeMiscellaneous(AF_FILE_AIFF, testFileName);
+	readMiscellaneous(testFileName);
+	::unlink(testFileName.c_str());
 }
 
 TEST(Miscellaneous, AIFFC)
 {
-	writeMiscellaneous(AF_FILE_AIFFC);
-	readMiscellaneous();
-	::unlink(kTestFileName);
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("Miscellaneous", &testFileName));
+	writeMiscellaneous(AF_FILE_AIFFC, testFileName);
+	readMiscellaneous(testFileName);
+	::unlink(testFileName.c_str());
 }
 
 TEST(Miscellaneous, WAVE)
 {
-	writeMiscellaneous(AF_FILE_WAVE);
-	readMiscellaneous();
-	::unlink(kTestFileName);
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("Miscellaneous", &testFileName));
+	writeMiscellaneous(AF_FILE_WAVE, testFileName);
+	readMiscellaneous(testFileName);
+	::unlink(testFileName.c_str());
 }
 
 TEST(Miscellaneous, IFF_8SVX)
 {
-	writeMiscellaneous(AF_FILE_IFF_8SVX);
-	readMiscellaneous();
-	::unlink(kTestFileName);
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("Miscellaneous", &testFileName));
+	writeMiscellaneous(AF_FILE_IFF_8SVX, testFileName);
+	readMiscellaneous(testFileName);
+	::unlink(testFileName.c_str());
 }
 
 int main(int argc, char **argv)

@@ -35,6 +35,7 @@
 #include <config.h>
 #endif
 
+#include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,13 +44,16 @@
 
 #include <audiofile.h>
 
-#define TEST_FILE "/tmp/test.aiff"
+#include "TestUtilities.h"
+
+static char sTestFileName[PATH_MAX];
+
 #define FRAME_COUNT 10000
 
 void cleanup (void)
 {
 #ifndef DEBUG
-	unlink(TEST_FILE);
+	unlink(sTestFileName);
 #endif
 }
 
@@ -75,7 +79,9 @@ int main (void)
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, 24);
 
-	file = afOpenFile(TEST_FILE, "w", setup);
+	ensure(createTemporaryFile("twentyfour2", sTestFileName),
+		"could not create temporary file");
+	file = afOpenFile(sTestFileName, "w", setup);
 	ensure(file != NULL, "could not open test file for writing");
 
 	afFreeFileSetup(setup);
@@ -103,7 +109,7 @@ int main (void)
 		Now open file for reading and ensure that the data read
 		is equal to the data written.
 	*/
-	file = afOpenFile(TEST_FILE, "r", AF_NULL_FILESETUP);
+	file = afOpenFile(sTestFileName, "r", AF_NULL_FILESETUP);
 	ensure(file != NULL, "could not open test file for reading");
 
 	framesread = afReadFrames(file, AF_DEFAULT_TRACK, readbuffer, FRAME_COUNT);

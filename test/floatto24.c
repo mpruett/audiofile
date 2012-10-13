@@ -36,8 +36,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
+#include <limits.h>
 
-#define TEST_FILE "/tmp/test.sf"
+#include "TestUtilities.h"
 
 /*
 	When converted to samples with width 24 bits, the samples
@@ -85,7 +87,14 @@ int main (int argc, char **argv)
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_FLOAT, 32);
 
-	AFfilehandle file = afOpenFile(TEST_FILE, "w", setup);
+	char testFileName[PATH_MAX];
+	if (!createTemporaryFile("floatto24", testFileName))
+	{
+		fprintf(stderr, "Could not create temporary file.\n");
+		exit(EXIT_FAILURE);
+	}
+
+	AFfilehandle file = afOpenFile(testFileName, "w", setup);
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		printf("could not open file for writing\n");
@@ -109,7 +118,7 @@ int main (int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	file = afOpenFile(TEST_FILE, "r", AF_NULL_FILESETUP);
+	file = afOpenFile(testFileName, "r", AF_NULL_FILESETUP);
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		fprintf(stderr, "Could not open file for writing.\n");
@@ -173,7 +182,7 @@ int main (int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	unlink(TEST_FILE);
+	unlink(testFileName);
 
 	exit(EXIT_SUCCESS);
 }

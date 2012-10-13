@@ -29,13 +29,17 @@
 
 #include <audiofile.h>
 #include <gtest/gtest.h>
+#include <string>
 
-const char *kTestFileName = "/tmp/test.aiff";
+#include "TestUtilities.h"
 
 template <typename T>
 void testChannelMatrixReading(int sampleFormat, int sampleWidth)
 {
 	// Create test file.
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("ChannelMatrix", &testFileName));
+
 	const int channelCount = 2;
 	const int frameCount = 10;
 	const T samples[channelCount * frameCount] =
@@ -49,7 +53,7 @@ void testChannelMatrixReading(int sampleFormat, int sampleWidth)
 	afInitFileFormat(setup, AF_FILE_AIFFC);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 2);
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, sampleFormat, sampleWidth);
-	AFfilehandle file = afOpenFile(kTestFileName, "w", setup);
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
 	afFreeFileSetup(setup);
 	EXPECT_TRUE(file);
 
@@ -60,7 +64,7 @@ void testChannelMatrixReading(int sampleFormat, int sampleWidth)
 	EXPECT_EQ(afCloseFile(file), 0);
 
 	// Open file for reading and read data using different channel matrices.
-	file = afOpenFile(kTestFileName, "r", NULL);
+	file = afOpenFile(testFileName.c_str(), "r", NULL);
 	EXPECT_TRUE(file);
 
 	EXPECT_EQ(afGetChannels(file, AF_DEFAULT_TRACK), 2);
@@ -89,7 +93,7 @@ void testChannelMatrixReading(int sampleFormat, int sampleWidth)
 
 	EXPECT_EQ(afCloseFile(file), 0);
 
-	::unlink(kTestFileName);
+	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
 TEST(ChannelMatrix, ReadInt8)
@@ -138,11 +142,14 @@ void testChannelMatrixWriting(int sampleFormat, int sampleWidth)
 	for (int c=0; c<2; c++)
 	{
 		// Create test file.
+		std::string testFileName;
+		ASSERT_TRUE(createTemporaryFile("ChannelMatrix", &testFileName));
+
 		AFfilesetup setup = afNewFileSetup();
 		afInitFileFormat(setup, AF_FILE_AIFFC);
 		afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 		afInitSampleFormat(setup, AF_DEFAULT_TRACK, sampleFormat, sampleWidth);
-		AFfilehandle file = afOpenFile(kTestFileName, "w", setup);
+		AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
 		afFreeFileSetup(setup);
 		EXPECT_TRUE(file);
 
@@ -159,7 +166,7 @@ void testChannelMatrixWriting(int sampleFormat, int sampleWidth)
 		EXPECT_EQ(afCloseFile(file), 0);
 
 		// Open file for reading.
-		file = afOpenFile(kTestFileName, "r", NULL);
+		file = afOpenFile(testFileName.c_str(), "r", NULL);
 		EXPECT_TRUE(file);
 
 		EXPECT_EQ(afGetChannels(file, AF_DEFAULT_TRACK), 1);
@@ -177,7 +184,7 @@ void testChannelMatrixWriting(int sampleFormat, int sampleWidth)
 
 		EXPECT_EQ(afCloseFile(file), 0);
 
-		::unlink(kTestFileName);
+		ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 	}
 }
 

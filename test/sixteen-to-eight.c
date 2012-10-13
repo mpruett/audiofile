@@ -35,10 +35,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <limits.h>
 
 #include <audiofile.h>
 
-#define TEST_FILE "/tmp/test.wave"
+#include "TestUtilities.h"
 
 int main (int argc, char **argv)
 {
@@ -57,7 +58,14 @@ int main (int argc, char **argv)
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_UNSIGNED, 8);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 
-	file = afOpenFile(TEST_FILE, "w", setup);
+	char testFileName[PATH_MAX];
+	if (!createTemporaryFile("sixteen-to-eight", testFileName))
+	{
+		fprintf(stderr, "Could not create temporary file.\n");
+		exit(EXIT_FAILURE);
+	}
+
+	file = afOpenFile(testFileName, "w", setup);
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		fprintf(stderr, "could not open file for writing\n");
@@ -72,7 +80,7 @@ int main (int argc, char **argv)
 
 	afCloseFile(file);
 
-	file = afOpenFile(TEST_FILE, "r", AF_NULL_FILESETUP);
+	file = afOpenFile(testFileName, "r", AF_NULL_FILESETUP);
 	if (file == AF_NULL_FILEHANDLE)
 	{
 		fprintf(stderr, "could not open file for reading\n");
@@ -105,7 +113,7 @@ int main (int argc, char **argv)
 	}
 
 	afCloseFile(file);
-	unlink(TEST_FILE);
+	unlink(testFileName);
 
 	exit(EXIT_SUCCESS);
 }

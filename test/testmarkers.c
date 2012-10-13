@@ -23,6 +23,7 @@
 #include <config.h>
 #endif
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,14 +31,16 @@
 
 #include <audiofile.h>
 
-#define TEST_FILE "/tmp/markers.test"
+#include "TestUtilities.h"
+
+static char sTestFileName[PATH_MAX];
 
 #define FRAME_COUNT 200
 
 void cleanup (void)
 {
 #ifndef DEBUG
-	unlink(TEST_FILE);
+	unlink(sTestFileName);
 #endif
 }
 
@@ -76,7 +79,7 @@ int testmarkers (int fileformat)
 	afInitMarkName(setup, AF_DEFAULT_TRACK, markids[2], marknames[2]);
 	afInitMarkName(setup, AF_DEFAULT_TRACK, markids[3], marknames[3]);
 
-	file = afOpenFile(TEST_FILE, "w", setup);
+	file = afOpenFile(sTestFileName, "w", setup);
 	ensure(file != AF_NULL_FILEHANDLE, "Could not open file for writing");
 
 	afFreeFileSetup(setup);
@@ -91,7 +94,7 @@ int testmarkers (int fileformat)
 
 	afCloseFile(file);
 
-	file = afOpenFile(TEST_FILE, "r", NULL);
+	file = afOpenFile(sTestFileName, "r", NULL);
 	ensure(file != AF_NULL_FILEHANDLE, "Could not open file for reading");
 
 	readmarkcount = afGetMarkIDs(file, AF_DEFAULT_TRACK, NULL);
@@ -125,6 +128,9 @@ int testmarkers (int fileformat)
 
 int main (void)
 {
+	ensure(createTemporaryFile("testmarkers", sTestFileName),
+		"could not create temporary file");
+
 	testmarkers(AF_FILE_AIFF);
 	testmarkers(AF_FILE_AIFFC);
 	testmarkers(AF_FILE_WAVE);

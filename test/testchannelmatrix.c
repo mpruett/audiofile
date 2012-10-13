@@ -30,6 +30,7 @@
 #include <config.h>
 #endif
 
+#include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,7 +38,9 @@
 
 #include <audiofile.h>
 
-#define TEST_FILE "/tmp/test.aiff"
+#include "TestUtilities.h"
+
+static char sTestFileName[PATH_MAX];
 
 const short samples[] = {300, -300, 515, -515, 2315, -2315, 9154, -9154};
 #define SAMPLE_COUNT (sizeof (samples) / sizeof (short))
@@ -45,7 +48,7 @@ const short samples[] = {300, -300, 515, -515, 2315, -2315, 9154, -9154};
 
 void cleanup (void)
 {
-	unlink(TEST_FILE);
+	unlink(sTestFileName);
 }
 
 void ensure (int condition, const char *message)
@@ -74,7 +77,9 @@ int main (void)
 	afInitFileFormat(setup, AF_FILE_AIFFC);
 
 	/* Write stereo data to test file. */
-	file = afOpenFile(TEST_FILE, "w", setup);
+	ensure(createTemporaryFile("testchannelmatrix", sTestFileName),
+		"could not create temporary file");
+	file = afOpenFile(sTestFileName, "w", setup);
 	ensure(file != AF_NULL_FILEHANDLE, "could not open file for writing");
 
 	afFreeFileSetup(setup);
@@ -95,7 +100,7 @@ int main (void)
 		corresponding even sample, the data read should be all
 		zeros.
 	*/
-	file = afOpenFile(TEST_FILE, "r", AF_NULL_FILESETUP);
+	file = afOpenFile(sTestFileName, "r", AF_NULL_FILESETUP);
 	ensure(file != AF_NULL_FILEHANDLE, "could not open file for reading");
 
 	ensure(afGetChannels(file, AF_DEFAULT_TRACK) == 2,
