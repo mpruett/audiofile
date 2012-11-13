@@ -1,3 +1,10 @@
+2012-11-12  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/File.cpp:
+	Open files in binary mode on Windows.
+
+	Thanks to Fabrizio Gennari for proposing this change.
+
 2012-10-13  Michael Pruett <michael@68k.org>
 
 	* test/*:
