@@ -1,3 +1,5 @@
+if ENABLE_DOCUMENTATION
+
 DOCS_TXT_MAN1 = \
 	sfconvert.1.txt \
 	sfinfo.1.txt
@@ -65,3 +67,5 @@ A2XFLAGS = $(ASCIIDOCFLAGS) -d manpage -f manpage
 html: $(DOCS_HTML)
 
 CLEANFILES = *.1 *.3 *.html
+
+endif
