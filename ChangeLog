@@ -1,3 +1,8 @@
+2012-11-13  Michael Pruett <michael@68k.org>
+
+	* configure.ac, docs/Makefile.am:
+	Add support for building without documentation.
+
 2012-11-12  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/File.cpp:

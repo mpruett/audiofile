@@ -98,8 +98,23 @@ AS_IF([test "$enable_valgrind" = "yes"],
 	)]
 )
 
-AC_PATH_PROG(A2X, a2x)
-AC_PATH_PROG(ASCIIDOC, asciidoc)
+AC_ARG_ENABLE(docs,
+	AS_HELP_STRING([--disable-docs], [disable documentation]),
+	[enable_documentation=$enableval],
+	[enable_documentation=yes])
+
+AM_CONDITIONAL(ENABLE_DOCUMENTATION, [test "$enable_documentation" = "yes"])
+
+AS_IF([test "$enable_documentation" = "yes"],
+	[AC_PATH_PROG(A2X, a2x, :)
+	AC_PATH_PROG(ASCIIDOC, asciidoc, :)
+	AS_IF([test "$A2X" = :],
+		[AC_MSG_WARN([Could not find a2x.])]
+	)
+	AS_IF([test "$ASCIIDOC" = :],
+		[AC_MSG_WARN([Could not find asciidoc.])]
+	)]
+)
 
 AC_CONFIG_FILES([
 	audiofile.spec
