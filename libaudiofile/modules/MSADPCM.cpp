@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 2010-2012, Michael Pruett <michael@68k.org>
+	Copyright (C) 2010-2013, Michael Pruett <michael@68k.org>
 	Copyright (C) 2001, Silicon Graphics, Inc.
 
 	This library is free software; you can redistribute it and/or
@@ -534,17 +534,14 @@ bool _af_ms_adpcm_format_ok (AudioFormat *f)
 	{
 		_af_error(AF_BAD_COMPRESSION,
 			"MS ADPCM compression requires 16-bit signed integer format");
-		f->sampleFormat = AF_SAMPFMT_TWOSCOMP;
-		f->sampleWidth = 16;
-		/* non-fatal */
+		return false;
 	}
 
-	if (f->byteOrder != AF_BYTEORDER_BIGENDIAN)
+	if (f->byteOrder != _AF_BYTEORDER_NATIVE)
 	{
 		_af_error(AF_BAD_COMPRESSION,
-			"MS ADPCM compression requires big endian format");
-		f->byteOrder = AF_BYTEORDER_BIGENDIAN;
-		/* non-fatal */
+			"MS ADPCM compression requires native byte order");
+		return false;
 	}
 
 	return true;

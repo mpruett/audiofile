@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 2012, Michael Pruett <michael@68k.org>
+	Copyright (C) 2012-2013, Michael Pruett <michael@68k.org>
 
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License as
@@ -26,16 +26,33 @@
 
 #include "TestUtilities.h"
 
-void runTest(int fileFormat, int compressionFormat)
+static const int kNativeByteOrder =
+#ifdef WORDS_BIGENDIAN
+	AF_BYTEORDER_BIGENDIAN;
+#else
+	AF_BYTEORDER_LITTLEENDIAN;
+#endif
+
+static const int kNonNativeByteOrder =
+#if WORDS_BIGENDIAN
+	AF_BYTEORDER_LITTLEENDIAN;
+#else
+	AF_BYTEORDER_BIGENDIAN;
+#endif
+
+static void runTest(int fileFormat, int compressionFormat, int channelCount = 1,
+	int sampleFormat = AF_SAMPFMT_TWOSCOMP, int sampleWidth = 16,
+	int byteOrder = kNativeByteOrder)
 {
 	std::string testFileName;
 	ASSERT_TRUE(createTemporaryFile("InvalidCompressionFormat", &testFileName));
 
 	AFfilesetup setup = afNewFileSetup();
 	afInitFileFormat(setup, fileFormat);
-	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, 16);
-	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
+	afInitSampleFormat(setup, AF_DEFAULT_TRACK, sampleFormat, sampleWidth);
+	afInitChannels(setup, AF_DEFAULT_TRACK, channelCount);
 	afInitCompression(setup, AF_DEFAULT_TRACK, compressionFormat);
+	afInitByteOrder(setup, AF_DEFAULT_TRACK, byteOrder);
 	ASSERT_TRUE(afOpenFile(testFileName.c_str(), "w", setup) == AF_NULL_FILEHANDLE);
 	afFreeFileSetup(setup);
 
@@ -77,6 +94,132 @@ TEST(NIST, IMA) { runTest(AF_FILE_NIST_SPHERE, AF_COMPRESSION_IMA); }
 TEST(NIST, MSADPCM) { runTest(AF_FILE_NIST_SPHERE, AF_COMPRESSION_MS_ADPCM); }
 
 TEST(CAF, MSADPCM) { runTest(AF_FILE_CAF, AF_COMPRESSION_MS_ADPCM); }
+
+/*
+	Test that opening an audio file with an invalid number of channels
+	results in failure.
+*/
+
+TEST(AIFFC, IMA) { runTest(AF_FILE_AIFFC, AF_COMPRESSION_IMA, 3); }
+
+TEST(WAVE, IMA) { runTest(AF_FILE_WAVE, AF_COMPRESSION_IMA, 3); }
+TEST(WAVE, MSADPCM) { runTest(AF_FILE_WAVE, AF_COMPRESSION_MS_ADPCM, 3); }
+
+TEST(CAF, IMA) { runTest(AF_FILE_CAF, AF_COMPRESSION_IMA, 3); }
+
+/*
+	Test that opening an audio file with an invalid sample format results
+	in failure.
+*/
+
+TEST(Mulaw, Signed)
+{
+	for (int sampleWidth=1; sampleWidth<=32; sampleWidth++)
+	{
+		if (sampleWidth==16)
+			continue;
+		runTest(AF_FILE_AIFFC, AF_COMPRESSION_G711_ULAW, 1, AF_SAMPFMT_TWOSCOMP, sampleWidth);
+	}
+}
+
+TEST(Mulaw, Unsigned)
+{
+	for (int sampleWidth=1; sampleWidth<=32; sampleWidth++)
+		runTest(AF_FILE_AIFFC, AF_COMPRESSION_G711_ULAW, 1, AF_SAMPFMT_UNSIGNED, sampleWidth);
+}
+
+TEST(Mulaw, Float)
+{
+	runTest(AF_FILE_AIFFC, AF_COMPRESSION_G711_ULAW, 1, AF_SAMPFMT_FLOAT, 32);
+}
+
+TEST(Mulaw, Double)
+{
+	runTest(AF_FILE_AIFFC, AF_COMPRESSION_G711_ULAW, 1, AF_SAMPFMT_DOUBLE, 64);
+}
+
+TEST(IMA, Signed)
+{
+	for (int sampleWidth=1; sampleWidth<=32; sampleWidth++)
+	{
+		if (sampleWidth==16)
+			continue;
+		runTest(AF_FILE_AIFFC, AF_COMPRESSION_IMA, 1, AF_SAMPFMT_TWOSCOMP, sampleWidth);
+		runTest(AF_FILE_WAVE, AF_COMPRESSION_IMA, 1, AF_SAMPFMT_TWOSCOMP, sampleWidth);
+		runTest(AF_FILE_CAF, AF_COMPRESSION_IMA, 1, AF_SAMPFMT_TWOSCOMP, sampleWidth);
+	}
+}
+
+TEST(IMA, Unsigned)
+{
+	for (int sampleWidth=1; sampleWidth<=32; sampleWidth++)
+	{
+		runTest(AF_FILE_AIFFC, AF_COMPRESSION_IMA, 1, AF_SAMPFMT_UNSIGNED, sampleWidth);
+		runTest(AF_FILE_WAVE, AF_COMPRESSION_IMA, 1, AF_SAMPFMT_UNSIGNED, sampleWidth);
+		runTest(AF_FILE_CAF, AF_COMPRESSION_IMA, 1, AF_SAMPFMT_UNSIGNED, sampleWidth);
+	}
+}
+
+TEST(IMA, Float)
+{
+	runTest(AF_FILE_AIFFC, AF_COMPRESSION_IMA, 1, AF_SAMPFMT_FLOAT, 32);
+	runTest(AF_FILE_WAVE, AF_COMPRESSION_IMA, 1, AF_SAMPFMT_FLOAT, 32);
+	runTest(AF_FILE_CAF, AF_COMPRESSION_IMA, 1, AF_SAMPFMT_FLOAT, 32);
+}
+
+TEST(IMA, Double)
+{
+	runTest(AF_FILE_AIFFC, AF_COMPRESSION_IMA, 1, AF_SAMPFMT_DOUBLE, 64);
+	runTest(AF_FILE_WAVE, AF_COMPRESSION_IMA, 1, AF_SAMPFMT_DOUBLE, 64);
+	runTest(AF_FILE_CAF, AF_COMPRESSION_IMA, 1, AF_SAMPFMT_DOUBLE, 64);
+}
+
+TEST(MSADPCM, Signed)
+{
+	for (int sampleWidth=1; sampleWidth<=32; sampleWidth++)
+		if (sampleWidth!=16)
+			runTest(AF_FILE_WAVE, AF_COMPRESSION_MS_ADPCM, 1, AF_SAMPFMT_TWOSCOMP, sampleWidth);
+}
+
+TEST(MSADPCM, Unsigned)
+{
+	for (int sampleWidth=1; sampleWidth<=32; sampleWidth++)
+		runTest(AF_FILE_WAVE, AF_COMPRESSION_MS_ADPCM, 1, AF_SAMPFMT_UNSIGNED, sampleWidth);
+}
+
+TEST(MSADPCM, Float)
+{
+	runTest(AF_FILE_WAVE, AF_COMPRESSION_MS_ADPCM, 1, AF_SAMPFMT_FLOAT, 32);
+}
+
+TEST(MSADPCM, Double)
+{
+	runTest(AF_FILE_WAVE, AF_COMPRESSION_MS_ADPCM, 1, AF_SAMPFMT_DOUBLE, 64);
+}
+
+TEST(Mulaw, InvalidByteOrder)
+{
+	runTest(AF_FILE_WAVE, AF_COMPRESSION_G711_ULAW, 1, AF_SAMPFMT_TWOSCOMP, 16,
+		kNonNativeByteOrder);
+}
+
+TEST(Alaw, InvalidByteOrder)
+{
+	runTest(AF_FILE_WAVE, AF_COMPRESSION_G711_ALAW, 1, AF_SAMPFMT_TWOSCOMP, 16,
+		kNonNativeByteOrder);
+}
+
+TEST(IMA, InvalidByteOrder)
+{
+	runTest(AF_FILE_WAVE, AF_COMPRESSION_IMA, 1, AF_SAMPFMT_TWOSCOMP, 16,
+		kNonNativeByteOrder);
+}
+
+TEST(MSADPCM, InvalidByteOrder)
+{
+	runTest(AF_FILE_WAVE, AF_COMPRESSION_MS_ADPCM, 1, AF_SAMPFMT_TWOSCOMP, 16,
+		kNonNativeByteOrder);
+}
 
 int main(int argc, char **argv)
 {

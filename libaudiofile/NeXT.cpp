@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 1998-2000, 2011, Michael Pruett <michael@68k.org>
+	Copyright (C) 1998-2000, 2011-2013, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -143,12 +143,14 @@ status NeXTFile::readInit(AFfilesetup setup)
 			track->f.sampleWidth = 16;
 			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
 			track->f.compressionType = AF_COMPRESSION_G711_ULAW;
+			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 			track->f.bytesPerPacket = track->f.channelCount;
 			break;
 		case _AU_FORMAT_ALAW_8:
 			track->f.sampleWidth = 16;
 			track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
 			track->f.compressionType = AF_COMPRESSION_G711_ALAW;
+			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 			track->f.bytesPerPacket = track->f.channelCount;
 			break;
 		case _AU_FORMAT_LINEAR_8:
@@ -244,11 +246,17 @@ AFfilesetup NeXTFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	if (track->f.byteOrder != AF_BYTEORDER_BIGENDIAN && track->byteOrderSet)
+	if (track->f.isUncompressed() &&
+		track->byteOrderSet &&
+		track->f.byteOrder != AF_BYTEORDER_BIGENDIAN &&
+		track->f.isByteOrderSignificant())
 	{
 		_af_error(AF_BAD_BYTEORDER, "NeXT format supports only big-endian data");
-		track->f.byteOrder = AF_BYTEORDER_BIGENDIAN;
+		return AF_NULL_FILESETUP;
 	}
+
+	if (track->f.isUncompressed())
+		track->f.byteOrder = AF_BYTEORDER_BIGENDIAN;
 
 	if (track->aesDataSet)
 	{
@@ -347,8 +355,6 @@ status NeXTFile::writeInit(AFfilesetup setup)
 
 	Track *track = getTrack();
 	track->fpos_first_frame = 28;
-
-	track->f.byteOrder = AF_BYTEORDER_BIGENDIAN;
 
 	return AF_SUCCEED;
 }

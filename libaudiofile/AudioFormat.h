@@ -61,6 +61,7 @@ struct AudioFormat
 	bool isCompressed() const;
 	bool isUncompressed() const;
 	bool isPacked() const { return packed; }
+	bool isByteOrderSignificant() const { return sampleWidth > 8; }
 
 	void computeBytesPerPacketPCM();
 
