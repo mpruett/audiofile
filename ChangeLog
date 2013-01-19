@@ -1,5 +1,11 @@
 2013-01-19  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/CAF.cpp,
+	libaudiofile/util.cpp:
+	Fix conversion specifications in error messages.
+
+2013-01-19  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/format.cpp,
 	test/Makefile.am,
 	test/SampleFormat.cpp:
