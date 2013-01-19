@@ -1,7 +1,7 @@
 /*
 	Audio File Library
 	Copyright (C) 2000-2001, Silicon Graphics, Inc.
-	Copyright (C) 2010, Michael Pruett <michael@68k.org>
+	Copyright (C) 2010-2013, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -64,18 +64,15 @@ bool _af_g711_format_ok (AudioFormat *f)
 	if (f->sampleFormat != AF_SAMPFMT_TWOSCOMP || f->sampleWidth != 16)
 	{
 		_af_error(AF_BAD_COMPRESSION,
-		       "G711 compression requires 16-bit signed integer format");
-		f->sampleFormat = AF_SAMPFMT_TWOSCOMP;
-		f->sampleWidth = 16;
-		/* non-fatal */
+		       "G.711 compression requires 16-bit signed integer format");
+		return false;
 	}
 
-	if (f->byteOrder != AF_BYTEORDER_BIGENDIAN)
+	if (f->byteOrder != _AF_BYTEORDER_NATIVE)
 	{
 		_af_error(AF_BAD_COMPRESSION,
-		       "G711 compression requires big endian format");
-		f->byteOrder = AF_BYTEORDER_BIGENDIAN;
-		/* non-fatal */
+			"G.711 compression requires native byte order");
+		return false;
 	}
 
 	return true;

@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 2011-2012, Michael Pruett <michael@68k.org>
+	Copyright (C) 2011-2013, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -190,13 +190,6 @@ AFfilesetup CAFFile::completeSetup(AFfilesetup setup)
 			"compression format %d not supported in CAF file",
 			track->f.compressionType);
 		return AF_NULL_FILESETUP;
-	}
-
-	if (track->f.compressionType == AF_COMPRESSION_IMA)
-	{
-		track->f.sampleWidth = 16;
-		track->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
-		track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 	}
 
 	if (track->markersSet && track->markerCount)

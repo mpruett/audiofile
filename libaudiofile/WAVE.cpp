@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 1998-2000, 2003-2004, 2010-2012, Michael Pruett <michael@68k.org>
+	Copyright (C) 1998-2000, 2003-2004, 2010-2013, Michael Pruett <michael@68k.org>
 	Copyright (C) 2000-2002, Silicon Graphics, Inc.
 	Copyright (C) 2002-2003, Davy Durham
 
@@ -829,7 +829,14 @@ AFfilesetup WAVEFile::completeSetup(AFfilesetup setup)
 
 	TrackSetup *track = setup->getTrack();
 
-	if (track->sampleFormatSet)
+	if (track->f.isCompressed())
+	{
+		if (!track->sampleFormatSet)
+			_af_set_sample_format(&track->f, AF_SAMPFMT_TWOSCOMP, 16);
+		else
+			_af_set_sample_format(&track->f, track->f.sampleFormat, track->f.sampleWidth);
+	}
+	else if (track->sampleFormatSet)
 	{
 		switch (track->f.sampleFormat)
 		{
@@ -937,18 +944,17 @@ AFfilesetup WAVEFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	if (track->byteOrderSet &&
+	if (track->f.isUncompressed() &&
+		track->byteOrderSet &&
 		track->f.byteOrder != AF_BYTEORDER_LITTLEENDIAN &&
-		track->f.compressionType == AF_COMPRESSION_NONE)
+		track->f.isByteOrderSignificant())
 	{
 		_af_error(AF_BAD_BYTEORDER, "WAVE format only supports little-endian data");
 		return AF_NULL_FILESETUP;
 	}
 
-	if (track->f.compressionType == AF_COMPRESSION_NONE)
+	if (track->f.isUncompressed())
 		track->f.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
-	else
-		track->f.byteOrder = AF_BYTEORDER_BIGENDIAN;
 
 	if (track->aesDataSet)
 	{

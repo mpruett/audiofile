@@ -1,7 +1,7 @@
 /*
 	Audio File Library
 	Copyright (C) 2000, Silicon Graphics, Inc.
-	Copyright (C) 2010, Michael Pruett <michael@68k.org>
+	Copyright (C) 2010-2013, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -51,6 +51,10 @@ status ModuleState::initFileModule(AFfilehandle file, Track *track)
 {
 	const CompressionUnit *unit = _af_compression_unit_from_id(track->f.compressionType);
 	if (!unit)
+		return AF_FAIL;
+
+	// Validate compression format and parameters.
+	if (!unit->fmtok(&track->f))
 		return AF_FAIL;
 
 	if (file->m_seekok &&

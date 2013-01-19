@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 1998-2000, 2003-2004, 2010-2012, Michael Pruett <michael@68k.org>
+	Copyright (C) 1998-2000, 2003-2004, 2010-2013, Michael Pruett <michael@68k.org>
 	Copyright (C) 2000-2001, Silicon Graphics, Inc.
 
 	This library is free software; you can redistribute it and/or
@@ -381,11 +381,15 @@ status AIFFFile::parseCOMM(const Tag &type, size_t size)
 		else if (compressionID == "ulaw" || compressionID == "ULAW")
 		{
 			track->f.compressionType = AF_COMPRESSION_G711_ULAW;
+			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
+			track->f.sampleWidth = 16;
 			track->f.bytesPerPacket = track->f.channelCount;
 		}
 		else if (compressionID == "alaw" || compressionID == "ALAW")
 		{
 			track->f.compressionType = AF_COMPRESSION_G711_ALAW;
+			track->f.byteOrder = _AF_BYTEORDER_NATIVE;
+			track->f.sampleWidth = 16;
 			track->f.bytesPerPacket = track->f.channelCount;
 		}
 		else if (compressionID == "fl32" || compressionID == "FL32")
@@ -642,14 +646,18 @@ AFfilesetup AIFFFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	if (track->byteOrderSet &&
+	if (track->f.isUncompressed() &&
+		track->byteOrderSet &&
 		track->f.byteOrder != AF_BYTEORDER_BIGENDIAN &&
-		track->f.sampleWidth > 8)
+		track->f.isByteOrderSignificant())
 	{
 		_af_error(AF_BAD_BYTEORDER,
 			"AIFF/AIFF-C format supports only big-endian data");
+		return AF_NULL_FILESETUP;
 	}
-	track->f.byteOrder = AF_BYTEORDER_BIGENDIAN;
+
+	if (track->f.isUncompressed())
+		track->f.byteOrder = AF_BYTEORDER_BIGENDIAN;
 
 	if (setup->instrumentSet)
 	{

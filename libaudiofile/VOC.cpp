@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 2011, Michael Pruett <michael@68k.org>
+	Copyright (C) 2011-2013, Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -127,17 +127,17 @@ AFfilesetup VOCFile::completeSetup(AFfilesetup setup)
 		_af_set_sample_format(&track->f, AF_SAMPFMT_TWOSCOMP,
 			track->f.sampleWidth);
 
-	if (track->byteOrderSet && track->f.byteOrder != AF_BYTEORDER_LITTLEENDIAN)
+	if (track->f.isUncompressed() &&
+		track->byteOrderSet &&
+		track->f.byteOrder != AF_BYTEORDER_LITTLEENDIAN &&
+		track->f.isByteOrderSignificant())
 	{
-		// Treat error as correctable.
 		_af_error(AF_BAD_BYTEORDER, "VOC supports only little-endian data");
-		track->f.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
+		return AF_NULL_FILESETUP;
 	}
 
-	if (track->f.compressionType == AF_COMPRESSION_NONE)
+	if (track->f.isUncompressed())
 		track->f.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
-	else
-		track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 
 	if (track->f.compressionType != AF_COMPRESSION_NONE &&
 		track->f.compressionType != AF_COMPRESSION_G711_ULAW &&
@@ -294,12 +294,14 @@ status VOCFile::readInit(AFfilesetup)
 			else if (format == kVOCFormatAlaw)
 			{
 				track->f.compressionType = AF_COMPRESSION_G711_ALAW;
+				track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 				track->f.bytesPerPacket = track->f.channelCount;
 				_af_set_sample_format(&track->f, AF_SAMPFMT_TWOSCOMP, 16);
 			}
 			else if (format == kVOCFormatUlaw)
 			{
 				track->f.compressionType = AF_COMPRESSION_G711_ULAW;
+				track->f.byteOrder = _AF_BYTEORDER_NATIVE;
 				track->f.bytesPerPacket = track->f.channelCount;
 				_af_set_sample_format(&track->f, AF_SAMPFMT_TWOSCOMP, 16);
 			}

@@ -1,3 +1,18 @@
+2013-01-19  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/AIFF.cpp,
+	libaudiofile/AudioFormat.h,
+	libaudiofile/CAF.cpp,
+	libaudiofile/NeXT.cpp,
+	libaudiofile/VOC.cpp,
+	libaudiofile/WAVE.cpp,
+	libaudiofile/modules/G711.cpp,
+	libaudiofile/modules/IMA.cpp,
+	libaudiofile/modules/MSADPCM.cpp,
+	libaudiofile/modules/ModuleState.cpp,
+	test/InvalidCompressionFormat.cpp:
+	Validate compressed audio formats.
+
 2012-11-13  Michael Pruett <michael@68k.org>
 
 	* configure.ac, docs/Makefile.am:
