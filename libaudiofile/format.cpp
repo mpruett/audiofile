@@ -241,10 +241,10 @@ void afGetSampleFormat (AFfilehandle file, int trackid, int *sampleFormat, int *
 	if (!track)
 		return;
 
-	if (sampleFormat != NULL)
+	if (sampleFormat)
 		*sampleFormat = track->f.sampleFormat;
 
-	if (sampleFormat != NULL)
+	if (sampleWidth)
 		*sampleWidth = track->f.sampleWidth;
 }
 
@@ -257,10 +257,10 @@ void afGetVirtualSampleFormat (AFfilehandle file, int trackid, int *sampleFormat
 	if (!track)
 		return;
 
-	if (sampleFormat != NULL)
+	if (sampleFormat)
 		*sampleFormat = track->v.sampleFormat;
 
-	if (sampleFormat != NULL)
+	if (sampleWidth)
 		*sampleWidth = track->v.sampleWidth;
 }
 

@@ -1,5 +1,14 @@
 2013-01-19  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/format.cpp,
+	test/Makefile.am,
+	test/SampleFormat.cpp:
+	Fix null checks in afGetSampleFormat() and afGetVirtualSampleFormat().
+
+	Thanks to David Lassonde for pointing out this problem.
+
+2013-01-19  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/AIFF.cpp,
 	libaudiofile/AudioFormat.h,
 	libaudiofile/CAF.cpp,

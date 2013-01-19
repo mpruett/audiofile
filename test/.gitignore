@@ -15,6 +15,7 @@ PCMData
 PCMMapping
 Pipe
 Query
+SampleFormat
 Seek
 Sign
 VirtualFile

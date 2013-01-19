@@ -18,6 +18,7 @@ TESTS = \
 	PCMMapping \
 	Pipe \
 	Query \
+	SampleFormat \
 	Seek \
 	Sign \
 	VirtualFile \
@@ -104,6 +105,9 @@ Pipe_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 Query_SOURCES = Query.cpp TestUtilities.cpp TestUtilities.h
 Query_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+SampleFormat_SOURCES = SampleFormat.cpp TestUtilities.cpp TestUtilities.h
+SampleFormat_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 Seek_SOURCES = Seek.cpp TestUtilities.cpp TestUtilities.h
 Seek_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
