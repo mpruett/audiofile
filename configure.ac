@@ -116,6 +116,9 @@ AS_IF([test "$enable_documentation" = "yes"],
 	)]
 )
 
+dnl Set the directory where pkgconfig files go
+PKG_INSTALLDIR
+
 AC_CONFIG_FILES([
 	audiofile.spec
 	audiofile.pc
