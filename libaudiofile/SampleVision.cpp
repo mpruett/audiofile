@@ -184,12 +184,12 @@ status SampleVisionFile::readInit(AFfilesetup)
 	readU32(&smpteOffset);
 	readU32(&cycleLength);
 
-	_af_set_sample_format(&track->f, AF_SAMPFMT_TWOSCOMP, 16);
 	track->f.byteOrder = AF_BYTEORDER_LITTLEENDIAN;
 	track->f.sampleRate = sampleRate;
 	track->f.channelCount = 1;
 	track->f.compressionType = AF_COMPRESSION_NONE;
 	track->f.framesPerPacket = 1;
+	_af_set_sample_format(&track->f, AF_SAMPFMT_TWOSCOMP, 16);
 	track->f.computeBytesPerPacketPCM();
 
 	return AF_SUCCEED;
