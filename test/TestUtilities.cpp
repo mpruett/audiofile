@@ -23,6 +23,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 bool createTemporaryFile(const std::string &prefix, std::string *path)
 {
