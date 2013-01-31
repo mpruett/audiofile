@@ -121,14 +121,6 @@ AFfilesetup NISTFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	if (track->channelCountSet && track->f.channelCount < 1)
-	{
-		_af_error(AF_BAD_CHANNELS,
-			"invalid channel count (%d) for NIST SPHERE format",
-			track->f.channelCount);
-		return AF_NULL_FILESETUP;
-	}
-
 	if (track->compressionSet && track->f.compressionType != AF_COMPRESSION_NONE &&
 		track->f.compressionType != AF_COMPRESSION_G711_ULAW &&
 		track->f.compressionType != AF_COMPRESSION_G711_ALAW)

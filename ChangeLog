@@ -1,5 +1,12 @@
 2013-01-30  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/NIST.cpp:
+	Remove unnecessary check for positive channel count.
+
+	This check is already performed in afInitChannels().
+
+2013-01-30  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/SampleVision.cpp:
 	Set compression type before initializing sample format.
 
