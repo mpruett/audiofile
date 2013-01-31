@@ -29,6 +29,7 @@
 #ifndef IRCAM_H
 #define IRCAM_H
 
+#include "Compiler.h"
 #include "FileHandle.h"
 
 #define _AF_IRCAM_NUM_COMPTYPES 2
@@ -40,9 +41,9 @@ public:
 	static bool recognize(File *fh);
 	static AFfilesetup completeSetup(AFfilesetup);
 
-	status readInit(AFfilesetup);
-	status writeInit(AFfilesetup);
-	status update();
+	status readInit(AFfilesetup) OVERRIDE;
+	status writeInit(AFfilesetup) OVERRIDE;
+	status update() OVERRIDE;
 };
 
 #endif

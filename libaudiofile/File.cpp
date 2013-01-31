@@ -30,6 +30,9 @@
 #include "config.h"
 #include "File.h"
 
+#include "Compiler.h"
+#include "af_vfs.h"
+
 #include <assert.h>
 #include <fcntl.h>
 #include <stdlib.h>
@@ -38,20 +41,18 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#include "af_vfs.h"
-
 class FilePOSIX : public File
 {
 public:
 	FilePOSIX(int fd, AccessMode mode) : File(mode), m_fd(fd) { }
 	virtual ~FilePOSIX() { }
 
-	virtual int close();
-	virtual ssize_t read(void *data, size_t nbytes);
-	virtual ssize_t write(const void *data, size_t nbytes);
-	virtual off_t length();
-	virtual off_t seek(off_t offset, SeekOrigin origin);
-	virtual off_t tell();
+	virtual int close() OVERRIDE;
+	virtual ssize_t read(void *data, size_t nbytes) OVERRIDE;
+	virtual ssize_t write(const void *data, size_t nbytes) OVERRIDE;
+	virtual off_t length() OVERRIDE;
+	virtual off_t seek(off_t offset, SeekOrigin origin) OVERRIDE;
+	virtual off_t tell() OVERRIDE;
 
 private:
 	int m_fd;
@@ -63,12 +64,12 @@ public:
 	FileVF(AFvirtualfile *vf, AccessMode mode) : File(mode), m_vf(vf) { }
 	virtual ~FileVF() { }
 
-	virtual int close();
-	virtual ssize_t read(void *data, size_t nbytes);
-	virtual ssize_t write(const void *data, size_t nbytes);
-	virtual off_t length();
-	virtual off_t seek(off_t offset, SeekOrigin origin);
-	virtual off_t tell();
+	virtual int close() OVERRIDE;
+	virtual ssize_t read(void *data, size_t nbytes) OVERRIDE;
+	virtual ssize_t write(const void *data, size_t nbytes) OVERRIDE;
+	virtual off_t length() OVERRIDE;
+	virtual off_t seek(off_t offset, SeekOrigin origin) OVERRIDE;
+	virtual off_t tell() OVERRIDE;
 
 private:
 	AFvirtualfile *m_vf;

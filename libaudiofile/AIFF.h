@@ -28,6 +28,7 @@
 #ifndef AIFF_H
 #define AIFF_H
 
+#include "Compiler.h"
 #include "FileHandle.h"
 
 #define _AF_AIFF_NUM_INSTPARAMS 9
@@ -45,14 +46,14 @@ public:
 
 	static AFfilesetup completeSetup(AFfilesetup);
 
-	virtual int getVersion();
+	int getVersion() OVERRIDE;
 
-	virtual status readInit(AFfilesetup);
-	virtual status writeInit(AFfilesetup);
+	status readInit(AFfilesetup) OVERRIDE;
+	status writeInit(AFfilesetup) OVERRIDE;
 
-	virtual status update();
+	status update() OVERRIDE;
 
-	virtual bool isInstrumentParameterValid(AUpvlist, int);
+	bool isInstrumentParameterValid(AUpvlist, int) OVERRIDE;
 
 private:
 	AFfileoffset m_miscellaneousPosition;

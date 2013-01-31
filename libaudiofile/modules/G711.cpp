@@ -24,6 +24,7 @@
 
 #include <assert.h>
 
+#include "Compiler.h"
 #include "FileModule.h"
 #include "Track.h"
 #include "afinternal.h"
@@ -86,16 +87,16 @@ public:
 	static Module *createDecompress(Track *trk, File *fh, bool canSeek,
 		bool headerless, AFframecount *chunkframes);
 
-	virtual const char *name() const
+	virtual const char *name() const OVERRIDE
 	{
 		return mode() == Compress ? "g711compress" : "g711decompress";
 	}
-	virtual void describe();
-	virtual void runPull();
-	virtual void reset2();
-	virtual void runPush();
-	virtual void sync1();
-	virtual void sync2();
+	virtual void describe() OVERRIDE;
+	virtual void runPull() OVERRIDE;
+	virtual void reset2() OVERRIDE;
+	virtual void runPush() OVERRIDE;
+	virtual void sync1() OVERRIDE;
+	virtual void sync2() OVERRIDE;
 
 private:
 	G711(Mode mode, Track *track, File *fh, bool canSeek);

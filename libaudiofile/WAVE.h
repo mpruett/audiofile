@@ -30,6 +30,7 @@
 #ifndef WAVE_H
 #define WAVE_H
 
+#include "Compiler.h"
 #include "FileHandle.h"
 #include <stdint.h>
 
@@ -48,12 +49,12 @@ public:
 
 	WAVEFile();
 
-	status readInit(AFfilesetup);
-	status writeInit(AFfilesetup);
+	status readInit(AFfilesetup) OVERRIDE;
+	status writeInit(AFfilesetup) OVERRIDE;
 
-	status update();
+	status update() OVERRIDE;
 
-	bool isInstrumentParameterValid(AUpvlist, int);
+	bool isInstrumentParameterValid(AUpvlist, int) OVERRIDE;
 
 private:
 	AFfileoffset m_factOffset;	// start of fact (frame count) chunk

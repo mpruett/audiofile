@@ -15,6 +15,7 @@ libaudiofile_la_SOURCES = \
 	AudioFormat.h \
 	CAF.cpp \
 	CAF.h \
+	Compiler.h \
 	File.cpp \
 	File.h \
 	FileHandle.cpp \

@@ -21,6 +21,7 @@
 #ifndef CAF_H
 #define CAF_H
 
+#include "Compiler.h"
 #include "File.h"
 #include "FileHandle.h"
 #include "Tag.h"
@@ -38,9 +39,9 @@ public:
 	CAFFile();
 	~CAFFile();
 
-	status readInit(AFfilesetup);
-	status writeInit(AFfilesetup);
-	status update();
+	status readInit(AFfilesetup) OVERRIDE;
+	status writeInit(AFfilesetup) OVERRIDE;
+	status update() OVERRIDE;
 
 private:
 	AFfileoffset m_dataOffset;

@@ -21,6 +21,7 @@
 #ifndef SAMPLE_VISION_H
 #define SAMPLE_VISION_H
 
+#include "Compiler.h"
 #include "FileHandle.h"
 
 class SampleVisionFile : public _AFfilehandle
@@ -33,10 +34,10 @@ public:
 
 	static AFfilesetup completeSetup(AFfilesetup);
 
-	virtual status readInit(AFfilesetup);
-	virtual status writeInit(AFfilesetup);
+	status readInit(AFfilesetup) OVERRIDE;
+	status writeInit(AFfilesetup) OVERRIDE;
 
-	virtual status update();
+	status update() OVERRIDE;
 
 private:
 	AFfileoffset m_frameCountOffset;

@@ -21,6 +21,7 @@
 #ifndef VOC_H
 #define VOC_H
 
+#include "Compiler.h"
 #include "FileHandle.h"
 
 #define _AF_VOC_NUM_COMPTYPES 2
@@ -34,9 +35,9 @@ public:
 	static bool recognize(File *);
 	static AFfilesetup completeSetup(AFfilesetup);
 
-	status readInit(AFfilesetup);
-	status writeInit(AFfilesetup);
-	status update();
+	status readInit(AFfilesetup) OVERRIDE;
+	status writeInit(AFfilesetup) OVERRIDE;
+	status update() OVERRIDE;
 
 private:
 	status writeSoundData();

@@ -28,6 +28,7 @@
 #ifndef IFF_H
 #define IFF_H
 
+#include "Compiler.h"
 #include "FileHandle.h"
 
 class IFFFile : public _AFfilehandle
@@ -37,9 +38,9 @@ public:
 	static AFfilesetup completeSetup(AFfilesetup);
 
 	IFFFile();
-	status readInit(AFfilesetup);
-	status writeInit(AFfilesetup);
-	status update();
+	status readInit(AFfilesetup) OVERRIDE;
+	status writeInit(AFfilesetup) OVERRIDE;
+	status update() OVERRIDE;
 
 private:
 	AFfileoffset m_miscellaneousPosition;

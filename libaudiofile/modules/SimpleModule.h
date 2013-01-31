@@ -23,6 +23,7 @@
 
 #include "config.h"
 
+#include "Compiler.h"
 #include "Module.h"
 #include "byteorder.h"
 
@@ -34,21 +35,21 @@
 class SimpleModule : public Module
 {
 public:
-	virtual void runPull();
-	virtual void runPush();
+	virtual void runPull() OVERRIDE;
+	virtual void runPush() OVERRIDE;
 	virtual void run(Chunk &inChunk, Chunk &outChunk) = 0;
 };
 
 struct SwapModule : public SimpleModule
 {
 public:
-	virtual const char *name() const { return "swap"; }
-	virtual void describe()
+	virtual const char *name() const OVERRIDE { return "swap"; }
+	virtual void describe() OVERRIDE
 	{
 		m_outChunk->f.byteOrder = m_inChunk->f.byteOrder == AF_BYTEORDER_BIGENDIAN ?
 			AF_BYTEORDER_LITTLEENDIAN : AF_BYTEORDER_BIGENDIAN;
 	}
-	virtual void run(Chunk &inChunk, Chunk &outChunk)
+	virtual void run(Chunk &inChunk, Chunk &outChunk) OVERRIDE
 	{
 		switch (m_inChunk->f.bytesPerSample(false))
 		{
@@ -143,8 +144,8 @@ public:
 		m_fromSigned(fromSigned)
 	{
 	}
-	virtual const char *name() const { return "sign"; }
-	virtual void describe()
+	virtual const char *name() const OVERRIDE { return "sign"; }
+	virtual void describe() OVERRIDE
 	{
 		const int scaleBits = m_inChunk->f.bytesPerSample(false) * CHAR_BIT;
 		m_outChunk->f.sampleFormat =
@@ -156,7 +157,7 @@ public:
 		m_outChunk->f.pcm.minClip += shift;
 		m_outChunk->f.pcm.maxClip += shift;
 	}
-	virtual void run(Chunk &input, Chunk &output)
+	virtual void run(Chunk &input, Chunk &output) OVERRIDE
 	{
 		size_t count = input.frameCount * m_inChunk->f.channelCount;
 		if (m_fromSigned)
@@ -228,12 +229,12 @@ public:
 	Expand3To4Module(bool isSigned) : m_isSigned(isSigned)
 	{
 	}
-	virtual const char *name() const { return "expand3to4"; }
-	virtual void describe()
+	virtual const char *name() const OVERRIDE { return "expand3to4"; }
+	virtual void describe() OVERRIDE
 	{
 		m_outChunk->f.packed = false;
 	}
-	virtual void run(Chunk &inChunk, Chunk &outChunk)
+	virtual void run(Chunk &inChunk, Chunk &outChunk) OVERRIDE
 	{
 		int count = inChunk.f.channelCount * inChunk.frameCount;
 		if (m_isSigned)
@@ -275,12 +276,12 @@ public:
 	Compress4To3Module(bool isSigned) : m_isSigned(isSigned)
 	{
 	}
-	virtual const char *name() const { return "compress4to3"; }
-	virtual void describe()
+	virtual const char *name() const OVERRIDE { return "compress4to3"; }
+	virtual void describe() OVERRIDE
 	{
 		m_outChunk->f.packed = true;
 	}
-	virtual void run(Chunk &inChunk, Chunk &outChunk)
+	virtual void run(Chunk &inChunk, Chunk &outChunk) OVERRIDE
 	{
 		int count = inChunk.f.channelCount * inChunk.frameCount;
 		if (m_isSigned)
@@ -333,14 +334,14 @@ struct ConvertIntToFloat : public SimpleModule
 		m_inFormat(inFormat), m_outFormat(outFormat)
 	{
 	}
-	virtual const char *name() const { return "intToFloat"; }
-	virtual void describe()
+	virtual const char *name() const OVERRIDE { return "intToFloat"; }
+	virtual void describe() OVERRIDE
 	{
 		m_outChunk->f.sampleFormat = m_outFormat == kDouble ?
 			AF_SAMPFMT_DOUBLE : AF_SAMPFMT_FLOAT;
 		m_outChunk->f.sampleWidth = m_outFormat == kDouble ? 64 : 32;
 	}
-	virtual void run(Chunk &inChunk, Chunk &outChunk)
+	virtual void run(Chunk &inChunk, Chunk &outChunk) OVERRIDE
 	{
 		const void *src = inChunk.buffer;
 		void *dst = outChunk.buffer;
@@ -408,8 +409,8 @@ struct ConvertInt : public SimpleModule
 		assert(isInteger(m_inFormat));
 		assert(isInteger(m_outFormat));
 	}
-	virtual const char *name() const { return "convertInt"; }
-	virtual void describe()
+	virtual const char *name() const OVERRIDE { return "convertInt"; }
+	virtual void describe() OVERRIDE
 	{
 		getDefaultPCMMapping(m_outChunk->f.sampleWidth,
 			m_outChunk->f.pcm.slope,
@@ -417,7 +418,7 @@ struct ConvertInt : public SimpleModule
 			m_outChunk->f.pcm.minClip,
 			m_outChunk->f.pcm.maxClip);
 	}
-	virtual void run(Chunk &inChunk, Chunk &outChunk)
+	virtual void run(Chunk &inChunk, Chunk &outChunk) OVERRIDE
 	{
 		const void *src = inChunk.buffer;
 		void *dst = outChunk.buffer;
@@ -503,8 +504,8 @@ struct ConvertFloat : public SimpleModule
 		assert((m_inFormat == kFloat && m_outFormat == kDouble) ||
 			(m_inFormat == kDouble && m_outFormat == kFloat));
 	}
-	virtual const char *name() const { return "convertFloat"; }
-	virtual void describe()
+	virtual const char *name() const OVERRIDE { return "convertFloat"; }
+	virtual void describe() OVERRIDE
 	{
 		switch (m_outFormat)
 		{
@@ -520,7 +521,7 @@ struct ConvertFloat : public SimpleModule
 				assert(false);
 		}
 	}
-	virtual void run(Chunk &inChunk, Chunk &outChunk)
+	virtual void run(Chunk &inChunk, Chunk &outChunk) OVERRIDE
 	{
 		const void *src = inChunk.buffer;
 		void *dst = outChunk.buffer;
@@ -550,12 +551,12 @@ struct Clip : public SimpleModule
 		m_outputMapping(outputMapping)
 	{
 	}
-	virtual const char *name() const { return "clip"; }
-	virtual void describe()
+	virtual const char *name() const OVERRIDE { return "clip"; }
+	virtual void describe() OVERRIDE
 	{
 		m_outChunk->f.pcm = m_outputMapping;
 	}
-	virtual void run(Chunk &inChunk, Chunk &outChunk)
+	virtual void run(Chunk &inChunk, Chunk &outChunk) OVERRIDE
 	{
 		const void *src = inChunk.buffer;
 		void *dst = outChunk.buffer;
@@ -617,14 +618,14 @@ struct ConvertFloatToIntClip : public SimpleModule
 			m_outputFormat == kInt24 ||
 			m_outputFormat == kInt32);
 	}
-	virtual const char *name() const { return "convertPCMMapping"; }
-	virtual void describe()
+	virtual const char *name() const OVERRIDE { return "convertPCMMapping"; }
+	virtual void describe() OVERRIDE
 	{
 		m_outChunk->f.sampleFormat = AF_SAMPFMT_TWOSCOMP;
 		m_outChunk->f.sampleWidth = (m_outputFormat + 1) * CHAR_BIT;
 		m_outChunk->f.pcm = m_outputMapping;
 	}
-	virtual void run(Chunk &inChunk, Chunk &outChunk)
+	virtual void run(Chunk &inChunk, Chunk &outChunk) OVERRIDE
 	{
 		const void *src = inChunk.buffer;
 		void *dst = outChunk.buffer;
@@ -694,9 +695,9 @@ public:
 		int inChannels, int outChannels,
 		double minClip, double maxClip, const double *matrix);
 	virtual ~ApplyChannelMatrix();
-	virtual const char *name() const;
-	virtual void describe();
-	virtual void run(Chunk &inChunk, Chunk &outChunk);
+	virtual const char *name() const OVERRIDE;
+	virtual void describe() OVERRIDE;
+	virtual void run(Chunk &inChunk, Chunk &outChunk) OVERRIDE;
 
 private:
 	FormatCode m_format;
@@ -721,12 +722,12 @@ public:
 	{
 		assert(m_format == kFloat || m_format == kDouble);
 	}
-	virtual const char *name() const { return "transform"; }
-	virtual void describe()
+	virtual const char *name() const OVERRIDE { return "transform"; }
+	virtual void describe() OVERRIDE
 	{
 		m_outChunk->f.pcm = m_outputMapping;
 	}
-	virtual void run(Chunk &inChunk, Chunk &outChunk)
+	virtual void run(Chunk &inChunk, Chunk &outChunk) OVERRIDE
 	{
 		int count = inChunk.frameCount * inChunk.f.channelCount;
 		if (m_format == kFloat)

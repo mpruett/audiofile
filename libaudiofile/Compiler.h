@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 2000, Silicon Graphics, Inc.
+	Copyright (C) 2013 Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -18,28 +18,26 @@
 	Boston, MA  02111-1307  USA.
 */
 
-/*
-	Raw.h
-*/
+#ifndef COMPILER_H
+#define COMPILER_H
 
-#ifndef RAW_H
-#define RAW_H
+#if defined(__GNUC__) && !defined(__clang__)
+#define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+#define GCC_VERSION_AT_LEAST(major, minor, patch) \
+	(GCC_VERSION >= (major * 10000 + minor * 100 + patch))
+#if GCC_VERSION_AT_LEAST(4, 7, 0) && defined(__cplusplus) && __cplusplus >= 201103L
+#define OVERRIDE override
+#endif
+#endif
 
-#include "Compiler.h"
-#include "FileHandle.h"
+#if defined(__clang__)
+#if __has_extension(cxx_override_control)
+#define OVERRRIDE override
+#endif
+#endif
 
-#define _AF_RAW_NUM_COMPTYPES 2
-extern const int _af_raw_compression_types[_AF_RAW_NUM_COMPTYPES];
-
-class RawFile : public _AFfilehandle
-{
-public:
-	static bool recognize(File *fh);
-	static AFfilesetup completeSetup(AFfilesetup);
-
-	status readInit(AFfilesetup setup) OVERRIDE;
-	status writeInit(AFfilesetup setup) OVERRIDE;
-	status update() OVERRIDE;
-};
+#ifndef OVERRIDE
+#define OVERRIDE
+#endif
 
 #endif

@@ -27,6 +27,7 @@
 #ifndef NIST_H
 #define NIST_H
 
+#include "Compiler.h"
 #include "FileHandle.h"
 
 class NISTFile : public _AFfilehandle
@@ -35,9 +36,9 @@ public:
 	static bool recognize(File *fh);
 	static AFfilesetup completeSetup(AFfilesetup setup);
 
-	virtual status readInit(AFfilesetup);
-	virtual status writeInit(AFfilesetup);
-	virtual status update();
+	status readInit(AFfilesetup) OVERRIDE;
+	status writeInit(AFfilesetup) OVERRIDE;
+	status update() OVERRIDE;
 
 private:
 	status writeHeader();

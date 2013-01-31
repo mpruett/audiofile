@@ -30,6 +30,7 @@
 
 #include <audiofile.h>
 
+#include "Compiler.h"
 #include "File.h"
 #include "FileModule.h"
 #include "Track.h"
@@ -60,18 +61,18 @@ public:
 
 	virtual ~IMA();
 
-	virtual const char *name() const
+	virtual const char *name() const OVERRIDE
 	{
 		return mode() == Compress ?
 			"ima_adpcm_compress" : "ima_adpcm_decompress";
 	}
-	virtual void describe();
-	virtual void runPull();
-	virtual void reset1();
-	virtual void reset2();
-	virtual void runPush();
-	virtual void sync1();
-	virtual void sync2();
+	virtual void describe() OVERRIDE;
+	virtual void runPull() OVERRIDE;
+	virtual void reset1() OVERRIDE;
+	virtual void reset2() OVERRIDE;
+	virtual void runPush() OVERRIDE;
+	virtual void sync1() OVERRIDE;
+	virtual void sync2() OVERRIDE;
 
 private:
 	int m_bytesPerPacket, m_framesPerPacket;

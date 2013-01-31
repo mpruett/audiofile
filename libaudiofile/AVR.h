@@ -28,6 +28,7 @@
 #ifndef AVR_H
 #define AVR_H
 
+#include "Compiler.h"
 #include "FileHandle.h"
 
 class AVRFile : public _AFfilehandle
@@ -38,9 +39,9 @@ public:
 	static bool recognize(File *fh);
 	static AFfilesetup completeSetup(AFfilesetup);
 
-	status readInit(AFfilesetup);
-	status writeInit(AFfilesetup);
-	status update();
+	status readInit(AFfilesetup) OVERRIDE;
+	status writeInit(AFfilesetup) OVERRIDE;
+	status update() OVERRIDE;
 };
 
 #endif

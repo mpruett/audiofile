@@ -1,3 +1,24 @@
+2013-01-30  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/AIFF.h,
+	libaudiofile/AVR.h,
+	libaudiofile/CAF.h,
+	libaudiofile/Compiler.h,
+	libaudiofile/IFF.h,
+	libaudiofile/IRCAM.h,
+	libaudiofile/NIST.h,
+	libaudiofile/NeXT.h,
+	libaudiofile/SampleVision.h,
+	libaudiofile/VOC.h,
+	libaudiofile/WAVE.h,
+	libaudiofile/modules/G711.cpp,
+	libaudiofile/modules/IMA.cpp,
+	libaudiofile/modules/MSADPCM.cpp,
+	libaudiofile/modules/PCM.cpp,
+	libaudiofile/modules/RebufferModule.h,
+	libaudiofile/modules/SimpleModule.h:
+	Use C++11 override keyword with compilers that support it.
+
 2013-01-19  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/CAF.cpp,
