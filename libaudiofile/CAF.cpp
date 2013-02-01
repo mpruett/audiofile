@@ -245,7 +245,7 @@ status CAFFile::parseDescription(const Tag &, int64_t)
 		{
 			if (bitsPerChannel != 32 && bitsPerChannel != 64)
 			{
-				_af_error(AF_BAD_WIDTH, "Invalid bits per sample %d for floating-point audio data", bitsPerChannel);
+				_af_error(AF_BAD_WIDTH, "invalid bits per sample %d for floating-point audio data", bitsPerChannel);
 				return AF_FAIL;
 			}
 			track->f.sampleFormat = bitsPerChannel == 32 ? AF_SAMPFMT_FLOAT :
@@ -258,7 +258,9 @@ status CAFFile::parseDescription(const Tag &, int64_t)
 		track->f.byteOrder = (formatFlags & kCAFLinearPCMFormatFlagIsLittleEndian) ?
 			AF_BYTEORDER_LITTLEENDIAN : AF_BYTEORDER_BIGENDIAN;
 
-		_af_set_sample_format(&track->f, track->f.sampleFormat, track->f.sampleWidth);
+		if (_af_set_sample_format(&track->f, track->f.sampleFormat, track->f.sampleWidth) == AF_FAIL)
+			return AF_FAIL;
+
 		track->f.computeBytesPerPacketPCM();
 		return AF_SUCCEED;
 	}

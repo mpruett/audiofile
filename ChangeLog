@@ -1,6 +1,12 @@
 2013-01-31  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/AIFF.cpp,
+	libaudiofile/CAF.cpp:
+	Report error when attempting to open a file with invalid sample width.
+
+2013-01-31  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/AIFF.cpp,
 	libaudiofile/CAF.cpp,
 	libaudiofile/NeXT.cpp,
 	libaudiofile/VOC.cpp,

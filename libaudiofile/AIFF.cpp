@@ -437,7 +437,8 @@ status AIFFFile::parseCOMM(const Tag &type, size_t size)
 	if (track->f.isUncompressed())
 		track->f.computeBytesPerPacketPCM();
 
-	_af_set_sample_format(&track->f, track->f.sampleFormat, track->f.sampleWidth);
+	if (_af_set_sample_format(&track->f, track->f.sampleFormat, track->f.sampleWidth) == AF_FAIL)
+		return AF_FAIL;
 
 	return AF_SUCCEED;
 }
