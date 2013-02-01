@@ -117,6 +117,12 @@ status NeXTFile::readInit(AFfilesetup setup)
 	readU32(&sampleRate);
 	readU32(&channelCount);
 
+	if (!channelCount)
+	{
+		_af_error(AF_BAD_CHANNELS, "invalid file with 0 channels");
+		return AF_FAIL;
+	}
+
 	Track *track = allocateTrack();
 	if (!track)
 		return AF_FAIL;

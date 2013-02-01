@@ -187,6 +187,12 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 	uint16_t blockAlign;
 	readU16(&blockAlign);
 
+	if (!channelCount)
+	{
+		_af_error(AF_BAD_CHANNELS, "invalid file with 0 channels");
+		return AF_FAIL;
+	}
+
 	track->f.channelCount = channelCount;
 	track->f.sampleRate = sampleRate;
 	track->f.byteOrder = AF_BYTEORDER_LITTLEENDIAN;

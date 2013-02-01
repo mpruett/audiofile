@@ -272,6 +272,12 @@ status VOCFile::readInit(AFfilesetup)
 			readU16(&format);
 			readU32(&pad);
 
+			if (!channels)
+			{
+				_af_error(AF_BAD_CHANNELS, "invalid file with 0 channels");
+				return AF_FAIL;
+			}
+
 			track->fpos_first_frame = m_fh->tell();
 			track->data_size = blockSize - 12;
 

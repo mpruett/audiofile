@@ -330,6 +330,12 @@ status AIFFFile::parseCOMM(const Tag &type, size_t size)
 	readU16(&numChannels);
 	track->f.channelCount = numChannels;
 
+	if (!numChannels)
+	{
+		_af_error(AF_BAD_CHANNELS, "invalid file with 0 channels");
+		return AF_FAIL;
+	}
+
 	readU32(&numSampleFrames);
 	track->totalfframes = numSampleFrames;
 

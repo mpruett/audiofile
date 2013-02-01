@@ -226,6 +226,12 @@ status CAFFile::parseDescription(const Tag &, int64_t)
 		!readU32(&bitsPerChannel))
 		return AF_FAIL;
 
+	if (!channelsPerFrame)
+	{
+		_af_error(AF_BAD_CHANNELS, "invalid file with 0 channels");
+		return AF_FAIL;
+	}
+
 	Track *track = getTrack();
 	track->f.channelCount = channelsPerFrame;
 	track->f.sampleWidth = bitsPerChannel;
