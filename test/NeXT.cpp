@@ -152,6 +152,35 @@ TEST(NeXT, Truncated)
 	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
+const char kDataZeroChannels[] =
+{
+	'.', 's', 'n', 'd',
+	0, 0, 0, 24, // offset of 24 bytes
+	0, 0, 0, 2, // 2 bytes
+	0, 0, 0, 3, // 16-bit linear
+	0, 0, 172, 68, // 44100 Hz
+	0, 0, 0, 0, // 0 channels
+	0, 1
+};
+
+TEST(NeXT, ZeroChannels)
+{
+	IgnoreErrors ignoreErrors;
+
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("NeXT", &testFileName));
+
+	int fd = ::open(testFileName.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0644);
+	ASSERT_GT(fd, -1);
+	ASSERT_EQ(::write(fd, kDataZeroChannels, sizeof (kDataZeroChannels)), sizeof (kDataZeroChannels));
+	::close(fd);
+
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "r", NULL);
+	EXPECT_FALSE(file);
+
+	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
+}
+
 int main(int argc, char **argv)
 {
 	::testing::InitGoogleTest(&argc, argv);

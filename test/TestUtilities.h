@@ -21,11 +21,29 @@
 #ifndef TEST_UTILITIES_H
 #define TEST_UTILITIES_H
 
+#include <audiofile.h>
+
 #ifdef __cplusplus
 
 #include <string>
 
 bool createTemporaryFile(const std::string &prefix, std::string *path);
+
+class IgnoreErrors
+{
+public:
+	IgnoreErrors()
+	{
+		m_oldErrorHandler = afSetErrorHandler(NULL);
+	}
+	~IgnoreErrors()
+	{
+		afSetErrorHandler(m_oldErrorHandler);
+	}
+
+private:
+	AFerrfunc m_oldErrorHandler;
+};
 
 #endif
 

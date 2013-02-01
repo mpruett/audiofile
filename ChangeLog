@@ -1,3 +1,8 @@
+2013-01-31  Michael Pruett <michael@68k.org>
+
+	* test/NeXT.cpp:
+	Add test for opening a NeXT sound file with zero channels.
+
 2013-01-30  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/NIST.cpp:
