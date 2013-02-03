@@ -1,5 +1,11 @@
 2013-02-02  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/Makefile.am,
+	libaudiofile/modules/Makefile.am:
+	Remove test coverage files when cleaning.
+
+2013-02-02  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/IRCAM.cpp:
 	Fix calculation of IRCAM frame size.
 

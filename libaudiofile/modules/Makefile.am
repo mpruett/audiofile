@@ -29,3 +29,5 @@ libmodules_la_SOURCES = \
 # No debugging.
 AM_CFLAGS = -DNDEBUG -Wall $(WERROR_CFLAGS) $(COVERAGE_CFLAGS) -fvisibility=hidden
 AM_CXXFLAGS = $(AM_CFLAGS) -fno-rtti -fno-exceptions -fvisibility-inlines-hidden
+
+CLEANFILES = *.gcda *.gcno
