@@ -388,7 +388,7 @@ status IRCAMFile::writeInit(AFfilesetup setup)
 		packMode = SF_ALAW;
 	else if (track->f.isSigned())
 	{
-		switch (track->f.bytesPerFrame(false))
+		switch (track->f.bytesPerSample(false))
 		{
 			case 1: packMode = SF_CHAR; break;
 			case 2: packMode = SF_SHORT; break;

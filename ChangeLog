@@ -1,5 +1,10 @@
 2013-02-02  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/IRCAM.cpp:
+	Fix calculation of IRCAM frame size.
+
+2013-02-02  Michael Pruett <michael@68k.org>
+
 	* test/PCMData.cpp:
 	Update PCMData test to create multi-channel audio files.
 
