@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2011, Michael Pruett. All rights reserved.
+	Copyright (C) 2011-2013 Michael Pruett. All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions
@@ -43,21 +43,21 @@
 #include "TestUtilities.h"
 
 template <typename T, int kSampleFormat, int kBitsPerSample>
-void runTest(int fileFormat)
+void runTestWithChannels(int fileFormat, int channelCount)
 {
 	std::string testFileName;
 	ASSERT_TRUE(createTemporaryFile("PCMData", &testFileName));
 
-	T samples[] =
-	{
-		2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47,
-		53, 59, 61, 67, 71, 73, 79, 83, 89, 97
-	};
-	const int numSamples = sizeof (samples) / sizeof (T);
+	const int numFrames = 20;
+	const int numSamples = numFrames * channelCount;
+	T samples[numSamples];
+	for (int i=0; i<numFrames; i++)
+		for (int c=0; c<channelCount; c++)
+			samples[i*channelCount + c] = static_cast<T>(i*i + 3*c + 1);
 
 	AFfilesetup setup = afNewFileSetup();
 	afInitFileFormat(setup, fileFormat);
-	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
+	afInitChannels(setup, AF_DEFAULT_TRACK, channelCount);
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, kSampleFormat, kBitsPerSample);
 
 	AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
@@ -65,8 +65,8 @@ void runTest(int fileFormat)
 
 	afFreeFileSetup(setup);
 
-	ASSERT_EQ(afWriteFrames(file, AF_DEFAULT_TRACK, samples, numSamples),
-		numSamples) <<
+	ASSERT_EQ(afWriteFrames(file, AF_DEFAULT_TRACK, samples, numFrames),
+		numFrames) <<
 		"Number of frames written does not match number of frames requested";
 
 	ASSERT_EQ(afCloseFile(file), 0) << "Error closing file";
@@ -82,12 +82,12 @@ void runTest(int fileFormat)
 	ASSERT_EQ(sampleFormat, kSampleFormat) << "Incorrect sample format";
 	ASSERT_EQ(sampleWidth, kBitsPerSample) << "Incorrect sample width";
 
-	ASSERT_EQ(afGetChannels(file, AF_DEFAULT_TRACK), 1) <<
+	ASSERT_EQ(afGetChannels(file, AF_DEFAULT_TRACK), channelCount) <<
 		"Incorrect number of channels";
 
 	T *samplesRead = new T[numSamples];
-	ASSERT_EQ(afReadFrames(file, AF_DEFAULT_TRACK, samplesRead, numSamples),
-		numSamples) <<
+	ASSERT_EQ(afReadFrames(file, AF_DEFAULT_TRACK, samplesRead, numFrames),
+		numFrames) <<
 		"Number of frames read does not match number of frames requested";
 
 	for (int i=0; i<numSamples; i++)
@@ -101,9 +101,22 @@ void runTest(int fileFormat)
 	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
+template <typename T, int kSampleFormat, int kBitsPerSample>
+void runTest(int fileFormat)
+{
+	runTestWithChannels<T, kSampleFormat, kBitsPerSample>(fileFormat, 1);
+	runTestWithChannels<T, kSampleFormat, kBitsPerSample>(fileFormat, 2);
+	runTestWithChannels<T, kSampleFormat, kBitsPerSample>(fileFormat, 4);
+}
+
 void testInt8(int fileFormat)
 {
 	runTest<int8_t, AF_SAMPFMT_TWOSCOMP, 8>(fileFormat);
+}
+
+void testInt8MonoOnly(int fileFormat)
+{
+	runTestWithChannels<int8_t, AF_SAMPFMT_TWOSCOMP, 8>(fileFormat, 1);
 }
 
 void testUInt8(int fileFormat)
@@ -114,6 +127,11 @@ void testUInt8(int fileFormat)
 void testInt16(int fileFormat)
 {
 	runTest<int16_t, AF_SAMPFMT_TWOSCOMP, 16>(fileFormat);
+}
+
+void testInt16MonoOnly(int fileFormat)
+{
+	runTestWithChannels<int16_t, AF_SAMPFMT_TWOSCOMP, 16>(fileFormat, 1);
 }
 
 void testInt24(int fileFormat)
@@ -169,12 +187,12 @@ TEST(IRCAM, Int32) { testInt32(AF_FILE_IRCAM); }
 TEST(IRCAM, Float) { testFloat32(AF_FILE_IRCAM); }
 TEST(IRCAM, Double) { testFloat64(AF_FILE_IRCAM); }
 
-TEST(IFF, Int8) { testInt8(AF_FILE_IFF_8SVX); }
+TEST(IFF, Int8) { testInt8MonoOnly(AF_FILE_IFF_8SVX); }
 
-TEST(AVR, Int8) { testInt8(AF_FILE_AVR); }
-TEST(AVR, Int16) { testInt16(AF_FILE_AVR); }
+TEST(AVR, Int8) { testInt8MonoOnly(AF_FILE_AVR); }
+TEST(AVR, Int16) { testInt16MonoOnly(AF_FILE_AVR); }
 
-TEST(SampleVision, Int16) { testInt16(AF_FILE_SAMPLEVISION); }
+TEST(SampleVision, Int16) { testInt16MonoOnly(AF_FILE_SAMPLEVISION); }
 
 TEST(VOC, UInt8) { testUInt8(AF_FILE_VOC); }
 TEST(VOC, Int16) { testInt16(AF_FILE_VOC); }
