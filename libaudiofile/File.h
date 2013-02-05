@@ -56,7 +56,7 @@ public:
 	static File *create(AFvirtualfile *vf, AccessMode mode);
 
 	virtual ~File();
-	virtual int close() { return -1; }
+	virtual int close() = 0;
 	virtual ssize_t read(void *data, size_t nbytes) = 0;
 	virtual ssize_t write(const void *data, size_t nbytes) = 0;
 	virtual off_t length() = 0;

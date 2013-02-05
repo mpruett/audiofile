@@ -1,3 +1,9 @@
+2013-02-04  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/File.cpp,
+	libaudiofile/File.h:
+	Fix resource leak in File destructor.
+
 2013-02-02  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/Makefile.am,

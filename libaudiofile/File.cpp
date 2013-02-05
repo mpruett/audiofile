@@ -45,7 +45,7 @@ class FilePOSIX : public File
 {
 public:
 	FilePOSIX(int fd, AccessMode mode) : File(mode), m_fd(fd) { }
-	virtual ~FilePOSIX() { }
+	virtual ~FilePOSIX() { close(); }
 
 	virtual int close() OVERRIDE;
 	virtual ssize_t read(void *data, size_t nbytes) OVERRIDE;
@@ -62,7 +62,7 @@ class FileVF : public File
 {
 public:
 	FileVF(AFvirtualfile *vf, AccessMode mode) : File(mode), m_vf(vf) { }
-	virtual ~FileVF() { }
+	virtual ~FileVF() { close(); }
 
 	virtual int close() OVERRIDE;
 	virtual ssize_t read(void *data, size_t nbytes) OVERRIDE;
@@ -104,7 +104,6 @@ File *File::create(AFvirtualfile *vf, File::AccessMode mode)
 
 File::~File()
 {
-	close();
 }
 
 bool File::canSeek()
@@ -164,7 +163,8 @@ off_t FilePOSIX::tell()
 
 int FileVF::close()
 {
-	af_virtual_file_destroy(m_vf);
+	if (m_vf)
+		af_virtual_file_destroy(m_vf);
 	m_vf = 0;
 	return 0;
 }
