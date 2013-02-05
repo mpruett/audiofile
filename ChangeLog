@@ -1,5 +1,12 @@
 2013-02-04  Michael Pruett <michael@68k.org>
 
+	* gtest/Makefile.am,
+	libaudiofile/Makefile.am,
+	test/Makefile.am:
+	Disable exceptions and RTTI when building Google Test framework.
+
+2013-02-04  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/File.cpp,
 	libaudiofile/File.h:
 	Fix resource leak in File destructor.

@@ -96,6 +96,7 @@ LIBGTEST = ../gtest/libgtest.la
 UnitTests_SOURCES = modules/UT_RebufferModule.cpp
 UnitTests_LDADD = libaudiofile.la $(LIBGTEST)
 UnitTests_CPPFLAGS = -I$(top_srcdir)
+UnitTests_CXXFLAGS = -fno-rtti -fno-exceptions -DGTEST_HAS_RTTI=0 -DGTEST_HAS_EXCEPTIONS=0
 UnitTests_LDFLAGS = -static
 
 # GNU gcc

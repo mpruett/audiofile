@@ -143,3 +143,4 @@ writeraw_SOURCES = writeraw.c TestUtilities.cpp TestUtilities.h
 
 writeulaw_SOURCES = writeulaw.c TestUtilities.cpp TestUtilities.h
 
+AM_CXXFLAGS = -fno-rtti -fno-exceptions -DGTEST_HAS_RTTI=0 -DGTEST_HAS_EXCEPTIONS=0
