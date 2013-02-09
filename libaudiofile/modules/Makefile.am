@@ -3,6 +3,8 @@ noinst_LTLIBRARIES = libmodules.la
 INCLUDES = -I$(srcdir)/..
 
 libmodules_la_SOURCES = \
+	BlockCodec.cpp \
+	BlockCodec.h \
 	FileModule.cpp \
 	FileModule.h \
 	G711.cpp \

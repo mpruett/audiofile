@@ -1,5 +1,14 @@
 2013-02-09  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/modules/BlockCodec.cpp,
+	libaudiofile/modules/BlockCodec.h,
+	libaudiofile/modules/IMA.cpp,
+	libaudiofile/modules/MSADPCM.cpp,
+	libaudiofile/modules/Makefile.am:
+	Factor out fixed-size block codec functionality common to IMA and MS ADPCM.
+
+2013-02-09  Michael Pruett <michael@68k.org>
+
 	* test/InvalidCompressionFormat.cpp,
 	test/InvalidSampleFormat.cpp,
 	test/Query.cpp:

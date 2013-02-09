@@ -30,9 +30,9 @@
 
 #include <audiofile.h>
 
+#include "BlockCodec.h"
 #include "Compiler.h"
 #include "File.h"
-#include "FileModule.h"
 #include "Track.h"
 #include "afinternal.h"
 #include "byteorder.h"
@@ -51,7 +51,7 @@ struct adpcmState
 	}
 };
 
-class IMA : public FileModule
+class IMA : public BlockCodec
 {
 public:
 	static Module *createDecompress(Track *track, File *fh, bool canSeek,
@@ -67,39 +67,24 @@ public:
 			"ima_adpcm_compress" : "ima_adpcm_decompress";
 	}
 	virtual void describe() OVERRIDE;
-	virtual void runPull() OVERRIDE;
-	virtual void reset1() OVERRIDE;
-	virtual void reset2() OVERRIDE;
-	virtual void runPush() OVERRIDE;
-	virtual void sync1() OVERRIDE;
-	virtual void sync2() OVERRIDE;
 
 private:
-	int m_bytesPerPacket, m_framesPerPacket;
-	AFframecount m_framesToIgnore;
-	AFfileoffset m_savedPositionNextFrame;
-	AFframecount m_savedNextFrame;
 	int m_imaType;
 	adpcmState *m_adpcmState;
 
 	IMA(Mode, Track *, File *fh, bool canSeek);
 
-	int decodeBlock(const uint8_t *encoded, int16_t *decoded);
+	int decodeBlock(const uint8_t *encoded, int16_t *decoded) OVERRIDE;
 	int decodeBlockWAVE(const uint8_t *encoded, int16_t *decoded);
 	int decodeBlockQT(const uint8_t *encoded, int16_t *decoded);
 
-	int encodeBlock(const int16_t *input, uint8_t *output);
+	int encodeBlock(const int16_t *input, uint8_t *output) OVERRIDE;
 	int encodeBlockWAVE(const int16_t *input, uint8_t *output);
 	int encodeBlockQT(const int16_t *input, uint8_t *output);
 };
 
 IMA::IMA(Mode mode, Track *track, File *fh, bool canSeek) :
-	FileModule(mode, track, fh, canSeek),
-	m_bytesPerPacket(-1),
-	m_framesPerPacket(-1),
-	m_framesToIgnore(-1),
-	m_savedPositionNextFrame(-1),
-	m_savedNextFrame(-1),
+	BlockCodec(mode, track, fh, canSeek),
 	m_imaType(0)
 {
 	AUpvlist pv = (AUpvlist) track->f.compressionParams;
@@ -418,101 +403,6 @@ Module *IMA::createCompress(Track *track, File *fh, bool canSeek,
 
 	*chunkFrames = ima->m_framesPerPacket;
 	return ima;
-}
-
-void IMA::runPull()
-{
-	AFframecount framesToRead = m_outChunk->frameCount;
-	AFframecount framesRead = 0;
-
-	assert(m_outChunk->frameCount % m_framesPerPacket == 0);
-	int blockCount = m_outChunk->frameCount / m_framesPerPacket;
-
-	// Read the compressed frames.
-	ssize_t bytesRead = read(m_inChunk->buffer, m_bytesPerPacket * blockCount);
-	int blocksRead = bytesRead >= 0 ? bytesRead / m_bytesPerPacket : 0;
-
-	// Decompress into m_outChunk.
-	for (int i=0; i<blocksRead; i++)
-	{
-		decodeBlock(static_cast<const uint8_t *>(m_inChunk->buffer) + i * m_bytesPerPacket,
-			static_cast<int16_t *>(m_outChunk->buffer) + i * m_framesPerPacket * m_track->f.channelCount);
-
-		framesRead += m_framesPerPacket;
-	}
-
-	m_track->nextfframe += framesRead;
-
-	assert(tell() == m_track->fpos_next_frame);
-
-	if (framesRead < framesToRead)
-		reportReadError(framesRead, framesToRead);
-
-	m_outChunk->frameCount = framesRead;
-}
-
-void IMA::reset1()
-{
-	AFframecount nextTrackFrame = m_track->nextfframe;
-	m_track->nextfframe = (nextTrackFrame / m_framesPerPacket) *
-		m_framesPerPacket;
-
-	m_framesToIgnore = nextTrackFrame - m_track->nextfframe;
-}
-
-void IMA::reset2()
-{
-	m_track->fpos_next_frame = m_track->fpos_first_frame +
-		m_bytesPerPacket * (m_track->nextfframe / m_framesPerPacket);
-	m_track->frames2ignore += m_framesToIgnore;
-
-	assert(m_track->nextfframe % m_framesPerPacket == 0);
-}
-
-void IMA::runPush()
-{
-	AFframecount framesToWrite = m_inChunk->frameCount;
-	int channelCount = m_inChunk->f.channelCount;
-
-	/*
-		For all but the last block, we will be supplied with enough
-		frames for a complete block. For the last block, round up to
-		the next complete block.
-	*/
-	int blockCount = (framesToWrite + m_framesPerPacket - 1) / m_framesPerPacket;
-
-	// Compress into m_outChunk.
-	for (int i=0; i<blockCount; i++)
-	{
-		encodeBlock(static_cast<const int16_t *>(m_inChunk->buffer) + i * m_framesPerPacket * channelCount,
-			static_cast<uint8_t *>(m_outChunk->buffer) + i * m_bytesPerPacket);
-	}
-
-	ssize_t bytesWritten = write(m_outChunk->buffer, m_bytesPerPacket * blockCount);
-	ssize_t blocksWritten = bytesWritten >= 0 ? bytesWritten / m_bytesPerPacket : 0;
-	AFframecount framesWritten = std::min((AFframecount) blocksWritten * m_framesPerPacket, framesToWrite);
-
-	m_track->nextfframe += framesWritten;
-	m_track->totalfframes = m_track->nextfframe;
-
-	assert(tell() == m_track->fpos_next_frame);
-
-	if (framesWritten < framesToWrite)
-		reportWriteError(framesWritten, framesToWrite);
-}
-
-void IMA::sync1()
-{
-	m_savedPositionNextFrame = m_track->fpos_next_frame;
-	m_savedNextFrame = m_track->nextfframe;
-}
-
-void IMA::sync2()
-{
-	assert(tell() == m_track->fpos_next_frame);
-	m_track->fpos_after_data = tell();
-	m_track->fpos_next_frame = m_savedPositionNextFrame;
-	m_track->nextfframe = m_savedNextFrame;
 }
 
 Module *_af_ima_adpcm_init_decompress(Track *track, File *fh,
