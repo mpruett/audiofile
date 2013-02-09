@@ -1,5 +1,12 @@
 2013-02-09  Michael Pruett <michael@68k.org>
 
+	* test/InvalidCompressionFormat.cpp,
+	test/InvalidSampleFormat.cpp,
+	test/Query.cpp:
+	Ignore errors in tests for which errors are expected.
+
+2013-02-09  Michael Pruett <michael@68k.org>
+
 	* test/PCMData.cpp:
 	Update PCMData test to validate PCM mappings.
 

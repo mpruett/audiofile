@@ -37,6 +37,8 @@
 
 void runTest(int fileFormat, int sampleFormat, int sampleWidth)
 {
+	IgnoreErrors ignoreErrors;
+
 	std::string testFileName;
 	ASSERT_TRUE(createTemporaryFile("InvalidSampleFormat", &testFileName));
 
@@ -132,8 +134,6 @@ TEST(NIST, Double) { testFloat64(AF_FILE_NIST_SPHERE); }
 
 int main(int argc, char **argv)
 {
-	afSetErrorHandler(NULL);
-
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
 }

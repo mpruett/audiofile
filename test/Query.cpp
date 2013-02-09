@@ -22,9 +22,11 @@
 #include <gtest/gtest.h>
 #include <unistd.h>
 
+#include "TestUtilities.h"
+
 TEST(Query, FileFormats)
 {
-	AFerrfunc errorHandler = afSetErrorHandler(NULL);
+	IgnoreErrors ignoreErrors;
 
 	int fileFormats[] =
 	{
@@ -67,13 +69,11 @@ TEST(Query, FileFormats)
 		if (implemented)
 			EXPECT_TRUE(description);
 	}
-
-	afSetErrorHandler(errorHandler);
 }
 
 TEST(Query, CompressionFormats)
 {
-	AFerrfunc errorHandler = afSetErrorHandler(NULL);
+	IgnoreErrors ignoreErrors;
 
 	int compressionFormats[] =
 	{
@@ -123,8 +123,6 @@ TEST(Query, CompressionFormats)
 		if (implemented)
 			EXPECT_TRUE(description);
 	}
-
-	afSetErrorHandler(errorHandler);
 }
 
 int main(int argc, char **argv)

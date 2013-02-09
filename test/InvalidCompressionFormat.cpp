@@ -46,6 +46,8 @@ static void runTest(int fileFormat, int compressionFormat, int channelCount = 1,
 	int sampleFormat = AF_SAMPFMT_TWOSCOMP, int sampleWidth = 16,
 	int byteOrder = kNativeByteOrder)
 {
+	IgnoreErrors ignoreErrors;
+
 	std::string testFileName;
 	ASSERT_TRUE(createTemporaryFile("InvalidCompressionFormat", &testFileName));
 
@@ -225,8 +227,6 @@ TEST(MSADPCM, InvalidByteOrder)
 
 int main(int argc, char **argv)
 {
-	afSetErrorHandler(NULL);
-
 	::testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
 }
