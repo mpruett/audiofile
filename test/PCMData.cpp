@@ -34,6 +34,7 @@
 
 #include <audiofile.h>
 #include <climits>
+#include <cmath>
 #include <gtest/gtest.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -41,6 +42,43 @@
 #include <unistd.h>
 
 #include "TestUtilities.h"
+
+struct PCMMapping
+{
+	double slope, intercept, minClip, maxClip;
+};
+
+void getDefaultPCMMapping(int sampleFormat, int bitsPerSample, PCMMapping &m)
+{
+	switch (sampleFormat)
+	{
+		case AF_SAMPFMT_TWOSCOMP:
+		{
+			double s = std::pow(2.0, bitsPerSample - 1);
+			m.slope = s;
+			m.intercept = 0;
+			m.minClip = -s;
+			m.maxClip = s - 1;
+			break;
+		}
+		case AF_SAMPFMT_UNSIGNED:
+		{
+			double s = std::pow(2.0, bitsPerSample - 1);
+			m.slope = s;
+			m.intercept = s;
+			m.minClip = 0;
+			m.maxClip = 2 * s - 1;
+			break;
+		}
+		case AF_SAMPFMT_FLOAT:
+		case AF_SAMPFMT_DOUBLE:
+			m.slope = 1;
+			m.intercept = 0;
+			m.minClip = 0;
+			m.maxClip = 0;
+			break;
+	}
+}
 
 template <typename T, int kSampleFormat, int kBitsPerSample>
 void runTestWithChannels(int fileFormat, int channelCount)
@@ -65,6 +103,23 @@ void runTestWithChannels(int fileFormat, int channelCount)
 
 	afFreeFileSetup(setup);
 
+	PCMMapping mapping, defaultMapping;
+	getDefaultPCMMapping(kSampleFormat, kBitsPerSample, defaultMapping);
+
+	afGetPCMMapping(file, AF_DEFAULT_TRACK,
+		&mapping.slope, &mapping.intercept, &mapping.minClip, &mapping.maxClip);
+	ASSERT_EQ(mapping.slope, defaultMapping.slope);
+	ASSERT_EQ(mapping.intercept, defaultMapping.intercept);
+	ASSERT_EQ(mapping.minClip, defaultMapping.minClip);
+	ASSERT_EQ(mapping.maxClip, defaultMapping.maxClip);
+
+	afGetVirtualPCMMapping(file, AF_DEFAULT_TRACK,
+		&mapping.slope, &mapping.intercept, &mapping.minClip, &mapping.maxClip);
+	ASSERT_EQ(mapping.slope, defaultMapping.slope);
+	ASSERT_EQ(mapping.intercept, defaultMapping.intercept);
+	ASSERT_EQ(mapping.minClip, defaultMapping.minClip);
+	ASSERT_EQ(mapping.maxClip, defaultMapping.maxClip);
+
 	ASSERT_EQ(afWriteFrames(file, AF_DEFAULT_TRACK, samples, numFrames),
 		numFrames) <<
 		"Number of frames written does not match number of frames requested";
@@ -84,6 +139,20 @@ void runTestWithChannels(int fileFormat, int channelCount)
 
 	ASSERT_EQ(afGetChannels(file, AF_DEFAULT_TRACK), channelCount) <<
 		"Incorrect number of channels";
+
+	afGetPCMMapping(file, AF_DEFAULT_TRACK,
+		&mapping.slope, &mapping.intercept, &mapping.minClip, &mapping.maxClip);
+	ASSERT_EQ(mapping.slope, defaultMapping.slope);
+	ASSERT_EQ(mapping.intercept, defaultMapping.intercept);
+	ASSERT_EQ(mapping.minClip, defaultMapping.minClip);
+	ASSERT_EQ(mapping.maxClip, defaultMapping.maxClip);
+
+	afGetVirtualPCMMapping(file, AF_DEFAULT_TRACK,
+		&mapping.slope, &mapping.intercept, &mapping.minClip, &mapping.maxClip);
+	ASSERT_EQ(mapping.slope, defaultMapping.slope);
+	ASSERT_EQ(mapping.intercept, defaultMapping.intercept);
+	ASSERT_EQ(mapping.minClip, defaultMapping.minClip);
+	ASSERT_EQ(mapping.maxClip, defaultMapping.maxClip);
 
 	T *samplesRead = new T[numSamples];
 	ASSERT_EQ(afReadFrames(file, AF_DEFAULT_TRACK, samplesRead, numFrames),

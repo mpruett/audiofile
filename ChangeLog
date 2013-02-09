@@ -1,5 +1,10 @@
 2013-02-09  Michael Pruett <michael@68k.org>
 
+	* test/PCMData.cpp:
+	Update PCMData test to validate PCM mappings.
+
+2013-02-09  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/CAF.cpp,
 	libaudiofile/IFF.cpp,
 	libaudiofile/SampleVision.cpp,
