@@ -125,6 +125,12 @@ AFfilesetup SampleVisionFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
+	if (track->aesDataSet)
+	{
+		_af_error(AF_BAD_FILESETUP, "SampleVision does not support AES data");
+		return AF_NULL_FILESETUP;
+	}
+
 	return _af_filesetup_copy(setup, &sSampleVisionDefaultFileSetup, true);
 }
 

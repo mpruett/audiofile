@@ -1,3 +1,12 @@
+2013-02-09  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/CAF.cpp,
+	libaudiofile/IFF.cpp,
+	libaudiofile/SampleVision.cpp,
+	libaudiofile/VOC.cpp,
+	test/AES.cpp:
+	Ensure that initializing AES data fails on unsupported file formats.
+
 2013-02-05  Michael Pruett <michael@68k.org>
 
 	* Release version 0.3.5 of the Audio File Library.

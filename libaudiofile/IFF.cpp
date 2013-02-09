@@ -297,6 +297,12 @@ AFfilesetup IFFFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
+	if (track->aesDataSet)
+	{
+		_af_error(AF_BAD_FILESETUP, "IFF/8SVX format does not support AES data");
+		return AF_NULL_FILESETUP;
+	}
+
 	if (setup->instrumentSet && setup->instrumentCount != 0)
 	{
 		_af_error(AF_BAD_NUMINSTS,

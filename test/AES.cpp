@@ -36,13 +36,13 @@
 
 #include "TestUtilities.h"
 
-TEST(AES, AIFF)
+static void testAESSupported(int fileFormat)
 {
 	std::string testFileName;
 	ASSERT_TRUE(createTemporaryFile("AES", &testFileName));
 
 	AFfilesetup setup = afNewFileSetup();
-	afInitFileFormat(setup, AF_FILE_AIFF);
+	afInitFileFormat(setup, fileFormat);
 	afInitAESChannelDataTo(setup, AF_DEFAULT_TRACK, true);
 
 	AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
@@ -68,6 +68,39 @@ TEST(AES, AIFF)
 
 	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
+
+TEST(AES_Supported, AIFFC) { testAESSupported(AF_FILE_AIFFC); }
+TEST(AES_Supported, AIFF) { testAESSupported(AF_FILE_AIFF); }
+
+static void testAESUnsupported(int fileFormat)
+{
+	IgnoreErrors ignoreErrors;
+
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("AES", &testFileName));
+
+	AFfilesetup setup = afNewFileSetup();
+	afInitFileFormat(setup, fileFormat);
+	afInitAESChannelDataTo(setup, AF_DEFAULT_TRACK, true);
+
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
+	ASSERT_FALSE(file);
+
+	afFreeFileSetup(setup);
+
+	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
+}
+
+TEST(AES_Unsupported, Raw) { testAESUnsupported(AF_FILE_RAWDATA); }
+TEST(AES_Unsupported, NeXT) { testAESUnsupported(AF_FILE_NEXTSND); }
+TEST(AES_Unsupported, WAVE) { testAESUnsupported(AF_FILE_WAVE); }
+TEST(AES_Unsupported, IRCAM) { testAESUnsupported(AF_FILE_IRCAM); }
+TEST(AES_Unsupported, AVR) { testAESUnsupported(AF_FILE_AVR); }
+TEST(AES_Unsupported, IFF) { testAESUnsupported(AF_FILE_IFF_8SVX); }
+TEST(AES_Unsupported, SampleVision) { testAESUnsupported(AF_FILE_SAMPLEVISION); }
+TEST(AES_Unsupported, VOC) { testAESUnsupported(AF_FILE_VOC); }
+TEST(AES_Unsupported, NIST) { testAESUnsupported(AF_FILE_NIST_SPHERE); }
+TEST(AES_Unsupported, CAF) { testAESUnsupported(AF_FILE_CAF); }
 
 int main(int argc, char **argv)
 {
