@@ -337,6 +337,7 @@ void MSADPCM::describe()
 
 MSADPCM::MSADPCM(Mode mode, Track *track, File *fh, bool canSeek) :
 	BlockCodec(mode, track, fh, canSeek),
+	m_numCoefficients(0),
 	m_state(NULL)
 {
 	m_state = new ms_adpcm_state[m_track->f.channelCount];

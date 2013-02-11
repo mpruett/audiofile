@@ -99,8 +99,11 @@ _AFfilehandle *_AFfilehandle::create(int fileFormat)
 _AFfilehandle::_AFfilehandle()
 {
 	m_valid = _AF_VALID_FILEHANDLE;
+	m_access = 0;
+	m_seekok = false;
 	m_fh = NULL;
 	m_fileName = NULL;
+	m_fileFormat = AF_FILE_UNKNOWN;
 	m_trackCount = 0;
 	m_tracks = NULL;
 	m_instrumentCount = 0;

@@ -1,3 +1,10 @@
+2013-02-10  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/FileHandle.cpp,
+	libaudiofile/modules/MSADPCM.cpp,
+	libaudiofile/modules/SimpleModule.h:
+	Fix uninitialized fields in constructors.
+
 2013-02-09  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/modules/BlockCodec.cpp,

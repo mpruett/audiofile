@@ -582,7 +582,7 @@ struct Clip : public SimpleModule
 
 private:
 	FormatCode m_format;
-	PCMInfo m_inputMapping, m_outputMapping;
+	PCMInfo m_outputMapping;
 
 	template <typename T>
 	void run(const void *srcData, void *dstData, int count)
