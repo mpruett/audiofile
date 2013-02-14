@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="generator" content="AsciiDoc 8.6.4">
+<title>afInitByteOrder(3)</title>
+</head>
+<body>
+<hr>
+<h1>
+    afInitByteOrder(3) Manual Page
+</h1>
+<hr>
+<h2>NAME</h2>
+<p>afInitByteOrder -
+   initialize byte order for a track in an audio file setup
+</p>
+<h2><a name="_synopsis"></a>SYNOPSIS</h2>
+<pre>#include &lt;audiofile.h&gt;</pre>
+<pre>void afInitByteOrder(AFfilesetup setup, int track, int byteOrder);</pre>
+<h2><a name="_description"></a>DESCRIPTION</h2>
+<p>Given an <tt>AFfilesetup</tt> structure created with <a href="afNewFileSetup.3.html">afNewFileSetup(3)</a>
+and a track identified by <tt>track</tt> (<tt>AF_DEFAULT_TRACK</tt> for all currently
+supported file formats), <tt>afInitByteOrder</tt> initializes the track to
+the specified byte order.</p>
+<h2><a name="_parameters"></a>PARAMETERS</h2>
+<p><tt>setup</tt> is a valid file setup returned by <a href="afNewFileSetup.3.html">afNewFileSetup(3)</a>.</p>
+<p><tt>track</tt> is always <tt>AF_DEFAULT_TRACK</tt> for all currently supported file formats.</p>
+<p><tt>byteOrder</tt> is one of <tt>AF_BYTEORDER_BIGENDIAN</tt> or <tt>AF_BYTEORDER_LITTLEENDIAN</tt>.</p>
+<h2><a name="_errors"></a>ERRORS</h2>
+<p><tt>afInitByteOrder</tt> can produce the following errors:</p>
+<dl>
+<dt>
+<tt>AF_BAD_FILESETUP</tt>
+</dt>
+<dd>
+<p>
+<tt>setup</tt> represents an invalid file setup.
+</p>
+</dd>
+<dt>
+<tt>AF_BAD_TRACKID</tt>
+</dt>
+<dd>
+<p>
+<tt>track</tt> represents an invalid track identifier.
+</p>
+</dd>
+<dt>
+<tt>AF_BAD_BYTEORDER</tt>
+</dt>
+<dd>
+<p>
+<tt>byteOrder</tt> is not one of <tt>AF_BYTEORDER_BIGENDIAN</tt>
+or <tt>AF_BYTEORDER_LITTLEENDIAN</tt>.
+</p>
+</dd>
+</dl>
+<h2><a name="_see_also"></a>SEE ALSO</h2>
+<p><a href="afNewFileSetup.3.html">afNewFileSetup(3)</a>,
+<a href="afInitSampleFormat.3.html">afInitSampleFormat(3)</a></p>
+<h2><a name="_author"></a>AUTHOR</h2>
+<p>Michael Pruett &lt;<a href="mailto:michael@68k.org">michael@68k.org</a>&gt;</p>
+<p></p>
+<p></p>
+<hr><p><small>
+Version 0.3.4<br>
+Last updated 2012-05-08 23:21:23 PDT
+</small></p>
+</body>
+</html>

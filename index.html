@@ -1,37 +1,30 @@
 <!DOCTYPE html>
 <html>
+<head>
+<meta charset='utf-8' />
+<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+<meta name="description" content="audiofile: Audio File Library"/>
 
-  <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="audiofile : Audio File Library" />
+<link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+<title>audiofile</title>
+</head>
 
-    <title>audiofile</title>
-  </head>
+<body>
 
-  <body>
+<!-- HEADER -->
+<div id="header_wrap" class="outer">
+<header class="inner">
+<a id="forkme_banner" href="https://github.com/mpruett/audiofile">View on GitHub</a>
+<h1 id="project_title">audiofile</h1>
+<h2 id="project_tagline">Audio File Library</h2>
+</header>
+</div>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/mpruett/audiofile">View on GitHub</a>
-
-          <h1 id="project_title">audiofile</h1>
-          <h2 id="project_tagline">Audio File Library</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/mpruett/audiofile/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/mpruett/audiofile/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <p>The Audio File Library handles reading and writing audio files in many
+<!-- MAIN CONTENT -->
+<div id="main_content_wrap" class="outer">
+<section id="main_content" class="inner">
+<p>The Audio File Library handles reading and writing audio files in many
 common formats.</p>
 
 <p>Key goals of the Audio File Library are file format transparency and data
@@ -62,18 +55,43 @@ of the data contained in the file.</p>
 <li>IMA ADPCM</li>
 <li>Microsoft ADPCM</li>
 </ul>
-      </section>
-    </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">audiofile maintained by <a href="https://github.com/mpruett">mpruett</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
+<h2>API documentation</h2>
+<ul>
+<li><a href="afCloseFile.3.html">afCloseFile</a>
+<li><a href="afGetFrameCount.3.html">afGetFrameCount</a>
+<li><a href="afGetFrameSize.3.html">afGetFrameSize</a>
+<li><a href="afInitAESChannelDataTo.3.html">afInitAESChannelDataTo</a>
+<li><a href="afInitByteOrder.3.html">afInitByteOrder</a>
+<li><a href="afInitChannels.3.html">afInitChannels</a>
+<li><a href="afInitCompression.3.html">afInitCompression</a>
+<li><a href="afInitFileFormat.3.html">afInitFileFormat</a>
+<li><a href="afInitSampleFormat.3.html">afInitSampleFormat</a>
+<li><a href="afNewFileSetup.3.html">afNewFileSetup</a>
+<li><a href="afOpenFile.3.html">afOpenFile</a>
+<li><a href="afQuery.3.html">afQuery</a>
+<li><a href="afReadFrames.3.html">afReadFrames</a>
+<li><a href="afReadMisc.3.html">afReadMisc</a>
+<li><a href="afSeekFrame.3.html">afSeekFrame</a>
+<li><a href="afSetErrorHandler.3.html">afSetErrorHandler</a>
+<li><a href="afSetVirtualSampleFormat.3.html">afSetVirtualSampleFormat</a>
+<li><a href="afWriteFrames.3.html">afWriteFrames</a>
+</ul>
 
-    
+<h2>Program documentation</h2>
+<ul>
+<li><a href="sfconvert.1.html">sfconvert</a>
+<li><a href="sfinfo.1.html">sfinfo</a>
+</ul>
+</section>
+</div>
 
-  </body>
+<!-- FOOTER  -->
+<div id="footer_wrap" class="outer">
+<footer class="inner">
+<p class="copyright">audiofile maintained by <a href="https://github.com/mpruett">michael pruett</a></p>
+<p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+</footer>
+</div>
+</body>
 </html>
