@@ -116,6 +116,38 @@ AS_IF([test "$enable_documentation" = "yes"],
 	)]
 )
 
+AC_ARG_ENABLE(flac,
+	AS_HELP_STRING([--disable-flac], [disable FLAC]),
+	[enable_flac=$enableval],
+	[enable_flac=yes])
+
+PKG_PROG_PKG_CONFIG
+
+FLAC_CFLAGS=""
+FLAC_LIBS=""
+
+if test -n "$PKG_CONFIG" ; then
+	if test "$enable_flac" = "yes" ; then
+		PKG_CHECK_MODULES([FLAC], [flac >= 1.2.1], [ac_cv_flac=yes], [ac_cv_flac=no])
+		FLAC_CFLAGS=`echo $FLAC_CFLAGS | $SED "s/FLAC$//"`
+		if test "$ac_cv_flac" = "no" ; then
+			enable_flac=no
+		fi
+	fi
+else
+	enable_flac=no
+fi
+
+AC_SUBST(FLAC_CFLAGS)
+AC_SUBST(FLAC_LIBS)
+
+AM_CONDITIONAL(ENABLE_FLAC, [test "$enable_flac" = "yes"])
+if test "$enable_flac" = "yes" ; then
+	AC_DEFINE_UNQUOTED([ENABLE_FLAC], [1], [Whether FLAC is enabled.])
+else
+	AC_DEFINE_UNQUOTED([ENABLE_FLAC], [0], [Whether FLAC is enabled.])
+fi
+
 AC_CONFIG_FILES([
 	audiofile.spec
 	audiofile.pc

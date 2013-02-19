@@ -82,9 +82,9 @@ bool _af_g711_format_ok (AudioFormat *f)
 class G711 : public FileModule
 {
 public:
-	static Module *createCompress(Track *trk, File *fh, bool canSeek,
+	static G711 *createCompress(Track *trk, File *fh, bool canSeek,
 		bool headerless, AFframecount *chunkframes);
-	static Module *createDecompress(Track *trk, File *fh, bool canSeek,
+	static G711 *createDecompress(Track *trk, File *fh, bool canSeek,
 		bool headerless, AFframecount *chunkframes);
 
 	virtual const char *name() const OVERRIDE
@@ -114,7 +114,7 @@ G711::G711(Mode mode, Track *track, File *fh, bool canSeek) :
 		track->f.compressionParams = AU_NULL_PVLIST;
 }
 
-Module *G711::createCompress(Track *track, File *fh,
+G711 *G711::createCompress(Track *track, File *fh,
 	bool canSeek, bool headerless, AFframecount *chunkframes)
 {
 	return new G711(Compress, track, fh, canSeek);
@@ -183,7 +183,7 @@ void G711::describe()
 	}
 }
 
-Module *G711::createDecompress(Track *track, File *fh,
+G711 *G711::createDecompress(Track *track, File *fh,
 	bool canSeek, bool headerless, AFframecount *chunkframes)
 {
 	return new G711(Decompress, track, fh, canSeek);
@@ -234,13 +234,13 @@ void G711::reset2()
 	m_track->frames2ignore = 0;
 }
 
-Module *_AFg711initcompress(Track *track, File *fh, bool canSeek,
+FileModule *_AFg711initcompress(Track *track, File *fh, bool canSeek,
 	bool headerless, AFframecount *chunkFrames)
 {
 	return G711::createCompress(track, fh, canSeek, headerless, chunkFrames);
 }
 
-Module *_AFg711initdecompress(Track *track, File *fh, bool canSeek,
+FileModule *_AFg711initdecompress(Track *track, File *fh, bool canSeek,
 	bool headerless, AFframecount *chunkFrames)
 {
 	return G711::createDecompress(track, fh, canSeek, headerless, chunkFrames);

@@ -29,12 +29,14 @@ The following keywords specify the format of the output sound file:
     `voc`::: Creative Voice File Format
     `nist`::: NIST SPHERE Format
     `caf`::: Core Audio Format
+    `flac`::: FLAC
 `compression` 'c'::
 [horizontal]
     `ulaw`::: G.711 mu-law
     `alaw`::: G.711 A-law
     `ima`::: IMA ADPCM
     `msadpcm`::: Microsoft ADPCM
+    `flac`::: FLAC
 `byteorder` 'e'::
   Output byte order. 'e' may be either `big` or `little`.
 `channels` 'n'::

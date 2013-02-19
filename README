@@ -32,11 +32,13 @@ The following file formats are currently supported:
 * Creative Voice File
 * NIST SPHERE
 * Core Audio Format
+* FLAC
 
 The following compression formats are currently supported:
 * G.711 mu-law and A-law
 * IMA ADPCM
 * Microsoft ADPCM
+* FLAC
 
 The Audio File Library itself is available under the GNU Library General
 Public License, and the programs in this package are available under the

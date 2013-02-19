@@ -54,9 +54,9 @@ struct adpcmState
 class IMA : public BlockCodec
 {
 public:
-	static Module *createDecompress(Track *track, File *fh, bool canSeek,
+	static IMA *createDecompress(Track *track, File *fh, bool canSeek,
 		bool headerless, AFframecount *chunkFrames);
-	static Module *createCompress(Track *track, File *fh, bool canSeek,
+	static IMA *createCompress(Track *track, File *fh, bool canSeek,
 		bool headerless, AFframecount *chunkFrames);
 
 	virtual ~IMA();
@@ -369,7 +369,7 @@ void IMA::describe()
 	m_outChunk->f.compressionParams = AU_NULL_PVLIST;
 }
 
-Module *IMA::createDecompress(Track *track, File *fh, bool canSeek,
+IMA *IMA::createDecompress(Track *track, File *fh, bool canSeek,
 	bool headerless, AFframecount *chunkFrames)
 {
 	assert(fh->tell() == track->fpos_first_frame);
@@ -387,7 +387,7 @@ Module *IMA::createDecompress(Track *track, File *fh, bool canSeek,
 	return ima;
 }
 
-Module *IMA::createCompress(Track *track, File *fh, bool canSeek,
+IMA *IMA::createCompress(Track *track, File *fh, bool canSeek,
 	bool headerless, AFframecount *chunkFrames)
 {
 	assert(fh->tell() == track->fpos_first_frame);
@@ -405,13 +405,13 @@ Module *IMA::createCompress(Track *track, File *fh, bool canSeek,
 	return ima;
 }
 
-Module *_af_ima_adpcm_init_decompress(Track *track, File *fh,
+FileModule *_af_ima_adpcm_init_decompress(Track *track, File *fh,
 	bool canSeek, bool headerless, AFframecount *chunkFrames)
 {
 	return IMA::createDecompress(track, fh, canSeek, headerless, chunkFrames);
 }
 
-Module *_af_ima_adpcm_init_compress(Track *track, File *fh,
+FileModule *_af_ima_adpcm_init_compress(Track *track, File *fh,
 	bool canSeek, bool headerless, AFframecount *chunkFrames)
 {
 	return IMA::createCompress(track, fh, canSeek, headerless, chunkFrames);

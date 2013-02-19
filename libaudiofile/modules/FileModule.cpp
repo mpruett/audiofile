@@ -58,9 +58,19 @@ ssize_t FileModule::write(const void *data, size_t nbytes)
 	return bytesWritten;
 }
 
+off_t FileModule::seek(off_t offset)
+{
+	return m_fh->seek(offset, File::SeekFromBeginning);
+}
+
 off_t FileModule::tell()
 {
 	return m_fh->tell();
+}
+
+off_t FileModule::length()
+{
+	return m_fh->length();
 }
 
 void FileModule::reportReadError(AFframecount framesRead,

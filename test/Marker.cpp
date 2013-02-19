@@ -161,6 +161,7 @@ TEST(Unsupported, SampleVision) { testUnsupported(AF_FILE_SAMPLEVISION); }
 TEST(Unsupported, VOC) { testUnsupported(AF_FILE_VOC); }
 TEST(Unsupported, NIST) { testUnsupported(AF_FILE_NIST_SPHERE); }
 TEST(Unsupported, CAF) { testUnsupported(AF_FILE_CAF); }
+TEST(Unsupported, FLAC) { testUnsupported(AF_FILE_FLAC); }
 
 int main(int argc, char **argv)
 {

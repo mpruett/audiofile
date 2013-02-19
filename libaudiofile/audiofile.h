@@ -114,7 +114,8 @@ enum
 	AF_FILE_VOC = 12,
 	AF_FILE_NIST_SPHERE = 13,
 	AF_FILE_SOUNDFONT2 = 14,	/* not implemented */
-	AF_FILE_CAF = 15
+	AF_FILE_CAF = 15,
+	AF_FILE_FLAC = 16
 };
 
 enum
@@ -202,7 +203,9 @@ enum
 	AF_COMPRESSION_GSM = 520,
 	AF_COMPRESSION_FS1016 = 521,
 	AF_COMPRESSION_DV = 522,
-	AF_COMPRESSION_MS_ADPCM = 523
+	AF_COMPRESSION_MS_ADPCM = 523,
+
+	AF_COMPRESSION_FLAC = 530
 };
 
 /* tokens for afQuery() -- see the man page for instructions */

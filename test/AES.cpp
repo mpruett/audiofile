@@ -101,6 +101,7 @@ TEST(AES_Unsupported, SampleVision) { testAESUnsupported(AF_FILE_SAMPLEVISION); 
 TEST(AES_Unsupported, VOC) { testAESUnsupported(AF_FILE_VOC); }
 TEST(AES_Unsupported, NIST) { testAESUnsupported(AF_FILE_NIST_SPHERE); }
 TEST(AES_Unsupported, CAF) { testAESUnsupported(AF_FILE_CAF); }
+TEST(AES_Unsupported, FLAC) { testAESUnsupported(AF_FILE_FLAC); }
 
 int main(int argc, char **argv)
 {

@@ -31,6 +31,7 @@
 #include "AIFF.h"
 #include "AVR.h"
 #include "CAF.h"
+#include "FLACFile.h"
 #include "IFF.h"
 #include "IRCAM.h"
 #include "NeXT.h"
@@ -91,6 +92,8 @@ _AFfilehandle *_AFfilehandle::create(int fileFormat)
 			return new NISTFile();
 		case AF_FILE_CAF:
 			return new CAFFile();
+		case AF_FILE_FLAC:
+			return new FLACFile();
 		default:
 			return NULL;
 	}

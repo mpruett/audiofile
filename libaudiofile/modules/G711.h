@@ -26,16 +26,20 @@
 #ifndef MODULES_G711_H
 #define MODULES_G711_H
 
-#include "Module.h"
 #include "afinternal.h"
 #include "audiofile.h"
 
+class File;
+class FileModule;
+struct AudioFormat;
+struct Track;
+
 bool _af_g711_format_ok (AudioFormat *f);
 
-Module *_AFg711initcompress (Track *, File *, bool canSeek,
+FileModule *_AFg711initcompress (Track *, File *, bool canSeek,
 	bool headerless, AFframecount *chunkframes);
 
-Module *_AFg711initdecompress (Track *, File *, bool canSeek,
+FileModule *_AFg711initdecompress (Track *, File *, bool canSeek,
 	bool headerless, AFframecount *chunkframes);
 
 #endif /* MODULES_G711_H */

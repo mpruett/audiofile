@@ -26,6 +26,7 @@
 
 #include "config.h"
 
+#include "Features.h"
 #include "audiofile.h"
 #include "afinternal.h"
 #include "units.h"
@@ -33,6 +34,7 @@
 #include "AIFF.h"
 #include "AVR.h"
 #include "CAF.h"
+#include "FLACFile.h"
 #include "IFF.h"
 #include "IRCAM.h"
 #include "NeXT.h"
@@ -44,10 +46,11 @@
 
 #include "compression.h"
 
-#include "modules/PCM.h"
+#include "modules/FLAC.h"
 #include "modules/G711.h"
 #include "modules/IMA.h"
 #include "modules/MSADPCM.h"
+#include "modules/PCM.h"
 
 const Unit _af_units[_AF_NUM_UNITS] =
 {
@@ -246,6 +249,21 @@ const Unit _af_units[_AF_NUM_UNITS] =
 		0,		// maximum number of loops per instrument
 		0,		// number of instrument parameters
 		NULL	// instrument parameters
+	},
+	{
+		AF_FILE_FLAC,
+		"FLAC", "Free Lossless Audio Codec", "flac",
+		true,
+		FLACFile::completeSetup,
+		FLACFile::recognize,
+		AF_SAMPFMT_TWOSCOMP, 16,
+		_AF_FLAC_NUM_COMPTYPES,
+		_af_flac_compression_types,
+		0,		// maximum marker count
+		0,		// maximum instrument count
+		0,		// maximum number of loops per instrument
+		0,		// number of instrument parameters
+		NULL	// instrument parameters
 	}
 };
 
@@ -315,5 +333,22 @@ const CompressionUnit _af_compression[_AF_NUM_COMPRESSION] =
 		false,	/* multiple_of */
 		_af_ms_adpcm_format_ok,
 		_af_ms_adpcm_init_compress, _af_ms_adpcm_init_decompress
+	},
+	{
+		AF_COMPRESSION_FLAC,
+#if ENABLE(FLAC)
+		true,
+#else
+		false,
+#endif
+		"flac",	// label
+		"FLAC",	// short name
+		"Free Lossless Audio Codec",
+		1.0,
+		AF_SAMPFMT_TWOSCOMP, 16,
+		false,	// needsRebuffer
+		false,	// multiple_of
+		_af_flac_format_ok,
+		_af_flac_init_compress, _af_flac_init_decompress
 	}
 };

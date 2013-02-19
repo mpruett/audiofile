@@ -2,6 +2,7 @@ ADPCM
 AES
 ChannelMatrix
 Error
+FLAC
 FloatToInt
 IntToFloat
 InvalidCompressionFormat

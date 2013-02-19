@@ -25,6 +25,9 @@
 
 class FileModule : public Module
 {
+public:
+	virtual bool handlesSeeking() const { return false; }
+
 protected:
 	enum Mode { Compress, Decompress };
 	FileModule(Mode, Track *, File *fh, bool canSeek);
@@ -34,7 +37,9 @@ protected:
 
 	ssize_t read(void *data, size_t nbytes);
 	ssize_t write(const void *data, size_t nbytes);
+	off_t seek(off_t offset);
 	off_t tell();
+	off_t length();
 
 private:
 	Mode m_mode;
