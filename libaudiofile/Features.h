@@ -1,7 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 2000, Silicon Graphics, Inc.
-	Copyright (C) 2010, Michael Pruett <michael@68k.org>
+	Copyright (C) 2013 Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -19,27 +18,9 @@
 	Boston, MA  02111-1307  USA.
 */
 
-/*
-	g711.h
-*/
+#ifndef Features_h
+#define Features_h
 
-#ifndef MODULES_G711_H
-#define MODULES_G711_H
+#define ENABLE(FEATURE) (defined ENABLE_##FEATURE && ENABLE_##FEATURE)
 
-#include "afinternal.h"
-#include "audiofile.h"
-
-class File;
-class FileModule;
-class Track;
-struct AudioFormat;
-
-bool _af_g711_format_ok (AudioFormat *f);
-
-FileModule *_AFg711initcompress (Track *, File *, bool canSeek,
-	bool headerless, AFframecount *chunkframes);
-
-FileModule *_AFg711initdecompress (Track *, File *, bool canSeek,
-	bool headerless, AFframecount *chunkframes);
-
-#endif /* MODULES_G711_H */
+#endif

@@ -60,7 +60,8 @@ int afWriteFrames (AFfilehandle file, int trackid, const void *samples,
 	if (track->ms->isDirty() && track->ms->setup(file, track) == AF_FAIL)
 		return -1;
 
-	if (file->m_seekok &&
+	if (!track->ms->fileModuleHandlesSeeking() &&
+		file->m_seekok &&
 		file->m_fh->seek(track->fpos_next_frame, File::SeekFromBeginning) !=
 			track->fpos_next_frame)
 	{
@@ -143,7 +144,8 @@ int afReadFrames (AFfilehandle file, int trackid, void *samples,
 	if (track->ms->isDirty() && track->ms->setup(file, track) == AF_FAIL)
 		return -1;
 
-	if (file->m_seekok &&
+	if (!track->ms->fileModuleHandlesSeeking() &&
+		file->m_seekok &&
 		file->m_fh->seek(track->fpos_next_frame, File::SeekFromBeginning) !=
 			track->fpos_next_frame)
 	{

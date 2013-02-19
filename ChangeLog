@@ -1,3 +1,39 @@
+2013-02-19  Michael Pruett <michael@68k.org>
+
+	* README,
+	configure.ac,
+	docs/afInitCompression.3.txt,
+	docs/sfconvert.1.txt,
+	libaudiofile/FLACFile.cpp,
+	libaudiofile/FLACFile.h,
+	libaudiofile/Features.h,
+	libaudiofile/FileHandle.cpp,
+	libaudiofile/Makefile.am,
+	libaudiofile/audiofile.h,
+	libaudiofile/data.cpp,
+	libaudiofile/modules/FLAC.cpp,
+	libaudiofile/modules/FLAC.h,
+	libaudiofile/modules/FileModule.cpp,
+	libaudiofile/modules/FileModule.h,
+	libaudiofile/modules/G711.cpp,
+	libaudiofile/modules/G711.h,
+	libaudiofile/modules/IMA.cpp,
+	libaudiofile/modules/IMA.h,
+	libaudiofile/modules/MSADPCM.cpp,
+	libaudiofile/modules/MSADPCM.h,
+	libaudiofile/modules/Makefile.am,
+	libaudiofile/modules/ModuleState.cpp,
+	libaudiofile/modules/ModuleState.h,
+	libaudiofile/modules/PCM.cpp,
+	libaudiofile/modules/PCM.h,
+	libaudiofile/units.cpp,
+	libaudiofile/units.h,
+	sfcommands/sfconvert.c,
+	test/.gitignore,
+	test/FLAC.cpp,
+	test/Makefile.am:
+	Add support for FLAC.
+
 2013-02-10  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/FileHandle.cpp,

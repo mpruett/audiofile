@@ -101,6 +101,8 @@ int main (int argc, char **argv)
 				outFileFormat = AF_FILE_NIST_SPHERE;
 			else if (!strcmp(argv[i+1], "caf"))
 				outFileFormat = AF_FILE_CAF;
+			else if (!strcmp(argv[i+1], "flac"))
+				outFileFormat = AF_FILE_FLAC;
 			else
 			{
 				fprintf(stderr, "sfconvert: Unknown format %s.\n", argv[i+1]);
@@ -171,6 +173,8 @@ int main (int argc, char **argv)
 				outCompression = AF_COMPRESSION_IMA;
 			else if (!strcmp(argv[i+1], "msadpcm"))
 				outCompression = AF_COMPRESSION_MS_ADPCM;
+			else if (!strcmp(argv[i+1], "flac"))
+				outCompression = AF_COMPRESSION_FLAC;
 			else
 			{
 				fprintf(stderr, "sfconvert: Unknown compression format %s.\n", argv[i+1]);
@@ -293,6 +297,7 @@ void printusage (void)
 	printf("    alaw    G.711 A-law\n");
 	printf("    ima     IMA ADPCM\n");
 	printf("    msadpcm MS ADPCM\n");
+	printf("    flac    FLAC\n");
 	printf("\n");
 }
 

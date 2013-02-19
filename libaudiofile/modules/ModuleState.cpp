@@ -24,6 +24,7 @@
 
 #include "File.h"
 #include "FileHandle.h"
+#include "FileModule.h"
 #include "RebufferModule.h"
 #include "SimpleModule.h"
 #include "Track.h"
@@ -97,6 +98,11 @@ status ModuleState::init(AFfilehandle file, Track *track)
 		return AF_FAIL;
 
 	return AF_SUCCEED;
+}
+
+bool ModuleState::fileModuleHandlesSeeking() const
+{
+	return m_fileModule->handlesSeeking();
 }
 
 status ModuleState::setup(AFfilehandle file, Track *track)

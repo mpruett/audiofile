@@ -31,8 +31,8 @@
 #include "audiofile.h"
 #include "afinternal.h"
 
-class Module;
 struct AudioFormat;
+class FileModule;
 
 struct Unit
 {
@@ -74,14 +74,14 @@ struct CompressionUnit
 	bool	multiple_of;	/* can accept any multiple of chunksize */
 	bool	(*fmtok) (AudioFormat *format);
 
-	Module *(*initcompress) (Track *track, File *fh,
+	FileModule *(*initcompress) (Track *track, File *fh,
 		bool seekok, bool headerless, AFframecount *chunkframes);
-	Module *(*initdecompress) (Track *track, File *fh,
+	FileModule *(*initdecompress) (Track *track, File *fh,
 		bool seekok, bool headerless, AFframecount *chunkframes);
 };
 
-#define _AF_NUM_UNITS 16
-#define _AF_NUM_COMPRESSION 5
+#define _AF_NUM_UNITS 17
+#define _AF_NUM_COMPRESSION 6
 
 extern const Unit _af_units[_AF_NUM_UNITS];
 extern const CompressionUnit _af_compression[_AF_NUM_COMPRESSION];

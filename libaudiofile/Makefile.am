@@ -14,6 +14,9 @@ libaudiofile_la_SOURCES = \
 	CAF.cpp \
 	CAF.h \
 	Compiler.h \
+	FLACFile.cpp \
+	FLACFile.h \
+	Features.h \
 	File.cpp \
 	File.h \
 	FileHandle.cpp \
@@ -79,7 +82,7 @@ libaudiofile_la_SOURCES = \
 	util.h \
 	util.h
 
-libaudiofile_la_LIBADD = modules/libmodules.la $(COVERAGE_LIBS) -lm
+libaudiofile_la_LIBADD = modules/libmodules.la $(COVERAGE_LIBS) $(FLAC_LIBS) -lm
 
 libaudiofile_la_LDFLAGS = -version-info $(AUDIOFILE_VERSION_INFO) \
 	-no-undefined \
@@ -104,7 +107,7 @@ UnitTests_LDFLAGS = -static
 # SGI MIPSpro cc
 # AM_CFLAGS = -fullwarn -g
 # No debugging.
-AM_CFLAGS = -DNDEBUG -Wall $(WERROR_CFLAGS) $(COVERAGE_CFLAGS) -fvisibility=hidden
+AM_CFLAGS = -DNDEBUG -Wall $(WERROR_CFLAGS) $(COVERAGE_CFLAGS) $(FLAC_CFLAGS) -fvisibility=hidden
 AM_CXXFLAGS = $(AM_CFLAGS) -fno-rtti -fno-exceptions -fvisibility-inlines-hidden
 
 CLEANFILES = *.gcda *.gcno

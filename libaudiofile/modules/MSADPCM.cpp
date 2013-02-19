@@ -59,9 +59,9 @@ struct ms_adpcm_state
 class MSADPCM : public BlockCodec
 {
 public:
-	static Module *createDecompress(Track *, File *, bool canSeek,
+	static MSADPCM *createDecompress(Track *, File *, bool canSeek,
 		bool headerless, AFframecount *chunkFrames);
-	static Module *createCompress(Track *, File *, bool canSeek,
+	static MSADPCM *createCompress(Track *, File *, bool canSeek,
 		bool headerless, AFframecount *chunkFrames);
 
 	virtual ~MSADPCM();
@@ -377,7 +377,7 @@ bool MSADPCM::initializeCoefficients()
 	return true;
 }
 
-Module *MSADPCM::createDecompress(Track *track, File *fh,
+MSADPCM *MSADPCM::createDecompress(Track *track, File *fh,
 	bool canSeek, bool headerless, AFframecount *chunkFrames)
 {
 	assert(fh->tell() == track->fpos_first_frame);
@@ -395,7 +395,7 @@ Module *MSADPCM::createDecompress(Track *track, File *fh,
 	return msadpcm;
 }
 
-Module *MSADPCM::createCompress(Track *track, File *fh,
+MSADPCM *MSADPCM::createCompress(Track *track, File *fh,
 	bool canSeek, bool headerless, AFframecount *chunkFrames)
 {
 	assert(fh->tell() == track->fpos_first_frame);
@@ -439,13 +439,13 @@ bool _af_ms_adpcm_format_ok (AudioFormat *f)
 	return true;
 }
 
-Module *_af_ms_adpcm_init_decompress (Track *track, File *fh,
+FileModule *_af_ms_adpcm_init_decompress (Track *track, File *fh,
 	bool canSeek, bool headerless, AFframecount *chunkFrames)
 {
 	return MSADPCM::createDecompress(track, fh, canSeek, headerless, chunkFrames);
 }
 
-Module *_af_ms_adpcm_init_compress (Track *track, File *fh,
+FileModule *_af_ms_adpcm_init_compress (Track *track, File *fh,
 	bool canSeek, bool headerless, AFframecount *chunkFrames)
 {
 	return MSADPCM::createCompress(track, fh, canSeek, headerless, chunkFrames);

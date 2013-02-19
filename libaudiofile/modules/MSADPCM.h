@@ -29,16 +29,20 @@
 #ifndef MSADPCM_H
 #define MSADPCM_H
 
-#include "Module.h"
 #include "afinternal.h"
 #include "audiofile.h"
 
+class File;
+class FileModule;
+class Track;
+struct AudioFormat;
+
 bool _af_ms_adpcm_format_ok (AudioFormat *f);
 
-Module *_af_ms_adpcm_init_decompress (Track *track, File *fh,
+FileModule *_af_ms_adpcm_init_decompress(Track *, File *,
 	bool canSeek, bool headerless, AFframecount *chunkframes);
 
-Module *_af_ms_adpcm_init_compress (Track *track, File *fh,
+FileModule *_af_ms_adpcm_init_compress(Track *, File *,
 	bool canSeek, bool headerless, AFframecount *chunkframes);
 
 #endif

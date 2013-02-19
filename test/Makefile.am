@@ -35,6 +35,10 @@ TESTS = \
 	writeraw \
 	writeulaw
 
+if ENABLE_FLAC
+TESTS += FLAC
+endif
+
 check_PROGRAMS = \
 	$(TESTS) \
 	instparamtest \
@@ -66,6 +70,9 @@ ChannelMatrix_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 Error_SOURCES = Error.cpp TestUtilities.cpp TestUtilities.h
 Error_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+FLAC_SOURCES = FLAC.cpp TestUtilities.cpp TestUtilities.h
+FLAC_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 FloatToInt_SOURCES = FloatToInt.cpp TestUtilities.cpp TestUtilities.h
 FloatToInt_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)

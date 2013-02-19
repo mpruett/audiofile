@@ -27,6 +27,7 @@
 #include "afinternal.h"
 #include <vector>
 
+class FileModule;
 class Module;
 
 class ModuleState : public Shared<ModuleState>
@@ -50,12 +51,14 @@ public:
 
 	void print();
 
+	bool fileModuleHandlesSeeking() const;
+
 private:
 	std::vector<SharedPtr<Module> > m_modules;
 	std::vector<SharedPtr<Chunk> > m_chunks;
 	bool m_isDirty;
 
-	SharedPtr<Module> m_fileModule;
+	SharedPtr<FileModule> m_fileModule;
 	SharedPtr<Module> m_fileRebufferModule;
 
 	status initFileModule(AFfilehandle file, Track *track);

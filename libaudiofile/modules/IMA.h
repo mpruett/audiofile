@@ -29,15 +29,19 @@
 #ifndef IMA_H
 #define IMA_H
 
-#include "Module.h"
 #include "afinternal.h"
 #include "audiofile.h"
 
-bool _af_ima_adpcm_format_ok (AudioFormat *f);
+class File;
+class FileModule;
+class Track;
+struct AudioFormat;
 
-Module *_af_ima_adpcm_init_compress (Track *track, File *fh,
+bool _af_ima_adpcm_format_ok(AudioFormat *);
+
+FileModule *_af_ima_adpcm_init_compress(Track *, File *,
 	bool canSeek, bool headerless, AFframecount *chunkframes);
-Module *_af_ima_adpcm_init_decompress (Track *track, File *fh,
+FileModule *_af_ima_adpcm_init_decompress(Track *, File *,
 	bool canSeek, bool headerless, AFframecount *chunkframes);
 
 #endif

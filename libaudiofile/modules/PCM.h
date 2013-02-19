@@ -26,16 +26,20 @@
 #ifndef MODULES_PCM_H
 #define MODULES_PCM_H
 
-#include "Module.h"
 #include "afinternal.h"
 #include "audiofile.h"
 
+class File;
+class FileModule;
+class Track;
+struct AudioFormat;
+
 bool _af_pcm_format_ok (AudioFormat *f);
 
-Module *_AFpcminitcompress (Track *trk, File *fh, bool seekok,
+FileModule *_AFpcminitcompress(Track *, File *, bool seekok,
 	bool headerless, AFframecount *chunkframes);
 
-Module *_AFpcminitdecompress (Track *trk, File *fh, bool seekok,
+FileModule *_AFpcminitdecompress(Track *, File *, bool seekok,
 	bool headerless, AFframecount *chunkframes);
 
 #endif /* MODULES_PCM_H */
