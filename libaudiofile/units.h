@@ -81,7 +81,7 @@ struct CompressionUnit
 };
 
 #define _AF_NUM_UNITS 17
-#define _AF_NUM_COMPRESSION 6
+#define _AF_NUM_COMPRESSION 7
 
 extern const Unit _af_units[_AF_NUM_UNITS];
 extern const CompressionUnit _af_compression[_AF_NUM_COMPRESSION];

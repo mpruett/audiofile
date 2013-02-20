@@ -115,3 +115,11 @@ void FileModule::reportWriteError(AFframecount framesWritten,
 
 	m_track->filemodhappy = false;
 }
+
+int FileModule::bufferSize() const
+{
+	if (mode() == Compress)
+		return outChunk()->frameCount * inChunk()->f.bytesPerFrame(true);
+	else
+		return inChunk()->frameCount * outChunk()->f.bytesPerFrame(true);
+}

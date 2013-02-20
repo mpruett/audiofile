@@ -175,6 +175,8 @@ int main (int argc, char **argv)
 				outCompression = AF_COMPRESSION_MS_ADPCM;
 			else if (!strcmp(argv[i+1], "flac"))
 				outCompression = AF_COMPRESSION_FLAC;
+			else if (!strcmp(argv[i+1], "alac"))
+				outCompression = AF_COMPRESSION_ALAC;
 			else
 			{
 				fprintf(stderr, "sfconvert: Unknown compression format %s.\n", argv[i+1]);
@@ -298,6 +300,7 @@ void printusage (void)
 	printf("    ima     IMA ADPCM\n");
 	printf("    msadpcm MS ADPCM\n");
 	printf("    flac    FLAC\n");
+	printf("    alac    Apple Lossless Audio Codec\n");
 	printf("\n");
 }
 

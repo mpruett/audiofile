@@ -109,7 +109,9 @@ enum
 	_AF_MS_ADPCM_COEFFICIENTS = 801,		/* type: array of int16_t[2] */
 	_AF_IMA_ADPCM_TYPE = 810,
 	_AF_IMA_ADPCM_TYPE_WAVE = 1,
-	_AF_IMA_ADPCM_TYPE_QT = 2
+	_AF_IMA_ADPCM_TYPE_QT = 2,
+	_AF_CODEC_DATA = 900,		// type: pointer
+	_AF_CODEC_DATA_SIZE = 901	// type: long
 };
 
 /* NeXT/Sun sampling rate */

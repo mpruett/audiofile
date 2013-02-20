@@ -37,6 +37,7 @@ The following compression types are currently supported:
 `AF_COMPRESSION_IMA`:: IMA ADPCM encoding
 `AF_COMPRESSION_MS_ADPCM`:: MS ADPCM encoding
 `AF_COMPRESSION_FLAC`:: FLAC
+`AF_COMPRESSION_ALAC`:: Apple Lossless Audio Codec
 
 ERRORS
 ------

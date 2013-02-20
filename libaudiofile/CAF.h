@@ -1,6 +1,6 @@
 /*
 	Audio File Library
-	Copyright (C) 2011-2012, Michael Pruett <michael@68k.org>
+	Copyright (C) 2011-2013 Michael Pruett <michael@68k.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -27,8 +27,10 @@
 #include "Tag.h"
 #include <stdint.h>
 
-#define _AF_CAF_NUM_COMPTYPES 3
+#define _AF_CAF_NUM_COMPTYPES 4
 extern const int _af_caf_compression_types[_AF_CAF_NUM_COMPTYPES];
+
+class Buffer;
 
 class CAFFile : public _AFfilehandle
 {
@@ -45,15 +47,22 @@ public:
 
 private:
 	AFfileoffset m_dataOffset;
+	AFfileoffset m_cookieDataOffset;
+	SharedPtr<Buffer> m_codecData;
 
 	status parseDescription(const Tag &, int64_t);
 	status parseData(const Tag &, int64_t);
+	status parsePacketTable(const Tag &, int64_t);
+	status parseCookieData(const Tag &, int64_t);
 
 	status writeDescription();
 	status writeData(bool update);
+	status writePacketTable();
+	status writeCookieData();
 
 	void initCompressionParams();
 	void initIMACompressionParams();
+	void initALACCompressionParams();
 };
 
 #endif

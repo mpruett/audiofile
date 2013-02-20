@@ -75,9 +75,9 @@ public:
 
 	void setSink(Module *);
 	void setSource(Module *);
-	Chunk *inChunk() { return m_inChunk.get(); }
+	Chunk *inChunk() const { return m_inChunk.get(); }
 	void setInChunk(Chunk *chunk) { m_inChunk = chunk; }
-	Chunk *outChunk() { return m_outChunk.get(); }
+	Chunk *outChunk() const { return m_outChunk.get(); }
 	void setOutChunk(Chunk *chunk) { m_outChunk = chunk; }
 
 	virtual const char *name() const;

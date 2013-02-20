@@ -28,6 +28,8 @@ class FileModule : public Module
 public:
 	virtual bool handlesSeeking() const { return false; }
 
+	virtual int bufferSize() const;
+
 protected:
 	enum Mode { Compress, Decompress };
 	FileModule(Mode, Track *, File *fh, bool canSeek);

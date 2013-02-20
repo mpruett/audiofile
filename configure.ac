@@ -152,12 +152,13 @@ AC_CONFIG_FILES([
 	audiofile.spec
 	audiofile.pc
 	audiofile-uninstalled.pc
-	sfcommands/Makefile 
-	test/Makefile 
+	sfcommands/Makefile
+	test/Makefile
 	gtest/Makefile
-	examples/Makefile 
-	libaudiofile/Makefile 
-	libaudiofile/modules/Makefile 
-	docs/Makefile 
+	examples/Makefile
+	libaudiofile/Makefile
+	libaudiofile/alac/Makefile
+	libaudiofile/modules/Makefile
+	docs/Makefile
 	Makefile])
 AC_OUTPUT

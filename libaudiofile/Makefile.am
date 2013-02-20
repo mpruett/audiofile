@@ -1,4 +1,4 @@
-SUBDIRS = modules
+SUBDIRS = alac modules
 
 lib_LTLIBRARIES = libaudiofile.la
 
@@ -11,6 +11,8 @@ libaudiofile_la_SOURCES = \
 	AVR.h \
 	AudioFormat.cpp \
 	AudioFormat.h \
+	Buffer.cpp \
+	Buffer.h \
 	CAF.cpp \
 	CAF.h \
 	Compiler.h \
@@ -35,6 +37,8 @@ libaudiofile_la_SOURCES = \
 	NIST.h \
 	NeXT.cpp \
 	NeXT.h \
+	PacketTable.cpp \
+	PacketTable.h \
 	Raw.cpp \
 	Raw.h \
 	SampleVision.cpp \
@@ -82,7 +86,12 @@ libaudiofile_la_SOURCES = \
 	util.h \
 	util.h
 
-libaudiofile_la_LIBADD = modules/libmodules.la $(COVERAGE_LIBS) $(FLAC_LIBS) -lm
+libaudiofile_la_LIBADD = \
+	modules/libmodules.la \
+	alac/libalac.la \
+	$(COVERAGE_LIBS) \
+	$(FLAC_LIBS) \
+	-lm
 
 libaudiofile_la_LDFLAGS = -version-info $(AUDIOFILE_VERSION_INFO) \
 	-no-undefined \

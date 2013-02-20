@@ -37,6 +37,7 @@
 #include "afinternal.h"
 #include "util.h"
 #include "Marker.h"
+#include "PacketTable.h"
 #include "modules/Module.h"
 #include "modules/ModuleState.h"
 
@@ -171,7 +172,6 @@ status Track::copyMarkers(TrackSetup *setup)
 
 void Track::computeTotalFileFrames()
 {
-	assert(f.bytesPerPacket);
-	assert(f.framesPerPacket);
-	totalfframes = (data_size / f.bytesPerPacket) * f.framesPerPacket;
+	if (f.bytesPerPacket && f.framesPerPacket)
+		totalfframes = (data_size / f.bytesPerPacket) * f.framesPerPacket;
 }

@@ -46,6 +46,7 @@
 
 #include "compression.h"
 
+#include "modules/ALAC.h"
 #include "modules/FLAC.h"
 #include "modules/G711.h"
 #include "modules/IMA.h"
@@ -350,5 +351,18 @@ const CompressionUnit _af_compression[_AF_NUM_COMPRESSION] =
 		false,	// multiple_of
 		_af_flac_format_ok,
 		_af_flac_init_compress, _af_flac_init_decompress
+	},
+	{
+		AF_COMPRESSION_ALAC,
+		true,
+		"alac",	// label
+		"ALAC",	// short name
+		"Apple Lossless Audio Codec",
+		1.0,
+		AF_SAMPFMT_TWOSCOMP, 16,
+		true,	// needsRebuffer
+		false,	// multiple_of
+		_af_alac_format_ok,
+		_af_alac_init_compress, _af_alac_init_decompress
 	}
 };

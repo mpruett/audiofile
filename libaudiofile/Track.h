@@ -30,6 +30,7 @@
 #include "afinternal.h"
 
 class ModuleState;
+class PacketTable;
 struct Marker;
 struct MarkerSetup;
 
@@ -58,6 +59,8 @@ struct Track
 	int	id;	/* usually AF_DEFAULT_TRACKID */
 
 	AudioFormat f, v;	/* file and virtual audio formats */
+
+	SharedPtr<PacketTable> m_packetTable;
 
 	double *channelMatrix;
 
