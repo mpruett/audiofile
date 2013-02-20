@@ -3,6 +3,7 @@ INCLUDES = -I$(top_srcdir)/libaudiofile -I$(top_srcdir)
 TESTS = \
 	ADPCM \
 	AES \
+	ALAC \
 	ChannelMatrix \
 	Error \
 	FloatToInt \
@@ -64,6 +65,9 @@ ADPCM_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 AES_SOURCES = AES.cpp TestUtilities.cpp TestUtilities.h
 AES_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+ALAC_SOURCES = ALAC.cpp TestUtilities.cpp TestUtilities.h
+ALAC_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 ChannelMatrix_SOURCES = ChannelMatrix.cpp TestUtilities.cpp TestUtilities.h
 ChannelMatrix_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)

@@ -31,6 +31,7 @@
 #include "byteorder.h"
 #include "compression.h"
 #include "units.h"
+#include "util.h"
 #include "../pcm.h"
 
 #include <algorithm>
@@ -77,13 +78,13 @@ status ModuleState::initFileModule(AFfilehandle file, Track *track)
 	if (unit->needsRebuffer)
 	{
 		assert(unit->nativeSampleFormat == AF_SAMPFMT_TWOSCOMP);
-		assert(unit->nativeSampleWidth == 16);
 
 		RebufferModule::Direction direction =
 			file->m_access == _AF_WRITE_ACCESS ?
 				RebufferModule::VariableToFixed : RebufferModule::FixedToVariable;
+
 		m_fileRebufferModule = new RebufferModule(direction,
-			sizeof (int16_t) * track->f.channelCount, chunkFrames,
+			track->f.bytesPerFrame(false), chunkFrames,
 			unit->multiple_of);
 	}
 

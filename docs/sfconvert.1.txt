@@ -37,6 +37,7 @@ The following keywords specify the format of the output sound file:
     `ima`::: IMA ADPCM
     `msadpcm`::: Microsoft ADPCM
     `flac`::: FLAC
+    `alac`::: Apple Lossless Audio Codec
 `byteorder` 'e'::
   Output byte order. 'e' may be either `big` or `little`.
 `channels` 'n'::

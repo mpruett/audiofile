@@ -3,6 +3,8 @@ noinst_LTLIBRARIES = libmodules.la
 INCLUDES = -I$(srcdir)/..
 
 libmodules_la_SOURCES = \
+	ALAC.cpp \
+	ALAC.h \
 	BlockCodec.cpp \
 	BlockCodec.h \
 	FLAC.cpp \
@@ -31,7 +33,12 @@ libmodules_la_SOURCES = \
 # SGI MIPSpro cc
 # AM_CFLAGS = -fullwarn -g
 # No debugging.
-AM_CFLAGS = -DNDEBUG -Wall $(WERROR_CFLAGS) $(COVERAGE_CFLAGS) $(FLAC_CFLAGS) -fvisibility=hidden
+AM_CFLAGS = \
+	-DNDEBUG -Wall -Wno-multichar \
+	$(WERROR_CFLAGS) \
+	$(COVERAGE_CFLAGS) \
+	$(FLAC_CFLAGS) \
+	-fvisibility=hidden
 AM_CXXFLAGS = $(AM_CFLAGS) -fno-rtti -fno-exceptions -fvisibility-inlines-hidden
 
 CLEANFILES = *.gcda *.gcno

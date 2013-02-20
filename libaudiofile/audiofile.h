@@ -205,7 +205,8 @@ enum
 	AF_COMPRESSION_DV = 522,
 	AF_COMPRESSION_MS_ADPCM = 523,
 
-	AF_COMPRESSION_FLAC = 530
+	AF_COMPRESSION_FLAC = 530,
+	AF_COMPRESSION_ALAC = 540
 };
 
 /* tokens for afQuery() -- see the man page for instructions */

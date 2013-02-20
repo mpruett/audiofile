@@ -39,6 +39,7 @@ The following compression formats are currently supported:
 * IMA ADPCM
 * Microsoft ADPCM
 * FLAC
+* Apple Lossless Audio Codec
 
 The Audio File Library itself is available under the GNU Library General
 Public License, and the programs in this package are available under the
