@@ -116,6 +116,12 @@ AS_IF([test "$enable_documentation" = "yes"],
 	)]
 )
 
+AC_ARG_ENABLE(examples,
+	AS_HELP_STRING([--disable-examples], [disable examples]),
+		[enable_examples=$enableval],
+		[enable_examples=yes])
+AS_IF([test "$enable_examples" != "yes"], [TEST_BIN=""])
+
 AC_ARG_ENABLE(flac,
 	AS_HELP_STRING([--disable-flac], [disable FLAC]),
 	[enable_flac=$enableval],

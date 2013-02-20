@@ -1,3 +1,8 @@
+2013-02-20  Cristian Morales Vega <reddwarf@opensuse.org>
+
+	* configure.ac:
+	Add option for building without example programs.
+
 2013-02-20  Michael Pruett <michael@68k.org>
 
 	* README,
