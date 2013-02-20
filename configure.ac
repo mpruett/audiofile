@@ -152,6 +152,13 @@ else
 	AC_DEFINE_UNQUOTED([ENABLE_FLAC], [0], [Whether FLAC is enabled.])
 fi
 
+AC_ARG_ENABLE(examples,
+        AS_HELP_STRING([--disable-examples], [disable examples]),
+        [enable_examples=$enableval],
+        [enable_examples=yes])
+
+AS_IF([test "$enable_examples" != "yes"], [TEST_BIN=""])
+
 AC_CONFIG_FILES([
 	audiofile.spec
 	audiofile.pc
