@@ -103,6 +103,11 @@ TESTS = UnitTests
 
 check_PROGRAMS = $(TESTS)
 
+if ENABLE_VALGRIND
+VALGRIND_FLAGS = --quiet --leak-check=full --show-reachable=yes --error-exitcode=1
+TESTS_ENVIRONMENT = $(top_builddir)/libtool --mode=execute $(VALGRIND) $(VALGRIND_FLAGS)
+endif
+
 LIBGTEST = ../gtest/libgtest.la
 
 UnitTests_SOURCES = modules/UT_RebufferModule.cpp
