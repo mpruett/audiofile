@@ -1,3 +1,7 @@
+2013-02-26  Michael Pruett <michael@68k.org>
+
+	Update license to LGPL 2.1.
+
 2013-02-21  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/Makefile.am:
