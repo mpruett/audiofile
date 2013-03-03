@@ -24,7 +24,6 @@
 //  Copyright 2011 Apple Inc. All rights reserved.
 //
 
-#include <stdio.h>
 #include "EndianPortable.h"
 
 #define BSWAP16(x) (((x << 8) | ((x >> 8) & 0x00ff)))

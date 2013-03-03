@@ -32,16 +32,8 @@
 #include "ALACAudioTypes.h"
 
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if __GNUC__ && TARGET_OS_MAC
-	#if __POWERPC__
-		#include <ppc_intrinsics.h>
-	#else
-		#include <libkern/OSByteOrder.h>
-	#endif
-#endif
 
 #define CODE_TO_LONG_MAXBITS	32
 #define N_MAX_MEAN_CLAMP		0xffff

@@ -1,5 +1,12 @@
 2013-03-03  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/alac/EndianPortable.c,
+	libaudiofile/alac/ag_dec.c,
+	libaudiofile/alac/ag_enc.c:
+	Eliminate unnecessary header inclusion in ALAC source files.
+
+2013-03-03  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/alac/ALACEncoder.cpp:
 	Write ALAC channel layout tag in big-endian byte order.
 
