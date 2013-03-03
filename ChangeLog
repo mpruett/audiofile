@@ -1,3 +1,8 @@
+2013-03-03  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/alac/ALACEncoder.cpp:
+	Remove superfluous debugging print statements in ALAC encoder.
+
 2013-02-27  Michael Pruett <michael@68k.org>
 
 	Update address for Free Software Foundation.

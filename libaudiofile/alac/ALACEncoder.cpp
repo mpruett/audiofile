@@ -523,7 +523,6 @@ int32_t ALACEncoder::EncodeStereo( BitBuffer * bitstream, void * inputBuffer, ui
 		{
 			*bitstream = startBits;		// reset bitstream state
 			doEscape = true;
-			printf( "compressed frame too big: %u vs. %u \n", minBits, escapeBits );
 		}
 	}
 
@@ -700,7 +699,6 @@ int32_t ALACEncoder::EncodeStereoFast( BitBuffer * bitstream, void * inputBuffer
 		if ( minBits >= escapeBits )
 		{
 			doEscape = true;
-			printf( "compressed frame too big: %u vs. %u\n", minBits, escapeBits );
 		}
 
 	}
@@ -965,7 +963,6 @@ int32_t ALACEncoder::EncodeMono( BitBuffer * bitstream, void * inputBuffer, uint
 		{
 			*bitstream = startBits;		// reset bitstream state
 			doEscape = true;
-			printf( "compressed frame too big: %u vs. %u\n", minBits, escapeBits );
 		}
 	}
 
@@ -1114,7 +1111,6 @@ int32_t ALACEncoder::Encode(AudioFormatDescription theInputFormat, AudioFormatDe
 					break;
 
 				default:
-					printf( "That ain't right! (%u)\n", tag );
 					status = kALAC_ParamError;
 					goto Exit;
 			}
