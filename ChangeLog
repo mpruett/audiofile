@@ -1,5 +1,11 @@
 2013-03-03  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/alac/ALACAudioTypes.h,
+	libaudiofile/alac/EndianPortable.c:
+	Fix byte order detection for ALAC.
+
+2013-03-03  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/alac/EndianPortable.c,
 	libaudiofile/alac/ag_dec.c,
 	libaudiofile/alac/ag_enc.c:

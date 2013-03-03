@@ -29,6 +29,8 @@
 #pragma once
 #endif
 
+#include "config.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -43,9 +45,7 @@ extern "C" {
 
 #include <stdint.h>
 
-#if defined(__ppc__)
-#define TARGET_RT_BIG_ENDIAN 1
-#elif defined(__ppc64__)
+#ifdef WORDS_BIGENDIAN
 #define TARGET_RT_BIG_ENDIAN 1
 #endif
 
