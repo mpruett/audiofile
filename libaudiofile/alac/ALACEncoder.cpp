@@ -1218,7 +1218,7 @@ void ALACEncoder::GetMagicCookie(void * outCookie, uint32_t * ioSize)
     GetConfig(theConfig);
     if (theConfig.numChannels > 2)
     {
-        theChannelLayout.mChannelLayoutTag = ALACChannelLayoutTags[theConfig.numChannels - 1];
+        theChannelLayout.mChannelLayoutTag = Swap32NtoB(ALACChannelLayoutTags[theConfig.numChannels - 1]);
         theCookieSize += (sizeof(ALACAudioChannelLayout) + kChannelAtomSize);
     }
      if (*ioSize >= theCookieSize)
