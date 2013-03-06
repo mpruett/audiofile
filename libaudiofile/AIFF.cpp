@@ -707,13 +707,14 @@ AFfilesetup AIFFFile::completeSetup(AFfilesetup setup)
 
 bool AIFFFile::isInstrumentParameterValid(AUpvlist list, int i)
 {
-	int param, type, lval;
+	int param, type;
 
 	AUpvgetparam(list, i, &param);
 	AUpvgetvaltype(list, i, &type);
 	if (type != AU_PVTYPE_LONG)
 		return false;
 
+	long lval;
 	AUpvgetval(list, i, &lval);
 
 	switch (param)

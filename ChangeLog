@@ -1,3 +1,12 @@
+2013-03-05  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/AIFF.cpp,
+	libaudiofile/WAVE.cpp,
+	test/.gitignore,
+	test/Instrument.cpp,
+	test/Makefile.am:
+	Fix instrument parameter validation.
+
 2013-03-03  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/alac/ALACAudioTypes.h,
