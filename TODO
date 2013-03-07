@@ -6,7 +6,7 @@ Michael Pruett <michael@68k.org>
 Short-term
 ----------
 
-Handle more compressed data formats, most importantly Ogg Vorbis and FLAC.
+Handle more compressed data formats, most importantly Ogg Vorbis.
 GSM 06.10 would also be nice.
 
 Handle sample rate conversion.
@@ -26,8 +26,6 @@ Long-term
 It would be nice to support some more file formats.
 
 Add locale support for error messages.
-
-Documentation should probably be in the SGML DocBook format.
 
 Whenever a compression format is requested, the library should scan
 through /usr/lib/audiofile/*.so to see if any DSOs support the requested

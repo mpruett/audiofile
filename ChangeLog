@@ -1,5 +1,9 @@
 2013-03-06  Michael Pruett <michael@68k.org>
 
+	Release version 0.3.6 of the Audio File Library.
+
+2013-03-06  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/alac/ALACDecoder.cpp,
 	libaudiofile/alac/ag_enc.c:
 	Fix unaligned memory accesses in ALAC.
