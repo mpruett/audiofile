@@ -115,17 +115,13 @@ int32_t ALACDecoder::Init( void * inMagicCookie, uint32_t inMagicCookieSize )
     // read the ALACSpecificConfig
     if (theCookieBytesRemaining >= sizeof(ALACSpecificConfig))
     {
-        theConfig.frameLength = Swap32BtoN(((ALACSpecificConfig *)theActualCookie)->frameLength);
-        theConfig.compatibleVersion = ((ALACSpecificConfig *)theActualCookie)->compatibleVersion;
-        theConfig.bitDepth = ((ALACSpecificConfig *)theActualCookie)->bitDepth;
-        theConfig.pb = ((ALACSpecificConfig *)theActualCookie)->pb;
-        theConfig.mb = ((ALACSpecificConfig *)theActualCookie)->mb;
-        theConfig.kb = ((ALACSpecificConfig *)theActualCookie)->kb;
-        theConfig.numChannels = ((ALACSpecificConfig *)theActualCookie)->numChannels;
-        theConfig.maxRun = Swap16BtoN(((ALACSpecificConfig *)theActualCookie)->maxRun);
-        theConfig.maxFrameBytes = Swap32BtoN(((ALACSpecificConfig *)theActualCookie)->maxFrameBytes);
-        theConfig.avgBitRate = Swap32BtoN(((ALACSpecificConfig *)theActualCookie)->avgBitRate);
-        theConfig.sampleRate = Swap32BtoN(((ALACSpecificConfig *)theActualCookie)->sampleRate);
+        memcpy(&theConfig, theActualCookie, sizeof(ALACSpecificConfig));
+
+        theConfig.frameLength = Swap32BtoN(theConfig.frameLength);
+        theConfig.maxRun = Swap16BtoN(theConfig.maxRun);
+        theConfig.maxFrameBytes = Swap32BtoN(theConfig.maxFrameBytes);
+        theConfig.avgBitRate = Swap32BtoN(theConfig.avgBitRate);
+        theConfig.sampleRate = Swap32BtoN(theConfig.sampleRate);
 
         mConfig = theConfig;
         

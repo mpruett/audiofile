@@ -1,3 +1,11 @@
+2013-03-06  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/alac/ALACDecoder.cpp,
+	libaudiofile/alac/ag_enc.c:
+	Fix unaligned memory accesses in ALAC.
+
+	Thanks to Erik de Castro Lopo for pointing out this problem.
+
 2013-03-05  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/AIFF.cpp,

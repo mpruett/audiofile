@@ -90,7 +90,7 @@ static inline int32_t ALWAYS_INLINE abs_func( int32_t a )
 	return result;	
 }
 
-static inline uint32_t ALWAYS_INLINE read32bit( uint8_t * buffer )
+static inline uint32_t ALWAYS_INLINE unaligned_read32_be(const uint8_t *buffer)
 {
 	// embedded CPUs typically can't read unaligned 32-bit words so just read the bytes
 	uint32_t		value;
@@ -98,6 +98,14 @@ static inline uint32_t ALWAYS_INLINE read32bit( uint8_t * buffer )
 	value = ((uint32_t)buffer[0] << 24) | ((uint32_t)buffer[1] << 16) |
 			 ((uint32_t)buffer[2] << 8) | (uint32_t)buffer[3];
 	return value;
+}
+
+static inline void ALWAYS_INLINE unaligned_write32_be(uint8_t *buffer, uint32_t value)
+{
+	buffer[0] = value >> 24;
+	buffer[1] = (value >> 16) & 0xff;
+	buffer[2] = (value >> 8) & 0xff;
+	buffer[3] = value & 0xff;
 }
 
 #if PRAGMA_MARK
@@ -178,15 +186,14 @@ codeasescape:
 
 static inline void ALWAYS_INLINE dyn_jam_noDeref(unsigned char *out, uint32_t bitPos, uint32_t numBits, uint32_t value)
 {
-	uint32_t	*i = (uint32_t *)(out + (bitPos >> 3));
+	uint8_t		*i = out + (bitPos >> 3);
 	uint32_t	mask;
 	uint32_t	curr;
 	uint32_t	shift;
 
 	//Assert( numBits <= 32 );
 
-	curr = *i;
-	curr = Swap32NtoB( curr );
+	curr = unaligned_read32_be(i);
 
 	shift = 32 - (bitPos & 7) - numBits;
 
@@ -196,13 +203,13 @@ static inline void ALWAYS_INLINE dyn_jam_noDeref(unsigned char *out, uint32_t bi
 	value  = (value << shift) & mask;
 	value |= curr & ~mask;
 	
-	*i = Swap32BtoN( value );
+	unaligned_write32_be(i, value);
 }
 
 
 static inline void ALWAYS_INLINE dyn_jam_noDeref_large(unsigned char *out, uint32_t bitPos, uint32_t numBits, uint32_t value)
 {
-	uint32_t *	i = (uint32_t *)(out + (bitPos>>3));
+	uint8_t		*i = out + (bitPos>>3);
 	uint32_t	w;
 	uint32_t	curr;
 	uint32_t	mask;
@@ -210,8 +217,7 @@ static inline void ALWAYS_INLINE dyn_jam_noDeref_large(unsigned char *out, uint3
 	
 	//Assert(numBits <= 32);
 
-	curr = *i;
-	curr = Swap32NtoB( curr );
+	curr = unaligned_read32_be(i);
 
 	if (shiftvalue < 0)
 	{
@@ -222,7 +228,7 @@ static inline void ALWAYS_INLINE dyn_jam_noDeref_large(unsigned char *out, uint3
 		mask = ~0u >> -shiftvalue;
 		w |= (curr & ~mask);
 
-		tailptr = ((uint8_t *)i) + 4;
+		tailptr = i + 4;
 		tailbyte = (value << ((8+shiftvalue))) & 0xff;
 		*tailptr = (uint8_t)tailbyte;
 	}
@@ -235,7 +241,7 @@ static inline void ALWAYS_INLINE dyn_jam_noDeref_large(unsigned char *out, uint3
 		w |= curr & ~mask;
 	}
 	
-	*i = Swap32BtoN( w );
+	unaligned_write32_be(i, w);
 }
 
 
