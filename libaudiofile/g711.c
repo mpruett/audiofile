@@ -43,11 +43,7 @@
 static const short seg_end[8] = {0xFF, 0x1FF, 0x3FF, 0x7FF,
 			    0xFFF, 0x1FFF, 0x3FFF, 0x7FFF};
 
-static int
-search(val, table, size)
-	int		val;
-	short		*table;
-	int		size;
+static int search(int val, const short *table, int size)
 {
 	int		i;
 
