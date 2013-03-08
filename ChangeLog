@@ -1,5 +1,10 @@
 2013-03-07  Michael Pruett <michael@68k.org>
 
+	* libaudiofile/g711.c:
+	Remove unused G.711 tables.
+
+2013-03-07  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/AIFF.cpp,
 	libaudiofile/CAF.cpp,
 	libaudiofile/FLACFile.cpp,
