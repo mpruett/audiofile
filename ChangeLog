@@ -1,3 +1,17 @@
+2013-03-07  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/AIFF.cpp,
+	libaudiofile/CAF.cpp,
+	libaudiofile/FLACFile.cpp,
+	libaudiofile/IFF.cpp,
+	libaudiofile/IRCAM.cpp,
+	libaudiofile/NIST.cpp,
+	libaudiofile/Raw.cpp,
+	libaudiofile/SampleVision.cpp,
+	libaudiofile/VOC.cpp,
+	libaudiofile/WAVE.cpp:
+	Refactor accessing track setup from file setup.
+
 2013-03-06  Michael Pruett <michael@68k.org>
 
 	Release version 0.3.6 of the Audio File Library.

@@ -130,7 +130,10 @@ AFfilesetup IRCAMFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	TrackSetup *track = &setup->tracks[0];
+	TrackSetup *track = setup->getTrack();
+	if (!track)
+		return AF_NULL_FILESETUP;
+
 	if (track->sampleFormatSet)
 	{
 		if (track->f.isUnsigned())

@@ -77,15 +77,15 @@ bool NISTFile::recognize(File *fh)
 
 AFfilesetup NISTFile::completeSetup(AFfilesetup setup)
 {
-	TrackSetup	*track;
-
 	if (setup->trackSet && setup->trackCount != 1)
 	{
 		_af_error(AF_BAD_NUMTRACKS, "NIST SPHERE file must have 1 track");
 		return AF_NULL_FILESETUP;
 	}
 
-	track = &setup->tracks[0];
+	TrackSetup *track = setup->getTrack();
+	if (!track)
+		return AF_NULL_FILESETUP;
 
 	if (track->sampleFormatSet)
 	{

@@ -250,7 +250,9 @@ AFfilesetup IFFFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	TrackSetup *track = &setup->tracks[0];
+	TrackSetup *track = setup->getTrack();
+	if (!track)
+		return AF_NULL_FILESETUP;
 
 	if (track->sampleFormatSet &&
 		track->f.sampleFormat != AF_SAMPFMT_TWOSCOMP)

@@ -598,8 +598,6 @@ bool AIFFFile::recognizeAIFFC(File *fh)
 
 AFfilesetup AIFFFile::completeSetup(AFfilesetup setup)
 {
-	TrackSetup	*track;
-
 	bool	isAIFF = setup->fileFormat == AF_FILE_AIFF;
 
 	if (setup->trackSet && setup->trackCount != 1)
@@ -608,7 +606,9 @@ AFfilesetup AIFFFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
-	track = &setup->tracks[0];
+	TrackSetup *track = setup->getTrack();
+	if (!track)
+		return AF_NULL_FILESETUP;
 
 	if (track->sampleFormatSet)
 	{

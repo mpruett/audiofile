@@ -834,6 +834,8 @@ AFfilesetup WAVEFile::completeSetup(AFfilesetup setup)
 	}
 
 	TrackSetup *track = setup->getTrack();
+	if (!track)
+		return AF_NULL_FILESETUP;
 
 	if (track->f.isCompressed())
 	{

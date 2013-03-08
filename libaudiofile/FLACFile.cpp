@@ -77,6 +77,8 @@ AFfilesetup FLACFile::completeSetup(AFfilesetup setup)
 	}
 
 	TrackSetup *track = setup->getTrack();
+	if (!track)
+		return AF_NULL_FILESETUP;
 
 	if (track->sampleFormatSet &&
 		track->f.sampleFormat != AF_SAMPFMT_TWOSCOMP)
