@@ -45,15 +45,19 @@
 
 #include "TestUtilities.h"
 
-static char sTestFileName[PATH_MAX];
+char *testFileName;
 
 #define FRAME_COUNT 10000
 
 void cleanup (void)
 {
+	if (testFileName)
+	{
 #ifndef DEBUG
-	unlink(sTestFileName);
+		unlink(testFileName);
 #endif
+		free(testFileName);
+	}
 }
 
 void ensure (int condition, const char *message)
@@ -78,9 +82,9 @@ int main (void)
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, 24);
 
-	ensure(createTemporaryFile("twentyfour2", sTestFileName),
+	ensure(createTemporaryFile("twentyfour2", &testFileName),
 		"could not create temporary file");
-	file = afOpenFile(sTestFileName, "w", setup);
+	file = afOpenFile(testFileName, "w", setup);
 	ensure(file != NULL, "could not open test file for writing");
 
 	afFreeFileSetup(setup);
@@ -108,7 +112,7 @@ int main (void)
 		Now open file for reading and ensure that the data read
 		is equal to the data written.
 	*/
-	file = afOpenFile(sTestFileName, "r", AF_NULL_FILESETUP);
+	file = afOpenFile(testFileName, "r", AF_NULL_FILESETUP);
 	ensure(file != NULL, "could not open test file for reading");
 
 	framesread = afReadFrames(file, AF_DEFAULT_TRACK, readbuffer, FRAME_COUNT);

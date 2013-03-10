@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 bool createTemporaryFile(const std::string &prefix, std::string *path)
 {
@@ -35,12 +36,21 @@ bool createTemporaryFile(const std::string &prefix, std::string *path)
 	return true;
 }
 
-bool createTemporaryFile(const char *prefix, char *path)
+bool createTemporaryFile(const char *prefix, char **path)
 {
-	snprintf(path, PATH_MAX, "/tmp/%s-XXXXXX", prefix);
-	int fd = ::mkstemp(path);
-	if (fd < 0)
+	*path = NULL;
+	const size_t newPathLength = sizeof("/tmp/%s-XXXXXX") + strlen(prefix);
+	char *newPath = static_cast<char *>(malloc(newPathLength));
+	if (!newPath)
 		return false;
+	snprintf(newPath, newPathLength, "/tmp/%s-XXXXXX", prefix);
+	int fd = ::mkstemp(newPath);
+	if (fd < 0)
+	{
+		free(newPath);
+		return false;
+	}
 	::close(fd);
+	*path = newPath;
 	return true;
 }

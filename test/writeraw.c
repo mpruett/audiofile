@@ -44,13 +44,17 @@
 
 #include "TestUtilities.h"
 
-static char sTestFileName[PATH_MAX];
+char *testFileName;
 
 void cleanup (void)
 {
+	if (testFileName)
+	{
 #ifndef DEBUG
-	unlink(sTestFileName);
+		unlink(testFileName);
 #endif
+		free(testFileName);
+	}
 }
 
 void ensure (int condition, const char *message)
@@ -84,9 +88,9 @@ int main (int argc, char **argv)
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, 16);
 
-	ensure(createTemporaryFile("writeraw", sTestFileName),
+	ensure(createTemporaryFile("writeraw", &testFileName),
 		"could not create temporary file");
-	file = afOpenFile(sTestFileName, "w", setup);
+	file = afOpenFile(testFileName, "w", setup);
 	ensure(file != AF_NULL_FILEHANDLE, "unable to open file for writing");
 
 	framesWritten = afWriteFrames(file, AF_DEFAULT_TRACK, samples, 8);
@@ -95,7 +99,7 @@ int main (int argc, char **argv)
 
 	ensure(afCloseFile(file) == 0, "error closing file");
 
-	file = afOpenFile(sTestFileName, "r", setup);
+	file = afOpenFile(testFileName, "r", setup);
 	ensure(file != AF_NULL_FILEHANDLE, "unable to open file for reading");
 	afFreeFileSetup(setup);
 

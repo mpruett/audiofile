@@ -39,7 +39,7 @@
 
 #include "TestUtilities.h"
 
-static char sTestFileName[PATH_MAX];
+char *testFileName;
 
 const short samples[] = {300, -300, 515, -515, 2315, -2315, 9154, -9154};
 #define SAMPLE_COUNT (sizeof (samples) / sizeof (short))
@@ -47,7 +47,11 @@ const short samples[] = {300, -300, 515, -515, 2315, -2315, 9154, -9154};
 
 void cleanup (void)
 {
-	unlink(sTestFileName);
+	if (testFileName)
+	{
+		unlink(testFileName);
+		free(testFileName);
+	}
 }
 
 void ensure (int condition, const char *message)
@@ -76,9 +80,9 @@ int main (void)
 	afInitFileFormat(setup, AF_FILE_AIFFC);
 
 	/* Write stereo data to test file. */
-	ensure(createTemporaryFile("testchannelmatrix", sTestFileName),
+	ensure(createTemporaryFile("testchannelmatrix", &testFileName),
 		"could not create temporary file");
-	file = afOpenFile(sTestFileName, "w", setup);
+	file = afOpenFile(testFileName, "w", setup);
 	ensure(file != AF_NULL_FILEHANDLE, "could not open file for writing");
 
 	afFreeFileSetup(setup);
@@ -99,7 +103,7 @@ int main (void)
 		corresponding even sample, the data read should be all
 		zeros.
 	*/
-	file = afOpenFile(sTestFileName, "r", AF_NULL_FILESETUP);
+	file = afOpenFile(testFileName, "r", AF_NULL_FILESETUP);
 	ensure(file != AF_NULL_FILEHANDLE, "could not open file for reading");
 
 	ensure(afGetChannels(file, AF_DEFAULT_TRACK) == 2,
