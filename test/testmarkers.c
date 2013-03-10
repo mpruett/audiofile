@@ -32,15 +32,19 @@
 
 #include "TestUtilities.h"
 
-static char sTestFileName[PATH_MAX];
+static char *sTestFileName;
 
 #define FRAME_COUNT 200
 
 void cleanup (void)
 {
+	if (sTestFileName)
+	{
 #ifndef DEBUG
-	unlink(sTestFileName);
+		unlink(sTestFileName);
 #endif
+		free(sTestFileName);
+	}
 }
 
 void ensure (int condition, const char *message)
@@ -127,7 +131,7 @@ int testmarkers (int fileformat)
 
 int main (void)
 {
-	ensure(createTemporaryFile("testmarkers", sTestFileName),
+	ensure(createTemporaryFile("testmarkers", &sTestFileName),
 		"could not create temporary file");
 
 	testmarkers(AF_FILE_AIFF);

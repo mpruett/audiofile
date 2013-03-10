@@ -45,15 +45,19 @@
 
 #include "TestUtilities.h"
 
-static char sTestFileName[PATH_MAX];
+static char *sTestFileName;
 
 #define FRAME_COUNT 10000
 
 void cleanup (void)
 {
+	if (sTestFileName)
+	{
 #ifndef DEBUG
-	unlink(sTestFileName);
+		unlink(sTestFileName);
 #endif
+		free(sTestFileName);
+	}
 }
 
 void ensure (int condition, const char *message)
@@ -78,7 +82,7 @@ int main (void)
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_TWOSCOMP, 24);
 
-	ensure(createTemporaryFile("twentyfour2", sTestFileName),
+	ensure(createTemporaryFile("twentyfour2", &sTestFileName),
 		"could not create temporary file");
 	file = afOpenFile(sTestFileName, "w", setup);
 	ensure(file != NULL, "could not open test file for writing");

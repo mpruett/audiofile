@@ -39,7 +39,7 @@
 
 #include "TestUtilities.h"
 
-static char sTestFileName[PATH_MAX];
+static char *sTestFileName;
 
 const short samples[] = {300, -300, 515, -515, 2315, -2315, 9154, -9154};
 #define SAMPLE_COUNT (sizeof (samples) / sizeof (short))
@@ -47,7 +47,11 @@ const short samples[] = {300, -300, 515, -515, 2315, -2315, 9154, -9154};
 
 void cleanup (void)
 {
-	unlink(sTestFileName);
+	if (sTestFileName)
+	{
+		unlink(sTestFileName);
+		free(sTestFileName);
+	}
 }
 
 void ensure (int condition, const char *message)
@@ -76,7 +80,7 @@ int main (void)
 	afInitFileFormat(setup, AF_FILE_AIFFC);
 
 	/* Write stereo data to test file. */
-	ensure(createTemporaryFile("testchannelmatrix", sTestFileName),
+	ensure(createTemporaryFile("testchannelmatrix", &sTestFileName),
 		"could not create temporary file");
 	file = afOpenFile(sTestFileName, "w", setup);
 	ensure(file != AF_NULL_FILEHANDLE, "could not open file for writing");

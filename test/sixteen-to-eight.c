@@ -57,8 +57,8 @@ int main (int argc, char **argv)
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_UNSIGNED, 8);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 
-	char testFileName[PATH_MAX];
-	if (!createTemporaryFile("sixteen-to-eight", testFileName))
+	char *testFileName;
+	if (!createTemporaryFile("sixteen-to-eight", &testFileName))
 	{
 		fprintf(stderr, "Could not create temporary file.\n");
 		exit(EXIT_FAILURE);
@@ -113,6 +113,7 @@ int main (int argc, char **argv)
 
 	afCloseFile(file);
 	unlink(testFileName);
+	free(testFileName);
 
 	exit(EXIT_SUCCESS);
 }
