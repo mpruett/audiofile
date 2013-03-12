@@ -86,8 +86,8 @@ int main (int argc, char **argv)
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 	afInitSampleFormat(setup, AF_DEFAULT_TRACK, AF_SAMPFMT_FLOAT, 32);
 
-	char testFileName[PATH_MAX];
-	if (!createTemporaryFile("floatto24", testFileName))
+	char *testFileName;
+	if (!createTemporaryFile("floatto24", &testFileName))
 	{
 		fprintf(stderr, "Could not create temporary file.\n");
 		exit(EXIT_FAILURE);
@@ -182,6 +182,7 @@ int main (int argc, char **argv)
 	}
 
 	unlink(testFileName);
+	free(testFileName);
 
 	exit(EXIT_SUCCESS);
 }

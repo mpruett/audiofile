@@ -53,7 +53,7 @@
 
 #include "TestUtilities.h"
 
-static char sTestFileName[PATH_MAX];
+char *testFileName;
 
 #define FRAME_COUNT 16
 #define SAMPLE_COUNT FRAME_COUNT
@@ -62,9 +62,13 @@ void testulaw (int fileFormat);
 
 void cleanup (void)
 {
+	if (testFileName)
+	{
 #ifndef DEBUG
-	unlink(sTestFileName);
+		unlink(testFileName);
 #endif
+		free(testFileName);
+	}
 }
 
 void ensure (int condition, const char *message)
@@ -113,9 +117,9 @@ void testulaw (int fileFormat)
 	afInitFileFormat(setup, fileFormat);
 	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
 
-	ensure(createTemporaryFile("writeulaw", sTestFileName),
+	ensure(createTemporaryFile("writeulaw", &testFileName),
 		"could not create temporary file");
-	file = afOpenFile(sTestFileName, "w", setup);
+	file = afOpenFile(testFileName, "w", setup);
 	afFreeFileSetup(setup);
 
 	ensure(afGetCompression(file, AF_DEFAULT_TRACK) ==
@@ -132,7 +136,7 @@ void testulaw (int fileFormat)
 	afCloseFile(file);
 
 	/* Open the file for reading and verify the data. */
-	file = afOpenFile(sTestFileName, "r", NULL);
+	file = afOpenFile(testFileName, "r", NULL);
 	ensure(file != AF_NULL_FILEHANDLE, "unable to open file for reading");
 
 	ensure(afGetFileFormat(file, NULL) == fileFormat,

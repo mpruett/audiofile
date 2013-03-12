@@ -32,15 +32,19 @@
 
 #include "TestUtilities.h"
 
-static char sTestFileName[PATH_MAX];
+char *testFileName;
 
 #define FRAME_COUNT 200
 
 void cleanup (void)
 {
+	if (testFileName)
+	{
 #ifndef DEBUG
-	unlink(sTestFileName);
+		unlink(testFileName);
 #endif
+		free(testFileName);
+	}
 }
 
 void ensure (int condition, const char *message)
@@ -78,7 +82,7 @@ int testmarkers (int fileformat)
 	afInitMarkName(setup, AF_DEFAULT_TRACK, markids[2], marknames[2]);
 	afInitMarkName(setup, AF_DEFAULT_TRACK, markids[3], marknames[3]);
 
-	file = afOpenFile(sTestFileName, "w", setup);
+	file = afOpenFile(testFileName, "w", setup);
 	ensure(file != AF_NULL_FILEHANDLE, "Could not open file for writing");
 
 	afFreeFileSetup(setup);
@@ -93,7 +97,7 @@ int testmarkers (int fileformat)
 
 	afCloseFile(file);
 
-	file = afOpenFile(sTestFileName, "r", NULL);
+	file = afOpenFile(testFileName, "r", NULL);
 	ensure(file != AF_NULL_FILEHANDLE, "Could not open file for reading");
 
 	readmarkcount = afGetMarkIDs(file, AF_DEFAULT_TRACK, NULL);
@@ -127,7 +131,7 @@ int testmarkers (int fileformat)
 
 int main (void)
 {
-	ensure(createTemporaryFile("testmarkers", sTestFileName),
+	ensure(createTemporaryFile("testmarkers", &testFileName),
 		"could not create temporary file");
 
 	testmarkers(AF_FILE_AIFF);

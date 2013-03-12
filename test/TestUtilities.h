@@ -53,7 +53,7 @@ extern "C" {
 
 #include <stdbool.h>
 
-bool createTemporaryFile(const char *prefix, char *path);
+bool createTemporaryFile(const char *prefix, char **path);
 
 #ifdef __cplusplus
 }
