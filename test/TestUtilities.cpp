@@ -39,18 +39,9 @@ bool createTemporaryFile(const std::string &prefix, std::string *path)
 bool createTemporaryFile(const char *prefix, char **path)
 {
 	*path = NULL;
-	const size_t newPathLength = sizeof("/tmp/%s-XXXXXX") + strlen(prefix);
-	char *newPath = static_cast<char *>(malloc(newPathLength));
-	if (!newPath)
-		return false;
-	snprintf(newPath, newPathLength, "/tmp/%s-XXXXXX", prefix);
-	int fd = ::mkstemp(newPath);
-	if (fd < 0)
-	{
-		free(newPath);
-		return false;
-	}
-	::close(fd);
-	*path = newPath;
-	return true;
+	std::string pathString;
+	bool result = createTemporaryFile(prefix, &pathString);
+	if (result)
+		*path = ::strdup(pathString.c_str());
+	return result;
 }
