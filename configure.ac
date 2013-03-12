@@ -135,7 +135,7 @@ FLAC_LIBS=""
 if test -n "$PKG_CONFIG" ; then
 	if test "$enable_flac" = "yes" ; then
 		PKG_CHECK_MODULES([FLAC], [flac >= 1.2.1], [ac_cv_flac=yes], [ac_cv_flac=no])
-		FLAC_CFLAGS=`echo $FLAC_CFLAGS | $SED "s/FLAC$//"`
+		FLAC_CFLAGS=`echo $FLAC_CFLAGS | $SED "s:include/FLAC:include:"`
 		if test "$ac_cv_flac" = "no" ; then
 			enable_flac=no
 		fi

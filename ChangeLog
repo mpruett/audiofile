@@ -1,3 +1,8 @@
+2013-03-12  Antoine Jacoutot <ajacoutot@bsdfrog.org>
+
+	* configure.ac:
+	Fix sanitization of FLAC_CFLAGS.
+
 2013-03-10  Pino Toscano <toscano.pino@tiscali.it>
 
 	* test/TestUtilities.cpp,
