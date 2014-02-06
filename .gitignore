@@ -1,9 +1,11 @@
 *.a
-*.o
 *.gcda
 *.gcno
 *.la
 *.lo
+*.log
+*.o
+*.trs
 .DS_Store
 .deps
 .libs
@@ -36,4 +38,5 @@ so_locations
 stamp-h
 stamp-h.in
 stamp-h1
+test-driver
 version.h
