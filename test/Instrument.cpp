@@ -71,6 +71,36 @@ static void testInstrumentParameters(int fileFormat)
 TEST(Instrument, AIFF) { testInstrumentParameters(AF_FILE_AIFF); }
 TEST(Instrument, AIFFC) { testInstrumentParameters(AF_FILE_AIFFC); }
 
+static void testInstrumentUnsupported(int fileFormat)
+{
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("Instrument", &testFileName));
+
+	AFfilesetup setup = afNewFileSetup();
+	afInitFileFormat(setup, fileFormat);
+	int instrumentIDs[] = {AF_DEFAULT_INST};
+	int numInstruments = sizeof (instrumentIDs) / sizeof (int);
+	afInitInstIDs(setup, instrumentIDs, numInstruments);
+
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
+	ASSERT_FALSE(file);
+
+	afFreeFileSetup(setup);
+
+	ASSERT_EQ(0, ::unlink(testFileName.c_str()));
+}
+
+TEST(Instrument, Raw) { testInstrumentUnsupported(AF_FILE_RAWDATA); }
+TEST(Instrument, NeXT) { testInstrumentUnsupported(AF_FILE_NEXTSND); }
+TEST(Instrument, IRCAM) { testInstrumentUnsupported(AF_FILE_IRCAM); }
+TEST(Instrument, AVR) { testInstrumentUnsupported(AF_FILE_AVR); }
+TEST(Instrument, IFF_8SVX) { testInstrumentUnsupported(AF_FILE_IFF_8SVX); }
+TEST(Instrument, SampleVision) { testInstrumentUnsupported(AF_FILE_SAMPLEVISION); }
+TEST(Instrument, VOC) { testInstrumentUnsupported(AF_FILE_VOC); }
+TEST(Instrument, NIST) { testInstrumentUnsupported(AF_FILE_NIST_SPHERE); }
+TEST(Instrument, CAF) { testInstrumentUnsupported(AF_FILE_CAF); }
+TEST(Instrument, FLAC) { testInstrumentUnsupported(AF_FILE_FLAC); }
+
 int main(int argc, char **argv)
 {
 	::testing::InitGoogleTest(&argc, argv);

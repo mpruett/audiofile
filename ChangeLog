@@ -1,3 +1,12 @@
+2014-02-05  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/CAF.cpp,
+	libaudiofile/FLACFile.cpp,
+	libaudiofile/SampleVision.cpp,
+	libaudiofile/VOC.cpp,
+	test/Instrument.cpp:
+	Prohibit creating files with instruments for incapable file formats.
+
 2013-03-12  Antoine Jacoutot <ajacoutot@bsdfrog.org>
 
 	* configure.ac:

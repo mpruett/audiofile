@@ -164,6 +164,12 @@ AFfilesetup VOCFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
+	if (setup->instrumentSet && setup->instrumentCount)
+	{
+		_af_error(AF_BAD_FILESETUP, "VOC does not support instruments");
+		return AF_NULL_FILESETUP;
+	}
+
 	return _af_filesetup_copy(setup, &vocDefaultFileSetup, true);
 }
 

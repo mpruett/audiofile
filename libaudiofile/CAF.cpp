@@ -233,6 +233,12 @@ AFfilesetup CAFFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
+	if (setup->instrumentSet && setup->instrumentCount)
+	{
+		_af_error(AF_BAD_NOT_IMPLEMENTED, "CAF does not yet support instruments");
+		return AF_NULL_FILESETUP;
+	}
+
 	return _af_filesetup_copy(setup, &cafDefaultFileSetup, true);
 }
 
