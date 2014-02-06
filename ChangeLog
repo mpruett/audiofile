@@ -1,5 +1,10 @@
 2014-02-05  Michael Pruett <michael@68k.org>
 
+	* test/Miscellaneous.cpp:
+	Refactor test for reading and writing miscellaneous data.
+
+2014-02-05  Michael Pruett <michael@68k.org>
+
 	* libaudiofile/CAF.cpp,
 	libaudiofile/FLACFile.cpp,
 	libaudiofile/SampleVision.cpp,

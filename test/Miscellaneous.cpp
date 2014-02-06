@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2011, Michael Pruett. All rights reserved.
+	Copyright (C) 2011-2014, Michael Pruett. All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions
@@ -71,18 +71,18 @@ void writeMiscellaneous(int fileFormat, const std::string &testFileName)
 	AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
 	ASSERT_TRUE(file);
 	afFreeFileSetup(setup);
-	int result;
 	for (int i=0; i<kNumMiscellaneous; i++)
 	{
-		result = afWriteMisc(file, kMiscellaneous[i].id, kMiscellaneous[i].data,
+		int result = afWriteMisc(file, kMiscellaneous[i].id,
+			kMiscellaneous[i].data,
 			strlen(kMiscellaneous[i].data));
-		EXPECT_EQ(result, strlen(kMiscellaneous[i].data));
+		EXPECT_EQ(strlen(kMiscellaneous[i].data), result);
 	}
 
 	const int16_t samples[] = { 1, 2, 3, 4 };
-	afWriteFrames(file, AF_DEFAULT_TRACK, samples,
-		sizeof (samples) / sizeof (samples[0]));
-	afCloseFile(file);
+	const int sampleCount = sizeof (samples) / sizeof (samples[0]);
+	EXPECT_EQ(sampleCount, afWriteFrames(file, AF_DEFAULT_TRACK, samples, sampleCount));
+	ASSERT_EQ(0, afCloseFile(file));
 }
 
 void readMiscellaneous(const std::string &testFileName)
@@ -104,50 +104,28 @@ void readMiscellaneous(const std::string &testFileName)
 		EXPECT_EQ(datasize, strlen(kMiscellaneous[i].data));
 
 		char *data = new char[datasize];
-		afReadMisc(file, miscIDs[i], data, datasize);
+		EXPECT_EQ(datasize, afReadMisc(file, miscIDs[i], data, datasize));
 
 		EXPECT_TRUE(!memcmp(data, kMiscellaneous[i].data, datasize));
 
 		delete [] data;
 	}
-	afCloseFile(file);
+	ASSERT_EQ(0, afCloseFile(file));
 }
 
-TEST(Miscellaneous, AIFF)
+void testMiscellaneous(int fileFormat)
 {
 	std::string testFileName;
 	ASSERT_TRUE(createTemporaryFile("Miscellaneous", &testFileName));
-	writeMiscellaneous(AF_FILE_AIFF, testFileName);
+	writeMiscellaneous(fileFormat, testFileName);
 	readMiscellaneous(testFileName);
-	::unlink(testFileName.c_str());
+	ASSERT_EQ(0, ::unlink(testFileName.c_str()));
 }
 
-TEST(Miscellaneous, AIFFC)
-{
-	std::string testFileName;
-	ASSERT_TRUE(createTemporaryFile("Miscellaneous", &testFileName));
-	writeMiscellaneous(AF_FILE_AIFFC, testFileName);
-	readMiscellaneous(testFileName);
-	::unlink(testFileName.c_str());
-}
-
-TEST(Miscellaneous, WAVE)
-{
-	std::string testFileName;
-	ASSERT_TRUE(createTemporaryFile("Miscellaneous", &testFileName));
-	writeMiscellaneous(AF_FILE_WAVE, testFileName);
-	readMiscellaneous(testFileName);
-	::unlink(testFileName.c_str());
-}
-
-TEST(Miscellaneous, IFF_8SVX)
-{
-	std::string testFileName;
-	ASSERT_TRUE(createTemporaryFile("Miscellaneous", &testFileName));
-	writeMiscellaneous(AF_FILE_IFF_8SVX, testFileName);
-	readMiscellaneous(testFileName);
-	::unlink(testFileName.c_str());
-}
+TEST(Miscellaneous, AIFF) { testMiscellaneous(AF_FILE_AIFF); }
+TEST(Miscellaneous, AIFFC) { testMiscellaneous(AF_FILE_AIFFC); }
+TEST(Miscellaneous, WAVE) { testMiscellaneous(AF_FILE_WAVE); }
+TEST(Miscellaneous, IFF_8SVX) { testMiscellaneous(AF_FILE_IFF_8SVX); }
 
 int main(int argc, char **argv)
 {
