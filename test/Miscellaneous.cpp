@@ -127,6 +127,42 @@ TEST(Miscellaneous, AIFFC) { testMiscellaneous(AF_FILE_AIFFC); }
 TEST(Miscellaneous, WAVE) { testMiscellaneous(AF_FILE_WAVE); }
 TEST(Miscellaneous, IFF_8SVX) { testMiscellaneous(AF_FILE_IFF_8SVX); }
 
+void testMiscellaneousUnsupported(int fileFormat)
+{
+	std::string testFileName;
+	ASSERT_TRUE(createTemporaryFile("Miscellaneous", &testFileName));
+
+	AFfilesetup setup = afNewFileSetup();
+	afInitChannels(setup, AF_DEFAULT_TRACK, 1);
+	afInitFileFormat(setup, fileFormat);
+	int *miscIDs = new int[kNumMiscellaneous];
+	for (int i=0; i<kNumMiscellaneous; i++)
+		miscIDs[i] = kMiscellaneous[i].id;
+	afInitMiscIDs(setup, miscIDs, kNumMiscellaneous);
+	delete [] miscIDs;
+	for (int i=0; i<kNumMiscellaneous; i++)
+	{
+		afInitMiscType(setup, kMiscellaneous[i].id, kMiscellaneous[i].type);
+		afInitMiscSize(setup, kMiscellaneous[i].id, strlen(kMiscellaneous[i].data));
+	}
+
+	AFfilehandle file = afOpenFile(testFileName.c_str(), "w", setup);
+	ASSERT_FALSE(file);
+	afFreeFileSetup(setup);
+
+	ASSERT_EQ(0, ::unlink(testFileName.c_str()));
+}
+
+TEST(Miscellaneous, Raw) { testMiscellaneousUnsupported(AF_FILE_RAWDATA); }
+TEST(Miscellaneous, NeXT) { testMiscellaneousUnsupported(AF_FILE_NEXTSND); }
+TEST(Miscellaneous, IRCAM) { testMiscellaneousUnsupported(AF_FILE_IRCAM); }
+TEST(Miscellaneous, AVR) { testMiscellaneousUnsupported(AF_FILE_AVR); }
+TEST(Miscellaneous, SampleVision) { testMiscellaneousUnsupported(AF_FILE_SAMPLEVISION); }
+TEST(Miscellaneous, VOC) { testMiscellaneousUnsupported(AF_FILE_VOC); }
+TEST(Miscellaneous, NIST) { testMiscellaneousUnsupported(AF_FILE_NIST_SPHERE); }
+TEST(Miscellaneous, CAF) { testMiscellaneousUnsupported(AF_FILE_CAF); }
+TEST(Miscellaneous, FLAC) { testMiscellaneousUnsupported(AF_FILE_FLAC); }
+
 int main(int argc, char **argv)
 {
 	::testing::InitGoogleTest(&argc, argv);

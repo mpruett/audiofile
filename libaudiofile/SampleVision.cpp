@@ -140,6 +140,12 @@ AFfilesetup SampleVisionFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
+	if (setup->miscellaneousSet && setup->miscellaneousCount)
+	{
+		_af_error(AF_BAD_FILESETUP, "SampleVision does not support miscellaneous data");
+		return AF_NULL_FILESETUP;
+	}
+
 	return _af_filesetup_copy(setup, &sSampleVisionDefaultFileSetup, true);
 }
 

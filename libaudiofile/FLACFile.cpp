@@ -127,6 +127,12 @@ AFfilesetup FLACFile::completeSetup(AFfilesetup setup)
 		return AF_NULL_FILESETUP;
 	}
 
+	if (setup->miscellaneousSet && setup->miscellaneousCount)
+	{
+		_af_error(AF_BAD_NOT_IMPLEMENTED, "FLAC does not yet support miscellaneous data");
+		return AF_NULL_FILESETUP;
+	}
+
 	return _af_filesetup_copy(setup, &flacDefaultFileSetup, true);
 }
 
