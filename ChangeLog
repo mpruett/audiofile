@@ -1,3 +1,11 @@
+2014-05-26  Michael Pruett <michael@68k.org>
+
+	* docs/Makefile.am,
+	docs/afIdentifyFD.3.txt,
+	test/Identify.cpp,
+	test/Makefile.am:
+	Add tests and documentation for afIdentifyFD() and afIdentifyNamedFD().
+
 2014-02-05  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/CAF.cpp,

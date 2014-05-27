@@ -5,6 +5,7 @@ ChannelMatrix
 Error
 FLAC
 FloatToInt
+Identify
 Instrument
 IntToFloat
 InvalidCompressionFormat

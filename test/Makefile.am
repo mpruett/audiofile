@@ -7,6 +7,7 @@ TESTS = \
 	ChannelMatrix \
 	Error \
 	FloatToInt \
+	Identify \
 	Instrument \
 	IntToFloat \
 	InvalidCompressionFormat \
@@ -81,6 +82,9 @@ FLAC_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 FloatToInt_SOURCES = FloatToInt.cpp TestUtilities.cpp TestUtilities.h
 FloatToInt_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
+
+Identify_SOURCES = Identify.cpp TestUtilities.cpp TestUtilities.h
+Identify_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)
 
 Instrument_SOURCES = Instrument.cpp TestUtilities.cpp TestUtilities.h
 Instrument_LDADD = $(LIBGTEST) $(LIBAUDIOFILE)

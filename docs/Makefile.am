@@ -8,6 +8,7 @@ DOCS_TXT_MAN3 = \
 	afCloseFile.3.txt \
 	afGetFrameCount.3.txt \
 	afGetFrameSize.3.txt \
+	afIdentifyFD.3.txt \
 	afInitAESChannelDataTo.3.txt \
 	afInitCompression.3.txt \
 	afInitFileFormat.3.txt \
@@ -31,6 +32,7 @@ EXTRA_DIST = \
 DOCS_MAN1 = $(DOCS_TXT_MAN1:.txt=)
 DOCS_MAN3 = $(DOCS_TXT_MAN3:.txt=)
 DOCS_MAN3_EXTRA = \
+	afIdentifyNamedFD.3 \
 	afInitAESChannelData.3 \
 	afInitByteOrder.3 \
 	afInitChannels.3 \
