@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/libaudiofile
+AM_CPPFLAGS = -I$(top_srcdir)/libaudiofile
 
 noinst_PROGRAMS = \
 	adddcoffset \

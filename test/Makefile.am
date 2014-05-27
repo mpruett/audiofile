@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/libaudiofile -I$(top_srcdir)
+AM_CPPFLAGS = -I$(top_srcdir)/libaudiofile -I$(top_srcdir)
 
 TESTS = \
 	ADPCM \

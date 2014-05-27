@@ -1,5 +1,13 @@
 2014-05-26  Michael Pruett <michael@68k.org>
 
+	* examples/Makefile.am,
+	libaudiofile/modules/Makefile.am,
+	sfcommands/Makefile.am,
+	test/Makefile.am:
+	Change INCLUDES to AM_CPPFLAGS.
+
+2014-05-26  Michael Pruett <michael@68k.org>
+
 	* configure.ac:
 	Remove arguments to AM_INIT_AUTOMAKE.
 

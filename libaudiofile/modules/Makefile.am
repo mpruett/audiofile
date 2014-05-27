@@ -1,6 +1,6 @@
 noinst_LTLIBRARIES = libmodules.la
 
-INCLUDES = -I$(srcdir)/..
+AM_CPPFLAGS = -I$(srcdir)/..
 
 libmodules_la_SOURCES = \
 	ALAC.cpp \
