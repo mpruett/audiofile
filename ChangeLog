@@ -1,5 +1,10 @@
 2014-05-26  Michael Pruett <michael@68k.org>
 
+	* gtest/*:
+	Update Google Test framework to version 1.7.0.
+
+2014-05-26  Michael Pruett <michael@68k.org>
+
 	* docs/Makefile.am,
 	docs/afIdentifyFD.3.txt,
 	test/Identify.cpp,
