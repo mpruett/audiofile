@@ -4,6 +4,16 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
+# On Mac OS X, Xcode ships its own libtool which is incompatible with
+# GNU libtool. However, homebrew users can install GNU libtool, but
+# the tool is called glibtool there to avoid conflicting with Xcode's.
+if [ `uname` = "Darwin" ] ; then
+  if [ -e "`which glibtool`" ] ; then
+    alias libtool=`which glibtool`
+    alias libtoolize=`which glibtoolize`
+  fi
+fi
+
 DIE=0
 
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {
