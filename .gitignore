@@ -18,6 +18,7 @@ audiofile-uninstalled.pc
 audiofile.pc
 audiofile.spec
 autom4te.cache
+compile
 config.cache
 config.guess
 config.h
