@@ -402,7 +402,7 @@ status ModuleState::arrange(AFfilehandle file, Track *track)
 		addModule(new Transform(outfc, in.pcm, out.pcm));
 
 	if (in.channelCount != out.channelCount)
-		addModule(new ApplyChannelMatrix(infc, isReading,
+		addModule(new ApplyChannelMatrix(outfc, isReading,
 			in.channelCount, out.channelCount,
 			in.pcm.minClip, in.pcm.maxClip,
 			track->channelMatrix));
