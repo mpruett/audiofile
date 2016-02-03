@@ -41,9 +41,9 @@ const char kDataUnspecifiedLength[] =
 {
 	'.', 's', 'n', 'd',
 	0, 0, 0, 24, // offset of 24 bytes
-	0xff, 0xff, 0xff, 0xff, // unspecified length
+	-1, -1, -1, -1, // unspecified length
 	0, 0, 0, 3, // 16-bit linear
-	0, 0, 172, 68, // 44100 Hz
+	0, 0, -84, 68, // 44100 Hz (0xAC44)
 	0, 0, 0, 1, // 1 channel
 	0, 1,
 	0, 1,
@@ -63,7 +63,7 @@ const char kDataTruncated[] =
 	0, 0, 0, 24, // offset of 24 bytes
 	0, 0, 0, 20, // length of 20 bytes
 	0, 0, 0, 3, // 16-bit linear
-	0, 0, 172, 68, // 44100 Hz
+	0, 0, -84, 68, // 44100 Hz (0xAC44)
 	0, 0, 0, 1, // 1 channel
 	0, 1,
 	0, 1,
@@ -158,7 +158,7 @@ const char kDataZeroChannels[] =
 	0, 0, 0, 24, // offset of 24 bytes
 	0, 0, 0, 2, // 2 bytes
 	0, 0, 0, 3, // 16-bit linear
-	0, 0, 172, 68, // 44100 Hz
+	0, 0, -84, 68, // 44100 Hz (0xAC44)
 	0, 0, 0, 0, // 0 channels
 	0, 1
 };
