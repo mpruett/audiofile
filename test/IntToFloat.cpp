@@ -117,7 +117,7 @@ TEST_F(IntToFloatTest, Int16)
 		EXPECT_EQ(readData[i], expectedData[i]);
 }
 
-static const int32_t kMinInt24 = 0-(1UL<<23);
+static const int32_t kMinInt24 = 0-(1U<<23);
 static const int32_t kMaxInt24 = (1<<23) - 1;
 
 TEST_F(IntToFloatTest, Int24)
