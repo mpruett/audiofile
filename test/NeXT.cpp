@@ -37,7 +37,7 @@
 
 #include "TestUtilities.h"
 
-const char kDataUnspecifiedLength[] =
+const signed char kDataUnspecifiedLength[] =
 {
 	'.', 's', 'n', 'd',
 	0, 0, 0, 24, // offset of 24 bytes
@@ -57,7 +57,7 @@ const char kDataUnspecifiedLength[] =
 	0, 55
 };
 
-const char kDataTruncated[] =
+const signed char kDataTruncated[] =
 {
 	'.', 's', 'n', 'd',
 	0, 0, 0, 24, // offset of 24 bytes
@@ -152,7 +152,7 @@ TEST(NeXT, Truncated)
 	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
-const char kDataZeroChannels[] =
+const signed char kDataZeroChannels[] =
 {
 	'.', 's', 'n', 'd',
 	0, 0, 0, 24, // offset of 24 bytes
