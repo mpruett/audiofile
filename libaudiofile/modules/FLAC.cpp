@@ -33,6 +33,7 @@
 #include <FLAC/stream_encoder.h>
 #include <assert.h>
 #include <string.h>
+#include <algorithm>
 #include <vector>
 
 class FLACDecoder : public FileModule
