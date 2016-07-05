@@ -718,7 +718,7 @@ void CAFFile::initALACCompressionParams()
 	if (track->f.channelCount > 2)
 		codecDataSize += kChannelAtomSize + kALACAudioChannelLayoutSize;
 	m_codecData = new Buffer(codecDataSize);
-	bzero(m_codecData->data(), m_codecData->size());
+	memset(m_codecData->data(), 0, m_codecData->size());
 
 	AUpvlist pv = AUpvnew(2);
 

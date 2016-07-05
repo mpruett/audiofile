@@ -1,3 +1,8 @@
+2016-07-04  Daniel Verkamp <daniel@drv.nu>
+
+	* libaudiofile/CAF.cpp:
+	Replace bzero() with memset().
+
 2016-07-04  Christoph J. Thompson <cjsthompson@gmail.com>
 
 	* Makefile.am,
