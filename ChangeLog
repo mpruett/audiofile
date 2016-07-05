@@ -1,3 +1,8 @@
+2016-07-04  Nik Reiman <nik.reiman@gmail.com>
+
+	* libaudiofile/modules/FLAC.cpp:
+	Include <algorithm> in FLAC.cpp.
+
 2016-07-04  Michael Pruett <michael@68k.org>
 
 	* test/.gitignore,
