@@ -1,3 +1,8 @@
+2016-07-04  Michael Pruett <michael@68k.org>
+
+	* autogen.sh:
+	Replace custom configuration script with autoreconf.
+
 2014-07-04  Michael Pruett <michael@68k.org>
 
 	* libaudiofile/AVR.cpp,
