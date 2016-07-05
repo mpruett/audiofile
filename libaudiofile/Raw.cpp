@@ -121,7 +121,6 @@ status RawFile::writeInit(AFfilesetup setup)
 
 	Track *track = getTrack();
 
-	track->totalfframes = 0;
 	if (trackSetup->dataOffsetSet)
 		track->fpos_first_frame = trackSetup->dataOffset;
 	else

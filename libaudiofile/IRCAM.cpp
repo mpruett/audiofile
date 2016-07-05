@@ -343,8 +343,6 @@ status IRCAMFile::readInit(AFfilesetup setup)
 	track->computeTotalFileFrames();
 
 	track->fpos_first_frame = SIZEOF_BSD_HEADER;
-	track->nextfframe = 0;
-	track->fpos_next_frame = track->fpos_first_frame;
 
 	return AF_SUCCEED;
 }
@@ -358,10 +356,7 @@ status IRCAMFile::writeInit(AFfilesetup setup)
 	uint32_t dataOffset = SIZEOF_BSD_HEADER;
 
 	Track *track = getTrack();
-	track->totalfframes = 0;
 	track->fpos_first_frame = dataOffset;
-	track->nextfframe = 0;
-	track->fpos_next_frame = track->fpos_first_frame;
 
 	/* Choose the magic number appropriate for the byte order. */
 	const uint8_t *magic;

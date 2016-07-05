@@ -371,8 +371,6 @@ status NISTFile::readInit(AFfilesetup setup)
 
 	track->fpos_first_frame = NIST_SPHERE_HEADER_LENGTH;
 	track->data_size = m_fh->length() - NIST_SPHERE_HEADER_LENGTH;
-	track->nextfframe = 0;
-	track->fpos_next_frame = track->fpos_first_frame;
 
 	return AF_SUCCEED;
 }
@@ -447,10 +445,7 @@ status NISTFile::writeInit(AFfilesetup setup)
 
 	Track *track = getTrack();
 
-	track->totalfframes = 0;
 	track->fpos_first_frame = NIST_SPHERE_HEADER_LENGTH;
-	track->nextfframe = 0;
-	track->fpos_next_frame = track->fpos_first_frame;
 
 	m_fh->seek(0, File::SeekFromBeginning);
 	writeHeader();

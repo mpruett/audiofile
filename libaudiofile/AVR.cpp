@@ -161,8 +161,6 @@ status AVRFile::readInit(AFfilesetup setup)
 	track->fpos_first_frame = m_fh->tell();
 	track->totalfframes = size;
 	track->data_size = track->totalfframes * track->f.bytesPerFrame(false);
-	track->nextfframe = 0;
-	track->fpos_next_frame = track->fpos_first_frame;
 
 	/* The file has been parsed successfully. */
 	return AF_SUCCEED;
