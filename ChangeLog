@@ -1,3 +1,8 @@
+2016-07-04  Fabrizio Gennari <fabrizio.ge@tiscali.it>
+
+	* libaudiofile/modules/ModuleState.cpp:
+	Fix data corruption when changing both sample format and channel count.
+
 2016-07-04  Nik Reiman <nik.reiman@gmail.com>
 
 	* .gitignore:
