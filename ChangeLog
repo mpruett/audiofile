@@ -1,3 +1,8 @@
+2016-07-04  Nik Reiman <nik.reiman@gmail.com>
+
+	* .gitignore:
+	Add compile to .gitignore.
+
 2016-07-04  Daniel Verkamp <daniel@drv.nu>
 
 	* libaudiofile/CAF.cpp:
