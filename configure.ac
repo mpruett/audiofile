@@ -128,6 +128,7 @@ AC_ARG_ENABLE(flac,
 	[enable_flac=yes])
 
 PKG_PROG_PKG_CONFIG
+PKG_INSTALLDIR
 
 FLAC_CFLAGS=""
 FLAC_LIBS=""

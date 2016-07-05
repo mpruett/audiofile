@@ -13,7 +13,6 @@ EXTRA_DIST = \
 	audiofile.pc.in \
 	audiofile-uninstalled.pc.in
 
-pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = audiofile.pc
 
 dist-hook: audiofile.spec

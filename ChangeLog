@@ -1,3 +1,9 @@
+2016-07-04  Christoph J. Thompson <cjsthompson@gmail.com>
+
+	* Makefile.am,
+	configure.ac:
+	Allow configuring pkg-config installation directory.
+
 2016-07-04  Michael Pruett <michael@68k.org>
 
 	* autogen.sh:
