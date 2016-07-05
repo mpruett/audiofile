@@ -5,6 +5,7 @@ ChannelMatrix
 Error
 FLAC
 FloatToInt
+FormatWithChannels
 Identify
 Instrument
 IntToFloat

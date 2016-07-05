@@ -1,3 +1,10 @@
+2016-07-04  Michael Pruett <michael@68k.org>
+
+	* test/.gitignore,
+	test/FormatWithChannels.cpp,
+	test/Makefile.am:
+	Add test for changing both sample format and channel count.
+
 2016-07-04  Fabrizio Gennari <fabrizio.ge@tiscali.it>
 
 	* libaudiofile/modules/ModuleState.cpp:
