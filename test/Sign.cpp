@@ -116,7 +116,7 @@ TEST_F(SignConversionTest, Int16)
 		EXPECT_EQ(readData[i], expectedData[i]);
 }
 
-static const int32_t kMinInt24 = -1<<23;
+static const int32_t kMinInt24 = 0-(1U<<23);
 static const int32_t kMaxInt24 = (1<<23) - 1;
 static const uint32_t kMaxUInt24 = (1<<24) - 1;
 

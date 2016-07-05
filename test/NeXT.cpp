@@ -37,13 +37,13 @@
 
 #include "TestUtilities.h"
 
-const char kDataUnspecifiedLength[] =
+const signed char kDataUnspecifiedLength[] =
 {
 	'.', 's', 'n', 'd',
 	0, 0, 0, 24, // offset of 24 bytes
-	0xff, 0xff, 0xff, 0xff, // unspecified length
+	-1, -1, -1, -1, // unspecified length
 	0, 0, 0, 3, // 16-bit linear
-	0, 0, 172, 68, // 44100 Hz
+	0, 0, -84, 68, // 44100 Hz (0xAC44)
 	0, 0, 0, 1, // 1 channel
 	0, 1,
 	0, 1,
@@ -57,13 +57,13 @@ const char kDataUnspecifiedLength[] =
 	0, 55
 };
 
-const char kDataTruncated[] =
+const signed char kDataTruncated[] =
 {
 	'.', 's', 'n', 'd',
 	0, 0, 0, 24, // offset of 24 bytes
 	0, 0, 0, 20, // length of 20 bytes
 	0, 0, 0, 3, // 16-bit linear
-	0, 0, 172, 68, // 44100 Hz
+	0, 0, -84, 68, // 44100 Hz (0xAC44)
 	0, 0, 0, 1, // 1 channel
 	0, 1,
 	0, 1,
@@ -152,13 +152,13 @@ TEST(NeXT, Truncated)
 	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
-const char kDataZeroChannels[] =
+const signed char kDataZeroChannels[] =
 {
 	'.', 's', 'n', 'd',
 	0, 0, 0, 24, // offset of 24 bytes
 	0, 0, 0, 2, // 2 bytes
 	0, 0, 0, 3, // 16-bit linear
-	0, 0, 172, 68, // 44100 Hz
+	0, 0, -84, 68, // 44100 Hz (0xAC44)
 	0, 0, 0, 0, // 0 channels
 	0, 1
 };
