@@ -8,5 +8,5 @@ Description: audiofile
 Requires:
 Version: @VERSION@
 Libs: -L${libdir} -laudiofile
-Libs.private: -lm
+Libs.private: @FLAC_LIBS@ -lm
 Cflags: -I${includedir}
