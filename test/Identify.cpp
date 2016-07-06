@@ -20,6 +20,7 @@
 #include <audiofile.h>
 #include <fcntl.h>
 #include <gtest/gtest.h>
+#include <stdint.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -27,7 +28,7 @@
 
 #include "TestUtilities.h"
 
-const char kNeXTData[] =
+const uint8_t kNeXTData[] =
 {
 	'.', 's', 'n', 'd',
 	0, 0, 0, 24, // offset of 24 bytes

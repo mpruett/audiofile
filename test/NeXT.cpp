@@ -30,6 +30,7 @@
 #include <audiofile.h>
 #include <fcntl.h>
 #include <gtest/gtest.h>
+#include <stdint.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -37,7 +38,7 @@
 
 #include "TestUtilities.h"
 
-const char kDataUnspecifiedLength[] =
+const uint8_t kDataUnspecifiedLength[] =
 {
 	'.', 's', 'n', 'd',
 	0, 0, 0, 24, // offset of 24 bytes
@@ -57,7 +58,7 @@ const char kDataUnspecifiedLength[] =
 	0, 55
 };
 
-const char kDataTruncated[] =
+const uint8_t kDataTruncated[] =
 {
 	'.', 's', 'n', 'd',
 	0, 0, 0, 24, // offset of 24 bytes
@@ -152,7 +153,7 @@ TEST(NeXT, Truncated)
 	ASSERT_EQ(::unlink(testFileName.c_str()), 0);
 }
 
-const char kDataZeroChannels[] =
+const uint8_t kDataZeroChannels[] =
 {
 	'.', 's', 'n', 'd',
 	0, 0, 0, 24, // offset of 24 bytes

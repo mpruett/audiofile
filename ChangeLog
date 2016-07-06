@@ -1,3 +1,9 @@
+2016-07-05  Michael Pruett <michael@68k.org>
+
+	* test/Identify.cpp,
+	test/NeXT.cpp:
+	Fix type of test data arrays.
+
 2016-07-04  Nik Reiman <nik.reiman@gmail.com>
 
 	* libaudiofile/modules/FLAC.cpp:
