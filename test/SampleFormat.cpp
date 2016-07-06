@@ -41,7 +41,7 @@ TEST(SampleFormat, NullArguments)
 
 	int sampleFormat, sampleWidth;
 	afGetSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
-	ASSERT_EQ(sampleFormat, AF_SAMPFMT_TWOSCOMP);
+	ASSERT_TRUE(sampleFormat == AF_SAMPFMT_TWOSCOMP);
 	ASSERT_EQ(sampleWidth, 16);
 
 	sampleFormat = -1;
@@ -51,11 +51,11 @@ TEST(SampleFormat, NullArguments)
 
 	sampleWidth = -1;
 	afGetSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, NULL);
-	ASSERT_EQ(sampleFormat, AF_SAMPFMT_TWOSCOMP);
+	ASSERT_TRUE(sampleFormat == AF_SAMPFMT_TWOSCOMP);
 	ASSERT_EQ(sampleWidth, -1);
 
 	afGetVirtualSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
-	ASSERT_EQ(sampleFormat, AF_SAMPFMT_TWOSCOMP);
+	ASSERT_TRUE(sampleFormat == AF_SAMPFMT_TWOSCOMP);
 	ASSERT_EQ(sampleWidth, 16);
 
 	sampleFormat = -1;
@@ -65,7 +65,7 @@ TEST(SampleFormat, NullArguments)
 
 	sampleWidth = -1;
 	afGetVirtualSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, NULL);
-	ASSERT_EQ(sampleFormat, AF_SAMPFMT_TWOSCOMP);
+	ASSERT_TRUE(sampleFormat == AF_SAMPFMT_TWOSCOMP);
 	ASSERT_EQ(sampleWidth, -1);
 
 	ASSERT_EQ(afCloseFile(file), 0);

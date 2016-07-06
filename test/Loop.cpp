@@ -116,8 +116,8 @@ TEST(Loop, AIFF)
 	ASSERT_EQ(afGetLoopStart(file, AF_DEFAULT_INST, 2), 3);
 	ASSERT_EQ(afGetLoopEnd(file, AF_DEFAULT_INST, 2), 4);
 
-	ASSERT_EQ(afGetLoopTrack(file, AF_DEFAULT_INST, 1), AF_DEFAULT_TRACK);
-	ASSERT_EQ(afGetLoopTrack(file, AF_DEFAULT_INST, 2), AF_DEFAULT_TRACK);
+	ASSERT_TRUE(afGetLoopTrack(file, AF_DEFAULT_INST, 1) == AF_DEFAULT_TRACK);
+	ASSERT_TRUE(afGetLoopTrack(file, AF_DEFAULT_INST, 2) == AF_DEFAULT_TRACK);
 
 	ASSERT_EQ(afGetLoopStartFrame(file, AF_DEFAULT_INST, 1),
 		markerPositions[0]);

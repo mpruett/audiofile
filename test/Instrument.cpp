@@ -53,7 +53,7 @@ static void testInstrumentParameters(int fileFormat)
 	ASSERT_EQ(1, afGetInstIDs(file, NULL));
 	int readInstrumentIDs[1] = {0};
 	ASSERT_EQ(1, afGetInstIDs(file, readInstrumentIDs));
-	ASSERT_EQ(AF_DEFAULT_INST, readInstrumentIDs[0]);
+	ASSERT_TRUE(AF_DEFAULT_INST == readInstrumentIDs[0]);
 
 	EXPECT_EQ(50,
 		afGetInstParamLong(file, AF_DEFAULT_INST, AF_INST_MIDI_BASENOTE));

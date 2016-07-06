@@ -47,10 +47,10 @@ TEST(Identify, NeXT)
 	ASSERT_GT(fd, -1);
 	ASSERT_EQ(::write(fd, kNeXTData, sizeof (kNeXTData)), sizeof (kNeXTData));
 
-	EXPECT_EQ(AF_FILE_NEXTSND, afIdentifyFD(fd));
+	EXPECT_TRUE(AF_FILE_NEXTSND == afIdentifyFD(fd));
 
 	int implemented = -1;
-	EXPECT_EQ(AF_FILE_NEXTSND, afIdentifyNamedFD(fd, testFileName.c_str(), &implemented));
+	EXPECT_TRUE(AF_FILE_NEXTSND == afIdentifyNamedFD(fd, testFileName.c_str(), &implemented));
 	EXPECT_EQ(implemented, 1);
 
 	ASSERT_EQ(::close(fd), 0);
@@ -64,10 +64,10 @@ TEST(Identify, Empty)
 	int fd = ::open(testFileName.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0644);
 	ASSERT_GT(fd, -1);
 
-	EXPECT_EQ(AF_FILE_UNKNOWN, afIdentifyFD(fd));
+	EXPECT_TRUE(AF_FILE_UNKNOWN == afIdentifyFD(fd));
 
 	int implemented = -1;
-	EXPECT_EQ(AF_FILE_UNKNOWN, afIdentifyNamedFD(fd, testFileName.c_str(), &implemented));
+	EXPECT_TRUE(AF_FILE_UNKNOWN == afIdentifyNamedFD(fd, testFileName.c_str(), &implemented));
 	EXPECT_EQ(implemented, 0);
 
 	ASSERT_EQ(::close(fd), 0);
@@ -79,8 +79,8 @@ TEST(Identify, NonSeekable)
 	int pipefd[2];
 	ASSERT_GE(::pipe(pipefd), 0);
 
-	EXPECT_EQ(AF_FILE_UNKNOWN, afIdentifyFD(pipefd[0]));
-	EXPECT_EQ(AF_FILE_UNKNOWN, afIdentifyNamedFD(pipefd[0], "", NULL));
+	EXPECT_TRUE(AF_FILE_UNKNOWN == afIdentifyFD(pipefd[0]));
+	EXPECT_TRUE(AF_FILE_UNKNOWN == afIdentifyNamedFD(pipefd[0], "", NULL));
 
 	ASSERT_EQ(::close(pipefd[0]), 0);
 	ASSERT_EQ(::close(pipefd[1]), 0);

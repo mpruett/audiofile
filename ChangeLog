@@ -1,6 +1,16 @@
 2016-07-05  Michael Pruett <michael@68k.org>
 
 	* test/Identify.cpp,
+	test/Instrument.cpp,
+	test/Loop.cpp,
+	test/Lossless.h,
+	test/NeXT.cpp,
+	test/SampleFormat.cpp:
+	Fix warnings in tests comparing integers to enums.
+
+2016-07-05  Michael Pruett <michael@68k.org>
+
+	* test/Identify.cpp,
 	test/NeXT.cpp:
 	Fix type of test data arrays.
 

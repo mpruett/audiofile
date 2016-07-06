@@ -96,7 +96,7 @@ TEST(NeXT, UnspecifiedLength)
 
 	int sampleFormat, sampleWidth;
 	afGetSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
-	EXPECT_EQ(sampleFormat, AF_SAMPFMT_TWOSCOMP);
+	EXPECT_TRUE(sampleFormat == AF_SAMPFMT_TWOSCOMP);
 	EXPECT_EQ(sampleWidth, 16);
 	EXPECT_EQ(afGetChannels(file, AF_DEFAULT_TRACK), 1);
 	EXPECT_EQ(afGetTrackBytes(file, AF_DEFAULT_TRACK),
@@ -133,7 +133,7 @@ TEST(NeXT, Truncated)
 
 	int sampleFormat, sampleWidth;
 	afGetSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
-	EXPECT_EQ(sampleFormat, AF_SAMPFMT_TWOSCOMP);
+	EXPECT_TRUE(sampleFormat == AF_SAMPFMT_TWOSCOMP);
 	EXPECT_EQ(sampleWidth, 16);
 	EXPECT_EQ(afGetChannels(file, AF_DEFAULT_TRACK), 1);
 	EXPECT_EQ(afGetTrackBytes(file, AF_DEFAULT_TRACK),

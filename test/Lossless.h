@@ -95,7 +95,7 @@ static void testLossless(const char *prefix, int fileFormat,
 	ASSERT_EQ(compressionFormat, afGetCompression(file, AF_DEFAULT_TRACK));
 	int readSampleFormat, readSampleWidth;
 	afGetSampleFormat(file, AF_DEFAULT_TRACK, &readSampleFormat, &readSampleWidth);
-	ASSERT_EQ(AF_SAMPFMT_TWOSCOMP, readSampleFormat);
+	ASSERT_TRUE(AF_SAMPFMT_TWOSCOMP == readSampleFormat);
 	ASSERT_EQ(sampleWidth, readSampleWidth);
 	ASSERT_EQ(frameCount, afGetFrameCount(file, AF_DEFAULT_TRACK));
 
