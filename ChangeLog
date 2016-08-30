@@ -1,3 +1,8 @@
+2016-08-29  Michael Pruett <michael@68k.org>
+
+	* libaudiofile/modules/SimpleModule.h:
+	Fix undefined behavior in sign conversion.
+
 2016-07-05  Joerg Krause <joerg.krause@embedded.rocks>
 
 	* audiofile.pc.in:
