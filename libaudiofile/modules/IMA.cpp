@@ -169,7 +169,7 @@ int IMA::decodeBlockWAVE(const uint8_t *encoded, int16_t *decoded)
 		if (encoded[1] & 0x80)
 			m_adpcmState[c].previousValue -= 0x10000;
 
-		m_adpcmState[c].index = encoded[2];
+		m_adpcmState[c].index = clamp(encoded[2], 0, 88);
 
 		*decoded++ = m_adpcmState[c].previousValue;
 
@@ -210,7 +210,7 @@ int IMA::decodeBlockQT(const uint8_t *encoded, int16_t *decoded)
 			predictor -= 0x10000;
 
 		state.previousValue = clamp(predictor, MIN_INT16, MAX_INT16);
-		state.index = encoded[1] & 0x7f;
+		state.index = clamp(encoded[1] & 0x7f, 0, 88);
 		encoded += 2;
 
 		for (int n=0; n<m_framesPerPacket; n+=2)
