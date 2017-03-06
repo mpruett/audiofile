@@ -45,6 +45,33 @@ void printusage (void);
 void usageerror (void);
 bool copyaudiodata (AFfilehandle infile, AFfilehandle outfile, int trackid);
 
+int firstBitSet(int x)
+{
+        int position=0;
+        while (x!=0)
+        {
+                x>>=1;
+                ++position;
+        }
+        return position;
+}
+
+#ifndef __has_builtin
+#define __has_builtin(x) 0
+#endif
+
+int multiplyCheckOverflow(int a, int b, int *result)
+{
+#if (defined __GNUC__ && __GNUC__ >= 5) || ( __clang__ && __has_builtin(__builtin_mul_overflow))
+	return __builtin_mul_overflow(a, b, result);
+#else
+	if (firstBitSet(a)+firstBitSet(b)>31) // int is signed, so we can't use 32 bits
+		return true;
+	*result = a * b;
+	return false;
+#endif
+}
+
 int main (int argc, char **argv)
 {
 	if (argc == 2)
@@ -323,8 +350,11 @@ bool copyaudiodata (AFfilehandle infile, AFfilehandle outfile, int trackid)
 {
 	int frameSize = afGetVirtualFrameSize(infile, trackid, 1);
 
-	const int kBufferFrameCount = 65536;
-	void *buffer = malloc(kBufferFrameCount * frameSize);
+	int kBufferFrameCount = 65536;
+	int bufferSize;
+	while (multiplyCheckOverflow(kBufferFrameCount, frameSize, &bufferSize))
+		kBufferFrameCount /= 2;
+	void *buffer = malloc(bufferSize);
 
 	AFframecount totalFrames = afGetFrameCount(infile, AF_DEFAULT_TRACK);
 	AFframecount totalFramesWritten = 0;
