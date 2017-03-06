@@ -281,6 +281,12 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 
 			/* numCoefficients should be at least 7. */
 			assert(numCoefficients >= 7 && numCoefficients <= 255);
+			if (numCoefficients < 7 || numCoefficients > 255)
+			{
+				_af_error(AF_BAD_HEADER,
+						"Bad number of coefficients");
+				return AF_FAIL;
+			}
 
 			m_msadpcmNumCoefficients = numCoefficients;
 
