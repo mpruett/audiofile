@@ -28,6 +28,7 @@ TESTS = \
 	VirtualFile \
 	floatto24 \
 	query2 \
+	sixteen-stereo-to-eight-mono \
 	sixteen-to-eight \
 	testchannelmatrix \
 	testdouble \
@@ -147,6 +148,7 @@ printmarkers_SOURCES = printmarkers.c
 printmarkers_LDADD = $(LIBAUDIOFILE) -lm
 
 sixteen_to_eight_SOURCES = sixteen-to-eight.c TestUtilities.cpp TestUtilities.h
+sixteen_stereo_to_eight_mono_SOURCES = sixteen-stereo-to-eight-mono.c TestUtilities.cpp TestUtilities.h
 
 testchannelmatrix_SOURCES = testchannelmatrix.c TestUtilities.cpp TestUtilities.h
 
