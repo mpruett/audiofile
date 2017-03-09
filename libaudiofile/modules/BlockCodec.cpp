@@ -47,7 +47,7 @@ void BlockCodec::runPull()
 
 	// Read the compressed data.
 	ssize_t bytesRead = read(m_inChunk->buffer, m_bytesPerPacket * blockCount);
-	int blocksRead = bytesRead >= 0 ? bytesRead / m_bytesPerPacket : 0;
+	int blocksRead = (bytesRead >= 0 && m_bytesPerPacket > 0) ? bytesRead / m_bytesPerPacket : 0;
 
 	// Decompress into m_outChunk.
 	for (int i=0; i<blocksRead; i++)
