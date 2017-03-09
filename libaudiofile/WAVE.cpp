@@ -326,6 +326,7 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 			{
 				_af_error(AF_BAD_NOT_IMPLEMENTED,
 					"IMA ADPCM compression supports only 4 bits per sample");
+				return AF_FAIL;
 			}
 
 			int bytesPerBlock = (samplesPerBlock + 14) / 8 * 4 * channelCount;
@@ -333,6 +334,7 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 			{
 				_af_error(AF_BAD_CODEC_CONFIG,
 					"Invalid samples per block for IMA ADPCM compression");
+				return AF_FAIL;
 			}
 
 			track->f.sampleWidth = 16;
