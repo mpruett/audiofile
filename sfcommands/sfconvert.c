@@ -60,7 +60,7 @@ int firstBitSet(int x)
 #define __has_builtin(x) 0
 #endif
 
-int multiplyCheckOverflow(int a, int b, int *result)
+bool multiplyCheckOverflow(int a, int b, int *result)
 {
 #if (defined __GNUC__ && __GNUC__ >= 5) || ( __clang__ && __has_builtin(__builtin_mul_overflow))
 	return __builtin_mul_overflow(a, b, result);
