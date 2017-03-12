@@ -52,8 +52,9 @@ void BlockCodec::runPull()
 	// Decompress into m_outChunk.
 	for (int i=0; i<blocksRead; i++)
 	{
-		decodeBlock(static_cast<const uint8_t *>(m_inChunk->buffer) + i * m_bytesPerPacket,
-			static_cast<int16_t *>(m_outChunk->buffer) + i * m_framesPerPacket * m_track->f.channelCount);
+		if (decodeBlock(static_cast<const uint8_t *>(m_inChunk->buffer) + i * m_bytesPerPacket,
+			static_cast<int16_t *>(m_outChunk->buffer) + i * m_framesPerPacket * m_track->f.channelCount)==0)
+			break;
 
 		framesRead += m_framesPerPacket;
 	}
