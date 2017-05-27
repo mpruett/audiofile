@@ -332,19 +332,19 @@ int32_t ALACEncoder::EncodeStereo( BitBuffer * bitstream, void * inputBuffer, ui
         switch ( mBitDepth )
         {
             case 16:
-                mix16( (int16_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples/dilate, mixBits, mixRes );
+                audiofile_alac_mix16( (int16_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples/dilate, mixBits, mixRes );
                 break;
             case 20:
-                mix20( (uint8_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples/dilate, mixBits, mixRes );
+                audiofile_alac_mix20( (uint8_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples/dilate, mixBits, mixRes );
                 break;
             case 24:
                 // includes extraction of shifted-off bytes
-                mix24( (uint8_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples/dilate,
+                audiofile_alac_mix24( (uint8_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples/dilate,
                         mixBits, mixRes, mShiftBufferUV, bytesShifted );
                 break;
             case 32:
                 // includes extraction of shifted-off bytes
-                mix32( (int32_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples/dilate,
+                audiofile_alac_mix32( (int32_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples/dilate,
                         mixBits, mixRes, mShiftBufferUV, bytesShifted );
                 break;
         }
@@ -379,19 +379,19 @@ int32_t ALACEncoder::EncodeStereo( BitBuffer * bitstream, void * inputBuffer, ui
 	switch ( mBitDepth )
 	{
 		case 16:
-			mix16( (int16_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples, mixBits, mixRes );
+			audiofile_alac_mix16( (int16_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples, mixBits, mixRes );
 			break;
 		case 20:
-			mix20( (uint8_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples, mixBits, mixRes );
+			audiofile_alac_mix20( (uint8_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples, mixBits, mixRes );
 			break;
 		case 24:
 			// also extracts the shifted off bytes into the shift buffers
-			mix24( (uint8_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples,
+			audiofile_alac_mix24( (uint8_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples,
 					mixBits, mixRes, mShiftBufferUV, bytesShifted );
 			break;
 		case 32:
 			// also extracts the shifted off bytes into the shift buffers
-			mix32( (int32_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples,
+			audiofile_alac_mix32( (int32_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples,
 					mixBits, mixRes, mShiftBufferUV, bytesShifted );
 			break;
 	}
@@ -605,19 +605,19 @@ int32_t ALACEncoder::EncodeStereoFast( BitBuffer * bitstream, void * inputBuffer
 	switch ( mBitDepth )
 	{
 		case 16:
-			mix16( (int16_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples, mixBits, mixRes );
+			audiofile_alac_mix16( (int16_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples, mixBits, mixRes );
 			break;
 		case 20:
-			mix20( (uint8_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples, mixBits, mixRes );
+			audiofile_alac_mix20( (uint8_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples, mixBits, mixRes );
 			break;
 		case 24:
 			// also extracts the shifted off bytes into the shift buffers
-			mix24( (uint8_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples,
+			audiofile_alac_mix24( (uint8_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples,
 					mixBits, mixRes, mShiftBufferUV, bytesShifted );
 			break;
 		case 32:
 			// also extracts the shifted off bytes into the shift buffers
-			mix32( (int32_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples,
+			audiofile_alac_mix32( (int32_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples,
 					mixBits, mixRes, mShiftBufferUV, bytesShifted );
 			break;
 	}
@@ -756,7 +756,7 @@ int32_t ALACEncoder::EncodeStereoEscape( BitBuffer * bitstream, void * inputBuff
 			break;
 		case 20:
 			// mix20() with mixres param = 0 means de-interleave so use it to simplify things
-			mix20( (uint8_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples, 0, 0 );
+			audiofile_alac_mix20( (uint8_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples, 0, 0 );
 			for ( index = 0; index < numSamples; index++ )
 			{
 				BitBufferWrite( bitstream, mMixBufferU[index], 20 );
@@ -765,7 +765,7 @@ int32_t ALACEncoder::EncodeStereoEscape( BitBuffer * bitstream, void * inputBuff
 			break;
 		case 24:
 			// mix24() with mixres param = 0 means de-interleave so use it to simplify things
-			mix24( (uint8_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples, 0, 0, mShiftBufferUV, 0 );
+			audiofile_alac_mix24( (uint8_t *) inputBuffer, stride, mMixBufferU, mMixBufferV, numSamples, 0, 0, mShiftBufferUV, 0 );
 			for ( index = 0; index < numSamples; index++ )
 			{
 				BitBufferWrite( bitstream, mMixBufferU[index], 24 );
