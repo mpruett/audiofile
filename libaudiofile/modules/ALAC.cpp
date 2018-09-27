@@ -240,6 +240,7 @@ void ALAC::runPull()
 	if (read(m_inChunk->buffer, bytesPerPacket) < bytesPerPacket)
 	{
 		reportReadError(0, m_track->f.framesPerPacket);
+		m_outChunk->frameCount = 0;
 		return;
 	}
 
