@@ -42,7 +42,7 @@
 #include "Setup.h"
 #include "Tag.h"
 #include "Track.h"
-#include "UUID.h"
+#include "af_UUID.h"
 #include "byteorder.h"
 #include "util.h"
 
@@ -127,22 +127,22 @@ static const _AFfilesetup waveDefaultFileSetup =
 	NULL			/* miscellaneous */
 };
 
-static const UUID _af_wave_guid_pcm =
+static const af_UUID _af_wave_guid_pcm =
 {{
 	0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00,
 	0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71
 }};
-static const UUID _af_wave_guid_ieee_float =
+static const af_UUID _af_wave_guid_ieee_float =
 {{
 	0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00,
 	0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71
 }};
-static const UUID _af_wave_guid_ulaw =
+static const af_UUID _af_wave_guid_ulaw =
 {{
 	0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00,
 	0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71
 }};
-static const UUID _af_wave_guid_alaw =
+static const af_UUID _af_wave_guid_alaw =
 {{
 	0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00,
 	0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71
@@ -357,7 +357,7 @@ status WAVEFile::parseFormat(const Tag &id, uint32_t size)
 			readU16(&reserved);
 			uint32_t channelMask;
 			readU32(&channelMask);
-			UUID subformat;
+			af_UUID subformat;
 			readUUID(&subformat);
 			if (subformat == _af_wave_guid_pcm)
 			{
@@ -1534,12 +1534,12 @@ status WAVEFile::writeInit(AFfilesetup setup)
 	return AF_SUCCEED;
 }
 
-bool WAVEFile::readUUID(UUID *u)
+bool WAVEFile::readUUID(af_UUID *u)
 {
 	return m_fh->read(u->data, 16) == 16;
 }
 
-bool WAVEFile::writeUUID(const UUID *u)
+bool WAVEFile::writeUUID(const af_UUID *u)
 {
 	return m_fh->write(u->data, 16) == 16;
 }

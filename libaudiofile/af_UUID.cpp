@@ -28,22 +28,22 @@
 */
 
 #include "config.h"
-#include "UUID.h"
+#include "af_UUID.h"
 
 #include <stdio.h>
 #include <string.h>
 
-bool UUID::operator==(const UUID &u) const
+bool af_UUID::operator==(const af_UUID &u) const
 {
 	return !memcmp(data, u.data, 16);
 }
 
-bool UUID::operator!=(const UUID &u) const
+bool af_UUID::operator!=(const af_UUID &u) const
 {
 	return memcmp(data, u.data, 16) != 0;
 }
 
-std::string UUID::name() const
+std::string af_UUID::name() const
 {
 	char s[37];
 	uint32_t u1 =

@@ -49,8 +49,8 @@ libaudiofile_la_SOURCES = \
 	Tag.h \
 	Track.cpp \
 	Track.h \
-	UUID.cpp \
-	UUID.h \
+	af_UUID.cpp \
+	af_UUID.h \
 	VOC.cpp \
 	VOC.h \
 	WAVE.cpp \

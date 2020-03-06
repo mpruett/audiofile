@@ -39,7 +39,7 @@ extern const InstParamInfo _af_wave_inst_params[_AF_WAVE_NUM_INSTPARAMS];
 #define _AF_WAVE_NUM_COMPTYPES 4
 extern const int _af_wave_compression_types[_AF_WAVE_NUM_COMPTYPES];
 
-struct UUID;
+struct af_UUID;
 
 class WAVEFile : public _AFfilehandle
 {
@@ -86,8 +86,8 @@ private:
 	status writeCues();
 	status writeData();
 
-	bool readUUID(UUID *g);
-	bool writeUUID(const UUID *g);
+	bool readUUID(af_UUID *g);
+	bool writeUUID(const af_UUID *g);
 
 	bool writeZString(const char *);
 	size_t zStringLength(const char *);

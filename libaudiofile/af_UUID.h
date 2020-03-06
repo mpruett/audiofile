@@ -33,12 +33,11 @@
 #include <stdint.h>
 #include <string>
 
-struct UUID
-{
+struct af_UUID {
 	uint8_t data[16];
 
-	bool operator==(const UUID &) const;
-	bool operator!=(const UUID &) const;
+	bool operator==(const af_UUID &) const;
+	bool operator!=(const af_UUID &) const;
 	std::string name() const;
 };
 
