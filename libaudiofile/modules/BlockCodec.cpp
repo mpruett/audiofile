@@ -24,6 +24,7 @@
 #include "Track.h"
 
 #include <assert.h>
+#include <algorithm>
 
 BlockCodec::BlockCodec(Mode mode, Track *track, File *fh, bool canSeek) :
 	FileModule(mode, track, fh, canSeek),
