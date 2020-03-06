@@ -54,7 +54,7 @@ enum
 };
     
 
-typedef enum
+enum
 {
     
     ID_SCE = 0,						/* Single Channel Element   */
@@ -65,7 +65,7 @@ typedef enum
     ID_PCE = 5,
     ID_FIL = 6,
     ID_END = 7
-} ELEMENT_TYPE;
+};
 
 // types
 typedef struct BitBuffer
