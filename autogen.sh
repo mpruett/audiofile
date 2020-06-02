@@ -1,6 +1,13 @@
 #!/bin/sh
 # Run this to generate all the initial makefiles, etc.
 
+if [ -d "$srcdir/m4" ]; then
+	echo "m4 already exists. Going straight to auto-generation."
+else
+	echo "m4 doesn't exist. Creating it."
+	mkdir m4
+fi
+
 test -n "$srcdir" || srcdir=`dirname $0`
 test -n "$srcdir" || srcdir=.
 
