@@ -48,7 +48,7 @@ void errorHandler(long error, const char *message)
 		fprintf(stderr, "sfinfo: %s [error %ld]\n", message, error);
 }
 
-void printusage()
+void printusage(void)
 {
 	printf("usage: sfinfo [options...] soundfiles...\n");
 	printf("options:\n");
@@ -58,7 +58,7 @@ void printusage()
 	printf("  -v, --version      Print version\n");
 }
 
-void printversion()
+void printversion(void)
 {
 	printf("sfinfo: Audio File Library version %s\n", VERSION);
 }

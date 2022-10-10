@@ -74,8 +74,7 @@ static int search(int val, const short *table, int size)
  * John Wiley & Sons, pps 98-111 and 472-476.
  */
 unsigned char
-_af_linear2alaw(pcm_val)
-	int		pcm_val;	/* 2's complement (16-bit range) */
+_af_linear2alaw(int pcm_val)		/* 2's complement (16-bit range) */
 {
 	int		mask;
 	int		seg;
@@ -110,8 +109,7 @@ _af_linear2alaw(pcm_val)
  *
  */
 int
-_af_alaw2linear(a_val)
-	unsigned char	a_val;
+_af_alaw2linear(unsigned char a_val)
 {
 	int		t;
 	int		seg;
