@@ -60,7 +60,7 @@ A2XFLAGS = $(ASCIIDOCFLAGS) -d manpage -f manpage
 .html: .txt
 	$(ASCIIDOC) $(ASCIIDOCFLAGS) -b html4 -d manpage -f asciidoc.conf $<
 
-.1.3: .1.txt .3.txt
+%.1 %.3: .1.txt .3.txt
 	$(A2X) $(A2XFLAGS) --asciidoc-opts="-f asciidoc.conf" $<
 
 html: $(DOCS_HTML)
